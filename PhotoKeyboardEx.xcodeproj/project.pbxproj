@@ -1,0 +1,979 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		6CA5BDCFBDCDC6ABDF240ACE /* Pods_PhotoKeyboardExOrigin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90C16389F0DEFE1F8B6C810A /* Pods_PhotoKeyboardExOrigin.framework */; };
+		7820686CB826574D043A519D /* Pods_PhotoKeyboardExTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1167ECE4863AEFBA7C7F8D46 /* Pods_PhotoKeyboardExTests.framework */; };
+		8258686122F2302D002941F4 /* PhotoCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8258685822F2302C002941F4 /* PhotoCollectionViewCell.xib */; };
+		8258686222F2302D002941F4 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8258685922F2302C002941F4 /* Media.xcassets */; };
+		8258686322F2302D002941F4 /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8258685A22F2302C002941F4 /* KeyboardViewController.swift */; };
+		8258686422F2302D002941F4 /* LottieFile in Resources */ = {isa = PBXBuildFile; fileRef = 8258685B22F2302C002941F4 /* LottieFile */; };
+		8258686622F2302D002941F4 /* MainKBView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8258685D22F2302D002941F4 /* MainKBView.xib */; };
+		8258686722F2302D002941F4 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8258685E22F2302D002941F4 /* Model.swift */; };
+		8258686922F2302D002941F4 /* PhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8258686022F2302D002941F4 /* PhotoCollectionViewCell.swift */; };
+		8278D13A22EE5A700034C2CC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8278D13922EE5A700034C2CC /* AppDelegate.swift */; };
+		8278D13F22EE5A700034C2CC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8278D13D22EE5A700034C2CC /* Main.storyboard */; };
+		8278D14122EE5A730034C2CC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8278D14022EE5A730034C2CC /* Assets.xcassets */; };
+		8278D14422EE5A730034C2CC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8278D14222EE5A730034C2CC /* LaunchScreen.storyboard */; };
+		8278D14F22EE5A730034C2CC /* PhotoKeyboardExTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8278D14E22EE5A730034C2CC /* PhotoKeyboardExTests.swift */; };
+		8278D15A22EE5A730034C2CC /* PhotoKeyboardExUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8278D15922EE5A730034C2CC /* PhotoKeyboardExUITests.swift */; };
+		8278D17222EE5AC30034C2CC /* PhotoKeyboardExOrigin.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8278D16B22EE5AC30034C2CC /* PhotoKeyboardExOrigin.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8280C03B22F24DE20069BF8B /* ColorManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280C03A22F24DE20069BF8B /* ColorManager.swift */; };
+		8280C03D22F454B80069BF8B /* Add.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8280C03C22F454B80069BF8B /* Add.storyboard */; };
+		8280C03F22F454D20069BF8B /* AddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280C03E22F454D20069BF8B /* AddViewController.swift */; };
+		8280C04222F455170069BF8B /* PhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280C04022F455170069BF8B /* PhotoCollectionViewCell.swift */; };
+		8280C04322F455170069BF8B /* PhotoCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8280C04122F455170069BF8B /* PhotoCollectionViewCell.xib */; };
+		8280C04522F47D400069BF8B /* MainTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280C04422F47D400069BF8B /* MainTabViewController.swift */; };
+		8280C04722F481420069BF8B /* ChildContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280C04622F481410069BF8B /* ChildContentViewController.swift */; };
+		8280C04922F481490069BF8B /* ChildContent.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8280C04822F481490069BF8B /* ChildContent.storyboard */; };
+		8280C04B22F4868F0069BF8B /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280C04A22F4868F0069BF8B /* Model.swift */; };
+		82F9F3EE22F588290062F451 /* MainNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9F3ED22F588290062F451 /* MainNavigationViewController.swift */; };
+		82F9F3F022F589400062F451 /* MainMenuTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9F3EF22F589400062F451 /* MainMenuTableViewController.swift */; };
+		D665FF9608408EFBB4EFAFE7 /* Pods_PhotoKeyboardExUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A59BCD0729283AE61EFE4B7A /* Pods_PhotoKeyboardExUITests.framework */; };
+		E8F05559D6556F8676426CBC /* Pods_PhotoKeyboardEx.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0956F83AA570857F2DF6553E /* Pods_PhotoKeyboardEx.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		8278D14B22EE5A730034C2CC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8278D12E22EE5A700034C2CC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8278D13522EE5A700034C2CC;
+			remoteInfo = PhotoKeyboardEx;
+		};
+		8278D15622EE5A730034C2CC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8278D12E22EE5A700034C2CC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8278D13522EE5A700034C2CC;
+			remoteInfo = PhotoKeyboardEx;
+		};
+		8278D17022EE5AC30034C2CC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8278D12E22EE5A700034C2CC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8278D16A22EE5AC30034C2CC;
+			remoteInfo = PhotoKeyboardExOrigin;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8278D17622EE5AC30034C2CC /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				8278D17222EE5AC30034C2CC /* PhotoKeyboardExOrigin.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0956F83AA570857F2DF6553E /* Pods_PhotoKeyboardEx.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PhotoKeyboardEx.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1167ECE4863AEFBA7C7F8D46 /* Pods_PhotoKeyboardExTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PhotoKeyboardExTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		286250ADBF3AA73F7083531C /* Pods-PhotoKeyboardEx.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhotoKeyboardEx.release.xcconfig"; path = "Target Support Files/Pods-PhotoKeyboardEx/Pods-PhotoKeyboardEx.release.xcconfig"; sourceTree = "<group>"; };
+		40374A8F9A55BA39E8E301A4 /* Pods-PhotoKeyboardExUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhotoKeyboardExUITests.release.xcconfig"; path = "Target Support Files/Pods-PhotoKeyboardExUITests/Pods-PhotoKeyboardExUITests.release.xcconfig"; sourceTree = "<group>"; };
+		52A3039611AC00C29BB06F50 /* Pods-PhotoKeyboardExTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhotoKeyboardExTests.release.xcconfig"; path = "Target Support Files/Pods-PhotoKeyboardExTests/Pods-PhotoKeyboardExTests.release.xcconfig"; sourceTree = "<group>"; };
+		7AD679DC5AEC5BF2B325581A /* Pods-PhotoKeyboardExOrigin.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhotoKeyboardExOrigin.debug.xcconfig"; path = "Target Support Files/Pods-PhotoKeyboardExOrigin/Pods-PhotoKeyboardExOrigin.debug.xcconfig"; sourceTree = "<group>"; };
+		8258685822F2302C002941F4 /* PhotoCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhotoCollectionViewCell.xib; sourceTree = "<group>"; };
+		8258685922F2302C002941F4 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		8258685A22F2302C002941F4 /* KeyboardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
+		8258685B22F2302C002941F4 /* LottieFile */ = {isa = PBXFileReference; lastKnownFileType = folder; path = LottieFile; sourceTree = "<group>"; };
+		8258685C22F2302D002941F4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8258685D22F2302D002941F4 /* MainKBView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainKBView.xib; sourceTree = "<group>"; };
+		8258685E22F2302D002941F4 /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		8258686022F2302D002941F4 /* PhotoCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewCell.swift; sourceTree = "<group>"; };
+		8278D13622EE5A700034C2CC /* PhotoKeyboardEx.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoKeyboardEx.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8278D13922EE5A700034C2CC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		8278D13E22EE5A700034C2CC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		8278D14022EE5A730034C2CC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8278D14322EE5A730034C2CC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		8278D14522EE5A730034C2CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8278D14A22EE5A730034C2CC /* PhotoKeyboardExTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhotoKeyboardExTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8278D14E22EE5A730034C2CC /* PhotoKeyboardExTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoKeyboardExTests.swift; sourceTree = "<group>"; };
+		8278D15022EE5A730034C2CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8278D15522EE5A730034C2CC /* PhotoKeyboardExUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhotoKeyboardExUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8278D15922EE5A730034C2CC /* PhotoKeyboardExUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoKeyboardExUITests.swift; sourceTree = "<group>"; };
+		8278D15B22EE5A730034C2CC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8278D16B22EE5AC30034C2CC /* PhotoKeyboardExOrigin.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PhotoKeyboardExOrigin.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		8280C03A22F24DE20069BF8B /* ColorManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorManager.swift; sourceTree = "<group>"; };
+		8280C03C22F454B80069BF8B /* Add.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Add.storyboard; sourceTree = "<group>"; };
+		8280C03E22F454D20069BF8B /* AddViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddViewController.swift; sourceTree = "<group>"; };
+		8280C04022F455170069BF8B /* PhotoCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewCell.swift; sourceTree = "<group>"; };
+		8280C04122F455170069BF8B /* PhotoCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhotoCollectionViewCell.xib; sourceTree = "<group>"; };
+		8280C04422F47D400069BF8B /* MainTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabViewController.swift; sourceTree = "<group>"; };
+		8280C04622F481410069BF8B /* ChildContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildContentViewController.swift; sourceTree = "<group>"; };
+		8280C04822F481490069BF8B /* ChildContent.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ChildContent.storyboard; sourceTree = "<group>"; };
+		8280C04A22F4868F0069BF8B /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		82F9F3ED22F588290062F451 /* MainNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainNavigationViewController.swift; sourceTree = "<group>"; };
+		82F9F3EF22F589400062F451 /* MainMenuTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuTableViewController.swift; sourceTree = "<group>"; };
+		90C16389F0DEFE1F8B6C810A /* Pods_PhotoKeyboardExOrigin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PhotoKeyboardExOrigin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		956D55CCA95EADEBC3D685B5 /* Pods-PhotoKeyboardExTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhotoKeyboardExTests.debug.xcconfig"; path = "Target Support Files/Pods-PhotoKeyboardExTests/Pods-PhotoKeyboardExTests.debug.xcconfig"; sourceTree = "<group>"; };
+		A59BCD0729283AE61EFE4B7A /* Pods_PhotoKeyboardExUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PhotoKeyboardExUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		C96A9E029566D3D49BBC6284 /* Pods-PhotoKeyboardEx.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhotoKeyboardEx.debug.xcconfig"; path = "Target Support Files/Pods-PhotoKeyboardEx/Pods-PhotoKeyboardEx.debug.xcconfig"; sourceTree = "<group>"; };
+		D11D546A63A2549769BD1719 /* Pods-PhotoKeyboardExUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhotoKeyboardExUITests.debug.xcconfig"; path = "Target Support Files/Pods-PhotoKeyboardExUITests/Pods-PhotoKeyboardExUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		FBFC6C993C1AA83E2604ED9F /* Pods-PhotoKeyboardExOrigin.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhotoKeyboardExOrigin.release.xcconfig"; path = "Target Support Files/Pods-PhotoKeyboardExOrigin/Pods-PhotoKeyboardExOrigin.release.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8278D13322EE5A700034C2CC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E8F05559D6556F8676426CBC /* Pods_PhotoKeyboardEx.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8278D14722EE5A730034C2CC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7820686CB826574D043A519D /* Pods_PhotoKeyboardExTests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8278D15222EE5A730034C2CC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D665FF9608408EFBB4EFAFE7 /* Pods_PhotoKeyboardExUITests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8278D16822EE5AC30034C2CC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6CA5BDCFBDCDC6ABDF240ACE /* Pods_PhotoKeyboardExOrigin.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		8278D12D22EE5A700034C2CC = {
+			isa = PBXGroup;
+			children = (
+				8278D13822EE5A700034C2CC /* PhotoKeyboardEx */,
+				8278D14D22EE5A730034C2CC /* PhotoKeyboardExTests */,
+				8278D15822EE5A730034C2CC /* PhotoKeyboardExUITests */,
+				8278D16C22EE5AC30034C2CC /* PhotoKeyboardExOrigin */,
+				8278D13722EE5A700034C2CC /* Products */,
+				E96BB11C0C049853094A3AC4 /* Pods */,
+				DEEDB2204F451E14EA336469 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		8278D13722EE5A700034C2CC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8278D13622EE5A700034C2CC /* PhotoKeyboardEx.app */,
+				8278D14A22EE5A730034C2CC /* PhotoKeyboardExTests.xctest */,
+				8278D15522EE5A730034C2CC /* PhotoKeyboardExUITests.xctest */,
+				8278D16B22EE5AC30034C2CC /* PhotoKeyboardExOrigin.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8278D13822EE5A700034C2CC /* PhotoKeyboardEx */ = {
+			isa = PBXGroup;
+			children = (
+				8278D13922EE5A700034C2CC /* AppDelegate.swift */,
+				8280C04A22F4868F0069BF8B /* Model.swift */,
+				8278D13D22EE5A700034C2CC /* Main.storyboard */,
+				8280C04422F47D400069BF8B /* MainTabViewController.swift */,
+				82F9F3ED22F588290062F451 /* MainNavigationViewController.swift */,
+				82F9F3EF22F589400062F451 /* MainMenuTableViewController.swift */,
+				8280C04822F481490069BF8B /* ChildContent.storyboard */,
+				8280C04622F481410069BF8B /* ChildContentViewController.swift */,
+				8280C04122F455170069BF8B /* PhotoCollectionViewCell.xib */,
+				8280C04022F455170069BF8B /* PhotoCollectionViewCell.swift */,
+				8280C03C22F454B80069BF8B /* Add.storyboard */,
+				8280C03E22F454D20069BF8B /* AddViewController.swift */,
+				8278D14222EE5A730034C2CC /* LaunchScreen.storyboard */,
+				8278D14022EE5A730034C2CC /* Assets.xcassets */,
+				8278D14522EE5A730034C2CC /* Info.plist */,
+			);
+			path = PhotoKeyboardEx;
+			sourceTree = "<group>";
+		};
+		8278D14D22EE5A730034C2CC /* PhotoKeyboardExTests */ = {
+			isa = PBXGroup;
+			children = (
+				8278D14E22EE5A730034C2CC /* PhotoKeyboardExTests.swift */,
+				8278D15022EE5A730034C2CC /* Info.plist */,
+			);
+			path = PhotoKeyboardExTests;
+			sourceTree = "<group>";
+		};
+		8278D15822EE5A730034C2CC /* PhotoKeyboardExUITests */ = {
+			isa = PBXGroup;
+			children = (
+				8278D15922EE5A730034C2CC /* PhotoKeyboardExUITests.swift */,
+				8278D15B22EE5A730034C2CC /* Info.plist */,
+			);
+			path = PhotoKeyboardExUITests;
+			sourceTree = "<group>";
+		};
+		8278D16C22EE5AC30034C2CC /* PhotoKeyboardExOrigin */ = {
+			isa = PBXGroup;
+			children = (
+				8258685C22F2302D002941F4 /* Info.plist */,
+				8258685922F2302C002941F4 /* Media.xcassets */,
+				8258685B22F2302C002941F4 /* LottieFile */,
+				8258685E22F2302D002941F4 /* Model.swift */,
+				8258685D22F2302D002941F4 /* MainKBView.xib */,
+				8258685A22F2302C002941F4 /* KeyboardViewController.swift */,
+				8258686022F2302D002941F4 /* PhotoCollectionViewCell.swift */,
+				8258685822F2302C002941F4 /* PhotoCollectionViewCell.xib */,
+				8280C03A22F24DE20069BF8B /* ColorManager.swift */,
+			);
+			path = PhotoKeyboardExOrigin;
+			sourceTree = "<group>";
+		};
+		DEEDB2204F451E14EA336469 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				0956F83AA570857F2DF6553E /* Pods_PhotoKeyboardEx.framework */,
+				90C16389F0DEFE1F8B6C810A /* Pods_PhotoKeyboardExOrigin.framework */,
+				1167ECE4863AEFBA7C7F8D46 /* Pods_PhotoKeyboardExTests.framework */,
+				A59BCD0729283AE61EFE4B7A /* Pods_PhotoKeyboardExUITests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E96BB11C0C049853094A3AC4 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				C96A9E029566D3D49BBC6284 /* Pods-PhotoKeyboardEx.debug.xcconfig */,
+				286250ADBF3AA73F7083531C /* Pods-PhotoKeyboardEx.release.xcconfig */,
+				7AD679DC5AEC5BF2B325581A /* Pods-PhotoKeyboardExOrigin.debug.xcconfig */,
+				FBFC6C993C1AA83E2604ED9F /* Pods-PhotoKeyboardExOrigin.release.xcconfig */,
+				956D55CCA95EADEBC3D685B5 /* Pods-PhotoKeyboardExTests.debug.xcconfig */,
+				52A3039611AC00C29BB06F50 /* Pods-PhotoKeyboardExTests.release.xcconfig */,
+				D11D546A63A2549769BD1719 /* Pods-PhotoKeyboardExUITests.debug.xcconfig */,
+				40374A8F9A55BA39E8E301A4 /* Pods-PhotoKeyboardExUITests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8278D13522EE5A700034C2CC /* PhotoKeyboardEx */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8278D15E22EE5A730034C2CC /* Build configuration list for PBXNativeTarget "PhotoKeyboardEx" */;
+			buildPhases = (
+				1111B4771A7538DB98F6B521 /* [CP] Check Pods Manifest.lock */,
+				8278D13222EE5A700034C2CC /* Sources */,
+				8278D13322EE5A700034C2CC /* Frameworks */,
+				8278D13422EE5A700034C2CC /* Resources */,
+				8278D17622EE5AC30034C2CC /* Embed App Extensions */,
+				5E245C9A4CF51403180D259C /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8278D17122EE5AC30034C2CC /* PBXTargetDependency */,
+			);
+			name = PhotoKeyboardEx;
+			productName = PhotoKeyboardEx;
+			productReference = 8278D13622EE5A700034C2CC /* PhotoKeyboardEx.app */;
+			productType = "com.apple.product-type.application";
+		};
+		8278D14922EE5A730034C2CC /* PhotoKeyboardExTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8278D16122EE5A730034C2CC /* Build configuration list for PBXNativeTarget "PhotoKeyboardExTests" */;
+			buildPhases = (
+				3B3026DA39E99430D7680180 /* [CP] Check Pods Manifest.lock */,
+				8278D14622EE5A730034C2CC /* Sources */,
+				8278D14722EE5A730034C2CC /* Frameworks */,
+				8278D14822EE5A730034C2CC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8278D14C22EE5A730034C2CC /* PBXTargetDependency */,
+			);
+			name = PhotoKeyboardExTests;
+			productName = PhotoKeyboardExTests;
+			productReference = 8278D14A22EE5A730034C2CC /* PhotoKeyboardExTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		8278D15422EE5A730034C2CC /* PhotoKeyboardExUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8278D16422EE5A730034C2CC /* Build configuration list for PBXNativeTarget "PhotoKeyboardExUITests" */;
+			buildPhases = (
+				F6995B4C4175FD3BEF373FF1 /* [CP] Check Pods Manifest.lock */,
+				8278D15122EE5A730034C2CC /* Sources */,
+				8278D15222EE5A730034C2CC /* Frameworks */,
+				8278D15322EE5A730034C2CC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8278D15722EE5A730034C2CC /* PBXTargetDependency */,
+			);
+			name = PhotoKeyboardExUITests;
+			productName = PhotoKeyboardExUITests;
+			productReference = 8278D15522EE5A730034C2CC /* PhotoKeyboardExUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		8278D16A22EE5AC30034C2CC /* PhotoKeyboardExOrigin */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8278D17322EE5AC30034C2CC /* Build configuration list for PBXNativeTarget "PhotoKeyboardExOrigin" */;
+			buildPhases = (
+				5255AE4979595898070E3121 /* [CP] Check Pods Manifest.lock */,
+				8278D16722EE5AC30034C2CC /* Sources */,
+				8278D16822EE5AC30034C2CC /* Frameworks */,
+				8278D16922EE5AC30034C2CC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PhotoKeyboardExOrigin;
+			productName = PhotoKeyboardExOrigin;
+			productReference = 8278D16B22EE5AC30034C2CC /* PhotoKeyboardExOrigin.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8278D12E22EE5A700034C2CC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1020;
+				LastUpgradeCheck = 1020;
+				ORGANIZATIONNAME = "Hiroki Taniguchi";
+				TargetAttributes = {
+					8278D13522EE5A700034C2CC = {
+						CreatedOnToolsVersion = 10.2.1;
+					};
+					8278D14922EE5A730034C2CC = {
+						CreatedOnToolsVersion = 10.2.1;
+						TestTargetID = 8278D13522EE5A700034C2CC;
+					};
+					8278D15422EE5A730034C2CC = {
+						CreatedOnToolsVersion = 10.2.1;
+						TestTargetID = 8278D13522EE5A700034C2CC;
+					};
+					8278D16A22EE5AC30034C2CC = {
+						CreatedOnToolsVersion = 10.2.1;
+					};
+				};
+			};
+			buildConfigurationList = 8278D13122EE5A700034C2CC /* Build configuration list for PBXProject "PhotoKeyboardEx" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 8278D12D22EE5A700034C2CC;
+			productRefGroup = 8278D13722EE5A700034C2CC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8278D13522EE5A700034C2CC /* PhotoKeyboardEx */,
+				8278D14922EE5A730034C2CC /* PhotoKeyboardExTests */,
+				8278D15422EE5A730034C2CC /* PhotoKeyboardExUITests */,
+				8278D16A22EE5AC30034C2CC /* PhotoKeyboardExOrigin */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8278D13422EE5A700034C2CC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8278D14422EE5A730034C2CC /* LaunchScreen.storyboard in Resources */,
+				8280C04322F455170069BF8B /* PhotoCollectionViewCell.xib in Resources */,
+				8278D14122EE5A730034C2CC /* Assets.xcassets in Resources */,
+				8280C04922F481490069BF8B /* ChildContent.storyboard in Resources */,
+				8280C03D22F454B80069BF8B /* Add.storyboard in Resources */,
+				8278D13F22EE5A700034C2CC /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8278D14822EE5A730034C2CC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8278D15322EE5A730034C2CC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8278D16922EE5AC30034C2CC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8258686422F2302D002941F4 /* LottieFile in Resources */,
+				8258686122F2302D002941F4 /* PhotoCollectionViewCell.xib in Resources */,
+				8258686622F2302D002941F4 /* MainKBView.xib in Resources */,
+				8258686222F2302D002941F4 /* Media.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		1111B4771A7538DB98F6B521 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-PhotoKeyboardEx-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		3B3026DA39E99430D7680180 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-PhotoKeyboardExTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5255AE4979595898070E3121 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-PhotoKeyboardExOrigin-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		5E245C9A4CF51403180D259C /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-PhotoKeyboardEx/Pods-PhotoKeyboardEx-frameworks.sh",
+				"${BUILT_PRODUCTS_DIR}/AutoInsetter/AutoInsetter.framework",
+				"${BUILT_PRODUCTS_DIR}/ENSwiftSideMenu/ENSwiftSideMenu.framework",
+				"${BUILT_PRODUCTS_DIR}/Floaty/Floaty.framework",
+				"${BUILT_PRODUCTS_DIR}/FontAwesome.swift/FontAwesome_swift.framework",
+				"${BUILT_PRODUCTS_DIR}/Pageboy/Pageboy.framework",
+				"${BUILT_PRODUCTS_DIR}/Tabman/Tabman.framework",
+				"${BUILT_PRODUCTS_DIR}/DynamicColor/DynamicColor.framework",
+				"${BUILT_PRODUCTS_DIR}/lottie-ios/Lottie.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AutoInsetter.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ENSwiftSideMenu.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Floaty.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FontAwesome_swift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Pageboy.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Tabman.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DynamicColor.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Lottie.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-PhotoKeyboardEx/Pods-PhotoKeyboardEx-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		F6995B4C4175FD3BEF373FF1 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-PhotoKeyboardExUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8278D13222EE5A700034C2CC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8280C04B22F4868F0069BF8B /* Model.swift in Sources */,
+				82F9F3F022F589400062F451 /* MainMenuTableViewController.swift in Sources */,
+				8280C04522F47D400069BF8B /* MainTabViewController.swift in Sources */,
+				8280C04222F455170069BF8B /* PhotoCollectionViewCell.swift in Sources */,
+				8278D13A22EE5A700034C2CC /* AppDelegate.swift in Sources */,
+				82F9F3EE22F588290062F451 /* MainNavigationViewController.swift in Sources */,
+				8280C04722F481420069BF8B /* ChildContentViewController.swift in Sources */,
+				8280C03F22F454D20069BF8B /* AddViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8278D14622EE5A730034C2CC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8278D14F22EE5A730034C2CC /* PhotoKeyboardExTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8278D15122EE5A730034C2CC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8278D15A22EE5A730034C2CC /* PhotoKeyboardExUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8278D16722EE5AC30034C2CC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8258686722F2302D002941F4 /* Model.swift in Sources */,
+				8258686322F2302D002941F4 /* KeyboardViewController.swift in Sources */,
+				8258686922F2302D002941F4 /* PhotoCollectionViewCell.swift in Sources */,
+				8280C03B22F24DE20069BF8B /* ColorManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		8278D14C22EE5A730034C2CC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8278D13522EE5A700034C2CC /* PhotoKeyboardEx */;
+			targetProxy = 8278D14B22EE5A730034C2CC /* PBXContainerItemProxy */;
+		};
+		8278D15722EE5A730034C2CC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8278D13522EE5A700034C2CC /* PhotoKeyboardEx */;
+			targetProxy = 8278D15622EE5A730034C2CC /* PBXContainerItemProxy */;
+		};
+		8278D17122EE5AC30034C2CC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8278D16A22EE5AC30034C2CC /* PhotoKeyboardExOrigin */;
+			targetProxy = 8278D17022EE5AC30034C2CC /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		8278D13D22EE5A700034C2CC /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				8278D13E22EE5A700034C2CC /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		8278D14222EE5A730034C2CC /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				8278D14322EE5A730034C2CC /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		8278D15C22EE5A730034C2CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		8278D15D22EE5A730034C2CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		8278D15F22EE5A730034C2CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C96A9E029566D3D49BBC6284 /* Pods-PhotoKeyboardEx.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 48KBV2T232;
+				INFOPLIST_FILE = PhotoKeyboardEx/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8278D16022EE5A730034C2CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 286250ADBF3AA73F7083531C /* Pods-PhotoKeyboardEx.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 48KBV2T232;
+				INFOPLIST_FILE = PhotoKeyboardEx/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		8278D16222EE5A730034C2CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 956D55CCA95EADEBC3D685B5 /* Pods-PhotoKeyboardExTests.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 48KBV2T232;
+				INFOPLIST_FILE = PhotoKeyboardExTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardExTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PhotoKeyboardEx.app/PhotoKeyboardEx";
+			};
+			name = Debug;
+		};
+		8278D16322EE5A730034C2CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 52A3039611AC00C29BB06F50 /* Pods-PhotoKeyboardExTests.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 48KBV2T232;
+				INFOPLIST_FILE = PhotoKeyboardExTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardExTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PhotoKeyboardEx.app/PhotoKeyboardEx";
+			};
+			name = Release;
+		};
+		8278D16522EE5A730034C2CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D11D546A63A2549769BD1719 /* Pods-PhotoKeyboardExUITests.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 48KBV2T232;
+				INFOPLIST_FILE = PhotoKeyboardExUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardExUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = PhotoKeyboardEx;
+			};
+			name = Debug;
+		};
+		8278D16622EE5A730034C2CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 40374A8F9A55BA39E8E301A4 /* Pods-PhotoKeyboardExUITests.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 48KBV2T232;
+				INFOPLIST_FILE = PhotoKeyboardExUITests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardExUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = PhotoKeyboardEx;
+			};
+			name = Release;
+		};
+		8278D17422EE5AC30034C2CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7AD679DC5AEC5BF2B325581A /* Pods-PhotoKeyboardExOrigin.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 48KBV2T232;
+				INFOPLIST_FILE = PhotoKeyboardExOrigin/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx.PhotoKeyboardExOrigin;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		8278D17522EE5AC30034C2CC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = FBFC6C993C1AA83E2604ED9F /* Pods-PhotoKeyboardExOrigin.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 48KBV2T232;
+				INFOPLIST_FILE = PhotoKeyboardExOrigin/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx.PhotoKeyboardExOrigin;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8278D13122EE5A700034C2CC /* Build configuration list for PBXProject "PhotoKeyboardEx" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8278D15C22EE5A730034C2CC /* Debug */,
+				8278D15D22EE5A730034C2CC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8278D15E22EE5A730034C2CC /* Build configuration list for PBXNativeTarget "PhotoKeyboardEx" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8278D15F22EE5A730034C2CC /* Debug */,
+				8278D16022EE5A730034C2CC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8278D16122EE5A730034C2CC /* Build configuration list for PBXNativeTarget "PhotoKeyboardExTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8278D16222EE5A730034C2CC /* Debug */,
+				8278D16322EE5A730034C2CC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8278D16422EE5A730034C2CC /* Build configuration list for PBXNativeTarget "PhotoKeyboardExUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8278D16522EE5A730034C2CC /* Debug */,
+				8278D16622EE5A730034C2CC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8278D17322EE5AC30034C2CC /* Build configuration list for PBXNativeTarget "PhotoKeyboardExOrigin" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8278D17422EE5AC30034C2CC /* Debug */,
+				8278D17522EE5AC30034C2CC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 8278D12E22EE5A700034C2CC /* Project object */;
+}

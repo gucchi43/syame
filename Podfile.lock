@@ -1,0 +1,44 @@
+PODS:
+  - AutoInsetter (1.7.2)
+  - DynamicColor (4.1.0)
+  - ENSwiftSideMenu (0.1.4)
+  - Floaty (4.2.0)
+  - FontAwesome.swift (1.8.1)
+  - lottie-ios (3.1.2)
+  - Pageboy (3.2.3)
+  - Tabman (2.4.3):
+    - AutoInsetter (~> 1.7.2)
+    - Pageboy (~> 3.2.3)
+
+DEPENDENCIES:
+  - DynamicColor (~> 4.1.0)
+  - ENSwiftSideMenu (~> 0.1.4)
+  - Floaty (~> 4.2.0)
+  - FontAwesome.swift
+  - lottie-ios
+  - Tabman (~> 2.4)
+
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - AutoInsetter
+    - DynamicColor
+    - ENSwiftSideMenu
+    - Floaty
+    - FontAwesome.swift
+    - lottie-ios
+    - Pageboy
+    - Tabman
+
+SPEC CHECKSUMS:
+  AutoInsetter: 176c5c069b40bf6afa51bf7081be346ab70ca315
+  DynamicColor: e72fcf4174518c514e862bb4bdea794c1865b412
+  ENSwiftSideMenu: 21e755dae28f09bbf453aa83b3d05f2e5f92ca39
+  Floaty: e2bd5a0f6f7f70899e26ff2da31081c8bee8d1b0
+  FontAwesome.swift: 6f55c8ed22a30ab6a8ca94033473161f678dcd4b
+  lottie-ios: 49cd85b1f24f61a7708ad7ec76a523ab2d0e3100
+  Pageboy: 347c49b3a7f15aa78ddb6bf5c6c3b113e382fe52
+  Tabman: c2c83ebfcbec3e5be67e27a1dd6689a4e3efccd3
+
+PODFILE CHECKSUM: d3afc3de8ff95946928a8afbbc83b5e80fcb84d0
+
+COCOAPODS: 1.6.1

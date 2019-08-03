@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PhotoCollectionViewCell" id="gTV-IL-0wX" customClass="PhotoCollectionViewCell" customModule="PhotoKeyboardExOrigin" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="200" height="279"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="200" height="279"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="agb-L2-X2s">
+                        <rect key="frame" x="0.0" y="0.0" width="200" height="247"/>
+                    </imageView>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4KK-S1-4aF">
+                        <rect key="frame" x="0.0" y="247" width="200" height="32"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="32" id="QK8-v2-r6X"/>
+                        </constraints>
+                    </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="いいですか〜？いいですか〜？いいですか〜？いいですか〜？いいですか〜？" lineBreakMode="characterWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="beQ-a6-dfr" userLabel="Title">
+                        <rect key="frame" x="4" y="247" width="192" height="32"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="IVp-bx-pRB" customClass="AnimationView" customModule="Lottie">
+                        <rect key="frame" x="0.0" y="0.0" width="200" height="279"/>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Y1e-Mf-tn6">
+                        <rect key="frame" x="0.0" y="0.0" width="200" height="279"/>
+                        <color key="backgroundColor" white="0.33333333333333331" alpha="0.5" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="COPY" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dxw-HV-DYI">
+                        <rect key="frame" x="64.5" y="127.5" width="71" height="24"/>
+                        <fontDescription key="fontDescription" name="HiraMaruProN-W4" family="Hiragino Maru Gothic ProN" pointSize="24"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+            </view>
+            <color key="backgroundColor" red="0.57919406890000003" green="0.1280144453" blue="0.57268613580000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <constraints>
+                <constraint firstItem="beQ-a6-dfr" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="4" id="2vi-OR-fE2"/>
+                <constraint firstItem="dxw-HV-DYI" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="3xP-mj-i0s"/>
+                <constraint firstItem="IVp-bx-pRB" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="5sd-fL-gcm"/>
+                <constraint firstItem="Y1e-Mf-tn6" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="5wx-Bz-NJh"/>
+                <constraint firstItem="agb-L2-X2s" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="5x5-vH-ma4"/>
+                <constraint firstItem="Y1e-Mf-tn6" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="6P6-Pf-GlG"/>
+                <constraint firstAttribute="bottom" secondItem="beQ-a6-dfr" secondAttribute="bottom" id="72D-ra-i7o"/>
+                <constraint firstAttribute="trailing" secondItem="beQ-a6-dfr" secondAttribute="trailing" constant="4" id="83i-AX-56H"/>
+                <constraint firstAttribute="bottom" secondItem="Y1e-Mf-tn6" secondAttribute="bottom" id="8fl-GE-f64"/>
+                <constraint firstAttribute="trailing" secondItem="agb-L2-X2s" secondAttribute="trailing" id="8mu-7W-zzn"/>
+                <constraint firstItem="agb-L2-X2s" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="GEU-5X-2KA"/>
+                <constraint firstItem="IVp-bx-pRB" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="P7c-c4-Ubt"/>
+                <constraint firstAttribute="trailing" secondItem="4KK-S1-4aF" secondAttribute="trailing" id="WeN-Nd-M8b"/>
+                <constraint firstItem="4KK-S1-4aF" firstAttribute="top" secondItem="agb-L2-X2s" secondAttribute="bottom" id="bvR-1C-vaR"/>
+                <constraint firstAttribute="bottom" secondItem="4KK-S1-4aF" secondAttribute="bottom" id="hp6-oR-E9S"/>
+                <constraint firstItem="4KK-S1-4aF" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="i7W-mj-G7L"/>
+                <constraint firstAttribute="trailing" secondItem="Y1e-Mf-tn6" secondAttribute="trailing" id="kFi-gg-8cv"/>
+                <constraint firstItem="dxw-HV-DYI" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="n5G-aV-7f1"/>
+                <constraint firstAttribute="bottom" secondItem="IVp-bx-pRB" secondAttribute="bottom" id="nE5-d9-m5B"/>
+                <constraint firstItem="beQ-a6-dfr" firstAttribute="top" secondItem="agb-L2-X2s" secondAttribute="bottom" id="qA0-wI-zPi"/>
+                <constraint firstAttribute="trailing" secondItem="IVp-bx-pRB" secondAttribute="trailing" id="thx-Q8-VnD"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
+            <size key="customSize" width="105" height="183"/>
+            <connections>
+                <outlet property="choiceCover2View" destination="Y1e-Mf-tn6" id="geN-xp-tsK"/>
+                <outlet property="choiceCoverLabel" destination="dxw-HV-DYI" id="fhl-Sp-FgI"/>
+                <outlet property="choiceCoverView" destination="IVp-bx-pRB" id="0DR-nX-UWR"/>
+                <outlet property="photoImageView" destination="agb-L2-X2s" id="TaX-EQ-JGp"/>
+                <outlet property="titleLabel" destination="beQ-a6-dfr" id="dCw-Og-CQh"/>
+            </connections>
+            <point key="canvasLocation" x="176.81159420289856" y="186.49553571428569"/>
+        </collectionViewCell>
+    </objects>
+</document>
