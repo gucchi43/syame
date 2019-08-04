@@ -13,11 +13,27 @@ import ENSwiftSideMenu
 import FontAwesome_swift
 import Floaty
 
+struct TabHead {
+    let title: String
+    let imageText: String
+    let badge: String?
+}
+
 class MainTabViewController: TabmanViewController, FloatyDelegate {
 
+    var tabHeads: [TabHead] = [
+        TabHead(title: "新着", imageText: "🆕", badge: nil),
+        TabHead(title: "人気", imageText: "🕺", badge: nil),
+        TabHead(title: "ユーモア", imageText: "🌈", badge: nil),
+        TabHead(title: "クール", imageText: "🐧", badge: nil),
+        TabHead(title: "キュート", imageText: "💖", badge: nil),
+        TabHead(title: "シリアス", imageText: "⚡️", badge: nil),
+        TabHead(title: "その他", imageText: "👻", badge: nil)
+    ]
+    var titles = ["新着", "人気", "ユーモア", "クール", "キュート", "シリアス", "その他"]
     lazy var viewControllers: [UIViewController] = {
         var viewControllers = [UIViewController]()
-        for _ in 0 ..< 5 {
+        for _ in 0 ..< 7 {
             viewControllers.append(makeChildViewController())
         }
         return viewControllers
@@ -34,7 +50,8 @@ class MainTabViewController: TabmanViewController, FloatyDelegate {
         self.dataSource = self
         
         // Create bar
-        let bar = TMBar.ButtonBar()
+//        let bar = TMBar.ButtonBar()
+        let bar = TMBar.TabBar()
         bar.layout.transitionStyle = .snap // Customize
         
         // Add to view
@@ -173,7 +190,9 @@ extension MainTabViewController: PageboyViewControllerDataSource, TMBarDataSourc
     
     func viewController(for pageboyViewController: PageboyViewController,
                         at index: PageboyViewController.PageIndex) -> UIViewController? {
-        return viewControllers[index]
+        let vc = viewControllers[index] as! ChildContentViewController
+        vc.tabPageIndex = index
+        return vc
     }
     
     func defaultPage(for pageboyViewController: PageboyViewController) -> PageboyViewController.Page? {
@@ -181,8 +200,15 @@ extension MainTabViewController: PageboyViewControllerDataSource, TMBarDataSourc
     }
     
     func barItem(for bar: TMBar, at index: Int) -> TMBarItemable {
-        let title = "Page \(index)"
-        return TMBarItem(title: title)
+        let curretTabHead = tabHeads[index]
+        let title = curretTabHead.title
+        let emojiLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 24, height: 24))
+        emojiLabel.text = curretTabHead.imageText
+        let image = UIImage.imageWithLabel(emojiLabel)
+        let badge = curretTabHead.badge
+        let item = TMBarItem(title: title, image: image, badgeValue: badge)
+
+        return item
     }
 }
 

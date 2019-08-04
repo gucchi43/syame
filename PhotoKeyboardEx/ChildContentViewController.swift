@@ -9,10 +9,13 @@
 import UIKit
 
 class ChildContentViewController: UIViewController {
-
+    
     @IBOutlet weak var collectionView: UICollectionView!
     var models = Model.createModels()
     var items : NSArray = []
+    
+    var tabPageIndex: Int!
+    
     private var searchResult = [String]()
     
     override func viewDidLoad() {
@@ -22,17 +25,41 @@ class ChildContentViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        updateIndexLabel()
+    }
+    
+    private func updateIndexLabel() {
+        if let index = pageboyPageIndex {
+            
+            let isFirstPage = index == 0
+            
+            var prompt = "(Index \(index))"
+            if isFirstPage {
+                prompt.append("\n\nswipe me >")
+            }
+            print(prompt)
+        }
+    }
+    
     func commonInit() {
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.register(UINib(nibName: "PhotoCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "PhotoCollectionViewCell")
         collectionView.backgroundView?.backgroundColor = .green
+        
+        print("tabPageIndex : ", tabPageIndex)
+        print("pageboyPageIndex : ", pageboyPageIndex)
+        
     }
 }
 
 extension ChildContentViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return models.count
+        return tabPageIndex
+//        return pageboyPageIndex!
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

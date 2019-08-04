@@ -34,6 +34,7 @@
 		8280C04B22F4868F0069BF8B /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280C04A22F4868F0069BF8B /* Model.swift */; };
 		82F9F3EE22F588290062F451 /* MainNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9F3ED22F588290062F451 /* MainNavigationViewController.swift */; };
 		82F9F3F022F589400062F451 /* MainMenuTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9F3EF22F589400062F451 /* MainMenuTableViewController.swift */; };
+		82F9F3F222F636FE0062F451 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9F3F122F636FE0062F451 /* Extension.swift */; };
 		D665FF9608408EFBB4EFAFE7 /* Pods_PhotoKeyboardExUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A59BCD0729283AE61EFE4B7A /* Pods_PhotoKeyboardExUITests.framework */; };
 		E8F05559D6556F8676426CBC /* Pods_PhotoKeyboardEx.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0956F83AA570857F2DF6553E /* Pods_PhotoKeyboardEx.framework */; };
 /* End PBXBuildFile section */
@@ -115,6 +116,7 @@
 		8280C04A22F4868F0069BF8B /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		82F9F3ED22F588290062F451 /* MainNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainNavigationViewController.swift; sourceTree = "<group>"; };
 		82F9F3EF22F589400062F451 /* MainMenuTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuTableViewController.swift; sourceTree = "<group>"; };
+		82F9F3F122F636FE0062F451 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		90C16389F0DEFE1F8B6C810A /* Pods_PhotoKeyboardExOrigin.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PhotoKeyboardExOrigin.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		956D55CCA95EADEBC3D685B5 /* Pods-PhotoKeyboardExTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhotoKeyboardExTests.debug.xcconfig"; path = "Target Support Files/Pods-PhotoKeyboardExTests/Pods-PhotoKeyboardExTests.debug.xcconfig"; sourceTree = "<group>"; };
 		A59BCD0729283AE61EFE4B7A /* Pods_PhotoKeyboardExUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PhotoKeyboardExUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -187,6 +189,7 @@
 			isa = PBXGroup;
 			children = (
 				8278D13922EE5A700034C2CC /* AppDelegate.swift */,
+				82F9F3F122F636FE0062F451 /* Extension.swift */,
 				8280C04A22F4868F0069BF8B /* Model.swift */,
 				8278D13D22EE5A700034C2CC /* Main.storyboard */,
 				8280C04422F47D400069BF8B /* MainTabViewController.swift */,
@@ -565,6 +568,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82F9F3F222F636FE0062F451 /* Extension.swift in Sources */,
 				8280C04B22F4868F0069BF8B /* Model.swift in Sources */,
 				82F9F3F022F589400062F451 /* MainMenuTableViewController.swift in Sources */,
 				8280C04522F47D400069BF8B /* MainTabViewController.swift in Sources */,
