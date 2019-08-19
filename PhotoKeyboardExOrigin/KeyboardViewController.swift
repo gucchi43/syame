@@ -26,9 +26,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
 //    @IBOutlet weak var searchBar: UISearchBar!
     //     var searchBar = UISearchBar()
     
-//    var models = Model.createModels()
     var photos = RealmManager.shared.realmData
-//    var photos = RealmManager.shared.realmData
     
     var items : NSArray = []
     private var searchResult = [String]()
@@ -66,16 +64,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         helpButton.setTitleColor(.acGreen(), for: .normal)
         sortRankButton.setTitleColor(.acGreen(), for: .normal)
         sortABCButton.setTitleColor(.acGreen(), for: .normal)
-        // FontAwesomeが反映されないためとりあえずコメントアウト
-//        homeButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 16, style: .solid)
-//        homeButton.titleLabel?.text = String.fontAwesomeIcon(name: .home)
-//        helpButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 16, style: .solid)
-//        helpButton.titleLabel?.text = String.fontAwesomeIcon(name: .questionCircle)
-//        homeButton.titleLabel?.textColor = .acGreen()
-//        sortRankButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 16, style: .solid)
-//        sortRankButton.titleLabel?.text = String.fontAwesomeIcon(name: .sortNumericDown)
-//        sortABCButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 16, style: .solid)
-//        sortABCButton.titleLabel?.text = String.fontAwesomeIcon(name: .sortAlphaDown)
     
         // Perform custom UI setup here
         self.nextKeyboardButton = UIButton(type: .system)
@@ -256,8 +244,16 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     }
     
     @IBAction func tapHomeButton(_ sender: Any) {
+        let url = URL(string: "photokeyboardex-app://")!
         
+        let selector = sel_registerName("openURL:")
+        var responder = self as UIResponder?
+        while let r = responder, !r.responds(to: selector) {
+            responder = r.next
+        }
+        _ = responder?.perform(selector, with: url)
     }
+    
     @IBAction func tapHelpButton(_ sender: Any) {
         if self.hasFullAccess {
             print("FullAccess is true")
