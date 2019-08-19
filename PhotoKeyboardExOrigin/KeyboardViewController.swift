@@ -7,22 +7,29 @@
 //
 
 import UIKit
+import FontAwesome_swift
+import PhotoKeyboardFramework
+import Firebase
 
-class KeyboardViewController: UIInputViewController, UITextFieldDelegate {
-
+class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmManagerDelegate {
 //    @IBOutlet weak var heightConstraint: NSLayoutConstraint!
     var heightConstraint: NSLayoutConstraint!
     var widthConstraint2: NSLayoutConstraint!
     
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet var nextKeyboardButton: UIButton!
-    
-    @IBOutlet weak var textField: UITextField!
+    @IBOutlet weak var homeButton: UIButton!
+    @IBOutlet weak var helpButton: UIButton!
+    @IBOutlet weak var sortRankButton: UIButton!
+    @IBOutlet weak var sortABCButton: UIButton!
     
 //    @IBOutlet weak var searchBar: UISearchBar!
     //     var searchBar = UISearchBar()
     
-    var models = Model.createModels()
+//    var models = Model.createModels()
+    var photos = RealmManager.shared.realmData
+//    var photos = RealmManager.shared.realmData
+    
     var items : NSArray = []
     private var searchResult = [String]()
     
@@ -40,23 +47,36 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        FirebaseApp.configure()
         var v = UINib(nibName:"MainKBView", bundle:nil).instantiate(withOwner: self,options:nil)[0] as! UIView
         //        self.inputView!.addSubview(v)
         view = v
-        
+        RealmManager.shared.delegate = self
+        collectionInit()
         commonInit()
+        sortState(rankFlag: true)
 //        let xibView = MainKBView(frame: CGRect(x: 0, y: 0, width: 300, height: 216))
 //        view.addSubview(xibView)
     }
-    
+
     func commonInit() {
+        self.view.backgroundColor = .bgDark()
         
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        collectionView.register(UINib(nibName: "PhotoCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "PhotoCollectionViewCell")
-        
-        collectionView.backgroundView?.backgroundColor = .green
-        
+        homeButton.setTitleColor(.acGreen(), for: .normal)
+        helpButton.setTitleColor(.acGreen(), for: .normal)
+        sortRankButton.setTitleColor(.acGreen(), for: .normal)
+        sortABCButton.setTitleColor(.acGreen(), for: .normal)
+        // FontAwesomeが反映されないためとりあえずコメントアウト
+//        homeButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 16, style: .solid)
+//        homeButton.titleLabel?.text = String.fontAwesomeIcon(name: .home)
+//        helpButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 16, style: .solid)
+//        helpButton.titleLabel?.text = String.fontAwesomeIcon(name: .questionCircle)
+//        homeButton.titleLabel?.textColor = .acGreen()
+//        sortRankButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 16, style: .solid)
+//        sortRankButton.titleLabel?.text = String.fontAwesomeIcon(name: .sortNumericDown)
+//        sortABCButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 16, style: .solid)
+//        sortABCButton.titleLabel?.text = String.fontAwesomeIcon(name: .sortAlphaDown)
+    
         // Perform custom UI setup here
         self.nextKeyboardButton = UIButton(type: .system)
         
@@ -70,9 +90,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate {
         
         self.nextKeyboardButton.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
         self.nextKeyboardButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
-        
-        textField.delegate = self
-        
 //        searchBar = UISearchBar()
 //        searchBar.delegate = self
 //        searchBar.frame = CGRect(x:0, y:0, width:self.view.frame.width, height:44)
@@ -85,6 +102,14 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate {
 //        searchBar.tintColor = UIColor.red
 //
 //        collectionView.addSubview(searchBar)
+    }
+    
+    func collectionInit() {
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.register(UINib(nibName: "PhotoCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "PhotoCollectionViewCell")
+        collectionView.backgroundColor = .bgDark()
+        collectionView.allowsMultipleSelection = false
     }
     
     override func viewWillLayoutSubviews() {
@@ -180,6 +205,21 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate {
 //        self.view.endEditing(true)
 //    }
     
+    func sortState(rankFlag: Bool) {
+        if rankFlag {
+            sortRankButton.setTitleColor(.acGreen(), for: .normal)
+            sortABCButton.setTitleColor(.gray, for: .normal)
+        } else {
+            sortRankButton.setTitleColor(.gray, for: .normal)
+            sortABCButton.setTitleColor(.acGreen(), for: .normal)
+        }
+    }
+    
+    func realmObjectDidChange() {
+        print("realmデータの変更を検知")
+//        collectionView.reloadData()
+    }
+    
     override func textWillChange(_ textInput: UITextInput?) {
         // The app is about to change the document's contents. Perform any preparation here.
     }
@@ -192,7 +232,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate {
         if proxy.keyboardAppearance == UIKeyboardAppearance.dark {
             textColor = UIColor.white
         } else {
-            textColor = UIColor.black
+            textColor = .bgDark()
         }
         self.nextKeyboardButton.setTitleColor(textColor, for: [])
     }
@@ -201,16 +241,16 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate {
         guard let lastSelectedIndex = lastSelectedIndex else {
             return
         }
-        let photo = models[lastSelectedIndex.row].photo
+        let pasetImage = photos![lastSelectedIndex.row].image!
         // The Pasteboard is nil if full access is not granted
         // 'image' is the UIImage you about to copy to the pasteboard
         let pb = UIPasteboard.general
         let type = UIPasteboard.typeListImage[0] as! String
         if !type.isEmpty {
-            pb.setData(photo.pngData()!, forPasteboardType: type)
+            pb.setData(pasetImage.pngData()!, forPasteboardType: type)
             if let readData = pb.data(forPasteboardType: type) {
                 let readImage = UIImage(data: readData, scale: 2)
-                print("\(photo) == \(String(describing: pb.image)) == \(String(describing: readImage))")
+                print("\(pasetImage) == \(String(describing: pb.image)) == \(String(describing: readImage))")
             }
         }
     }
@@ -227,19 +267,44 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate {
         }
     }
     
+    @IBAction func tapSortRankButton(_ sender: Any) {
+        sortState(rankFlag: true)
+    }
+    @IBAction func tapSortABCButton(_ sender: Any) {
+        sortState(rankFlag: false)
+    }
+    
+    func numUpdatePhoto(current: RealmPhoto) -> RealmPhoto {
+        let new = RealmPhoto()
+        new.id = current.id
+        new.text = current.text
+        new.image = current.image
+        new.imageHeight = current.imageHeight
+        new.imageWidth = current.imageWidth
+        new.getDay = current.getDay
+        new.useNum = current.useNum + 1
+        return new
+    }
 }
 
 
 extension KeyboardViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return models.count
+        return photos?.count ??  0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCollectionViewCell", for: indexPath)
         if let cell = cell as? PhotoCollectionViewCell {
-            cell.configure(model: models[indexPath.row])
-        }
+//            if let lastSelectedIndex = lastSelectedIndex, lastSelectedIndex == indexPath {
+//                cell.configure(photo: photos![indexPath.row], isSelected: true)
+//            } else {
+//                cell.configure(photo: photos![indexPath.row], isSelected: false)
+//            }
+                cell.configure(photo: photos![indexPath.row])
+                cell.isCheck = false
+//            }
+            print("cell 生成 index: ", indexPath.row)}
         return cell
     }
     
@@ -264,70 +329,88 @@ extension KeyboardViewController: UICollectionViewDataSource, UICollectionViewDe
 
 extension KeyboardViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        var newValue = self.getModel(at: indexPath) as! Model
-        newValue.isSelected = false
-        models[indexPath.row] = newValue
+//        var newValue = self.getModel(at: indexPath) as! Model
+//
+//        guard var newValue = self.getPhoto(at: indexPath) else { return }
         
         print("=========")
         print("call didDeselectItemAt")
         print("indexpath : ", indexPath)
-        print("newValue : ", newValue)
+//        print("newValue : ", self.getPhoto(at: indexPath)!)
         print("=========")
+        
+        print("didDeselectItemAt 更新前のphoto : ", photos![indexPath.row])
+//        self.getPhoto(at: indexPath)!.isSelected = false
+        print("didDeselectItemAt 更新前のphoto : ", photos![indexPath.row])
+//        newValue.isSelected = false
+//        models[indexPath.row] = newValue
+        
         
         guard let cell = collectionView.cellForItem(at: indexPath) as? PhotoCollectionViewCell else {
             return //the cell is not visible
         }
-        cell.choiceCover2View.isHidden = true
-        cell.choiceCoverLabel.isHidden = true
+        cell.isCheck = false
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let cell = collectionView.cellForItem(at: indexPath) as! PhotoCollectionViewCell
-        
+        // 未選択->選択済み
         guard let lastSelectedIndex = self.lastSelectedIndex, lastSelectedIndex == indexPath else {
-            
-            var newValue = self.getModel(at: indexPath) as! Model
-            newValue.isSelected = true
-            models[indexPath.row] = newValue
-            
-            self.lastSelectedIndex = indexPath
-            
             print("=========")
             print("call didSelectItemAt 通常モード")
             print("indexpath : ", indexPath)
-            print("newValue : ", newValue)
             print("=========")
-            
-            self.copyBoard()
-
-            cell.choiceCoverView.play()
-            cell.choiceCoverView.play { (finish) in
-                let choiceColor = ColorManager.shared.acRandom()
-                cell.choiceCoverLabel.textColor = choiceColor
-                cell.choiceCover2View.backgroundColor = choiceColor
-                cell.choiceCover2View.isHidden = false
-                cell.choiceCoverLabel.isHidden = false
+            self.lastSelectedIndex = indexPath
+            cell.isCheck = true
+            print("didSelectItemAt 通常モード 更新前のphoto : ", photos![indexPath.row])
+            let updateValue = numUpdatePhoto(current: photos![indexPath.row])
+            RealmManager.shared.update(data: updateValue, success: { () in
+            }) { (error) in
+                print(error)
             }
+            print("didSelectItemAt 通常モード 更新後のphoto : ", photos![indexPath.row])
+            self.copyBoard()
+            
+            self.tapAnimation(cell: cell)
             return
         }
-        self.collectionView.deselectItem(at: indexPath, animated: true)
-        self.lastSelectedIndex = nil
-        
-        var newValue = self.getModel(at: indexPath) as! Model
-        newValue.isSelected = false
-        models[indexPath.row] = newValue
-        
-        cell.choiceCover2View.isHidden = true
-        cell.choiceCoverLabel.isHidden = true
-        
+        // 選択済み->選択解除
         print("=========")
         print("call didSelectItemAt 解除モード")
         print("indexpath : ", indexPath)
         print("=========")
+        
+        self.collectionView.deselectItem(at: indexPath, animated: true)
+        self.lastSelectedIndex = nil
+        cell.isCheck = false
+        print("didSelectItemAt 解除モード 更新前のphoto : ", photos![indexPath.row])
+        
+//        guard var newValue = self.getPhoto(at: indexPath) else { return }
+//        newValue.isSelected = false
+        RealmManager.shared.update(data: self.getPhoto(at: indexPath)!, success: { () in
+            print()
+        }) { (error) in
+            print(error)
+        }
+        print("didSelectItemAt 解除モード 更新後のphoto : ", photos![indexPath.row])
+        
     }
     
-    fileprivate func getModel(at indexPath: IndexPath) -> Model? {
-        guard !self.models.isEmpty && indexPath.row >= 0 && indexPath.row < self.models.count else { return nil }
-        return self.models[indexPath.row]
+    private func tapAnimation(cell: PhotoCollectionViewCell) {
+        cell.choiceCoverView.play()
+        cell.choiceCoverView.play { (finish) in
+            print("コール アニメーション row: ")
+//            let choiceColor = ColorManager.shared.acRandom()
+//            cell.choiceCoverLabel.textColor = choiceColor
+//            cell.choiceCover2View.backgroundColor = choiceColor
+//            cell.choiceCover2View.isHidden = false
+//            cell.choiceCoverLabel.isHidden = false
+        }
+    }
+    
+    fileprivate func getPhoto(at indexPath: IndexPath) ->  RealmPhoto? {
+        guard !self.photos!.isEmpty && indexPath.row >= 0 && indexPath.row <= self.photos!.count else { return nil }
+        return self.photos![indexPath.row]
     }
 }
+

@@ -11,7 +11,10 @@ import Tabman
 import Pageboy
 import ENSwiftSideMenu
 import FontAwesome_swift
+import PhotoKeyboardFramework
 import Floaty
+import Realm
+import RealmSwift
 
 struct TabHead {
     let title: String
@@ -20,20 +23,11 @@ struct TabHead {
 }
 
 class MainTabViewController: TabmanViewController, FloatyDelegate {
-
-    var tabHeads: [TabHead] = [
-        TabHead(title: "新着", imageText: "🆕", badge: nil),
-        TabHead(title: "人気", imageText: "🕺", badge: nil),
-        TabHead(title: "ユーモア", imageText: "🌈", badge: nil),
-        TabHead(title: "クール", imageText: "🐧", badge: nil),
-        TabHead(title: "キュート", imageText: "💖", badge: nil),
-        TabHead(title: "シリアス", imageText: "⚡️", badge: nil),
-        TabHead(title: "その他", imageText: "👻", badge: nil)
-    ]
-    var titles = ["新着", "人気", "ユーモア", "クール", "キュート", "シリアス", "その他"]
+    var tabHeads = GenreTagType.getAllGenreTags()
+var titles = ["私の宝物！", "おニュー", "キラキラ〜", "ぷぷぷっ", "ふっ", "プリプリ〜", "ぞわぞわっ", "色々あるよん"]
     lazy var viewControllers: [UIViewController] = {
         var viewControllers = [UIViewController]()
-        for _ in 0 ..< 7 {
+        for _ in 0 ..< 8 {
             viewControllers.append(makeChildViewController())
         }
         return viewControllers
@@ -42,28 +36,52 @@ class MainTabViewController: TabmanViewController, FloatyDelegate {
     @IBOutlet weak var barMenuButton: UIBarButtonItem!
     
     var floaty = Floaty()
-//    private var viewControllers = [ChildContentViewController(), ChildContentViewController()]
+    
+    let bar = TMBar.TabBar()
+//    let bar = TMBar.ButtonBar()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        commonInit()
+    }
+    
+    func commonInit() {
         self.dataSource = self
-        
-        // Create bar
-//        let bar = TMBar.ButtonBar()
-        let bar = TMBar.TabBar()
-        bar.layout.transitionStyle = .snap // Customize
-        
-        // Add to view
+        self.view.backgroundColor = .bgDark()
+        bar.tintColor = .acGreen()
+        bar.backgroundColor = .bgDark()
+        bar.backgroundView.style = .clear
+        bar.layout.transitionStyle = .snap
         addBar(bar, dataSource: self, at: .top)
         
-        let attributes = [NSAttributedString.Key.font: UIFont.fontAwesome(ofSize: 20, style: .brands)]
-        barMenuButton.setTitleTextAttributes(attributes, for: .normal)
-        barMenuButton.title = String.fontAwesomeIcon(name: . bars)
+        barMenuButton.title = String.fontAwesomeIcon(name: .bars)
+        barMenuButton.setTitleTextAttributes([.font: UIFont.fontAwesome(ofSize: 24, style: .solid)], for: .normal)
         
+        if let pageboyPageIndex = pageboyPageIndex {
+            self.navigationItem.title = titles[pageboyPageIndex]
+        } else {
+            self.navigationItem.title = titles.first
+        }
         layoutFAB()
-//        Floaty.global.button.addItem(title: "Hello, World!")
-//        Floaty.global.show()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        bar.buttons.customize { (button) in
+            button.selectedTintColor = .acGreen()
+            button.tintColor = .white
+        }
+    }
+    
+    func allListButtonUpdate() {
+        
+        print("call me allListButtonUpdate")
+        
+//        for vc in viewControllers {
+//            let cvc = vc as! ChildContentViewController
+//            if cvc.firePhotos  != nil {
+//                cvc.collectionView.reloadData()
+//            }
+//        }
     }
     
     func makeChildViewController() -> ChildContentViewController {
@@ -72,11 +90,15 @@ class MainTabViewController: TabmanViewController, FloatyDelegate {
     }
     
     func layoutFAB() {
-        floaty.buttonColor = .green
-        floaty.plusColor = .red
+        floaty.buttonColor = .acGreen()
+        floaty.plusColor = .acPink()
+        
+//        floaty.buttonColor = .acPink()
+//        floaty.plusColor = .acGreen()
+        
         floaty.sticky = true
         floaty.hasShadow = true
-        let cameraImage = UIImage.fontAwesomeIcon(name: .camera, style: .solid, textColor: .green, size: CGSize(width: 20, height: 20))
+        let cameraImage = UIImage.fontAwesomeIcon(name: .camera, style: .solid, textColor: .acGreen(), size: CGSize(width: 20, height: 20))
         floaty.addItem(icon: cameraImage) { (item) in
             if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum) {
                 let picker = UIImagePickerController()
@@ -89,7 +111,7 @@ class MainTabViewController: TabmanViewController, FloatyDelegate {
                 self.floaty.close()
             }
         }
-        let photoImage = UIImage.fontAwesomeIcon(name: .images, style: .solid, textColor: .green, size: CGSize(width: 20, height: 20))
+        let photoImage = UIImage.fontAwesomeIcon(name: .images, style: .solid, textColor: .acGreen(), size: CGSize(width: 20, height: 20))
         floaty.addItem(icon: photoImage) { (item) in
             if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum) {
                 let picker = UIImagePickerController()
@@ -168,10 +190,8 @@ class MainTabViewController: TabmanViewController, FloatyDelegate {
                                     direction: direction,
                                     animated: animated)
         
-        //        print("didScrollToPageAtIndex: \(index)")
-        
-//        gradient?.gradientOffset = gradientOffset(for: CGFloat(index))
-//        statusView.currentIndex = index
+        print("didScrollToPageAtIndex: \(index)")
+        self.navigationItem.title = titles[index]
     }
     
     override func pageboyViewController(_ pageboyViewController: PageboyViewController,
@@ -201,13 +221,13 @@ extension MainTabViewController: PageboyViewControllerDataSource, TMBarDataSourc
     
     func barItem(for bar: TMBar, at index: Int) -> TMBarItemable {
         let curretTabHead = tabHeads[index]
-        let title = curretTabHead.title
+        let title = curretTabHead.rawValue
         let emojiLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 24, height: 24))
-        emojiLabel.text = curretTabHead.imageText
+        emojiLabel.text = curretTabHead.getEmoji()
         let image = UIImage.imageWithLabel(emojiLabel)
-        let badge = curretTabHead.badge
-        let item = TMBarItem(title: title, image: image, badgeValue: badge)
-
+        // TODO: 今後つけるかも
+//        let badge = nil
+        let item = TMBarItem(title: title, image: image, badgeValue: nil)
         return item
     }
 }
@@ -240,7 +260,10 @@ extension MainTabViewController: UIImagePickerControllerDelegate, UINavigationCo
     // 画像選択
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         let image = info[.originalImage] as! UIImage
-        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+        
+        // カメラロールに保存する
+        // UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+        
         self.dismiss(animated: true)
         
         let sb = UIStoryboard(name: "Add", bundle: nil)

@@ -8,41 +8,41 @@
 
 import UIKit
 import Lottie
+import PhotoKeyboardFramework
 
 class PhotoCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var photoImageView: UIImageView!
     @IBOutlet weak var choiceCoverView: AnimationView!
     @IBOutlet weak var choiceCover2View: UIView!
     @IBOutlet weak var choiceCoverLabel: UILabel!
-    
     @IBOutlet weak var titleLabel: UILabel!
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        // Initialization code
-    }
-    
-    func configure(model: Model) {
-        photoImageView.image = model.photo
-        photoImageView.contentMode = .scaleAspectFill
-        titleLabel.text = model.title
-        let animation = Animation.named("fireworks", subdirectory: "LottieFile")
-        choiceCoverView.animation = animation
-        choiceCover2View.alpha = 0.3
-        if model.isSelected {
-            choiceCover2View.isHidden = false
-            choiceCoverLabel.isHidden = false
-        } else {
-            choiceCover2View.isHidden = true
-            choiceCoverLabel.isHidden = true
+    var isCheck: Bool = false {
+        didSet {
+            if isCheck {
+                let choiceColor = ColorManager.shared.acRandom()
+                choiceCoverLabel.textColor = choiceColor
+                choiceCover2View.backgroundColor = choiceColor
+                choiceCover2View.isHidden = false
+                choiceCoverLabel.isHidden = false
+            } else {
+                choiceCover2View.isHidden = true
+                choiceCoverLabel.isHidden = true
+            }
         }
     }
     
-    func choice() {
-        choiceCoverView.isHidden = false
+    override func awakeFromNib() {
+        super.awakeFromNib()
     }
     
-    func unChoice() {
-        choiceCoverView.isHidden = true
+    func configure(photo: RealmPhoto) {
+        photoImageView.image = photo.image
+        photoImageView.contentMode = .scaleAspectFill
+        titleLabel.text = photo.text
+        let animation = Animation.named("fireworks", subdirectory: "LottieFile")
+        choiceCoverView.animation = animation
+        choiceCover2View.alpha = 0.3
     }
+    
 }

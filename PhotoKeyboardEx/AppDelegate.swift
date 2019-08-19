@@ -7,16 +7,46 @@
 //
 
 import UIKit
+import PhotoKeyboardFramework
+import IQKeyboardManagerSwift
+import Firebase
+import FirebaseFirestore
+import Ballcap
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    var remoteConfig: RemoteConfig!
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        setLayout()
+        IQKeyboardManager.shared.enable = true
         return true
+    }
+    
+    override init() {
+        super.init()
+        FirebaseApp.configure()
+        var rootKey = ""
+        let type = Bundle.main.preferredLocalizations.first!
+        if type.contains("ja") {
+            rootKey = "ja"
+        } else {
+            rootKey = "other"
+        }
+        print("rootKey : ", rootKey)
+        let db = Firestore.firestore()
+        BallcapApp.configure(db.document(rootKey + "/1"))
+    }
+    
+    private func setLayout() {
+        UINavigationBar.appearance().tintColor = .acGreen()
+        UINavigationBar.appearance().barTintColor = .bgDark()
+        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.acGreen()]
+//        UINavigationBar.appearance().setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+//        UINavigationBar.appearance().shadowImage = UIImage()
     }
 
     func applicationWillResignActive(_ application: UIApplication) {

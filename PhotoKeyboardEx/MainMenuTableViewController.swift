@@ -63,7 +63,7 @@ class MyMenuTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        print("did select row: \(indexPath.row)")
+        print("何入れよう？？: \(indexPath.row)")
         
         if (indexPath.row == selectedMenuItem) {
             return
@@ -76,19 +76,19 @@ class MyMenuTableViewController: UITableViewController {
         var destViewController : UIViewController
         switch (indexPath.row) {
         case 0:
-            destViewController = mainStoryboard.instantiateViewController(withIdentifier: "ViewController1")
+//            destViewController = mainStoryboard.instantiateViewController(withIdentifier: "ViewController1")
             break
         case 1:
-            destViewController = mainStoryboard.instantiateViewController(withIdentifier: "ViewController2")
+//            destViewController = mainStoryboard.instantiateViewController(withIdentifier: "ViewController2")
             break
         case 2:
-            destViewController = mainStoryboard.instantiateViewController(withIdentifier: "ViewController3")
+//            destViewController = mainStoryboard.instantiateViewController(withIdentifier: "ViewController3")
             break
         default:
-            destViewController = mainStoryboard.instantiateViewController(withIdentifier: "ViewController4")
+//            destViewController = mainStoryboard.instantiateViewController(withIdentifier: "ViewController4")
             break
         }
-        sideMenuController()?.setContentViewController(destViewController)
+//        sideMenuController()?.setContentViewController(destViewController)
     }
     
 }
