@@ -28,7 +28,8 @@ public class RealmPhoto: Object {
         set{
             self._image = newValue
             if let value = newValue {
-                self.imageData = value.pngData()
+//                self.imageData = value.pngData()
+                self.imageData = value.jpegData(compressionQuality: 1.0)
             }
         }
         get{

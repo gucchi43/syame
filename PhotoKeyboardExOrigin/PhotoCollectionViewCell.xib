@@ -24,14 +24,13 @@
                     </imageView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4KK-S1-4aF">
                         <rect key="frame" x="0.0" y="247" width="200" height="32"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="32" id="QK8-v2-r6X"/>
                         </constraints>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="いいですか〜？いいですか〜？いいですか〜？いいですか〜？いいですか〜？" lineBreakMode="characterWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontForContentSizeCategory="YES" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="beQ-a6-dfr" userLabel="Title">
-                        <rect key="frame" x="4" y="247" width="192" height="32"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="10"/>
+                        <rect key="frame" x="6" y="247" width="188" height="32"/>
+                        <fontDescription key="fontDescription" type="boldSystem" pointSize="10"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
@@ -51,16 +50,15 @@
                     </label>
                 </subviews>
             </view>
-            <color key="backgroundColor" red="0.57919406890000003" green="0.1280144453" blue="0.57268613580000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="beQ-a6-dfr" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="4" id="2vi-OR-fE2"/>
+                <constraint firstItem="beQ-a6-dfr" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="6" id="2vi-OR-fE2"/>
                 <constraint firstItem="dxw-HV-DYI" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="3xP-mj-i0s"/>
                 <constraint firstItem="IVp-bx-pRB" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="5sd-fL-gcm"/>
                 <constraint firstItem="Y1e-Mf-tn6" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="5wx-Bz-NJh"/>
                 <constraint firstItem="agb-L2-X2s" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="5x5-vH-ma4"/>
                 <constraint firstItem="Y1e-Mf-tn6" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="6P6-Pf-GlG"/>
                 <constraint firstAttribute="bottom" secondItem="beQ-a6-dfr" secondAttribute="bottom" id="72D-ra-i7o"/>
-                <constraint firstAttribute="trailing" secondItem="beQ-a6-dfr" secondAttribute="trailing" constant="4" id="83i-AX-56H"/>
+                <constraint firstAttribute="trailing" secondItem="beQ-a6-dfr" secondAttribute="trailing" constant="6" id="83i-AX-56H"/>
                 <constraint firstAttribute="bottom" secondItem="Y1e-Mf-tn6" secondAttribute="bottom" id="8fl-GE-f64"/>
                 <constraint firstAttribute="trailing" secondItem="agb-L2-X2s" secondAttribute="trailing" id="8mu-7W-zzn"/>
                 <constraint firstItem="agb-L2-X2s" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="GEU-5X-2KA"/>

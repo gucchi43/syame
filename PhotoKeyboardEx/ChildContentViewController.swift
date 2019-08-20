@@ -10,6 +10,7 @@ import UIKit
 import PhotoKeyboardFramework
 import SwiftDate
 import DZNEmptyDataSet
+import DynamicColor
 import FontAwesome_swift
 import Ballcap
 import Firebase
@@ -129,7 +130,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
         setupCollectionView()
         collectionView.register(UINib(nibName: "PhotoCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "PhotoCollectionViewCell")
         collectionView.contentMode = .left
-        collectionView.backgroundView?.backgroundColor = .bgDark()
+        collectionView.backgroundView?.backgroundColor = UIColor.bgDark().lighter(amount: 0.8)
         collectionView.backgroundColor = .bgDark()
         refreshControl.addTarget(self, action: #selector(self
             .refresh(sender:)), for: .valueChanged)
@@ -146,6 +147,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
         // Change individual layout attributes for the spacing between cells
         layout.minimumColumnSpacing = 8.0
         layout.minimumInteritemSpacing = 8.0
+        layout.sectionInset = UIEdgeInsets(top: 8.0, left: 8.0, bottom: 88.0, right: 8.0)
         
         // Collection view attributes
         collectionView.autoresizingMask = [.flexibleHeight, .flexibleWidth]

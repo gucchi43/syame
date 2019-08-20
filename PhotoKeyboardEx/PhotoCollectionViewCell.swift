@@ -31,9 +31,10 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     }
     
     func baseLayout() {
-//        let bgDarkDark = UIColor.bgDark().darkened(amount: 0.02)
         self.contentView.layer.cornerRadius = 8
         self.contentView.clipsToBounds = true
+//        self.contentView.layer.borderWidth = 1.0
+//        self.contentView.layer.borderColor = UIColor.acGreen().cgColor
         let bgkDarkLight = UIColor.bgDark().lighter(amount: 0.1)
         self.contentView.backgroundColor = bgkDarkLight
         photoImageView.contentMode = .scaleAspectFill
@@ -66,13 +67,13 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     func saveButtonState(saved: Bool) {
         if saved {
             saveButton.setTitle("saved", for: .normal)
-            saveButton.setTitleColor(.acGreen(), for: .normal)
-            saveButton.backgroundColor = .white
-            saveButton.layer.borderColor = UIColor.white.cgColor
-        } else {
-            saveButton.setTitle("save", for: .normal)
             saveButton.setTitleColor(.white, for: .normal)
             saveButton.backgroundColor = .acGreen()
+            saveButton.layer.borderColor = UIColor.acGreen().cgColor
+        } else {
+            saveButton.setTitle("save", for: .normal)
+            saveButton.setTitleColor(.acGreen(), for: .normal)
+            saveButton.backgroundColor = .clear
             saveButton.layer.borderColor = UIColor.acGreen().cgColor
         }
     }

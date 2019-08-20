@@ -10,14 +10,22 @@ import UIKit
 import FontAwesome_swift
 import PhotoKeyboardFramework
 import Firebase
+import Realm
+import RealmSwift
 
 class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmManagerDelegate {
 //    @IBOutlet weak var heightConstraint: NSLayoutConstraint!
     var heightConstraint: NSLayoutConstraint!
-    var widthConstraint2: NSLayoutConstraint!
+//    var widthConstraint2: NSLayoutConstraint!
+    
+    @IBOutlet weak var collectionViewHeightConstraint: NSLayoutConstraint!
+    @IBOutlet weak var homeButtonLeadingConstraint: NSLayoutConstraint!
+    
+    @IBOutlet weak var collectionViewBottomConstraint: NSLayoutConstraint!
+    
     
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet var nextKeyboardButton: UIButton!
+    @IBOutlet weak var nextKeyboardButton: UIButton!
     @IBOutlet weak var homeButton: UIButton!
     @IBOutlet weak var helpButton: UIButton!
     @IBOutlet weak var sortRankButton: UIButton!
@@ -26,7 +34,10 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
 //    @IBOutlet weak var searchBar: UISearchBar!
     //     var searchBar = UISearchBar()
     
-    var photos = RealmManager.shared.realmData
+    // photosの中にfavPhotos or abcPhotos が入る
+    var favSortFlag = true
+    var favPhotos = RealmManager.shared.realmData.sorted(byKeyPath: "useNum")
+    var abcPhotos = RealmManager.shared.realmData.sorted(byKeyPath: "text")
     
     var items : NSArray = []
     private var searchResult = [String]()
@@ -36,48 +47,64 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     override func updateViewConstraints() {
         super.updateViewConstraints()
         // Add custom view sizing constraints here
-        if (view.frame.size.width == 0 || view.frame.size.height == 0) {
-            return
-        }
+//        if (view.frame.size.width == 0 || view.frame.size.height == 0) {
+//            return
+//        }
         setUpHeightConstraint()
 //        setUpWidthConstraint()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        FirebaseApp.configure()
+        if FirebaseApp.app() == nil {
+            FirebaseApp.configure()
+        }
+//        FirebaseApp.configure()
         var v = UINib(nibName:"MainKBView", bundle:nil).instantiate(withOwner: self,options:nil)[0] as! UIView
-        //        self.inputView!.addSubview(v)
+//                self.inputView!.addSubview(v)
+//        self.view.addSubview(v)
         view = v
         RealmManager.shared.delegate = self
         collectionInit()
         commonInit()
-        sortState(rankFlag: true)
+        sortState()
 //        let xibView = MainKBView(frame: CGRect(x: 0, y: 0, width: 300, height: 216))
 //        view.addSubview(xibView)
     }
-
+    
     func commonInit() {
         self.view.backgroundColor = .bgDark()
-        
         homeButton.setTitleColor(.acGreen(), for: .normal)
-        helpButton.setTitleColor(.acGreen(), for: .normal)
-        sortRankButton.setTitleColor(.acGreen(), for: .normal)
-        sortABCButton.setTitleColor(.acGreen(), for: .normal)
-    
-        // Perform custom UI setup here
-        self.nextKeyboardButton = UIButton(type: .system)
+        homeButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 20, style: .solid)
+        homeButton.setTitle(String.fontAwesomeIcon(name: .home), for: .normal)
         
-        self.nextKeyboardButton.setTitle(NSLocalizedString("Next Keyboard", comment: "Title for 'Next Keyboard' button"), for: [])
-        self.nextKeyboardButton.sizeToFit()
+        helpButton.setTitleColor(.acGreen(), for: .normal)
+        helpButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 20, style: .solid)
+        helpButton.setTitle(String.fontAwesomeIcon(name: .question), for: .normal)
+        
+        sortRankButton.setTitleColor(.acGreen(), for: .normal)
+        sortRankButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 20, style: .solid)
+        sortRankButton.setTitle(String.fontAwesomeIcon(name: .sortAmountDown), for: .normal)
+        
+        sortABCButton.setTitleColor(.acGreen(), for: .normal)
+        sortABCButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 20, style: .solid)
+        sortABCButton.setTitle(String.fontAwesomeIcon(name: .sortAlphaDown), for: .normal)
+        // Perform custom UI setup here
+//        self.nextKeyboardButton = UIButton(type: .system)
+        self.nextKeyboardButton.setTitleColor(.acGreen(), for: .normal)
+        self.nextKeyboardButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 20, style: .brands)
+        self.nextKeyboardButton.setTitle(String.fontAwesomeIcon(name: .globe), for: .normal)
+//        self.nextKeyboardButton.setTitle(NSLocalizedString("Next", comment: "Title for 'Next Keyboard' button"), for: [])
+//        self.nextKeyboardButton.setTitle(NSLocalizedString("Next Keyboard", comment: "Title for 'Next Keyboard' button"), for: [])
+//        self.nextKeyboardButton.sizeToFit()
         self.nextKeyboardButton.translatesAutoresizingMaskIntoConstraints = false
         
         self.nextKeyboardButton.addTarget(self, action: #selector(handleInputModeList(from:with:)), for: .allTouchEvents)
         
-        self.view.addSubview(self.nextKeyboardButton)
+//        self.view.addSubview(self.nextKeyboardButton)
         
-        self.nextKeyboardButton.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
-        self.nextKeyboardButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+//        self.nextKeyboardButton.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
+//        self.nextKeyboardButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
 //        searchBar = UISearchBar()
 //        searchBar.delegate = self
 //        searchBar.frame = CGRect(x:0, y:0, width:self.view.frame.width, height:44)
@@ -93,11 +120,12 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     }
     
     func collectionInit() {
-        collectionView.dataSource = self
-        collectionView.delegate = self
         collectionView.register(UINib(nibName: "PhotoCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "PhotoCollectionViewCell")
         collectionView.backgroundColor = .bgDark()
         collectionView.allowsMultipleSelection = false
+        updateViewConstraints()
+        collectionView.dataSource = self
+        collectionView.delegate = self
     }
     
     override func viewWillLayoutSubviews() {
@@ -110,6 +138,11 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     override func viewDidAppear(_ animated: Bool) {
 //                comzmonInit()
         self.nextKeyboardButton.isHidden = !self.needsInputModeSwitchKey
+        if self.needsInputModeSwitchKey {
+            collectionViewBottomConstraint.constant = -self.nextKeyboardButton.frame.height
+        } else {
+            collectionViewBottomConstraint.constant = 0
+        }
 //        heightConstraint2.constant = 500
 //        self.view.addConstraint(heightConstraint2)
         if self.hasFullAccess {
@@ -124,6 +157,12 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     func setUpHeightConstraint() {
         let customHeight = UIScreen.main.bounds.height / 2
         
+//        if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
+//            collectionViewHeightConstraint.constant = 300
+//        } else {
+//            collectionViewHeightConstraint.constant = 600
+//        }
+        
         if heightConstraint == nil {
             heightConstraint = NSLayoutConstraint(item: view,
                                                   attribute: .height,
@@ -133,7 +172,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
                                                   multiplier: 1,
                                                   constant: customHeight)
             heightConstraint.priority = UILayoutPriority.required
-            
+
             view.addConstraint(heightConstraint)
         }
         else {
@@ -141,25 +180,25 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         }
     }
     
-    func setUpWidthConstraint() {
-        let customWidth = UIScreen.main.bounds.width
-        
-        if widthConstraint2 == nil {
-            widthConstraint2 = NSLayoutConstraint(item: view,
-                                                  attribute: .width,
-                                                  relatedBy: .equal,
-                                                  toItem: nil,
-                                                  attribute: .notAnAttribute,
-                                                  multiplier: 1,
-                                                  constant: customWidth)
-            widthConstraint2.priority = UILayoutPriority.required
-            
-            view.addConstraint(widthConstraint2)
-        }
-        else {
-            widthConstraint2.constant = customWidth
-        }
-    }
+//    func setUpWidthConstraint() {
+//        let customWidth = UIScreen.main.bounds.width
+//
+//        if widthConstraint2 == nil {
+//            widthConstraint2 = NSLayoutConstraint(item: view,
+//                                                  attribute: .width,
+//                                                  relatedBy: .equal,
+//                                                  toItem: nil,
+//                                                  attribute: .notAnAttribute,
+//                                                  multiplier: 1,
+//                                                  constant: customWidth)
+//            widthConstraint2.priority = UILayoutPriority.required
+//
+//            view.addConstraint(widthConstraint2)
+//        }
+//        else {
+//            widthConstraint2.constant = customWidth
+//        }
+//    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // キーボードを閉じる
@@ -193,14 +232,23 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
 //        self.view.endEditing(true)
 //    }
     
-    func sortState(rankFlag: Bool) {
-        if rankFlag {
+    func currentPhotos() -> Results<RealmPhoto> {
+        if favSortFlag {
+            return favPhotos
+        } else {
+            return abcPhotos
+        }
+    }
+    
+    func sortState() {
+        if favSortFlag {
             sortRankButton.setTitleColor(.acGreen(), for: .normal)
             sortABCButton.setTitleColor(.gray, for: .normal)
         } else {
             sortRankButton.setTitleColor(.gray, for: .normal)
             sortABCButton.setTitleColor(.acGreen(), for: .normal)
         }
+        collectionView.reloadData()
     }
     
     func realmObjectDidChange() {
@@ -229,9 +277,12 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         guard let lastSelectedIndex = lastSelectedIndex else {
             return
         }
-        let pasetImage = photos![lastSelectedIndex.row].image!
+        let pasetImage = currentPhotos()[lastSelectedIndex.row].image!
         // The Pasteboard is nil if full access is not granted
         // 'image' is the UIImage you about to copy to the pasteboard
+        
+        print("pasetImage : ", pasetImage)
+        
         let pb = UIPasteboard.general
         let type = UIPasteboard.typeListImage[0] as! String
         if !type.isEmpty {
@@ -239,7 +290,16 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
             if let readData = pb.data(forPasteboardType: type) {
                 let readImage = UIImage(data: readData, scale: 2)
                 print("\(pasetImage) == \(String(describing: pb.image)) == \(String(describing: readImage))")
+                updateUseNum(index: lastSelectedIndex.row)
             }
+        }
+    }
+    
+    func updateUseNum(index: Int) {
+        let updateValue = numUpdatePhoto(current: currentPhotos()[index])
+        RealmManager.shared.update(data: updateValue, success: { () in
+        }) { (error) in
+            print(error)
         }
     }
     
@@ -264,10 +324,12 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     }
     
     @IBAction func tapSortRankButton(_ sender: Any) {
-        sortState(rankFlag: true)
+        favSortFlag = true
+        sortState()
     }
     @IBAction func tapSortABCButton(_ sender: Any) {
-        sortState(rankFlag: false)
+        favSortFlag = false
+        sortState()
     }
     
     func numUpdatePhoto(current: RealmPhoto) -> RealmPhoto {
@@ -286,7 +348,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
 
 extension KeyboardViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return photos?.count ??  0
+        return currentPhotos().count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -297,7 +359,7 @@ extension KeyboardViewController: UICollectionViewDataSource, UICollectionViewDe
 //            } else {
 //                cell.configure(photo: photos![indexPath.row], isSelected: false)
 //            }
-                cell.configure(photo: photos![indexPath.row])
+                cell.configure(photo: currentPhotos()[indexPath.row])
                 cell.isCheck = false
 //            }
             print("cell 生成 index: ", indexPath.row)}
@@ -335,9 +397,9 @@ extension KeyboardViewController: UICollectionViewDelegate {
 //        print("newValue : ", self.getPhoto(at: indexPath)!)
         print("=========")
         
-        print("didDeselectItemAt 更新前のphoto : ", photos![indexPath.row])
+        print("didDeselectItemAt 更新前のphoto : ", currentPhotos()[indexPath.row])
 //        self.getPhoto(at: indexPath)!.isSelected = false
-        print("didDeselectItemAt 更新前のphoto : ", photos![indexPath.row])
+        print("didDeselectItemAt 更新前のphoto : ", currentPhotos()[indexPath.row])
 //        newValue.isSelected = false
 //        models[indexPath.row] = newValue
         
@@ -358,13 +420,13 @@ extension KeyboardViewController: UICollectionViewDelegate {
             print("=========")
             self.lastSelectedIndex = indexPath
             cell.isCheck = true
-            print("didSelectItemAt 通常モード 更新前のphoto : ", photos![indexPath.row])
-            let updateValue = numUpdatePhoto(current: photos![indexPath.row])
-            RealmManager.shared.update(data: updateValue, success: { () in
-            }) { (error) in
-                print(error)
-            }
-            print("didSelectItemAt 通常モード 更新後のphoto : ", photos![indexPath.row])
+            print("didSelectItemAt 通常モード 更新前のphoto : ", currentPhotos()[indexPath.row])
+//            let updateValue = numUpdatePhoto(current: currentPhotos()[indexPath.row])
+//            RealmManager.shared.update(data: updateValue, success: { () in
+//            }) { (error) in
+//                print(error)
+//            }
+            print("didSelectItemAt 通常モード 更新後のphoto : ", currentPhotos()[indexPath.row])
             self.copyBoard()
             
             self.tapAnimation(cell: cell)
@@ -379,7 +441,7 @@ extension KeyboardViewController: UICollectionViewDelegate {
         self.collectionView.deselectItem(at: indexPath, animated: true)
         self.lastSelectedIndex = nil
         cell.isCheck = false
-        print("didSelectItemAt 解除モード 更新前のphoto : ", photos![indexPath.row])
+        print("didSelectItemAt 解除モード 更新前のphoto : ", currentPhotos()[indexPath.row])
         
 //        guard var newValue = self.getPhoto(at: indexPath) else { return }
 //        newValue.isSelected = false
@@ -388,7 +450,7 @@ extension KeyboardViewController: UICollectionViewDelegate {
         }) { (error) in
             print(error)
         }
-        print("didSelectItemAt 解除モード 更新後のphoto : ", photos![indexPath.row])
+        print("didSelectItemAt 解除モード 更新後のphoto : ", currentPhotos()[indexPath.row])
         
     }
     
@@ -405,8 +467,8 @@ extension KeyboardViewController: UICollectionViewDelegate {
     }
     
     fileprivate func getPhoto(at indexPath: IndexPath) ->  RealmPhoto? {
-        guard !self.photos!.isEmpty && indexPath.row >= 0 && indexPath.row <= self.photos!.count else { return nil }
-        return self.photos![indexPath.row]
+        guard !self.currentPhotos().isEmpty && indexPath.row >= 0 && indexPath.row <= self.currentPhotos().count else { return nil }
+        return self.currentPhotos()[indexPath.row]
     }
 }
 

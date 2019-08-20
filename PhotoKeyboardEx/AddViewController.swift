@@ -80,13 +80,13 @@ class AddViewController: UIViewController {
         if titleTextField.text!.count > 0 && choiceImage != nil && selectedJenreTag != nil {
             doneButton.isEnabled = true
             doneButton.backgroundColor = .acGreen()
-            doneButton.setTitleColor(.acPink(), for: .normal)
+            doneButton.setTitleColor(.white, for: .normal)
         } else {
             doneButton.isEnabled = false
             let acGreen = UIColor.acGreen()
             let acGreenDark = acGreen.darkened()
             doneButton.backgroundColor = acGreenDark
-            doneButton.setTitleColor(.acPink(), for: .normal)
+            doneButton.setTitleColor(.white, for: .normal)
         }
     }
     

@@ -8,6 +8,7 @@
 
 import UIKit
 import Lottie
+import DynamicColor
 import PhotoKeyboardFramework
 
 class PhotoCollectionViewCell: UICollectionViewCell {
@@ -34,6 +35,9 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        self.backgroundColor = UIColor.bgDark().lighter(amount: 0.1)
+        photoImageView.backgroundColor = UIColor.bgDark().lighter(amount: 0.2)
+        titleLabel.textColor = .white
     }
     
     func configure(photo: RealmPhoto) {

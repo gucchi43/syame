@@ -91,11 +91,7 @@ var titles = ["私の宝物！", "おニュー", "キラキラ〜", "ぷぷぷ�
     
     func layoutFAB() {
         floaty.buttonColor = .acGreen()
-        floaty.plusColor = .acPink()
-        
-//        floaty.buttonColor = .acPink()
-//        floaty.plusColor = .acGreen()
-        
+        floaty.plusColor = .white
         floaty.sticky = true
         floaty.hasShadow = true
         let cameraImage = UIImage.fontAwesomeIcon(name: .camera, style: .solid, textColor: .acGreen(), size: CGSize(width: 20, height: 20))
