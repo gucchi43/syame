@@ -10,6 +10,8 @@
 		1CA5C392CE37392557119E2C /* Pods_All_PhotoKeyboardExOrigin.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FB608B8ADF531C152159F030 /* Pods_All_PhotoKeyboardExOrigin.framework */; };
 		2A5293AE4B1CE75911AAD26B /* Pods_PhotoKeyboardExUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A59BCD0729283AE61EFE4B7A /* Pods_PhotoKeyboardExUITests.framework */; };
 		3ACE86CEBB02C3D24A38DC01 /* Pods_PhotoKeyboardExTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1167ECE4863AEFBA7C7F8D46 /* Pods_PhotoKeyboardExTests.framework */; };
+		821ABDD8230C641600B3DCFE /* Usage.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 821ABDD7230C641600B3DCFE /* Usage.storyboard */; };
+		821ABDDA230C642A00B3DCFE /* UsageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821ABDD9230C642A00B3DCFE /* UsageViewController.swift */; };
 		822137092302F1560046E095 /* GenreTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822137082302F1550046E095 /* GenreTag.swift */; };
 		8221370B2304D1A60046E095 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8221370A2304D1A60046E095 /* Extension.swift */; };
 		822F932F22F72A0C006998E2 /* Pods_All_PhotoKeyboardEx.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0903A86298C04802358C6F2B /* Pods_All_PhotoKeyboardEx.framework */; };
@@ -135,6 +137,8 @@
 		52A3039611AC00C29BB06F50 /* Pods-PhotoKeyboardExTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhotoKeyboardExTests.release.xcconfig"; path = "Target Support Files/Pods-PhotoKeyboardExTests/Pods-PhotoKeyboardExTests.release.xcconfig"; sourceTree = "<group>"; };
 		56B00A1AB1A8449F04A7F802 /* Pods-All-PhotoKeyboardEx.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All-PhotoKeyboardEx.debug.xcconfig"; path = "Target Support Files/Pods-All-PhotoKeyboardEx/Pods-All-PhotoKeyboardEx.debug.xcconfig"; sourceTree = "<group>"; };
 		7AD679DC5AEC5BF2B325581A /* Pods-PhotoKeyboardExOrigin.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhotoKeyboardExOrigin.debug.xcconfig"; path = "Target Support Files/Pods-PhotoKeyboardExOrigin/Pods-PhotoKeyboardExOrigin.debug.xcconfig"; sourceTree = "<group>"; };
+		821ABDD7230C641600B3DCFE /* Usage.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Usage.storyboard; sourceTree = "<group>"; };
+		821ABDD9230C642A00B3DCFE /* UsageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageViewController.swift; sourceTree = "<group>"; };
 		822137082302F1550046E095 /* GenreTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreTag.swift; sourceTree = "<group>"; };
 		8221370A2304D1A60046E095 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		823FA91522FC39D10041F145 /* ColorMG.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorMG.swift; sourceTree = "<group>"; };
@@ -298,6 +302,8 @@
 				824E1FC522FF79D2007D0883 /* FirePhoto.swift */,
 				8280C03C22F454B80069BF8B /* Add.storyboard */,
 				8280C03E22F454D20069BF8B /* AddViewController.swift */,
+				821ABDD7230C641600B3DCFE /* Usage.storyboard */,
+				821ABDD9230C642A00B3DCFE /* UsageViewController.swift */,
 				8278D14222EE5A730034C2CC /* LaunchScreen.storyboard */,
 				8278D14022EE5A730034C2CC /* Assets.xcassets */,
 				826530A122FDB610007A7F44 /* GoogleService-Info.plist */,
@@ -614,6 +620,7 @@
 				8280C04322F455170069BF8B /* PhotoCollectionViewCell.xib in Resources */,
 				8278D14122EE5A730034C2CC /* Assets.xcassets in Resources */,
 				8280C04922F481490069BF8B /* ChildContent.storyboard in Resources */,
+				821ABDD8230C641600B3DCFE /* Usage.storyboard in Resources */,
 				8280C03D22F454B80069BF8B /* Add.storyboard in Resources */,
 				8278D13F22EE5A700034C2CC /* Main.storyboard in Resources */,
 				826530A222FDB610007A7F44 /* GoogleService-Info.plist in Resources */,
@@ -860,6 +867,7 @@
 				82F9F3F022F589400062F451 /* MainMenuTableViewController.swift in Sources */,
 				8280C04522F47D400069BF8B /* MainTabViewController.swift in Sources */,
 				8280C04222F455170069BF8B /* PhotoCollectionViewCell.swift in Sources */,
+				821ABDDA230C642A00B3DCFE /* UsageViewController.swift in Sources */,
 				8278D13A22EE5A700034C2CC /* AppDelegate.swift in Sources */,
 				824E1FC622FF79D2007D0883 /* FirePhoto.swift in Sources */,
 				82F9F3EE22F588290062F451 /* MainNavigationViewController.swift in Sources */,

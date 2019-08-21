@@ -46,14 +46,25 @@ class MyMenuTableViewController: UITableViewController {
         if (cell == nil) {
             cell = UITableViewCell(style:.default, reuseIdentifier: menuOptionCellId)
             cell!.backgroundColor = .clear
-            cell!.textLabel?.textColor = .darkGray
+            cell!.textLabel?.textColor = .white
             let selectedBackgroundView = UIView(frame: CGRect(x: 0, y: 0, width: cell!.frame.size.width, height: cell!.frame.size.height))
             selectedBackgroundView.backgroundColor = UIColor.gray.withAlphaComponent(0.2)
             cell!.selectedBackgroundView = selectedBackgroundView
         }
         
-        cell!.textLabel?.text = "ViewController #\(indexPath.row+1)"
-        
+        switch (indexPath.row) {
+        case 0:
+            cell!.textLabel?.text = "ホーム"
+            break
+        case 1:
+            cell!.textLabel?.text = "キーボード設定方法"
+            break
+        case 2:
+            cell!.textLabel?.text = "お問い合わせ(仮)"
+        default:
+            cell!.textLabel?.text = "その他(仮)"
+            break
+        }
         return cell!
     }
     
@@ -62,33 +73,30 @@ class MyMenuTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        print("何入れよう？？: \(indexPath.row)")
-        
         if (indexPath.row == selectedMenuItem) {
             return
         }
-        
         selectedMenuItem = indexPath.row
-        
         //Present new view controller
-        let mainStoryboard: UIStoryboard = UIStoryboard(name: "Main",bundle: nil)
         var destViewController : UIViewController
         switch (indexPath.row) {
         case 0:
-//            destViewController = mainStoryboard.instantiateViewController(withIdentifier: "ViewController1")
+            let mainStoryboard: UIStoryboard = UIStoryboard(name: "Main",bundle: nil)
+            let nvc = mainStoryboard.instantiateInitialViewController() as! UINavigationController
+            destViewController = nvc.viewControllers.first as! MainTabViewController
+                    sideMenuController()?.setContentViewController(destViewController)
+//            destViewController = mainStoryboard.instantiateViewController(withIdentifier: "MainTabViewController") as! MainTabViewController
             break
         case 1:
-//            destViewController = mainStoryboard.instantiateViewController(withIdentifier: "ViewController2")
+            let mainStoryboard: UIStoryboard = UIStoryboard(name: "Usage",bundle: nil)
+            destViewController = mainStoryboard.instantiateViewController(withIdentifier: "UsageViewController") as! UsageViewController
+            sideMenuController()?.setContentViewController(destViewController)
             break
         case 2:
-//            destViewController = mainStoryboard.instantiateViewController(withIdentifier: "ViewController3")
             break
         default:
-//            destViewController = mainStoryboard.instantiateViewController(withIdentifier: "ViewController4")
             break
         }
-//        sideMenuController()?.setContentViewController(destViewController)
     }
     
 }
