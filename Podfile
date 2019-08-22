@@ -17,7 +17,7 @@ abstract_target 'All' do
   pod 'Firebase/RemoteConfig'
   #pod ‘Firebase/AdMob’
   pod 'Firebase/Messaging'
-  pod 'Ballcap'
+  pod 'Ballcap', '0.8.4'
   pod 'CHTCollectionViewWaterfallLayout/Swift'
   pod 'Nuke', '~> 7.0'
 

@@ -39,6 +39,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
 
     var realmPhotos = RealmManager.shared.realmData
     var firePhotos: DataSource<Document<FirePhoto>>?
+    var cacheIdArray: [String]?
     
     var tabPageIndex: Int!
     private let refreshControl = UIRefreshControl()
@@ -97,16 +98,31 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
                 guard let collectionView = self.collectionView else { return }
                 switch changes {
                 case .initial:
-                    collectionView.reloadData()
+                    collectionView.reloadData {
+                        self.cacheIdArray = self.firePhotos?.documents.map({$0.id})
+                    }
                 case .update(let deletions, let insertions, let modifications):
+                    print("ジャンル : ", self.currentGenreTag.getKey())
                     print("deletions : ", deletions)
                     print("insertions : ", insertions)
                     print("modifications : ", modifications)
+                    // 過去のdsと最新のdsの差分をmodificationsと合体させて、reloadItemsさせる
+                    let newIdArray = self.firePhotos?.documents.map({$0.id})
+                    let zipArray = zip(newIdArray!, self.cacheIdArray!).reduce(into: [String: String]()) { $0[$1.0] = $1.1 }
+                    var diffs: [Int] = modifications
+                    for (index, data) in zipArray.enumerated() {
+                        if data.key != data.value {
+                            diffs.append(index)
+                        }
+                    }
+                    print("diffs : ", diffs)
                     collectionView.performBatchUpdates({
                         collectionView.insertItems(at: insertions.map({ IndexPath(row: $0, section: 0)}))
                         collectionView.deleteItems(at: deletions.map({ IndexPath(row: $0, section: 0)}))
-                        collectionView.reloadItems(at: modifications.map({ IndexPath(row: $0, section: 0)}))
-                    }, completion: nil)
+                        collectionView.reloadItems(at: diffs.map({ IndexPath(row: $0, section: 0)}))
+                    }, completion: { (done) in
+                        self.cacheIdArray = self.firePhotos?.documents.map({$0.id})
+                    })
                 case .error(let error):
                     print(error)
                 }
