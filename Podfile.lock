@@ -169,6 +169,8 @@ PODS:
     - Realm (= 3.17.3)
   - SnapKit (5.0.1)
   - SwiftDate (5.1.0)
+  - SwiftyAttributes (5.1.1)
+  - SwiftyUserDefaults (4.0.0)
   - Tabman (2.4.3):
     - AutoInsetter (~> 1.7.2)
     - Pageboy (~> 3.2.3)
@@ -194,6 +196,8 @@ DEPENDENCIES:
   - Nuke (~> 7.0)
   - RealmSwift
   - SwiftDate (~> 5.0)
+  - SwiftyAttributes
+  - SwiftyUserDefaults (~> 4.0)
   - Tabman (~> 2.4)
   - TagListView (~> 1.0)
 
@@ -242,6 +246,8 @@ SPEC REPOS:
     - RealmSwift
     - SnapKit
     - SwiftDate
+    - SwiftyAttributes
+    - SwiftyUserDefaults
     - Tabman
     - TagListView
 
@@ -289,9 +295,11 @@ SPEC CHECKSUMS:
   RealmSwift: b7fdc2d18616621c31df5c7a398a45a2163f8eb0
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
   SwiftDate: 6329e58969a2de31cea7f1ee1143b247693196e7
+  SwiftyAttributes: e3e13891ddac3c62b3d7798d5c3969cea88e62bb
+  SwiftyUserDefaults: 6a1951df1daa19337862b677dd9a4b9bd4c288cd
   Tabman: c2c83ebfcbec3e5be67e27a1dd6689a4e3efccd3
   TagListView: 987b0bdbb16cd9d9e7c0e2ec32aff37ecba8b173
 
-PODFILE CHECKSUM: 0449944ac31a2cc02709ca512742a18281cd0677
+PODFILE CHECKSUM: 4d98df73f0f7415d105004aee468d4f501d2a17a
 
 COCOAPODS: 1.6.1

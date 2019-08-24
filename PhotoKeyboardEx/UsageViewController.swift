@@ -10,6 +10,7 @@ import UIKit
 import DynamicColor
 import FontAwesome_swift
 import ENSwiftSideMenu
+import SwiftyAttributes
 
 class UsageViewController: UIViewController {
 
@@ -26,14 +27,22 @@ class UsageViewController: UIViewController {
     @IBOutlet weak var fourthImageView: UIImageView!
     @IBOutlet weak var navBarButton: UIBarButtonItem!
     
+    @IBOutlet weak var subLabel: UILabel!
+    @IBOutlet weak var nextButton: UIButton!
+    
+    @IBOutlet weak var topConstraint: NSLayoutConstraint!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         commonInit()
+        setText()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
     }
     
     func commonInit() {
-        self.navigationItem.title = "キーボードの設定方法"
         scrollView.backgroundColor = .bgDark()
         baseView.backgroundColor = .bgDark()
         firstLabel.textColor = .white
@@ -42,10 +51,38 @@ class UsageViewController: UIViewController {
         fourthLabel.textColor = .white   
         navBarButton.title = String.fontAwesomeIcon(name: .bars)
         navBarButton.setTitleTextAttributes([.font: UIFont.fontAwesome(ofSize: 24, style: .solid)], for: .normal)
+        nextButton.setTitleColor(.white, for: .normal)
+        nextButton.backgroundColor = .acGreen()
+        nextButton.layer.cornerRadius = 8.0
+        subLabel.textColor = .white
+    }
+    
+    func setText() {
+//        let firstString = "キーボード".withAttribute([.font(Font.systemFont(ofSize: 32.0, weight: .bold))]) + "をタップする".withAttribute([.font(Font.systemFont(ofSize: 24, weight: .regular))])
+        secondLabel.attributedText = "PKBの設定".withFont(Font.systemFont(ofSize: 24, weight: .bold))
+        secondLabel.attributedText = " [キーボード] ".withFont(Font.systemFont(ofSize: 14, weight: .bold)) + "をタップする".withFont(Font.systemFont(ofSize: 14, weight: .regular))
+        thirdLabel.attributedText = " PKB ".withFont(Font.systemFont(ofSize: 14, weight: .bold)) + "を有効にする".withFont(Font.systemFont(ofSize: 14, weight: .regular))
+        fourthLabel.attributedText = " [フルアクセスを許可] ".withFont(Font.systemFont(ofSize: 14, weight: .bold)) + "をオンにする".withFont(Font.systemFont(ofSize: 14, weight: .regular))
+        subLabel.text = "これでPKBをキーボードから使えるようになります。\nもし設定方法がわからない場合はお問い合わせからLINEでご連絡ください。"
     }
 
     @IBAction func tapNavBarButton(_ sender: Any) {
         toggleSideMenuView()
     }
     
+    @IBAction func tapNextButton(_ sender: Any) {
+        guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else {
+            return
+        }
+        if UIApplication.shared.canOpenURL(settingsUrl) {
+            UIApplication.shared.open(settingsUrl)
+            goWelcomeView()
+        }
+    }
+    
+    func goWelcomeView() {
+        let sb: UIStoryboard = UIStoryboard(name: "Welcome",bundle: nil)
+        let vc = sb.instantiateViewController(withIdentifier: "WelcomeViewController") as! WelcomeViewController
+        self.show(vc, sender: nil)
+    }
 }

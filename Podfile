@@ -20,6 +20,8 @@ abstract_target 'All' do
   pod 'Ballcap', '0.8.4'
   pod 'CHTCollectionViewWaterfallLayout/Swift'
   pod 'Nuke', '~> 7.0'
+  pod 'SwiftyUserDefaults', '~> 4.0'
+  pod 'SwiftyAttributes'  
 
   target 'PhotoKeyboardEx' do
     # Comment the next line if you're not using Swift and don't want to use dynamic frameworks

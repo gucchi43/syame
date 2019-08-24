@@ -24,7 +24,7 @@ struct TabHead {
 
 class MainTabViewController: TabmanViewController, FloatyDelegate {
     var tabHeads = GenreTagType.getAllGenreTags()
-var titles = ["私の宝物！", "おニュー", "キラキラ〜", "ぷぷぷっ", "ふっ", "プリプリ〜", "ぞわぞわっ", "色々あるよん"]
+    var titles = ["私の宝物！", "おニュー", "キラキラ〜", "ぷぷぷっ", "ふっ", "プリプリ〜", "ぞわぞわっ", "色々あるよん"]
     lazy var viewControllers: [UIViewController] = {
         var viewControllers = [UIViewController]()
         for _ in 0 ..< 8 {
@@ -35,6 +35,8 @@ var titles = ["私の宝物！", "おニュー", "キラキラ〜", "ぷぷぷ�
     
     @IBOutlet weak var barMenuButton: UIBarButtonItem!
     
+    var firstFlag = true
+    
     var floaty = Floaty()
     
     let bar = TMBar.TabBar()
@@ -44,7 +46,7 @@ var titles = ["私の宝物！", "おニュー", "キラキラ〜", "ぷぷぷ�
         super.viewDidLoad()
         commonInit()
     }
-    
+
     func commonInit() {
         self.dataSource = self
         self.view.backgroundColor = .bgDark()
@@ -70,6 +72,26 @@ var titles = ["私の宝物！", "おニュー", "キラキラ〜", "ぷぷぷ�
             button.selectedTintColor = .acGreen()
             button.tintColor = .white
         }
+        
+        if firstFlag {
+            firstFlag = false
+            let sb = UIStoryboard(name: "Usage",bundle: nil)
+            let nvc = sb.instantiateInitialViewController() as! UINavigationController
+            //            let vc = nvc.viewControllers.first as! UsageViewController
+            present(nvc, animated: true, completion: nil)
+        }
+        
+//        if GroupeDefaults.shared.isUsagePush() {
+//            let sb = UIStoryboard(name: "Usage",bundle: nil)
+//            let nvc = sb.instantiateInitialViewController() as! UINavigationController
+////            let vc = nvc.viewControllers.first as! UsageViewController
+//            present(nvc, animated: true, completion: nil)
+//
+////            let sb: UIStoryboard = UIStoryboard(name: "Usage",bundle: nil)
+////            let vc = sb.instantiateViewController(withIdentifier: "UsageViewController") as! UsageViewController
+////            present(vc, animated: true, completion: nil)
+//        }
+        
     }
     
     func allListButtonUpdate() {
