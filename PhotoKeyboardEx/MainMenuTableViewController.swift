@@ -57,7 +57,7 @@ class MyMenuTableViewController: UITableViewController {
             cell!.textLabel?.text = "ホーム"
             break
         case 1:
-            cell!.textLabel?.text = "キーボード設定方法"
+            cell!.textLabel?.text = "PKB設定"
             break
         case 2:
             cell!.textLabel?.text = "お問い合わせ(仮)"

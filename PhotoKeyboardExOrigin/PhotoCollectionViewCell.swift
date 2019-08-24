@@ -10,6 +10,7 @@ import UIKit
 import Lottie
 import DynamicColor
 import PhotoKeyboardFramework
+import FontAwesome_swift
 
 class PhotoCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var photoImageView: UIImageView!
@@ -43,10 +44,17 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     func configure(photo: RealmPhoto) {
         photoImageView.image = photo.image
         photoImageView.contentMode = .scaleAspectFill
+        titleLabel.textColor = .white
         titleLabel.text = photo.text
         let animation = Animation.named("fireworks", subdirectory: "LottieFile")
         choiceCoverView.animation = animation
         choiceCover2View.alpha = 0.3
     }
     
+    func addCellconfigure() {
+        photoImageView.image = UIImage.fontAwesomeIcon(name: .plus, style: .solid, textColor: .acGreen(), size: CGSize(width: 88, height: 88))
+        photoImageView.contentMode = .center
+        titleLabel.textColor = .acGreen()
+        titleLabel.text = "アプリから画像を追加"
+    }
 }
