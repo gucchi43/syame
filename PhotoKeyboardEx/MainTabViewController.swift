@@ -72,26 +72,13 @@ class MainTabViewController: TabmanViewController, FloatyDelegate {
             button.selectedTintColor = .acGreen()
             button.tintColor = .white
         }
-        
-        if firstFlag {
-            firstFlag = false
+
+        if GroupeDefaults.shared.isUsagePush() {
             let sb = UIStoryboard(name: "Usage",bundle: nil)
             let nvc = sb.instantiateInitialViewController() as! UINavigationController
-            //            let vc = nvc.viewControllers.first as! UsageViewController
+            GroupeDefaults.shared.usageDone()
             present(nvc, animated: true, completion: nil)
         }
-        
-//        if GroupeDefaults.shared.isUsagePush() {
-//            let sb = UIStoryboard(name: "Usage",bundle: nil)
-//            let nvc = sb.instantiateInitialViewController() as! UINavigationController
-////            let vc = nvc.viewControllers.first as! UsageViewController
-//            present(nvc, animated: true, completion: nil)
-//
-////            let sb: UIStoryboard = UIStoryboard(name: "Usage",bundle: nil)
-////            let vc = sb.instantiateViewController(withIdentifier: "UsageViewController") as! UsageViewController
-////            present(vc, animated: true, completion: nil)
-//        }
-        
     }
     
     func allListButtonUpdate() {

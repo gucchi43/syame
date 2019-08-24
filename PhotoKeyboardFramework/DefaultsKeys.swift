@@ -11,35 +11,46 @@ import SwiftyUserDefaults
 
 extension DefaultsKeys {
     public static let launchCount = DefaultsKey<Int>("launchCount", defaultValue: 0)
-    public static let saveCount = DefaultsKey<Int>("saveCount", defaultValue: 0)
+    public static let saveLife = DefaultsKey<Int>("saveCount", defaultValue: 5)
+    public static let usageNeed = DefaultsKey<Bool>("usageFlag", defaultValue: true)
 }
 
 public final class GroupeDefaults {
     fileprivate init() {
     }
     public static let shared = GroupeDefaults()
-    
     public var sharedDefaults = UserDefaults(suiteName: "group.bocchi.PhotoKeyboardEx")!
+
+    public func isUsagePush() -> Bool {
+        if sharedDefaults[.usageNeed] {
+            return true
+        } else {
+            return false
+        }
+    }
     
-    public func incrementSave() {
+    public func usageDone() {
+        sharedDefaults[.usageNeed] = false
+    }
+    
+    public func incrementLaunchCount() {
         sharedDefaults[.launchCount] += 1
     }
     
-    public func isUsagePush() -> Bool {
-        if sharedDefaults[.launchCount] == 0 {
-            return true
-        } else {
-            return false
-        }
-    }
-    
     public func isAddCount() -> Bool {
-        if sharedDefaults[.saveCount] % 5 == 0 {
-            return true
-        } else {
+        if sharedDefaults[.saveLife] > 0 {
             return false
+        } else {
+            return true
         }
     }
     
+    public func useSaveLife() {
+        sharedDefaults[.saveLife] -= 1
+    }
+    
+    public func chargeSaveLife() {
+        sharedDefaults[.saveLife] = 5
+    }
 }
 

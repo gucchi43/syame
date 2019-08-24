@@ -23,12 +23,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         setLayout()
-        if GroupeDefaults.shared.isUsagePush() {
-            print("使い方表示")
-        }
-        
-
         IQKeyboardManager.shared.enable = true
+        GroupeDefaults.shared.incrementLaunchCount()
         return true
     }
     

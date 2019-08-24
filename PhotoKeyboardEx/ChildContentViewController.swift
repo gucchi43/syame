@@ -257,6 +257,11 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
                 print(error)
             }
         } else {
+            
+            if GroupeDefaults.shared.isAddCount() {
+                return showAdd()
+            }
+
             var photo = RealmPhoto()
             if tabPageIndex == 0 {
                 photo = realmPhotos![index]
@@ -278,9 +283,26 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
                 } else {
                     self.updateSaveCount(doc: self.firePhotos![index], up: true)
                 }
+                GroupeDefaults.shared.useSaveLife()
             }) { (error) in
                 print(error)
             }
+        }
+    }
+    
+    func showAdd() {
+        let alert = UIAlertController(title: "これ以上SAVEするには広告を見てね", message: "５枚画像を保存するごとにお願いしてるよ", preferredStyle: .alert)
+        let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) in
+            // 広告流す
+            print("call add")
+            GroupeDefaults.shared.chargeSaveLife()
+        })
+        let cancell = UIAlertAction(title: "キャンセル", style: .default, handler: { (action) in
+            print("cancell cell add")
+        })
+        alert.addAction(ok)
+        alert.addAction(cancell)
+        present(alert, animated: true) {
         }
     }
     
