@@ -12,6 +12,7 @@ import PhotoKeyboardFramework
 import Firebase
 import Realm
 import RealmSwift
+import SwiftyAttributes
 
 class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmManagerDelegate {
 //    @IBOutlet weak var heightConstraint: NSLayoutConstraint!
@@ -22,8 +23,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     @IBOutlet weak var homeButtonLeadingConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var collectionViewBottomConstraint: NSLayoutConstraint!
-    
-    
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var nextKeyboardButton: UIButton!
     @IBOutlet weak var homeButton: UIButton!
@@ -31,13 +30,17 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     @IBOutlet weak var sortRankButton: UIButton!
     @IBOutlet weak var sortABCButton: UIButton!
     
+    @IBOutlet weak var notFullBGView: UIView!
+    @IBOutlet weak var notFullButton: UIButton!
+    @IBOutlet weak var notFullLabel: UILabel!
+    
 //    @IBOutlet weak var searchBar: UISearchBar!
     //     var searchBar = UISearchBar()
     
     // photosの中にfavPhotos or abcPhotos が入る
-    var favSortFlag = true
-    var favPhotos = RealmManager.shared.realmData.sorted(byKeyPath: "useNum")
-    var abcPhotos = RealmManager.shared.realmData.sorted(byKeyPath: "text")
+    var favSortFlag = false
+    var favPhotos: Results<RealmPhoto>!
+    var abcPhotos: Results<RealmPhoto>!
     
     var items : NSArray = []
     private var searchResult = [String]()
@@ -59,17 +62,37 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         if FirebaseApp.app() == nil {
             FirebaseApp.configure()
         }
-//        FirebaseApp.configure()
-        var v = UINib(nibName:"MainKBView", bundle:nil).instantiate(withOwner: self,options:nil)[0] as! UIView
-//                self.inputView!.addSubview(v)
-//        self.view.addSubview(v)
+        var nib = UINib(nibName:"MainKBView", bundle:nil)
+        var object = nib.instantiate(withOwner: self,options:nil)
+        var v = object[0] as! UIView
+        //                self.inputView!.addSubview(v)
+        //        self.view.addSubview(v)
         view = v
-        RealmManager.shared.delegate = self
-        collectionInit()
         commonInit()
-        sortState()
-//        let xibView = MainKBView(frame: CGRect(x: 0, y: 0, width: 300, height: 216))
-//        view.addSubview(xibView)
+        
+        if self.hasFullAccess {
+            print("FullAccess is true")
+            notFullInit(notFull: false)
+            favPhotos = RealmManager.shared.realmData.sorted(byKeyPath: "useNum")
+            abcPhotos = RealmManager.shared.realmData.sorted(byKeyPath: "text")
+            RealmManager.shared.delegate = self
+            collectionInit()
+            sortState()
+            //        let xibView = MainKBView(frame: CGRect(x: 0, y: 0, width: 300, height: 216))
+            //        view.addSubview(xibView)
+        } else {
+            print("FullAccess is false")
+            notFullInit(notFull: true)
+            //            self.extensionContext?.open(URL(string: UIApplication.openSettingsURLString)!, completionHandler: nil)
+        }
+    }
+    
+    func notFullInit(notFull: Bool) {
+        if notFull {
+            notFullBGView.isHidden = false
+        } else {
+            notFullBGView.isHidden = true
+        }
     }
     
     func commonInit() {
@@ -98,8 +121,17 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
 //        self.nextKeyboardButton.setTitle(NSLocalizedString("Next Keyboard", comment: "Title for 'Next Keyboard' button"), for: [])
 //        self.nextKeyboardButton.sizeToFit()
         self.nextKeyboardButton.translatesAutoresizingMaskIntoConstraints = false
-        
         self.nextKeyboardButton.addTarget(self, action: #selector(handleInputModeList(from:with:)), for: .allTouchEvents)
+        
+        self.notFullBGView.backgroundColor = .bgDark()
+        self.notFullButton.backgroundColor = .acGreen()
+        self.notFullButton.setTitle("設定画面へ", for: .normal)
+        self.notFullButton.setTitleColor(.white, for: .normal)
+        self.notFullButton.layer.cornerRadius = 8.0
+        let notFullLabelStrig = "[KPB]".withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) + "→".withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "[キーボード]".withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) +
+            "→".withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "[フルアクセスを許可する]".withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) + "をオンにしてください。".withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white)
+        self.notFullLabel.attributedText = notFullLabelStrig
+        
         
 //        self.view.addSubview(self.nextKeyboardButton)
         
@@ -142,15 +174,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
             collectionViewBottomConstraint.constant = -self.nextKeyboardButton.frame.height
         } else {
             collectionViewBottomConstraint.constant = 0
-        }
-//        heightConstraint2.constant = 500
-//        self.view.addConstraint(heightConstraint2)
-        if self.hasFullAccess {
-            print("FullAccess is true")
-        } else {
-            print("FullAccess is false")
-//            self.extensionContext?.open(URL(string: UIApplication.openSettingsURLString)!, completionHandler: nil)
-
         }
     }
     
@@ -295,9 +318,10 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     @IBAction func tapHelpButton(_ sender: Any) {
         if self.hasFullAccess {
             print("FullAccess is true")
+            self.openAppSettings()
         } else {
             print("FullAccess is false")
-                        self.extensionContext?.open(URL(string: UIApplication.openSettingsURLString)!, completionHandler: nil)
+            self.openAppSettings()
         }
     }
     
@@ -309,6 +333,35 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         favSortFlag = false
         sortState()
     }
+    
+    @IBAction func tapNotFullButton(_ sender: Any) {
+      openAppSettings()
+    }
+    
+    func openAppSettings() {
+        var responder: UIResponder? = self
+        var sharedApplication: UIResponder?
+        while responder != nil {
+            if let application = responder as? UIApplication {
+                sharedApplication = application
+                break
+            }
+            responder = responder?.next
+        }
+        
+        guard let application = sharedApplication else { return }
+        
+        if #available(iOS 11.0, *) {
+            application.perform(#selector(UIApplication.openURL(_:)), with: URL(string: UIApplication.openSettingsURLString))
+        } else {
+            if #available(iOS 10.0, *) {
+                application.perform("openURL:", with: URL(string: "App-Prefs:root=General&path=Keyboard/KEYBOARDS"))
+            } else {
+                application.perform("openURL:", with: URL(string: "prefs:root=General&path=Keyboard/KEYBOARDS"))
+            }
+        }
+    }
+    
     
     func numUpdatePhoto(current: RealmPhoto) -> RealmPhoto {
         let new = RealmPhoto()
@@ -338,7 +391,6 @@ extension KeyboardViewController: UICollectionViewDataSource, UICollectionViewDe
 //            } else {
 //                cell.configure(photo: photos![indexPath.row], isSelected: false)
 //            }
-//            if indexPath.row == currentPhotos().count + 1{
             if indexPath.row == currentPhotos().count {
                 cell.addCellconfigure()
             } else {

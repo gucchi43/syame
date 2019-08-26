@@ -17,6 +17,9 @@
                 <outlet property="helpButton" destination="2dK-tC-E8q" id="upy-UF-Z6A"/>
                 <outlet property="homeButton" destination="sq0-76-pZQ" id="IhN-9G-V8N"/>
                 <outlet property="nextKeyboardButton" destination="css-Gc-FnU" id="gtf-3a-2x1"/>
+                <outlet property="notFullBGView" destination="uKr-7Y-y2u" id="YHq-cV-Mtd"/>
+                <outlet property="notFullButton" destination="3c7-EO-cos" id="Dsy-IR-Nm2"/>
+                <outlet property="notFullLabel" destination="e5U-qd-M1L" id="kkh-e7-sUg"/>
                 <outlet property="sortABCButton" destination="Vdc-LT-Dm6" id="yIO-g9-myB"/>
                 <outlet property="sortRankButton" destination="duc-Sx-qUH" id="3VO-eg-7Ar"/>
             </connections>
@@ -84,6 +87,40 @@
                     <rect key="frame" x="8" y="414" width="31" height="30"/>
                     <state key="normal" title="次へ"/>
                 </button>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="uKr-7Y-y2u">
+                    <rect key="frame" x="0.0" y="0.0" width="300" height="444"/>
+                    <subviews>
+                        <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="28" translatesAutoresizingMaskIntoConstraints="NO" id="84v-GF-uTh">
+                            <rect key="frame" x="32" y="171.5" width="236" height="101"/>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3c7-EO-cos">
+                                    <rect key="frame" x="70" y="0.0" width="96" height="32"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" constant="32" id="DvI-gf-nw1"/>
+                                        <constraint firstAttribute="width" constant="96" id="Zqh-Iz-pxO"/>
+                                    </constraints>
+                                    <state key="normal" title="設定画面へ"/>
+                                    <connections>
+                                        <action selector="tapNotFullButton:" destination="-1" eventType="touchUpInside" id="aqr-sj-PHt"/>
+                                    </connections>
+                                </button>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="フルアクセスを許可するをオンにしてください。" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="e5U-qd-M1L">
+                                    <rect key="frame" x="5.5" y="60" width="225.5" height="41"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                        </stackView>
+                    </subviews>
+                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstItem="84v-GF-uTh" firstAttribute="centerX" secondItem="uKr-7Y-y2u" secondAttribute="centerX" id="OYl-4a-WiZ"/>
+                        <constraint firstAttribute="trailing" secondItem="84v-GF-uTh" secondAttribute="trailing" constant="32" id="XA1-Pz-ck4"/>
+                        <constraint firstItem="84v-GF-uTh" firstAttribute="centerY" secondItem="uKr-7Y-y2u" secondAttribute="centerY" id="bzr-Y4-lR8"/>
+                        <constraint firstItem="84v-GF-uTh" firstAttribute="leading" secondItem="uKr-7Y-y2u" secondAttribute="leading" constant="32" id="vDL-Gx-axO"/>
+                    </constraints>
+                </view>
             </subviews>
             <constraints>
                 <constraint firstItem="duc-Sx-qUH" firstAttribute="leading" secondItem="Vdc-LT-Dm6" secondAttribute="trailing" id="0P8-yl-qnd"/>
@@ -99,10 +136,14 @@
                 <constraint firstItem="sq0-76-pZQ" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="aro-Ub-KyH"/>
                 <constraint firstItem="0rY-Wd-Qi6" firstAttribute="top" secondItem="2dK-tC-E8q" secondAttribute="bottom" id="bfF-LB-Ccp"/>
                 <constraint firstItem="0rY-Wd-Qi6" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="ibc-7O-kCB"/>
+                <constraint firstItem="uKr-7Y-y2u" firstAttribute="bottom" secondItem="vUN-kp-3ea" secondAttribute="bottom" id="kX0-YM-xDZ"/>
                 <constraint firstItem="0rY-Wd-Qi6" firstAttribute="trailing" secondItem="iN0-l3-epB" secondAttribute="trailing" id="mxg-Mb-KNJ"/>
+                <constraint firstItem="uKr-7Y-y2u" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" id="pFb-pH-tWl"/>
                 <constraint firstItem="duc-Sx-qUH" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="rTd-zb-fJM"/>
                 <constraint firstItem="0rY-Wd-Qi6" firstAttribute="top" secondItem="sq0-76-pZQ" secondAttribute="bottom" id="vy7-6L-jpQ"/>
+                <constraint firstItem="uKr-7Y-y2u" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="wBy-xz-Bvp"/>
                 <constraint firstItem="css-Gc-FnU" firstAttribute="bottom" secondItem="vUN-kp-3ea" secondAttribute="bottom" id="wuU-X5-Bj5"/>
+                <constraint firstItem="uKr-7Y-y2u" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="yuB-co-r1M"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
