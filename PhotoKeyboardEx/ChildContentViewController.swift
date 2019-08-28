@@ -82,11 +82,11 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
         case .some(.new):
             let option = DataSource<Document<FirePhoto>>.Option()
             option.sortClosure = { l, r in return l.createdAt > r.createdAt }
-            currentDataSource = Document<FirePhoto>.order(by: "createdAt").limit(to: 20).dataSource(option:option)
+            currentDataSource = Document<FirePhoto>.order(by: "createdAt").limit(to: 50).dataSource(option:option)
         case .some(.popular):
             let option = DataSource<Document<FirePhoto>>.Option()
             option.sortClosure = { l, r in return l.data!.saveCount > r.data!.saveCount }
-            currentDataSource = Document<FirePhoto>.order(by: "saveCount").limit(to: 20).dataSource(option:option)
+            currentDataSource = Document<FirePhoto>.order(by: "saveCount").limit(to: 50).dataSource(option:option)
         case .some(.humor), .some(.cool), .some(.cute), .some(.serious), .some(.other):
             let option = DataSource<Document<FirePhoto>>.Option()
             option.sortClosure = { l, r in return l.data!.title < r.data!.title }
@@ -109,8 +109,10 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
                     // 過去のdsと最新のdsの差分をmodificationsと合体させて、reloadItemsさせる
                     let newIdArray = self.firePhotos?.documents.map({$0.id})
                     var diffs: [Int] = []
-                    if let cacheIdArray = self.cacheIdArray, let newIdArray = newIdArray {
-                        diffs = cacheIdArray.enumerated().filter { $0.1 != newIdArray[$0.0] }.map { $0.0 }
+                    if modifications.count > 0 {
+                        if let cacheIdArray = self.cacheIdArray, let newIdArray = newIdArray {
+                            diffs = cacheIdArray.enumerated().filter { $0.1 != newIdArray[$0.0] }.map { $0.0 }
+                        }                        
                     }
                     diffs += modifications
                     let orderedSet: NSOrderedSet = NSOrderedSet(array: diffs)
@@ -184,11 +186,6 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
 //        if let mTVC = pageboyParent as? MainTabViewController {
 //            mTVC.allListButtonUpdate()
 //        }
-        
-        if pageboyPageIndex == 0 {
-            collectionView.reloadData()
-        }
-        
     }
     
     @objc func refresh(sender: UIRefreshControl) {
