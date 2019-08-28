@@ -108,13 +108,13 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
                     print("modifications : ", modifications)
                     // 過去のdsと最新のdsの差分をmodificationsと合体させて、reloadItemsさせる
                     let newIdArray = self.firePhotos?.documents.map({$0.id})
-                    let zipArray = zip(newIdArray!, self.cacheIdArray!).reduce(into: [String: String]()) { $0[$1.0] = $1.1 }
-                    var diffs: [Int] = modifications
-                    for (index, data) in zipArray.enumerated() {
-                        if data.key != data.value {
-                            diffs.append(index)
-                        }
+                    var diffs: [Int] = []
+                    if let cacheIdArray = self.cacheIdArray, let newIdArray = newIdArray {
+                        diffs = cacheIdArray.enumerated().filter { $0.1 != newIdArray[$0.0] }.map { $0.0 }
                     }
+                    diffs += modifications
+                    let orderedSet: NSOrderedSet = NSOrderedSet(array: diffs)
+                    diffs = orderedSet.array as! [Int]
                     print("diffs : ", diffs)
                     collectionView.performBatchUpdates({
                         collectionView.insertItems(at: insertions.map({ IndexPath(row: $0, section: 0)}))
