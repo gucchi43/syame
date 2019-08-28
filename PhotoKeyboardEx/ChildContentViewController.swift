@@ -445,17 +445,17 @@ extension ChildContentViewController: DZNEmptyDataSetSource {
     
     /// データが空の状態の時に表示したい画像
     func image(forEmptyDataSet scrollView: UIScrollView!) -> UIImage! {
-        let image = UIImage.fontAwesomeIcon(name: .storeAlt, style: .solid, textColor: .acGreen(), size: CGSize(width: 100, height: 100))
+        let image = UIImage.fontAwesomeIcon(name: .grinTears, style: .solid, textColor: .acGreen(), size: CGSize(width: 80, height: 80))
         return  image
     }
     //
     /// データが空の状態の時に表示したい属性付きタイトル文字列
     func title(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
-        let text = "カラッポ"
+        let title = "カラッポ"
         let attributes: [NSAttributedString.Key: Any]
             = [.font: UIFont.boldSystemFont(ofSize: 19),
                .foregroundColor: UIColor.acGreen()]
-        return NSAttributedString(string: text, attributes: attributes)
+        return NSAttributedString(string: title, attributes: attributes)
     }
     
     func verticalOffset(forEmptyDataSet scrollView: UIScrollView!) -> CGFloat {
