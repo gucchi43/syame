@@ -1,5 +1,5 @@
 PODS:
-  - Alamofire (4.8.2)
+  - Alamofire (5.0.0-beta.7)
   - AutoInsetter (1.7.2)
   - Ballcap (0.8.4):
     - Firebase
@@ -170,6 +170,7 @@ PODS:
   - SnapKit (5.0.1)
   - SwiftDate (5.1.0)
   - SwiftyAttributes (5.1.1)
+  - SwiftyJSON (4.3.0)
   - SwiftyUserDefaults (4.0.0)
   - Tabman (2.4.3):
     - AutoInsetter (~> 1.7.2)
@@ -177,7 +178,7 @@ PODS:
   - TagListView (1.4.0)
 
 DEPENDENCIES:
-  - Alamofire
+  - Alamofire (~> 5.0.0-beta.6)
   - Ballcap
   - Ballcap (= 0.8.4)
   - CHTCollectionViewWaterfallLayout/Swift
@@ -197,6 +198,7 @@ DEPENDENCIES:
   - RealmSwift
   - SwiftDate (~> 5.0)
   - SwiftyAttributes
+  - SwiftyJSON (~> 4.0)
   - SwiftyUserDefaults (~> 4.0)
   - Tabman (~> 2.4)
   - TagListView (~> 1.0)
@@ -247,12 +249,13 @@ SPEC REPOS:
     - SnapKit
     - SwiftDate
     - SwiftyAttributes
+    - SwiftyJSON
     - SwiftyUserDefaults
     - Tabman
     - TagListView
 
 SPEC CHECKSUMS:
-  Alamofire: ae5c501addb7afdbb13687d7f2f722c78734c2d3
+  Alamofire: bd07938ceecad59d2492aeecb1f785a8f2721160
   AutoInsetter: 176c5c069b40bf6afa51bf7081be346ab70ca315
   Ballcap: 94598e3dc025e270b78a0548713ebeea18fdc51c
   BoringSSL-GRPC: db8764df3204ccea016e1c8dd15d9a9ad63ff318
@@ -296,10 +299,11 @@ SPEC CHECKSUMS:
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
   SwiftDate: 6329e58969a2de31cea7f1ee1143b247693196e7
   SwiftyAttributes: e3e13891ddac3c62b3d7798d5c3969cea88e62bb
+  SwiftyJSON: 6faa0040f8b59dead0ee07436cbf76b73c08fd08
   SwiftyUserDefaults: 6a1951df1daa19337862b677dd9a4b9bd4c288cd
   Tabman: c2c83ebfcbec3e5be67e27a1dd6689a4e3efccd3
   TagListView: 987b0bdbb16cd9d9e7c0e2ec32aff37ecba8b173
 
-PODFILE CHECKSUM: 4d98df73f0f7415d105004aee468d4f501d2a17a
+PODFILE CHECKSUM: 257fe9468330a4a72cbb3db46ff47435ee091e70
 
 COCOAPODS: 1.6.1

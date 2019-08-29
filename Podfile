@@ -4,7 +4,7 @@ platform :ios, '12.0'
 abstract_target 'All' do
   use_frameworks!
 
-  pod 'Alamofire'
+  pod 'Alamofire', '~> 5.0.0-beta.6'
   pod 'RealmSwift'
   pod 'lottie-ios'
   pod 'DynamicColor', '~> 4.1.0'
@@ -21,7 +21,8 @@ abstract_target 'All' do
   pod 'CHTCollectionViewWaterfallLayout/Swift'
   pod 'Nuke', '~> 7.0'
   pod 'SwiftyUserDefaults', '~> 4.0'
-  pod 'SwiftyAttributes'  
+  pod 'SwiftyAttributes'
+  pod 'SwiftyJSON', '~> 4.0'
 
   target 'PhotoKeyboardEx' do
     # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
