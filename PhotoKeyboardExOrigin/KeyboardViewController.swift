@@ -72,11 +72,11 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         
         if self.hasFullAccess {
             print("FullAccess is true")
-            notFullInit(notFull: false)
             favPhotos = RealmManager.shared.realmData.sorted(byKeyPath: "useNum")
             abcPhotos = RealmManager.shared.realmData.sorted(byKeyPath: "text")
             RealmManager.shared.delegate = self
             collectionInit()
+            notFullInit(notFull: false)
             sortState()
             //        let xibView = MainKBView(frame: CGRect(x: 0, y: 0, width: 300, height: 216))
             //        view.addSubview(xibView)
@@ -90,6 +90,10 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     func notFullInit(notFull: Bool) {
         if notFull {
             notFullBGView.isHidden = false
+            sortRankButton.isEnabled = false
+            sortABCButton.isEnabled = false
+            sortRankButton.setTitleColor(.gray, for: .normal)
+            sortABCButton.setTitleColor(.gray, for: .normal)
         } else {
             notFullBGView.isHidden = true
         }
@@ -115,14 +119,13 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         // Perform custom UI setup here
 //        self.nextKeyboardButton = UIButton(type: .system)
         self.nextKeyboardButton.setTitleColor(.acGreen(), for: .normal)
-        self.nextKeyboardButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 20, style: .brands)
+        self.nextKeyboardButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 20, style: .solid)
         self.nextKeyboardButton.setTitle(String.fontAwesomeIcon(name: .globe), for: .normal)
 //        self.nextKeyboardButton.setTitle(NSLocalizedString("Next", comment: "Title for 'Next Keyboard' button"), for: [])
 //        self.nextKeyboardButton.setTitle(NSLocalizedString("Next Keyboard", comment: "Title for 'Next Keyboard' button"), for: [])
 //        self.nextKeyboardButton.sizeToFit()
-        self.nextKeyboardButton.translatesAutoresizingMaskIntoConstraints = false
+//        self.nextKeyboardButton.translatesAutoresizingMaskIntoConstraints = false
         self.nextKeyboardButton.addTarget(self, action: #selector(handleInputModeList(from:with:)), for: .allTouchEvents)
-        
         self.notFullBGView.backgroundColor = .bgDark()
         self.notFullButton.backgroundColor = .acGreen()
         self.notFullButton.setTitle("設定画面へ", for: .normal)
@@ -168,7 +171,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     }
     
     override func viewDidAppear(_ animated: Bool) {
-//                comzmonInit()
         self.nextKeyboardButton.isHidden = !self.needsInputModeSwitchKey
         if self.needsInputModeSwitchKey {
             collectionViewBottomConstraint.constant = -self.nextKeyboardButton.frame.height
@@ -179,13 +181,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     
     func setUpHeightConstraint() {
         let customHeight = UIScreen.main.bounds.height / 2
-        
-//        if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
-//            collectionViewHeightConstraint.constant = 300
-//        } else {
-//            collectionViewHeightConstraint.constant = 600
-//        }
-        
         if heightConstraint == nil {
             heightConstraint = NSLayoutConstraint(item: view,
                                                   attribute: .height,
@@ -260,14 +255,14 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     override func textDidChange(_ textInput: UITextInput?) {
         // The app has just changed the document's contents, the document context has been updated.
         
-        var textColor: UIColor
-        let proxy = self.textDocumentProxy
-        if proxy.keyboardAppearance == UIKeyboardAppearance.dark {
-            textColor = UIColor.white
-        } else {
-            textColor = .bgDark()
-        }
-        self.nextKeyboardButton.setTitleColor(textColor, for: [])
+//        var textColor: UIColor
+//        let proxy = self.textDocumentProxy
+//        if proxy.keyboardAppearance == UIKeyboardAppearance.dark {
+//            textColor = UIColor.white
+//        } else {
+//            textColor = .bgDark()
+//        }
+//        self.nextKeyboardButton.setTitleColor(textColor, for: [])
     }
     
     func copyBoard() {
