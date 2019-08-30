@@ -49,10 +49,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     
     override func updateViewConstraints() {
         super.updateViewConstraints()
-        // Add custom view sizing constraints here
-//        if (view.frame.size.width == 0 || view.frame.size.height == 0) {
-//            return
-//        }
+
         setUpHeightConstraint()
 //        setUpWidthConstraint()
     }
@@ -79,12 +76,9 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
             collectionInit()
             notFullInit(notFull: false)
             sortState()
-            //        let xibView = MainKBView(frame: CGRect(x: 0, y: 0, width: 300, height: 216))
-            //        view.addSubview(xibView)
         } else {
             print("FullAccess is false")
             notFullInit(notFull: true)
-            //            self.extensionContext?.open(URL(string: UIApplication.openSettingsURLString)!, completionHandler: nil)
         }
     }
     
@@ -117,15 +111,10 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         sortABCButton.setTitleColor(.acGreen(), for: .normal)
         sortABCButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 20, style: .solid)
         sortABCButton.setTitle(String.fontAwesomeIcon(name: .sortAlphaDown), for: .normal)
-        // Perform custom UI setup here
-//        self.nextKeyboardButton = UIButton(type: .system)
+        
         self.nextKeyboardButton.setTitleColor(.acGreen(), for: .normal)
         self.nextKeyboardButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 20, style: .solid)
         self.nextKeyboardButton.setTitle(String.fontAwesomeIcon(name: .globe), for: .normal)
-//        self.nextKeyboardButton.setTitle(NSLocalizedString("Next", comment: "Title for 'Next Keyboard' button"), for: [])
-//        self.nextKeyboardButton.setTitle(NSLocalizedString("Next Keyboard", comment: "Title for 'Next Keyboard' button"), for: [])
-//        self.nextKeyboardButton.sizeToFit()
-//        self.nextKeyboardButton.translatesAutoresizingMaskIntoConstraints = false
         self.nextKeyboardButton.addTarget(self, action: #selector(handleInputModeList(from:with:)), for: .allTouchEvents)
         self.notFullBGView.backgroundColor = .bgDark()
         self.notFullButton.backgroundColor = .acGreen()
@@ -135,24 +124,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         let notFullLabelStrig = "[KPB]".withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) + "→".withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "[キーボード]".withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) +
             "→".withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "[フルアクセスを許可する]".withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) + "をオンにしてください。".withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white)
         self.notFullLabel.attributedText = notFullLabelStrig
-        
-        
-//        self.view.addSubview(self.nextKeyboardButton)
-        
-//        self.nextKeyboardButton.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
-//        self.nextKeyboardButton.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
-//        searchBar = UISearchBar()
-//        searchBar.delegate = self
-//        searchBar.frame = CGRect(x:0, y:0, width:self.view.frame.width, height:44)
-////        searchBar.layer.position = CGPoint(x: self.view.bounds.width/2, y: 89)
-//        searchBar.searchBarStyle = UISearchBar.Style.default
-//        searchBar.showsSearchResultsButton = false
-//        collectionView.contentOffset = CGPoint(x: 0, y: searchBar.frame.height)
-//        searchBar.placeholder = "検索"
-//        searchBar.setValue("キャンセル", forKey: "_cancelButtonText")
-//        searchBar.tintColor = UIColor.red
-//
-//        collectionView.addSubview(searchBar)
     }
     
     func collectionInit() {
@@ -180,8 +151,22 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         }
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        setUpHeightConstraint()
+        view.layoutIfNeeded()
+        collectionView.collectionViewLayout.invalidateLayout()
+    }
+    
     func setUpHeightConstraint() {
-        let customHeight = UIScreen.main.bounds.height / 2
+        var customHeight: CGFloat!
+        if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
+            customHeight = UIScreen.main.bounds.height / 2
+        } else {
+            customHeight = UIScreen.main.bounds.height / 2
+        }
+        
         if heightConstraint == nil {
             heightConstraint = NSLayoutConstraint(item: view,
                                                   attribute: .height,
@@ -198,26 +183,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
             heightConstraint.constant = customHeight
         }
     }
-    
-//    func setUpWidthConstraint() {
-//        let customWidth = UIScreen.main.bounds.width
-//
-//        if widthConstraint2 == nil {
-//            widthConstraint2 = NSLayoutConstraint(item: view,
-//                                                  attribute: .width,
-//                                                  relatedBy: .equal,
-//                                                  toItem: nil,
-//                                                  attribute: .notAnAttribute,
-//                                                  multiplier: 1,
-//                                                  constant: customWidth)
-//            widthConstraint2.priority = UILayoutPriority.required
-//
-//            view.addConstraint(widthConstraint2)
-//        }
-//        else {
-//            widthConstraint2.constant = customWidth
-//        }
-//    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         // キーボードを閉じる
@@ -402,8 +367,13 @@ extension KeyboardViewController: UICollectionViewDataSource, UICollectionViewDe
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         //　横幅を画面サイズの約半分にする
-        let cellSize:CGFloat = self.view.bounds.width/2 - 0.5
-        return CGSize(width: cellSize, height: cellSize)
+        if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
+            let cellSize:CGFloat = self.view.bounds.width/4 - 1.5
+            return CGSize(width: cellSize, height: cellSize)
+        } else {
+            let cellSize:CGFloat = self.view.bounds.width/2 - 0.5
+            return CGSize(width: cellSize, height: cellSize)
+        }
     }
     
     // 水平方向におけるセル間のマージン
