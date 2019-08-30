@@ -15,10 +15,8 @@ import RealmSwift
 import SwiftyAttributes
 
 class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmManagerDelegate {
-//    @IBOutlet weak var heightConstraint: NSLayoutConstraint!
+
     var heightConstraint: NSLayoutConstraint!
-//    var widthConstraint2: NSLayoutConstraint!
-    
     @IBOutlet weak var collectionViewHeightConstraint: NSLayoutConstraint!
     @IBOutlet weak var homeButtonLeadingConstraint: NSLayoutConstraint!
     
@@ -47,6 +45,8 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     
     fileprivate var lastSelectedIndex: IndexPath?
     
+    let generator = UINotificationFeedbackGenerator()
+    
     override func updateViewConstraints() {
         super.updateViewConstraints()
         // Add custom view sizing constraints here
@@ -69,6 +69,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         //        self.view.addSubview(v)
         view = v
         commonInit()
+        generator.prepare()
         
         if self.hasFullAccess {
             print("FullAccess is true")
@@ -496,6 +497,7 @@ extension KeyboardViewController: UICollectionViewDelegate {
     private func tapAnimation(cell: PhotoCollectionViewCell) {
         cell.choiceCoverView.play()
         cell.choiceCoverView.play { (finish) in
+            self.generator.notificationOccurred(.success)
             print("コール アニメーション row: ")
 //            let choiceColor = ColorManager.shared.acRandom()
 //            cell.choiceCoverLabel.textColor = choiceColor

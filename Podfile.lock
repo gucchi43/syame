@@ -63,15 +63,15 @@ PODS:
     - GoogleUtilities/Environment (~> 6.2)
     - GoogleUtilities/Logger (~> 6.2)
   - FirebaseCoreDiagnosticsInterop (1.0.0)
-  - FirebaseFirestore (1.4.4):
+  - FirebaseFirestore (1.4.5):
     - FirebaseAuthInterop (~> 1.0)
     - FirebaseCore (~> 6.2)
-    - FirebaseFirestore/abseil-cpp (= 1.4.4)
+    - FirebaseFirestore/abseil-cpp (= 1.4.5)
     - "gRPC-C++ (= 0.0.9)"
     - leveldb-library (~> 1.20)
     - nanopb (~> 0.3.901)
     - Protobuf (~> 3.1)
-  - FirebaseFirestore/abseil-cpp (1.4.4):
+  - FirebaseFirestore/abseil-cpp (1.4.5):
     - FirebaseAuthInterop (~> 1.0)
     - FirebaseCore (~> 6.2)
     - "gRPC-C++ (= 0.0.9)"
@@ -113,7 +113,7 @@ PODS:
     - GoogleUtilities/Network (~> 6.0)
     - "GoogleUtilities/NSData+zlib (~> 6.0)"
     - nanopb (~> 0.3)
-  - GoogleDataTransport (1.1.2)
+  - GoogleDataTransport (1.1.3)
   - GoogleDataTransportCCTSupport (1.0.2):
     - GoogleDataTransport (~> 1.1)
     - nanopb
@@ -278,7 +278,7 @@ SPEC CHECKSUMS:
   FirebaseCore: 32b48f41c84a56fbde73b35ed01a830b3b6dc048
   FirebaseCoreDiagnostics: 4c04ae09d0ab027c30179828c6bb47764df1bd13
   FirebaseCoreDiagnosticsInterop: 6829da2b8d1fc795ff1bd99df751d3788035d2cb
-  FirebaseFirestore: 65aba32fcc772434dc69726fb0c528d2a67ec486
+  FirebaseFirestore: c457c22c49ccf15a0fbe95bfcbcf69b984dec285
   FirebaseInstanceID: 8b42755db950682e7de0d167bc6fb26a57b244af
   FirebaseMessaging: 930e4cce01f8f1e634cfdd1881db471fb61be883
   FirebaseRemoteConfig: 938b338e9e56f73b4e3880213cc01287b8582468
@@ -287,7 +287,7 @@ SPEC CHECKSUMS:
   FontAwesome.swift: 6f55c8ed22a30ab6a8ca94033473161f678dcd4b
   Google-Mobile-Ads-SDK: df315e371b29cf935f7ea872e7bdec39462a100e
   GoogleAppMeasurement: 86a82f0e1f20b8eedf8e20326530138fd71409de
-  GoogleDataTransport: 9c3d63ed82f882a9a74d4be67dd7ad01bf046102
+  GoogleDataTransport: 91e682bd60a49d3f8f69f2e909a66efaed5a1e7a
   GoogleDataTransportCCTSupport: 6b545f7149111180763dc18c6f372c963de4a310
   GoogleUtilities: e7dc37039b19df7fe543479d3e4a02ac8d11bb69
   "gRPC-C++": 9dfe7b44821e7b3e44aacad2af29d2c21f7cde83
@@ -312,6 +312,6 @@ SPEC CHECKSUMS:
   Tabman: c2c83ebfcbec3e5be67e27a1dd6689a4e3efccd3
   TagListView: 987b0bdbb16cd9d9e7c0e2ec32aff37ecba8b173
 
-PODFILE CHECKSUM: eb7b882e3097a43078169fe02d08ba9820f1a143
+PODFILE CHECKSUM: 3892584283b28da70caf8895a9d53e134e7aef84
 
 COCOAPODS: 1.6.1

@@ -15,7 +15,6 @@ abstract_target 'All' do
   pod 'Firebase/Core'
   pod 'Firebase/Firestore’
   pod 'Firebase/RemoteConfig'
-  pod ‘Firebase/AdMob’
   pod 'Firebase/Messaging'
   pod 'Ballcap', '0.8.4'
   pod 'CHTCollectionViewWaterfallLayout/Swift'
@@ -36,7 +35,8 @@ abstract_target 'All' do
    # pod "ActionClosurable"
     pod 'IQKeyboardManagerSwift'
     #  pod 'Ballcap'
-    # x pod 'SwifterSwift'
+    #  pod 'SwifterSwift'
+    pod 'Firebase/AdMob'
 
     target 'PhotoKeyboardExTests' do
       inherit! :search_paths
