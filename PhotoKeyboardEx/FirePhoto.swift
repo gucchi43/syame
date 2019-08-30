@@ -17,7 +17,9 @@ struct FirePhoto: Codable, Equatable, Modelable {
     var imageWidth = 0
     var image: File?
     var genre: String = ""
-    var saveCount: Int = 0
+    var totalSaveCount: Int = 0
+    var weeklySaveCount: Int = 0
+    var weekStartDay: String = ""
 }
 
 // sort用extension
@@ -28,17 +30,6 @@ extension Array {
             self = beforeArraey.sorted {$0.createdAt > $1.createdAt} as! Array<Element>
         } else {
             self = beforeArraey.sorted {$0.createdAt < $1.createdAt} as! Array<Element>
-        }
-    }
-    
-    func sortSaveCount<T>(before: [Document<T>], order: Bool) -> [Document<T>] {
-        let beforeArraey = before as! [Document<FirePhoto>]
-        if order {
-            let after = beforeArraey.sorted {$0.data!.saveCount > $1.data!.saveCount}
-            return after as! [Document<T>]
-        } else {
-            let after = beforeArraey.sorted {$0.data!.saveCount < $1.data!.saveCount}
-            return after as! [Document<T>]
         }
     }
 }

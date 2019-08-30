@@ -60,7 +60,7 @@ class PhotoCollectionViewCell: UICollectionViewCell {
         photoImageView.cacheImage(imageFile: doc.data!.image!)
         titleLabel.text = doc.data!.title
         titleLabel.sizeToFit()
-        countNumLabel.text = String(doc.data!.saveCount)
+        countNumLabel.text = String(doc.data!.totalSaveCount)
         saveButtonState(saved: saved)
     }
     

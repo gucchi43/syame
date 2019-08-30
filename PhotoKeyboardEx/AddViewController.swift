@@ -151,7 +151,9 @@ class AddViewController: UIViewController {
             } else {
                 photoDoc.data?.title = self.titleTextField.text!
                 photoDoc.data?.genre = self.selectedJenreTag!.getKey()
-                photoDoc.data?.saveCount = 1
+                photoDoc.data?.totalSaveCount = 1
+                photoDoc.data?.weeklySaveCount = 1
+                photoDoc.data?.weekStartDay = Date().dateAt(.startOfWeek).toString()
                 photoDoc.data?.imageHeight = Int(self.postImage!.size.height)
                 photoDoc.data?.imageWidth = Int(self.postImage!.size.width)
                 // upload

@@ -93,7 +93,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
             currentDataSource = Document<FirePhoto>.order(by: "createdAt").limit(to: 50).dataSource(option:option)
         case .some(.popular):
             let option = DataSource<Document<FirePhoto>>.Option()
-            option.sortClosure = { l, r in return l.data!.saveCount > r.data!.saveCount }
+            option.sortClosure = { l, r in return l.data!.totalSaveCount > r.data!.totalSaveCount }
             currentDataSource = Document<FirePhoto>.order(by: "saveCount").limit(to: 50).dataSource(option:option)
         case .some(.humor), .some(.cool), .some(.cute), .some(.serious), .some(.other):
             let option = DataSource<Document<FirePhoto>>.Option()
@@ -218,11 +218,24 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
     }
     
     func updateSaveCount(doc: Document<FirePhoto>, up: Bool) {
+        let beforeStartDay = doc.data!.weekStartDay
+        let currentStartDay = Date().dateAt(.startOfWeek).toString()
+        if beforeStartDay != currentStartDay {
+            doc.data!.weeklySaveCount = 0
+            doc.data?.weekStartDay = currentStartDay
+        }
+        print("baforeStartDay : ", beforeStartDay)
+        print("currentStartDay : ", currentStartDay)
+
         if up {
-            doc.data!.saveCount += 1
+            doc.data!.totalSaveCount += 1
+            doc.data!.weeklySaveCount += 1
         } else {
-            if doc.data!.saveCount > 0 {
-                doc.data!.saveCount -= 1
+            if doc.data!.totalSaveCount > 0 {
+                doc.data!.totalSaveCount -= 1
+            }
+            if doc.data!.weeklySaveCount > 0 {
+                doc.data!.weeklySaveCount -= 1
             }
         }
         
@@ -472,7 +485,10 @@ extension ChildContentViewController: DZNEmptyDataSetSource {
     //
     /// データが空の状態の時に表示したい属性付きタイトル文字列
     func title(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
-        let title = "カラッポ"
+        var title = "カラッポ"
+        if pageboyPageIndex == 0 {
+            title = "使いたい画像をsaveしよう → "
+        }
         let attributes: [NSAttributedString.Key: Any]
             = [.font: UIFont.boldSystemFont(ofSize: 19),
                .foregroundColor: UIColor.acGreen()]
