@@ -49,8 +49,8 @@ public final class GroupeDefaults {
         sharedDefaults[.saveLife] -= 1
     }
     
-    public func chargeSaveLife() {
-        sharedDefaults[.saveLife] = 5
+    public func chargeSaveLife(amount: Int) {
+        sharedDefaults[.saveLife] = amount
     }
 }
 

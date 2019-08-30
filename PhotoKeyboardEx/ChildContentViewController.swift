@@ -15,6 +15,7 @@ import FontAwesome_swift
 import Ballcap
 import Firebase
 import CHTCollectionViewWaterfallLayout
+import GoogleMobileAds
 
 class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCollectionViewDelegateWaterfallLayout {
     
@@ -44,6 +45,12 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
     var tabPageIndex: Int!
     private let refreshControl = UIRefreshControl()
     
+    #if DEBUG
+    let addId = "ca-app-pub-3940256099942544/1712485313"
+    #else
+    let addId = "ca-app-pub-2311091333372031/6162073771"
+    #endif
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         RealmManager.shared.delegate = self
@@ -58,6 +65,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
         if pageboyPageIndex != 0 {
             photosInit()
         }
+        setUpAd()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -292,7 +300,20 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
         let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) in
             // 広告流す
             print("call add")
-            GroupeDefaults.shared.chargeSaveLife()
+            
+            GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: self)
+            
+//            if self.rewardedAd?.isReady == true {
+//                GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: self)
+////                self.rewardedAd?.present(fromRootViewController: self, delegate:self)
+//            } else {
+//                UIAlertView(title: "Rewarded video not ready",
+//                            message: "The rewarded video didn't finish loading or failed to load",
+//                            delegate: self,
+//                            cancelButtonTitle: "Drat").show()
+//            }
+            
+//            GroupeDefaults.shared.chargeSaveLife()
         })
         let cancell = UIAlertAction(title: "キャンセル", style: .default, handler: { (action) in
             print("cancell cell add")
@@ -499,5 +520,31 @@ extension ChildContentViewController: DZNEmptyDataSetDelegate {
     /// EmptyDataSetViewがタップされた時の動作
     func emptyDataSet(_ scrollView: UIScrollView!, didTap view: UIView!) {
         // 何かの動作
+    }
+}
+
+extension ChildContentViewController: GADRewardBasedVideoAdDelegate {
+    func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
+        print("Reward received with currency: \(reward.type), amount \(reward.amount).")
+        GroupeDefaults.shared.chargeSaveLife(amount: Int(truncating: reward.amount))
+    }
+    
+    func setUpAd() {
+        GADRewardBasedVideoAd.sharedInstance().delegate = self
+        GADRewardBasedVideoAd.sharedInstance().load(GADRequest(),
+                                                    withAdUnitID: addId)
+    }
+    
+    func rewardedAdDidPresent(_ rewardedAd: GADRewardedAd) {
+        print("Rewarded ad presented.")
+    }
+    
+    func rewardedAdDidDismiss(_ rewardedAd: GADRewardedAd) {
+        print("Rewarded ad dismissed.")
+    }
+    
+    func rewardBasedVideoAdDidClose(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
+        GADRewardBasedVideoAd.sharedInstance().load(GADRequest(),
+                                                    withAdUnitID: addId)
     }
 }

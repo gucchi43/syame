@@ -17,6 +17,9 @@ PODS:
   - ENSwiftSideMenu (0.1.4)
   - Firebase (6.7.0):
     - Firebase/Core (= 6.7.0)
+  - Firebase/AdMob (6.7.0):
+    - Firebase/CoreOnly
+    - Google-Mobile-Ads-SDK (~> 7.48)
   - Firebase/Core (6.7.0):
     - Firebase/CoreOnly
     - FirebaseAnalytics (= 6.1.1)
@@ -102,6 +105,8 @@ PODS:
     - GTMSessionFetcher/Core (~> 1.1)
   - Floaty (4.2.0)
   - FontAwesome.swift (1.8.1)
+  - Google-Mobile-Ads-SDK (7.49.0):
+    - GoogleAppMeasurement (~> 6.0)
   - GoogleAppMeasurement (6.1.1):
     - GoogleUtilities/AppDelegateSwizzler (~> 6.0)
     - GoogleUtilities/MethodSwizzler (~> 6.0)
@@ -185,6 +190,7 @@ DEPENDENCIES:
   - DynamicColor (~> 4.1.0)
   - DZNEmptyDataSet
   - ENSwiftSideMenu (~> 0.1.4)
+  - Firebase/AdMob
   - Firebase/Core
   - Firebase/Firestore
   - Firebase/Messaging
@@ -228,6 +234,7 @@ SPEC REPOS:
     - FirebaseStorage
     - Floaty
     - FontAwesome.swift
+    - Google-Mobile-Ads-SDK
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleDataTransportCCTSupport
@@ -278,6 +285,7 @@ SPEC CHECKSUMS:
   FirebaseStorage: 618dd8fd886b30adf6e5d1915b1f5c18cb5c3944
   Floaty: e2bd5a0f6f7f70899e26ff2da31081c8bee8d1b0
   FontAwesome.swift: 6f55c8ed22a30ab6a8ca94033473161f678dcd4b
+  Google-Mobile-Ads-SDK: df315e371b29cf935f7ea872e7bdec39462a100e
   GoogleAppMeasurement: 86a82f0e1f20b8eedf8e20326530138fd71409de
   GoogleDataTransport: 9c3d63ed82f882a9a74d4be67dd7ad01bf046102
   GoogleDataTransportCCTSupport: 6b545f7149111180763dc18c6f372c963de4a310
@@ -304,6 +312,6 @@ SPEC CHECKSUMS:
   Tabman: c2c83ebfcbec3e5be67e27a1dd6689a4e3efccd3
   TagListView: 987b0bdbb16cd9d9e7c0e2ec32aff37ecba8b173
 
-PODFILE CHECKSUM: 257fe9468330a4a72cbb3db46ff47435ee091e70
+PODFILE CHECKSUM: eb7b882e3097a43078169fe02d08ba9820f1a143
 
 COCOAPODS: 1.6.1

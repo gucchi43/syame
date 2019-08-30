@@ -14,6 +14,7 @@ import FirebaseFirestore
 import Ballcap
 import Alamofire
 import SwiftyJSON
+import GoogleMobileAds
 import SwiftyUserDefaults
 
 @UIApplicationMain
@@ -26,6 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         setLayout()
         IQKeyboardManager.shared.enable = true
         GroupeDefaults.shared.incrementLaunchCount()
+        GADMobileAds.sharedInstance().start(completionHandler: nil)
         return true
     }
     

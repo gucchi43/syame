@@ -7,17 +7,17 @@
 		<key>PhotoKeyboardEx.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>55</integer>
+			<integer>56</integer>
 		</dict>
 		<key>PhotoKeyboardExOrigin.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>56</integer>
+			<integer>57</integer>
 		</dict>
 		<key>PhotoKeyboardFramework.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>57</integer>
+			<integer>58</integer>
 		</dict>
 	</dict>
 </dict>

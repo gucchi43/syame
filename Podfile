@@ -15,7 +15,7 @@ abstract_target 'All' do
   pod 'Firebase/Core'
   pod 'Firebase/Firestore’
   pod 'Firebase/RemoteConfig'
-  #pod ‘Firebase/AdMob’
+  pod ‘Firebase/AdMob’
   pod 'Firebase/Messaging'
   pod 'Ballcap', '0.8.4'
   pod 'CHTCollectionViewWaterfallLayout/Swift'
