@@ -56,5 +56,7 @@ class PhotoCollectionViewCell: UICollectionViewCell {
         photoImageView.contentMode = .center
         titleLabel.textColor = .acGreen()
         titleLabel.text = "アプリから画像を追加"
+        choiceCover2View.isHidden = true
+        choiceCoverLabel.isHidden = true
     }
 }
