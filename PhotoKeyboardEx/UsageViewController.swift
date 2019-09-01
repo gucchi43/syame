@@ -58,12 +58,11 @@ class UsageViewController: UIViewController {
     }
     
     func setText() {
-//        let firstString = "キーボード".withAttribute([.font(Font.systemFont(ofSize: 32.0, weight: .bold))]) + "をタップする".withAttribute([.font(Font.systemFont(ofSize: 24, weight: .regular))])
         secondLabel.attributedText = "PKBの設定".withFont(Font.systemFont(ofSize: 24, weight: .bold))
         secondLabel.attributedText = " [キーボード] ".withFont(Font.systemFont(ofSize: 14, weight: .bold)) + "をタップする".withFont(Font.systemFont(ofSize: 14, weight: .regular))
         thirdLabel.attributedText = " PKB ".withFont(Font.systemFont(ofSize: 14, weight: .bold)) + "を有効にする".withFont(Font.systemFont(ofSize: 14, weight: .regular))
         fourthLabel.attributedText = " [フルアクセスを許可] ".withFont(Font.systemFont(ofSize: 14, weight: .bold)) + "をオンにする".withFont(Font.systemFont(ofSize: 14, weight: .regular))
-        subLabel.text = "これでPKBをキーボードから使えるようになります。\nもし設定方法がわからない場合はお問い合わせからLINEでご連絡ください。"
+        subLabel.text = "これでPKBをキーボードから使えるようになります。\nもし設定方法がわからない場合は「LINEでお問い合わせ」からご連絡ください。"
     }
 
     @IBAction func tapNavBarButton(_ sender: Any) {

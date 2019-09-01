@@ -11,8 +11,9 @@ import SwiftyUserDefaults
 
 extension DefaultsKeys {
     public static let launchCount = DefaultsKey<Int>("launchCount", defaultValue: 0)
-    public static let saveLife = DefaultsKey<Int>("saveCount", defaultValue: 5)
-    public static let usageNeed = DefaultsKey<Bool>("usageFlag", defaultValue: true)
+    public static let saveLife = DefaultsKey<Int>("saveLife", defaultValue: 5)
+    public static let sendCount = DefaultsKey<Int>("sendCount", defaultValue: 0)
+    public static let usageNeedFlag = DefaultsKey<Bool>("usageNeedFlag", defaultValue: true)
 }
 
 public final class GroupeDefaults {
@@ -22,7 +23,7 @@ public final class GroupeDefaults {
     public var sharedDefaults = UserDefaults(suiteName: "group.bocchi.PhotoKeyboardEx")!
 
     public func isUsagePush() -> Bool {
-        if sharedDefaults[.usageNeed] {
+        if sharedDefaults[.usageNeedFlag] {
             return true
         } else {
             return false
@@ -30,11 +31,15 @@ public final class GroupeDefaults {
     }
     
     public func usageDone() {
-        sharedDefaults[.usageNeed] = false
+        sharedDefaults[.usageNeedFlag] = false
     }
     
     public func incrementLaunchCount() {
         sharedDefaults[.launchCount] += 1
+    }
+    
+    public func incrementSendCount() {
+        sharedDefaults[.sendCount] += 1
     }
     
     public func isAddCount() -> Bool {
@@ -51,6 +56,15 @@ public final class GroupeDefaults {
     
     public func chargeSaveLife(amount: Int) {
         sharedDefaults[.saveLife] = amount
+    }
+    
+    public func isRateAlert() -> Bool {
+        if sharedDefaults[.sendCount] > 7 {
+            sharedDefaults[.sendCount] = 0
+            return true
+        } else {
+            return false
+        }
     }
 }
 

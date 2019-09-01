@@ -302,6 +302,11 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
                     self.updateSaveCount(doc: self.firePhotos![index], up: true)
                 }
                 GroupeDefaults.shared.useSaveLife()
+                if GroupeDefaults.shared.isRateAlert() {
+                    if #available(iOS 10.3, *) {
+                        SKStoreReviewController.requestReview()
+                    }
+                }
             }) { (error) in
                 print(error)
             }
@@ -507,7 +512,6 @@ extension ChildContentViewController: DZNEmptyDataSetSource {
         print("self.view.frame.size.height : ", self.view.frame.size.height)
         print("barHeight : ", barHeight)
         //        let navigationBarHeight = self.navigationController!.navigationBar.frame.size.height
-        
         
         return -navigationBarHeight*2
     }

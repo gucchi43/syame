@@ -436,7 +436,7 @@ extension KeyboardViewController: UICollectionViewDelegate {
                 //            }
                 print("didSelectItemAt 通常モード 更新後のphoto : ", currentPhotos()[indexPath.row])
                 self.copyBoard()
-                
+                GroupeDefaults.shared.incrementSendCount()
                 self.tapAnimation(cell: cell)
                 return
             }
@@ -460,8 +460,6 @@ extension KeyboardViewController: UICollectionViewDelegate {
             }
             print("didSelectItemAt 解除モード 更新後のphoto : ", currentPhotos()[indexPath.row])
         }
-        
-        
     }
     
     private func tapAnimation(cell: PhotoCollectionViewCell) {

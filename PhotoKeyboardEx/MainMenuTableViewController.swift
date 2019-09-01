@@ -15,22 +15,15 @@ class MyMenuTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Customize apperance of table view
         tableView.contentInset = UIEdgeInsets(top: 64.0, left: 0, bottom: 0, right: 0)
         tableView.separatorStyle = .none
         tableView.backgroundColor = UIColor.clear
         tableView.scrollsToTop = false
-        
-        // Preserve selection between presentations
         clearsSelectionOnViewWillAppear = false
-        
-        // Preselect a menu option
         tableView.selectRow(at: IndexPath(row: selectedMenuItem, section: 0), animated: false, scrollPosition: .middle)
     }
     
-    
-    // MARK: - Table view data source
+
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
@@ -55,15 +48,12 @@ class MyMenuTableViewController: UITableViewController {
         switch (indexPath.row) {
         case 0:
             cell!.textLabel?.text = "ホーム"
-            break
         case 1:
             cell!.textLabel?.text = "PKB設定"
-            break
         case 2:
-            cell!.textLabel?.text = "お問い合わせ(仮)"
+            cell!.textLabel?.text = "LINEでお問い合わせ"
         default:
-            cell!.textLabel?.text = "その他(仮)"
-            break
+            cell!.textLabel?.text = "公式サイト"
         }
         return cell!
     }
@@ -77,7 +67,6 @@ class MyMenuTableViewController: UITableViewController {
             return
         }
         selectedMenuItem = indexPath.row
-        //Present new view controller
         var destViewController : UIViewController
         switch (indexPath.row) {
         case 0:
@@ -85,7 +74,6 @@ class MyMenuTableViewController: UITableViewController {
             let nvc = mainStoryboard.instantiateInitialViewController() as! UINavigationController
             destViewController = nvc.viewControllers.first as! MainTabViewController
                     sideMenuController()?.setContentViewController(destViewController)
-//            destViewController = mainStoryboard.instantiateViewController(withIdentifier: "MainTabViewController") as! MainTabViewController
             break
         case 1:
             let mainStoryboard: UIStoryboard = UIStoryboard(name: "Usage",bundle: nil)
@@ -93,8 +81,10 @@ class MyMenuTableViewController: UITableViewController {
             sideMenuController()?.setContentViewController(destViewController)
             break
         case 2:
+            UIApplication.shared.open(URL(string: "http://line.me/ti/p/%40gox9644r")!)
             break
         default:
+            UIApplication.shared.open(URL(string: "https://pkbkeyboard.studio.design")!)
             break
         }
     }

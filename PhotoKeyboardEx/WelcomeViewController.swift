@@ -24,10 +24,8 @@ class WelcomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         commonInit()
         settext()
-        
     }
     
     func commonInit() {
@@ -49,14 +47,11 @@ class WelcomeViewController: UIViewController {
         secondLabel.attributedText = "K".withTextColor(.acGreen()).withFont(Font.systemFont(ofSize: 32.0, weight: .bold)) + "eyboard".withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold)) + "で".withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
         thirdLabel.attributedText = "B".withTextColor(.acGreen()).withFont(Font.systemFont(ofSize: 32.0, weight: .bold)) + "akyu~~~~n".withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold)) + "!".withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
         fourthLabel.attributedText =  "ひ〜〜〜〜いぁ!!!".withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
-        explainLabel.text = "PKBへようこそ！\nPKBはみんなが投稿した画像をスタンプみたいにバキュ〜〜ンと簡単に送れるキーボードアプリです。\nまずは誰かが投稿した画像をsaveしてマイキーボードに追加してみましょう！"
+        explainLabel.text = "PKBへようこそ！\nPKBはみんなが投稿した画像をスタンプみたいにバキュ〜〜ンと簡単に送れるキーボードアプリです。\nまずは誰かが投稿した画像を「save」してマイキーボードに追加してみましょう！"
         explainLabel.numberOfLines = 0
-
     }
-    
     
     @IBAction func tapNextButton(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
-//        self.navigationController?.popToRootViewController(animated: true)
     }
 }
