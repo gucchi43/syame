@@ -94,7 +94,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
         case .some(.popular):
             let option = DataSource<Document<FirePhoto>>.Option()
             option.sortClosure = { l, r in return l.data!.totalSaveCount > r.data!.totalSaveCount }
-            currentDataSource = Document<FirePhoto>.order(by: "saveCount").limit(to: 50).dataSource(option:option)
+            currentDataSource = Document<FirePhoto>.order(by: "weeklySaveCount").limit(to: 50).dataSource(option:option)
         case .some(.humor), .some(.cool), .some(.cute), .some(.serious), .some(.other):
             let option = DataSource<Document<FirePhoto>>.Option()
             option.sortClosure = { l, r in return l.data!.title < r.data!.title }
