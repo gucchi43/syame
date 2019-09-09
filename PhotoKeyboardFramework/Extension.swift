@@ -8,7 +8,38 @@
 
 import UIKit
 import Foundation
-import Ballcap
+
+class Language {
+    
+    /**
+     設定言語の取得
+     - returns: String
+     */
+    fileprivate func get() -> String {
+        let languages = NSLocale.preferredLanguages
+        if let type = languages.first {
+            return type
+        }
+        return ""
+    }
+    
+    /**
+     設定言語が日本語かどうか
+     - returns: Bool
+     */
+    func isJapanese() -> Bool {
+        return self.get().contains("ja") ? true : false
+    }
+    
+    /**
+     設定言語が英語かどうか
+     - returns: Bool
+     */
+    func isEnglish() -> Bool {
+        return self.get().contains("en") ? true : false
+    }
+    
+}
 
 extension UIImage {
     public class func imageWithLabel(_ label: UILabel) -> UIImage {
@@ -31,47 +62,6 @@ extension UIImage {
         UIGraphicsEndImageContext()
         
         return resizedImage
-    }
-}
-
-public extension UIImageView {
-    
-    //NSCacheのインスタンスを生成しておく。ここに、どんどんキャッシュ化されたものが保存されていく。
-    static let imageCache = NSCache<AnyObject, AnyObject>()
-    
-    //読み込むURLのstringを引数にする。
-    func cacheImage(imageFile: File) {
-        
-        //引数のimageUrlStringをURLに型変換する。
-//        let url = URL(string: imageUrlString)
-        
-        //引数で渡されたimageUrlStringがすでにキャッシュとして保存されている場合は、キャッシュからそのimageを取り出し、self.imageに代入し、returnで抜ける。
-        if let imageFromCache = UIImageView.imageCache.object(forKey: imageFile.name as AnyObject) as? UIImage {
-            self.image = imageFromCache
-            return
-        }
-        
-        //上記のifに引っかからないということは、キャッシュとして保存されていないということなので、以下でキャッシュ化をしていく。
-        //URLSessionクラスのdataTaskメソッドで、urlを元にして、バックグランドでサーバーと通信を行う。
-        //{ 以降はcompletionHandler(クロージャー)で、通信処理が終わってから実行される。
-        //dataはサーバーからの返り値。urlResponseは。HTTPヘッダーやHTTPステータスコードなどの情報。リクエストが失敗したときに、errorに値が入力される。失敗しない限り、nilとなる。
-        imageFile.getData(completion: { (data, error) in
-            if let error = error {
-                print("image get error : ", error)
-                return
-            } else {
-                DispatchQueue.main.async {
-                    if let data = data {
-                        let imageToCache = UIImage(data:data)
-                        self.image = imageToCache
-                        UIImageView.imageCache.setObject(imageToCache!, forKey: imageFile.name as AnyObject)
-                    } else {
-                        print("image get not data error")
-                        return
-                    }
-                }
-            }
-        })
     }
 }
 
@@ -268,6 +258,5 @@ public extension UICollectionView {
             indexPath.section < numberOfSections &&
             indexPath.item < numberOfItems(inSection: indexPath.section)
     }
-    
 }
 

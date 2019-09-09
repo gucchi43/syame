@@ -12,16 +12,19 @@ abstract_target 'All' do
   pod 'TagListView', '~> 1.0'
   pod 'DZNEmptyDataSet'
   pod 'FontAwesome.swift'
+  pod 'Firebase'
   pod 'Firebase/Core'
   pod 'Firebase/Firestore’
   pod 'Firebase/RemoteConfig'
   pod 'Firebase/Messaging'
-  pod 'Ballcap', '0.8.4'
+  pod 'FirebaseUI/Storage', '~> 8.0'
   pod 'CHTCollectionViewWaterfallLayout/Swift'
   pod 'Nuke', '~> 7.0'
   pod 'SwiftyUserDefaults', '~> 4.0'
   pod 'SwiftyAttributes'
   pod 'SwiftyJSON', '~> 4.0'
+  pod 'Toast-Swift', '~> 5.0.0'
+  
 
   target 'PhotoKeyboardEx' do
     # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
@@ -34,7 +37,6 @@ abstract_target 'All' do
     pod 'NotificationBannerSwift'
    # pod "ActionClosurable"
     pod 'IQKeyboardManagerSwift'
-    #  pod 'Ballcap'
     #  pod 'SwifterSwift'
     pod 'Firebase/AdMob'
 

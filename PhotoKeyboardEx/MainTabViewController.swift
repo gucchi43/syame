@@ -15,6 +15,7 @@ import PhotoKeyboardFramework
 import Floaty
 import Realm
 import RealmSwift
+import Toast_Swift
 
 struct TabHead {
     let title: String
@@ -65,6 +66,7 @@ class MainTabViewController: TabmanViewController, FloatyDelegate {
             self.navigationItem.title = titles.first
         }
         layoutFAB()
+        NotificationCenter.default.addObserver(self, selector: #selector(finishToast(notification:)), name: .finishUpload, object: nil)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -81,18 +83,18 @@ class MainTabViewController: TabmanViewController, FloatyDelegate {
         }
     }
     
-    func allListButtonUpdate() {
-        
-        print("call me allListButtonUpdate")
-        
-//        for vc in viewControllers {
-//            let cvc = vc as! ChildContentViewController
-//            if cvc.firePhotos  != nil {
-//                cvc.collectionView.reloadData()
-//            }
-//        }
+    @objc func finishToast(notification: Notification) {
+        // toast with a specific duration and position
+        // create a new style
+        var style = ToastStyle()
+        style.messageColor = .white
+        style.backgroundColor = UIColor.acGreen()
+        style.cornerRadius = 20.0
+        style.horizontalPadding = 20.0
+        self.view.makeToast("アップロード 成功!!!", duration: 3.0, position: .top, style: style)
+        NotificationCenter.default.post(name: .allRelaod, object: nil, userInfo: nil)
     }
-    
+        
     func makeChildViewController() -> ChildContentViewController {
         let storyboard = UIStoryboard(name: "ChildContent", bundle: .main)
         return storyboard.instantiateInitialViewController() as! ChildContentViewController

@@ -12,8 +12,9 @@ import SwiftDate
 import DZNEmptyDataSet
 import DynamicColor
 import FontAwesome_swift
-import Ballcap
 import Firebase
+import Realm
+import RealmSwift
 import CHTCollectionViewWaterfallLayout
 import GoogleMobileAds
 
@@ -33,37 +34,35 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
     }
     
     @IBOutlet weak var collectionView: UICollectionView!
-    
-//    var firePhotos: [Document<FirePhoto>] = []
     var contentChanges: [CollectionViewContentChange] = []
     var currentGenreTag:GenreTagType!
-
-    var realmPhotos = RealmManager.shared.realmData
-    var firePhotos: DataSource<Document<FirePhoto>>?
-    var cacheIdArray: [String]?
-    
+    var realmPhotos: Results<RealmPhoto>?
     var tabPageIndex: Int!
     private let refreshControl = UIRefreshControl()
-    
     #if DEBUG
     let addId = "ca-app-pub-3940256099942544/1712485313"
     #else
     let addId = "ca-app-pub-2311091333372031/6162073771"
     #endif
+    private var firePhotoCollection : CollectionReference = RootStore.rootDB().collection("ofirephoto")
+    private var oFirePhotos : [OFirePhoto] = []
+    private var lastDoc: DocumentSnapshot?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        realmPhotos = RealmManager.shared.realmData
         RealmManager.shared.delegate = self
         if let tabPageIndex = tabPageIndex {
             currentGenreTag = GenreTagType.getAllGenreTags()[tabPageIndex]
         } else {
             currentGenreTag = GenreTagType.getAllGenreTags()[0]
         }
-        NotificationCenter.default.addObserver(self, selector: #selector(updateButtons(notification:)), name: .updateListButton, object: self)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadSaveState(notification:)), name: .updateSaveState, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadAfterPost(notification:)), name: .allRelaod, object: nil)
         commonInit()
         emptyDataSetInit()
         if pageboyPageIndex != 0 {
-            photosInit()
+            firePhotoInit()
         }
         setUpAd()
     }
@@ -73,80 +72,6 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
         updateIndexLabel()
         if pageboyPageIndex == 0 {
             collectionView.reloadData()
-        }
-    }
-    
-    @objc func updateButtons(notification: Notification) -> Void {
-        print("呼び出し！")
-    }
-    
-    func photosInit() {
-        var currentDataSource: DataSource<Document<FirePhoto>>?
-        switch currentGenreTag {
-        case .none:
-            return
-        case .some(.myBoard):
-            return
-        case .some(.new):
-            let option = DataSource<Document<FirePhoto>>.Option()
-            option.sortClosure = { l, r in return l.createdAt > r.createdAt }
-            currentDataSource = Document<FirePhoto>.order(by: "createdAt").limit(to: 50).dataSource(option:option)
-        case .some(.popular):
-            let option = DataSource<Document<FirePhoto>>.Option()
-            option.sortClosure = { l, r in return l.data!.totalSaveCount > r.data!.totalSaveCount }
-            currentDataSource = Document<FirePhoto>.order(by: "weeklySaveCount").limit(to: 50).dataSource(option:option)
-        case .some(.humor), .some(.cool), .some(.cute), .some(.serious), .some(.other):
-            let option = DataSource<Document<FirePhoto>>.Option()
-            option.sortClosure = { l, r in return l.data!.title < r.data!.title }
-            currentDataSource = Document<FirePhoto>.where("genre", isEqualTo: currentGenreTag.getKey()).order(by: "title").dataSource(option:option)
-
-        }
-        firePhotos = currentDataSource!
-             .on({ (snapshot, changes) in
-                guard let collectionView = self.collectionView else { return }
-                switch changes {
-                case .initial:
-                    collectionView.reloadData {
-                        self.cacheIdArray = self.firePhotos?.documents.map({$0.id})
-                    }
-                case .update(let deletions, let insertions, let modifications):
-                    print("ジャンル : ", self.currentGenreTag.getKey())
-                    print("deletions : ", deletions)
-                    print("insertions : ", insertions)
-                    print("modifications : ", modifications)
-                    // 過去のdsと最新のdsの差分をmodificationsと合体させて、reloadItemsさせる
-                    let newIdArray = self.firePhotos?.documents.map({$0.id})
-                    var diffs: [Int] = []
-                    if modifications.count > 0 {
-                        if let cacheIdArray = self.cacheIdArray, let newIdArray = newIdArray {
-                            diffs = cacheIdArray.enumerated().filter { $0.1 != newIdArray[$0.0] }.map { $0.0 }
-                        }                        
-                    }
-                    diffs += modifications
-                    let orderedSet: NSOrderedSet = NSOrderedSet(array: diffs)
-                    diffs = orderedSet.array as! [Int]
-                    print("diffs : ", diffs)
-                    collectionView.performBatchUpdates({
-                        collectionView.insertItems(at: insertions.map({ IndexPath(row: $0, section: 0)}))
-                        collectionView.deleteItems(at: deletions.map({ IndexPath(row: $0, section: 0)}))
-                        collectionView.reloadItems(at: diffs.map({ IndexPath(row: $0, section: 0)}))
-                    }, completion: { (done) in
-                        self.cacheIdArray = self.firePhotos?.documents.map({$0.id})
-                    })
-                case .error(let error):
-                    print(error)
-                }
-        }).listen()
-    }
-    
-    private func updateIndexLabel() {
-        if let index = tabPageIndex {
-            let isFirstPage = index == 0
-            var prompt = "(Index \(index))"
-            if isFirstPage {
-                prompt.append("\n\nswipe me >")
-            }
-            print(prompt)
         }
     }
     
@@ -188,18 +113,194 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
         collectionView.emptyDataSetSource = self
     }
     
+    func createQuery(lastDoc: DocumentSnapshot? = nil) -> Query? {
+        var query: Query?
+        switch currentGenreTag {
+        case .none:
+            query = nil
+        case .some(.myBoard):
+            query = nil
+        case .some(.new):
+            if let lastDoc = lastDoc {
+                query = firePhotoCollection.order(by: "createdAt").limit(to: 5).start(afterDocument: lastDoc)
+            } else {
+                query = firePhotoCollection.order(by: "createdAt").limit(to: 5)
+            }
+        case .some(.popular):
+            if let lastDoc = lastDoc {
+                query = firePhotoCollection.order(by: "weeklySaveCount").limit(to: 5).start(afterDocument: lastDoc)
+            } else {
+                query = firePhotoCollection.order(by: "weeklySaveCount").limit(to: 5)
+            }
+        case .some(.humor), .some(.cool), .some(.cute), .some(.serious), .some(.other):
+            if let lastDoc = lastDoc {
+                query = firePhotoCollection.whereField("genre", isEqualTo: currentGenreTag.getKey()).order(by: "title").limit(to: 20).start(afterDocument: lastDoc)
+            } else {
+                query = firePhotoCollection.whereField("genre", isEqualTo: currentGenreTag.getKey()).order(by: "title").limit(to: 20)
+            }
+        }
+        return query
+    }
+    
+    func firePhotoInit() {
+        guard let currentQuery = createQuery() else { return }
+        currentQuery.getDocuments { (snapshot, error) in
+            guard let snapshot = snapshot else {
+                print("Error fetching snapshots: \(error!)")
+                return
+            }
+            if let error = error {
+                print("Error retreiving collection: \(error)")
+                return
+            }
+            if let lastDoc = snapshot.documents.last {
+                self.lastDoc = lastDoc
+            } else {
+                self.lastDoc = nil
+            }
+            let decoder = Firestore.Decoder()
+            let newFirePhotos = snapshot.documents.map{ oFirePhoto -> OFirePhoto in
+                let data = oFirePhoto.data()
+                var model = try! decoder.decode(OFirePhoto.self, from: data)
+                model.id = oFirePhoto.documentID
+                print("model : ", model)
+                return model
+            }
+            self.oFirePhotos = newFirePhotos
+            print("self.oFirePhotos : ", self.oFirePhotos)
+            guard let collectionView = self.collectionView else { return }
+            collectionView.reloadData()
+        }
+    }
+    
+    func nextLoad() {
+        guard let lastDoc = lastDoc else {
+            print("not next data")
+            return
+        }
+        guard let currentQuery = createQuery(lastDoc: lastDoc) else { return }
+        currentQuery.getDocuments { (snapshot, error) in
+            guard let snapshot = snapshot else {
+                print("Error fetching snapshots: \(error!)")
+                return
+            }
+            if let error = error {
+                print("Error retreiving collection: \(error)")
+                return
+            }
+            if let lastDoc = snapshot.documents.last {
+                self.lastDoc = lastDoc
+            } else {
+                self.lastDoc = nil
+            }
+            // モデルに当て込み
+            let decoder = Firestore.Decoder()
+            let newFirePhotos = snapshot.documents.map{ oFirePhoto -> OFirePhoto in
+                let data = oFirePhoto.data()
+                var model = try! decoder.decode(OFirePhoto.self, from: data)
+                model.id = oFirePhoto.documentID
+                return model
+            }
+            self.oFirePhotos += newFirePhotos
+            guard let collectionView = self.collectionView else { return }
+            collectionView.reloadData()
+        }
+    }
+    
+    @objc func reloadAfterPost(notification: Notification) -> Void {
+        if pageboyPageIndex == 0 {
+            print("realmPhotos :", realmPhotos)
+            collectionView.reloadData()
+        } else {
+            firePhotoInit()
+        }
+    }
+    
+    @objc func reloadSaveState(notification: Notification) -> Void {
+        if let info = notification.userInfo {
+            let id = info["id"] as! String
+            let saveFlag = info["saveFlag"] as! Bool
+            print("ジャンル : ", self.currentGenreTag.getKey(), "チェンジ！")
+            print("changeするId", id)
+            print("changeするsaveFlag", saveFlag)
+            var changeIndex: [IndexPath]
+            if pageboyPageIndex == 0 {
+                print("realmPhotos :", realmPhotos)
+                return collectionView.reloadData()
+            } else {
+                changeIndex = oFirePhotos.enumerated().filter{ $0.1.id == id }.map { IndexPath(row: $0.0, section: 0) }
+            }
+            print("changeIndex: ", changeIndex)
+            if let indexPath = changeIndex.first {
+                if pageboyPageIndex == 0 {
+                    if saveFlag {
+                        self.contentChanges.append(CollectionViewContentChange(type: .insert, indexPath: indexPath, newIndexPath: nil))
+                    } else {
+                        self.contentChanges.append(CollectionViewContentChange(type: .delete, indexPath: indexPath, newIndexPath: nil))
+                    }
+                } else {
+                    self.contentChanges.append(CollectionViewContentChange(type: .update, indexPath: indexPath, newIndexPath: nil))
+                }
+                self.batchUpdate()
+            }
+        }
+    }
+    
+    private func updateIndexLabel() {
+        if let index = tabPageIndex {
+            let isFirstPage = index == 0
+            var prompt = "(Index \(index))"
+            if isFirstPage {
+                prompt.append("\n\nswipe me >")
+            }
+            print(prompt)
+        }
+    }
+    
     func realmObjectDidChange() {
-        print("realm のなんかが変更された")
-        NotificationCenter.default.post(name: .updateListButton, object: nil)
-//        if let mTVC = pageboyParent as? MainTabViewController {
-//            mTVC.allListButtonUpdate()
-//        }
+        print("realm のなんかが変更された ジャンル : ", currentGenreTag.getKey())
+//        NotificationCenter.default.post(name: .updateSaveState, object: nil)
+//        let mTVC = MainTabViewController()
+//        mTVC.allListButtonUpdate()
+//        self.reloadSaveState()
+        
     }
     
     @objc func refresh(sender: UIRefreshControl) {
         // refresh処理
-        collectionView.reloadData {
-            sender.endRefreshing()
+        if tabPageIndex == 0 {
+            return collectionView.reloadData {
+                sender.endRefreshing()
+            }
+        }
+        guard let currentQuery = createQuery() else { return }
+        currentQuery.getDocuments { (snapshot, error) in
+            guard let snapshot = snapshot else {
+                print("Error fetching snapshots: \(error!)")
+                return
+            }
+            if let error = error {
+                print("Error retreiving collection: \(error)")
+                return
+            }
+            if let lastDoc = snapshot.documents.last {
+                self.lastDoc = lastDoc
+            } else {
+                self.lastDoc = nil
+            }
+            let decoder = Firestore.Decoder()
+            self.oFirePhotos = snapshot.documents.map{ oFirePhoto -> OFirePhoto in
+                let data = oFirePhoto.data()
+                var model = try! decoder.decode(OFirePhoto.self, from: data)
+                model.id = oFirePhoto.documentID
+                print("model : ", model)
+                return model
+            }
+            print("self.oFirePhotos : ", self.oFirePhotos)
+            guard let collectionView = self.collectionView else { return }
+            collectionView.reloadData {
+                sender.endRefreshing()
+            }
         }
     }
     
@@ -207,7 +308,8 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
         if tabPageIndex == 0 {
             return true
         } else {
-            let currentFirePhoto = firePhotos![index]
+            let currentFirePhoto = oFirePhotos[index]
+            print("currentFirePhoto.id : ", currentFirePhoto.id)
             let selectSavedPhotos = realmPhotos?.filter { $0.id == currentFirePhoto.id}
             if selectSavedPhotos!.count > 0 {
                 return true
@@ -217,89 +319,93 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
         }
     }
     
-    func updateSaveCount(doc: Document<FirePhoto>, up: Bool) {
-        let beforeStartDay = doc.data!.weekStartDay
+    func updateSaveCount(doc: OFirePhoto, up: Bool) {
+        let beforeStartDay = doc.weekStartDay
         let currentStartDay = Date().dateAt(.startOfWeek).toString()
+        var updateDoc = doc
         if beforeStartDay != currentStartDay {
-            doc.data!.weeklySaveCount = 0
-            doc.data?.weekStartDay = currentStartDay
+            updateDoc.weeklySaveCount = 0
+            updateDoc.weekStartDay = currentStartDay
         }
         print("baforeStartDay : ", beforeStartDay)
         print("currentStartDay : ", currentStartDay)
-
         if up {
-            doc.data!.totalSaveCount += 1
-            doc.data!.weeklySaveCount += 1
+            updateDoc.totalSaveCount += 1
+            updateDoc.weeklySaveCount += 1
         } else {
-            if doc.data!.totalSaveCount > 0 {
-                doc.data!.totalSaveCount -= 1
+            if doc.totalSaveCount > 0 {
+                updateDoc.totalSaveCount -= 1
             }
-            if doc.data!.weeklySaveCount > 0 {
-                doc.data!.weeklySaveCount -= 1
+            if doc.weeklySaveCount > 0 {
+                updateDoc.weeklySaveCount -= 1
             }
         }
-        
-        doc.update { (error) in
+        updateDoc.updateAt = Timestamp(date: Date())
+        let encoder = Firestore.Encoder()
+        let updatePhotoDoc = try! encoder.encode(updateDoc)
+        firePhotoCollection.document(doc.id).setData(updatePhotoDoc, merge: true) { (error) in
             if let error = error {
                 print(error)
+            } else {
+                print("savecont update success")
             }
         }
     }
-
+    
     @objc func tapCellSaveButton(sender: UIButton) {
         let cell = sender.superview?.superview?.superview as! PhotoCollectionViewCell
         let row = collectionView.indexPath(for: cell)!.row
         let index = row
         
+        var id: String!
+        if tabPageIndex == 0 {
+            id = realmPhotos![index].id
+        } else {
+            id = oFirePhotos[index].id
+        }
+        
         if checkSaved(index: index) {
-            var id: String!
-            if tabPageIndex == 0 {
-                id = realmPhotos![index].id
-            } else {
-                id = firePhotos![index].id
-            }
             // Realmからdeleteする
             RealmManager.shared.delete(docId: id, success: { () in
+                NotificationCenter.default.post(name: .updateSaveState, object: nil, userInfo: ["id": id!, "saveFlag": false])
                 if self.tabPageIndex == 0  {
-                        Document<FirePhoto>.get(id: id) { (doc, error) in
-                            guard let doc = doc else { return }
-                            self.updateSaveCount(doc: doc, up: false)
-                            // マイキーボードのみRealmなのでこちらでCell処理
-                            self.contentChanges.append(CollectionViewContentChange(type: .delete, indexPath: IndexPath(row: index, section: 0), newIndexPath: nil))
-                            self.batchUpdate()
-                        }
+                    self.firePhotoCollection.document(id).getDocument(completion: { (snapshot, error) in
+                        guard let snapshot = snapshot else { return }
+                        let decoder = Firestore.Decoder()
+                        let updatePhotoDoc = try! decoder.decode(OFirePhoto.self, from: snapshot.data()!)
+                        self.updateSaveCount(doc: updatePhotoDoc, up: false)
+                    })
                 } else {
-                    self.updateSaveCount(doc: self.firePhotos![index], up: false)
+                    self.updateSaveCount(doc: self.oFirePhotos[index], up: false)
                 }
             }) { (error) in
                 print(error)
             }
         } else {
-            
             if GroupeDefaults.shared.isAddCount() {
                 return showAdd()
             }
-
             var photo = RealmPhoto()
             if tabPageIndex == 0 {
                 photo = realmPhotos![index]
             } else {
-                let selectData = firePhotos![index]
+                let selectData = oFirePhotos[index]
                 guard let image = cell.photoImageView.image else { return }
+                print("selectData.id : ", selectData.id)
                 photo = RealmPhoto.create(id: selectData.id,
-                                            text: selectData.data!.title,
+                                            text: selectData.title,
                                             image: image,
-                                            imageHeight: selectData.data!.imageHeight,
-                                            imageWidth: selectData.data!.imageWidth,
+                                            imageHeight: selectData.imageHeight,
+                                            imageWidth: selectData.imageWidth,
                                             getDay: Date().toString())
             }
-            
             // Realmにsaveする
             RealmManager.shared.save(data: photo, success: {() in
+                NotificationCenter.default.post(name: .updateSaveState, object: nil, userInfo: ["id": id!, "saveFlag": true])
                 if self.tabPageIndex == 0  {
-                    self.updateSaveCount(doc: self.firePhotos![index], up: true)
+                    self.updateSaveCount(doc: self.oFirePhotos[index], up: true)
                 } else {
-                    self.updateSaveCount(doc: self.firePhotos![index], up: true)
+                    self.updateSaveCount(doc: self.oFirePhotos[index], up: true)
                 }
                 GroupeDefaults.shared.useSaveLife()
                 if GroupeDefaults.shared.isRateAlert() {
@@ -318,7 +424,6 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
         let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) in
             // 広告流す
             print("call add")
-            
             GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: self)
             
 //            if self.rewardedAd?.isReady == true {
@@ -369,8 +474,8 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
             let h = realmPhotos![indexPath.row].imageHeight
             size = CGSize(width: w, height: h)
         } else {
-            let w = firePhotos![indexPath.row].data!.imageWidth
-            let h = firePhotos![indexPath.row].data!.imageHeight
+            let w = oFirePhotos[indexPath.row].imageWidth
+            let h = oFirePhotos[indexPath.row].imageHeight
             size = CGSize(width: w, height: h)
         }
         return convertBestSize(before: size)
@@ -379,7 +484,6 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
     private func convertBestSize(before: CGSize) -> CGSize {
         let w = before.width
         let h = before.height
-        
         if w * 1.8 < h {
             return CGSize(width: w, height: h * 0.8)
         } else if w * 1.5 < h {
@@ -405,36 +509,34 @@ extension ChildContentViewController: UICollectionViewDataSource {
             
             return photos.count
         } else {
-            return firePhotos?.count ??  0
+            return oFirePhotos.count
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCollectionViewCell", for: indexPath)
         if let cell = cell as? PhotoCollectionViewCell {
-            
             if tabPageIndex == 0 {
                 let photo = realmPhotos![indexPath.row]
                 cell.configure(photo: photo, saved: true)
             } else {
                 if self.checkSaved(index: indexPath.row) {
-                    cell.configure(doc: firePhotos![indexPath.row], saved: true)
+                    cell.configure(doc: oFirePhotos[indexPath.row], saved: true)
                 } else {
-                    cell.configure(doc: firePhotos![indexPath.row], saved: false)
+                    cell.configure(doc: oFirePhotos[indexPath.row], saved: false)
                 }
             }
-            
-            //  test
-//            cell.titleLabel.text = "row : " + String(indexPath.row) +  ", section : " + String(indexPath.item)
-//            print("firePhotos![indexPath.row].createdAt : ", firePhotos?[indexPath.row].createdAt ??  realmPhotos![indexPath.row].getDay)
-//            if tabPageIndex != 0 {
-//                cell.countNumLabel.text = firePhotos![indexPath.row].createdAt.dateValue().toString()
-//            }
-            
             cell.saveButton.tag = indexPath.row
             cell.saveButton.addTarget(self, action: #selector(self.tapCellSaveButton(sender: )), for: .touchUpInside)
         }
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if indexPath == collectionView.indexPathForLastItem {
+            print("last cell -> call next")
+            self.nextLoad()
+        }
     }
 }
 
@@ -456,9 +558,9 @@ extension ChildContentViewController: UICollectionViewDelegate {
         print("=========")
     }
     
-    fileprivate func getModel(at indexPath: IndexPath) -> Document<FirePhoto>? {
-        guard !self.firePhotos!.isEmpty && indexPath.row >= 0 && indexPath.row < self.firePhotos!.count else { return nil }
-        return self.firePhotos![indexPath.row]
+    fileprivate func getModel(at indexPath: IndexPath) -> OFirePhoto? {
+        guard !self.oFirePhotos.isEmpty && indexPath.row >= 0 && indexPath.row < self.oFirePhotos.count else { return nil }
+        return self.oFirePhotos[indexPath.row]
     }
 }
 
@@ -505,14 +607,6 @@ extension ChildContentViewController: DZNEmptyDataSetSource {
         let statusBarHeight = UIApplication.shared.statusBarFrame.size.height
         guard let navigationBarHeight = self.navigationController?.navigationBar.frame.size.height else { return 0.0 }
         let barHeight = deviceHeight - (collectionView.contentSize.height + statusBarHeight + navigationBarHeight)
-        print("deviceHeight : ", deviceHeight)
-        print("collectionView.contentSize.height : ", collectionView.frame.size.height)
-        print("statusBarHeight : ", statusBarHeight)
-        print("navigationBarHeight : ", navigationBarHeight)
-        print("self.view.frame.size.height : ", self.view.frame.size.height)
-        print("barHeight : ", barHeight)
-        //        let navigationBarHeight = self.navigationController!.navigationBar.frame.size.height
-        
         return -navigationBarHeight*2
     }
 }

@@ -14,7 +14,7 @@ import Realm
 
 public class RealmPhoto: Object {
     // TESTデータ削除用
-    @objc public dynamic var reset = ""
+//    @objc public dynamic var reset = ""
     
     @objc public dynamic var id = ""
     @objc public dynamic var text = ""

@@ -15,7 +15,6 @@ import TagListView
 import FontAwesome_swift
 import DynamicColor
 import Firebase
-import Ballcap
 
 class AddViewController: UIViewController {
 
@@ -30,6 +29,8 @@ class AddViewController: UIViewController {
     var choiceImage: UIImage!
     var postImage: UIImage!
     var selectedJenreTag: GenreTagType?
+    
+    private var firePhotoCollection : CollectionReference = RootStore.rootDB().collection("ofirephoto")
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -127,48 +128,60 @@ class AddViewController: UIViewController {
 
     @IBAction func tapDoneButton(_ sender: Any) {
         saveServer(success: {  (docId) in
+            print(docId)
             self.saveRealm(id: docId, success: {
                 print("アップドーロ成功！！")
+                NotificationCenter.default.post(name: .finishUpload, object: nil, userInfo: nil)
             }, failure: { (error) in
                 print(error)
             })
         }) { (error) in
             print(error)
         }
-//        saveRealm()
         self.dismiss(animated: true, completion: nil)
     }
-
+    
     func saveServer(success: @escaping (String) -> Void, failure: @escaping (String) -> Void) {
-        
+        let originID = UUID().uuidString
         postImage = choiceImage!.resize(size: convertedImageSize(size: choiceImage!.size))
-        let photoDoc = Document<FirePhoto>.init()
-        let file: File = File(photoDoc.storageReference, data: postImage.jpegData(compressionQuality: 0.5), mimeType: .jpeg)
-        let task = file.save { (metadata, error) in
-            if let error = error {
-                print(error)
-                failure("file seve error")
-            } else {
-                photoDoc.data?.title = self.titleTextField.text!
-                photoDoc.data?.genre = self.selectedJenreTag!.getKey()
-                photoDoc.data?.totalSaveCount = 1
-                photoDoc.data?.weeklySaveCount = 1
-                photoDoc.data?.weekStartDay = Date().dateAt(.startOfWeek).toString()
-                photoDoc.data?.imageHeight = Int(self.postImage!.size.height)
-                photoDoc.data?.imageWidth = Int(self.postImage!.size.width)
-                // upload
-                photoDoc.data?.image = file
-                photoDoc.save(completion: { (error) in
+        let imageData = postImage.jpegData(compressionQuality: 0.5)!
+        let storageRef = Storage.storage().reference(withPath: firePhotoCollection.path)
+        let photoRef = storageRef.child(originID)
+        let metadata = StorageMetadata()
+        metadata.contentType = "image/jpeg"
+        let uploadTask = photoRef.putData(imageData, metadata: metadata) { (metadata, error) in
+            guard let metadata = metadata else {
+                return failure("error upload storage")
+            }
+            print("metadata : ", metadata)
+            photoRef.downloadURL(completion: { (url, error) in
+                guard let downloadURL = url else {
+                    print(error?.localizedDescription)
+                    return failure("not found downloadURL")
+                }
+                var newPhoto = OFirePhoto()
+                newPhoto.id = originID
+                newPhoto.title = self.titleTextField.text!
+                newPhoto.genre = self.selectedJenreTag!.getKey()
+                newPhoto.totalSaveCount = 1
+                newPhoto.weeklySaveCount = 1
+                newPhoto.weekStartDay = Date().dateAt(.startOfWeek).toString()
+                newPhoto.imageHeight = Int(self.postImage!.size.height)
+                newPhoto.imageWidth = Int(self.postImage!.size.width)
+                newPhoto.imageUrl = downloadURL.absoluteString
+                let encoder = Firestore.Encoder()
+                let newPhotoDoc = try! encoder.encode(newPhoto)
+                self.firePhotoCollection.document(originID).setData(newPhotoDoc, completion: { (error) in
                     if let error = error {
-                        print(error)
-                        failure("firePhoto save error")
+                        print(error.localizedDescription)
+                        failure("error save store")
                     } else {
-                        success(photoDoc.id)
+                        print("success save firestore", originID)
+                        success(originID)
                     }
                 })
-            }
+            })
         }
-        
     }
 
     func saveRealm(id: String, success: @escaping () -> Void, failure: @escaping (String) -> Void) {

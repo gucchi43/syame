@@ -10,8 +10,6 @@ import UIKit
 import PhotoKeyboardFramework
 import IQKeyboardManagerSwift
 import Firebase
-import FirebaseFirestore
-import Ballcap
 import Alamofire
 import SwiftyJSON
 import GoogleMobileAds
@@ -35,16 +33,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         super.init()
         FirebaseApp.configure()
         setRemoteConfig()
-        var rootKey = ""
-        let type = Bundle.main.preferredLocalizations.first!
-        if type.contains("ja") {
-            rootKey = "ja"
-        } else {
-            rootKey = "other"
-        }
-        print("rootKey : ", rootKey)
-        let db = Firestore.firestore()
-        BallcapApp.configure(db.document(rootKey + "/1"))
+//        var rootKey = ""
+//        let type = Bundle.main.preferredLocalizations.first!
+//        if type.contains("ja") {
+//            rootKey = "ja"
+//        } else {
+//            rootKey = "other"
+//        }
+//        print("rootKey : ", rootKey)
+//        let db = Firestore.firestore()
+//        BallcapApp.configure(db.document(rootKey + "/1"))
     }
     
     private func setLayout() {
@@ -71,6 +69,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        
+        // 環境言語取得テストコード
+//        let langFirstFromLocale:String = NSLocale.preferredLanguages.first!
+//        let langFirstFromBundle:String = Bundle.main.preferredLocalizations.first!
+//        
+//        let alertController = UIAlertController(title: "SettingCheck", message: String(format: "NSLocale:%@\n NSBundle:%@",langFirstFromLocale, langFirstFromBundle), preferredStyle: .alert)
+//        
+//        let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+//        alertController.addAction(defaultAction)
+//        
+//        let activeVc = UIApplication.shared.keyWindow?.rootViewController
+//        
+//        
+//        activeVc?.present(alertController, animated: true, completion: nil)
     }
 
     func applicationWillTerminate(_ application: UIApplication) {

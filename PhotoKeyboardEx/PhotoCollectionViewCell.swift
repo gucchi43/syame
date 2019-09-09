@@ -10,9 +10,9 @@ import UIKit
 import FontAwesome_swift
 import PhotoKeyboardFramework
 import DynamicColor
-import Ballcap
 import FirebaseFirestore
-import Nuke
+import FirebaseStorage
+import FirebaseUI
 
 class PhotoCollectionViewCell: UICollectionViewCell {
 
@@ -54,13 +54,14 @@ class PhotoCollectionViewCell: UICollectionViewCell {
         saveButtonState(saved: saved)
     }
     
-    func configure(doc: Document<FirePhoto>? , saved: Bool) {
+    func configure(doc: OFirePhoto? , saved: Bool) {
         self.photoImageView.image = nil
         guard let doc = doc else { return }
-        photoImageView.cacheImage(imageFile: doc.data!.image!)
-        titleLabel.text = doc.data!.title
+        let storageref = Storage.storage().reference(forURL: doc.imageUrl)
+        photoImageView.sd_setImage(with: storageref)
+        titleLabel.text = doc.title
         titleLabel.sizeToFit()
-        countNumLabel.text = String(doc.data!.totalSaveCount)
+        countNumLabel.text = String(doc.totalSaveCount)
         saveButtonState(saved: saved)
     }
     
