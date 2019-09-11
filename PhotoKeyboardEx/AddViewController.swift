@@ -38,15 +38,18 @@ class AddViewController: UIViewController {
     }
     
     func commonInit() {
-//        let height  = UIScreen.main.bounds.size.height
-//        heightConstraint.constant = height
-        navigationItem.title = "コトバを追加しよう"
+        //        let height  = UIScreen.main.bounds.size.height
+        //        heightConstraint.constant = height
+        navigationItem.title = LocalizeKey.addNavTitle.localizedString()
+        doneButton.setTitle(LocalizeKey.addDone.localizedString() , for: .normal)
+        titleLabel.text = LocalizeKey.addInputTitle.localizedString()
+        genreLabel.text = LocalizeKey.addInputGenre.localizedString()
         titleLabel.textColor = .white
         genreLabel.textColor = .white
         view.backgroundColor = .bgDark()
         titleTextField.delegate = self
         titleTextField.addTarget(self, action: #selector(self.textFieldDidChange(_:)),
-                            for: UIControl.Event.editingChanged)
+                                 for: UIControl.Event.editingChanged)
         if let image = choiceImage {
             imageView.image = image
         }

@@ -420,8 +420,8 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
     }
     
     func showAdd() {
-        let alert = UIAlertController(title: "これ以上SAVEするには広告を見てね", message: "５枚画像を保存するごとにお願いしてるよ", preferredStyle: .alert)
-        let ok = UIAlertAction(title: "OK", style: .default, handler: { (action) in
+        let alert = UIAlertController(title:LocalizeKey.adAlertTitle.localizedString(), message: LocalizeKey.adAlertTitle.localizedString(), preferredStyle: .alert)
+        let ok = UIAlertAction(title: LocalizeKey.baseOK.localizedString(), style: .default, handler: { (action) in
             // 広告流す
             print("call add")
             GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: self)
@@ -438,7 +438,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
             
 //            GroupeDefaults.shared.chargeSaveLife()
         })
-        let cancell = UIAlertAction(title: "キャンセル", style: .default, handler: { (action) in
+        let cancell = UIAlertAction(title: LocalizeKey.baseCancel.localizedString(), style: .default, handler: { (action) in
             print("cancell cell add")
         })
         alert.addAction(ok)
@@ -592,9 +592,9 @@ extension ChildContentViewController: DZNEmptyDataSetSource {
     //
     /// データが空の状態の時に表示したい属性付きタイトル文字列
     func title(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
-        var title = "カラッポ"
+        var title = LocalizeKey.othersEmptyTitle.localizedString()
         if pageboyPageIndex == 0 {
-            title = "使いたい画像をsaveしよう → "
+            title = LocalizeKey.myBoardEmptyTitle.localizedString()
         }
         let attributes: [NSAttributedString.Key: Any]
             = [.font: UIFont.boldSystemFont(ofSize: 19),

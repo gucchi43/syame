@@ -29,15 +29,22 @@ final class RootStore {
     static let shared = RootStore()
     class func rootDB() -> DocumentReference {
         var rootKey = ""
-        let type = Bundle.main.preferredLocalizations.first!
-        if type.contains("ja") {
-            rootKey = "ja"
+        var mode = ""
+        let type = NSLocale.preferredLanguages.first!
+        if type.suffix(2) == "JP"{
+            rootKey = "JP"
         } else {
-            rootKey = "other"
+            rootKey = "WORLD"
         }
         print("rootKey : ", rootKey)
+        
+        #if DEBUG
+        mode = "/debug"
+        #else
+        mode = "/1"
+        #endif
         var root = Firestore.firestore().document(rootKey + "/1")
-//        var root = Firestore.firestore().collection(rootKey + "/1")
         return root
     }
 }
+

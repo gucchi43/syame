@@ -9,6 +9,7 @@
 import UIKit
 import DynamicColor
 import SwiftyAttributes
+import PhotoKeyboardFramework
 
 class WelcomeViewController: UIViewController {
 
@@ -39,15 +40,23 @@ class WelcomeViewController: UIViewController {
         nextButton.setTitleColor(.white, for: .normal)
         nextButton.layer.cornerRadius = 8.0
         nextButton.backgroundColor = .acGreen()
+        nextButton.titleLabel?.adjustsFontSizeToFitWidth = true
+        nextButton.setTitle(LocalizeKey.welcomeDone.localizedString(), for: .normal)
     }
     
     func settext() {
-        titleLabel.attributedText = "PKB!".withTextColor(.acGreen()).withFont(Font.systemFont(ofSize: 40.0, weight: .bold))
-        firstLabel.attributedText = "P".withTextColor(.acGreen()).withFont(Font.systemFont(ofSize: 32.0, weight: .bold)) + "hoto".withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold)) + "を".withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
-        secondLabel.attributedText = "K".withTextColor(.acGreen()).withFont(Font.systemFont(ofSize: 32.0, weight: .bold)) + "eyboard".withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold)) + "で".withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
-        thirdLabel.attributedText = "B".withTextColor(.acGreen()).withFont(Font.systemFont(ofSize: 32.0, weight: .bold)) + "akyu~~~~n".withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold)) + "!".withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
-        fourthLabel.attributedText =  "ひ〜〜〜〜いぁ!!!".withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
-        explainLabel.text = "PKBへようこそ！\nPKBはみんなが投稿した画像をスタンプみたいにバキュ〜〜ンと簡単に送れるキーボードアプリです。\nまずは誰かが投稿した画像を「save」してマイキーボードに追加してみましょう！"
+        titleLabel.attributedText = LocalizeKey.welcomeTitle.localizedString().withTextColor(.acGreen()).withFont(Font.systemFont(ofSize: 40.0, weight: .bold))
+        firstLabel.attributedText = LocalizeKey.welcomeFirst1.localizedString().withTextColor(.acGreen()).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
+            + LocalizeKey.welcomeFirst2.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
+            + LocalizeKey.welcomeFirst3.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
+        secondLabel.attributedText = LocalizeKey.welcomeSecond1.localizedString().withTextColor(.acGreen()).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
+            + LocalizeKey.welcomeSecond2.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
+            + LocalizeKey.welcomeSecond3.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
+        thirdLabel.attributedText = LocalizeKey.welcomeThird1.localizedString().withTextColor(.acGreen()).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
+            + LocalizeKey.welcomeThird2.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
+            + LocalizeKey.welcomeThird3.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
+        fourthLabel.attributedText =  LocalizeKey.welcomeFourth.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
+        explainLabel.text = LocalizeKey.welcomeDiscription.localizedString()
         explainLabel.numberOfLines = 0
     }
     

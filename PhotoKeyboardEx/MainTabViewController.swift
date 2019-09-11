@@ -25,7 +25,14 @@ struct TabHead {
 
 class MainTabViewController: TabmanViewController, FloatyDelegate {
     var tabHeads = GenreTagType.getAllGenreTags()
-    var titles = ["私の宝物！", "おニュー", "キラキラ〜", "ぷぷぷっ", "ふっ", "プリプリ〜", "ぞわぞわっ", "色々あるよん"]
+    var titles = [LocalizeKey.navMyBoard.localizedString(),
+                  LocalizeKey.navNew.localizedString(),
+                  LocalizeKey.navPopular.localizedString(),
+                  LocalizeKey.navHumor.localizedString(),
+                  LocalizeKey.navCool.localizedString(),
+                  LocalizeKey.navCute.localizedString(),
+                  LocalizeKey.navSerious.localizedString(),
+                  LocalizeKey.navOther.localizedString()]
     lazy var viewControllers: [UIViewController] = {
         var viewControllers = [UIViewController]()
         for _ in 0 ..< 8 {
@@ -91,7 +98,7 @@ class MainTabViewController: TabmanViewController, FloatyDelegate {
         style.backgroundColor = UIColor.acGreen()
         style.cornerRadius = 20.0
         style.horizontalPadding = 20.0
-        self.view.makeToast("アップロード 成功!!!", duration: 3.0, position: .top, style: style)
+        self.view.makeToast(LocalizeKey.doneUploadToast.localizedString(), duration: 3.0, position: .top, style: style)
         NotificationCenter.default.post(name: .allRelaod, object: nil, userInfo: nil)
     }
         
@@ -228,7 +235,7 @@ extension MainTabViewController: PageboyViewControllerDataSource, TMBarDataSourc
     
     func barItem(for bar: TMBar, at index: Int) -> TMBarItemable {
         let curretTabHead = tabHeads[index]
-        let title = curretTabHead.rawValue
+        let title = curretTabHead.getLocalizeString()
         let emojiLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 24, height: 24))
         emojiLabel.text = curretTabHead.getEmoji()
         let image = UIImage.imageWithLabel(emojiLabel)

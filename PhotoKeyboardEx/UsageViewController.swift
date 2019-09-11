@@ -11,6 +11,7 @@ import DynamicColor
 import FontAwesome_swift
 import ENSwiftSideMenu
 import SwiftyAttributes
+import PhotoKeyboardFramework
 
 class UsageViewController: UIViewController {
 
@@ -51,18 +52,20 @@ class UsageViewController: UIViewController {
         fourthLabel.textColor = .white   
         navBarButton.title = String.fontAwesomeIcon(name: .bars)
         navBarButton.setTitleTextAttributes([.font: UIFont.fontAwesome(ofSize: 24, style: .solid)], for: .normal)
+        nextButton.setTitle(LocalizeKey.settingDone.localizedString(), for: .normal)
         nextButton.setTitleColor(.white, for: .normal)
+        nextButton.titleLabel?.adjustsFontSizeToFitWidth = true
         nextButton.backgroundColor = .acGreen()
         nextButton.layer.cornerRadius = 8.0
         subLabel.textColor = .white
     }
     
     func setText() {
-        secondLabel.attributedText = "PKBの設定".withFont(Font.systemFont(ofSize: 24, weight: .bold))
-        secondLabel.attributedText = " [キーボード] ".withFont(Font.systemFont(ofSize: 14, weight: .bold)) + "をタップする".withFont(Font.systemFont(ofSize: 14, weight: .regular))
-        thirdLabel.attributedText = " PKB ".withFont(Font.systemFont(ofSize: 14, weight: .bold)) + "を有効にする".withFont(Font.systemFont(ofSize: 14, weight: .regular))
-        fourthLabel.attributedText = " [フルアクセスを許可] ".withFont(Font.systemFont(ofSize: 14, weight: .bold)) + "をオンにする".withFont(Font.systemFont(ofSize: 14, weight: .regular))
-        subLabel.text = "これでPKBをキーボードから使えるようになります。\nもし設定方法がわからない場合は「LINEでお問い合わせ」からご連絡ください。"
+        firstLabel.attributedText = LocalizeKey.settingTitle.localizedString().withFont(Font.systemFont(ofSize: 24, weight: .bold))
+        secondLabel.attributedText = LocalizeKey.settingFirstBoaldText.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .bold)) + LocalizeKey.settingFirstNormalText.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular))
+        thirdLabel.attributedText = LocalizeKey.settingSecondBoaldText.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .bold)) + LocalizeKey.settingSecondNormalText.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular))
+        fourthLabel.attributedText = LocalizeKey.settingThirdBoaldText.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .bold)) + LocalizeKey.settingThirdNormalText.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular))
+        subLabel.text = LocalizeKey.settingDiscription.localizedString()
     }
 
     @IBAction func tapNavBarButton(_ sender: Any) {

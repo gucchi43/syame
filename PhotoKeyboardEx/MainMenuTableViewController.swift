@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import PhotoKeyboardFramework
 
 class MyMenuTableViewController: UITableViewController {
     
@@ -47,13 +48,13 @@ class MyMenuTableViewController: UITableViewController {
         
         switch (indexPath.row) {
         case 0:
-            cell!.textLabel?.text = "ホーム"
+            cell!.textLabel?.text = LocalizeKey.menuHome.localizedString()
         case 1:
-            cell!.textLabel?.text = "PKB設定"
+            cell!.textLabel?.text = LocalizeKey.menuSetting.localizedString()
         case 2:
-            cell!.textLabel?.text = "LINEでお問い合わせ"
+            cell!.textLabel?.text = LocalizeKey.menuLine.localizedString()
         default:
-            cell!.textLabel?.text = "公式サイト"
+            cell!.textLabel?.text = LocalizeKey.menuOfficial.localizedString()
         }
         return cell!
     }

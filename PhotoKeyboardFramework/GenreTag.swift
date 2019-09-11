@@ -60,9 +60,30 @@ public enum GenreTagType: String, CaseIterable {
         }
     }
     
+    public func getLocalizeString() -> String {
+        switch self {
+        case .myBoard:
+            return LocalizeKey.subGenreMyBoard.localizedString()
+        case .new:
+            return LocalizeKey.subGenreNew.localizedString()
+        case .popular:
+            return LocalizeKey.subGenrePopular.localizedString()
+        case .humor:
+            return LocalizeKey.genreHumor.localizedString()
+        case .cool:
+            return LocalizeKey.genreCool.localizedString()
+        case .cute:
+            return LocalizeKey.genreCute.localizedString()
+        case .serious:
+            return LocalizeKey.genreSerious.localizedString()
+        case .other:
+            return LocalizeKey.genreOther.localizedString()
+        }
+    }
+    
     public static func getTypeFromTitle(title: String) -> GenreTagType? {
         for type in self.allCases {
-            if type.rawValue == title {
+            if type.getLocalizeString() == title {
                 return type
             }
         }
@@ -78,7 +99,7 @@ public enum GenreTagType: String, CaseIterable {
     }
     
     public static func getAddAllGenreTitles() -> [String] {
-        var array = GenreTagType.allCases.map {$0.rawValue}
+        var array = GenreTagType.allCases.map { $0.getLocalizeString() }
         // マイボード、新着、人気のタグを除く
         array.removeSubrange(0...2)
         return array

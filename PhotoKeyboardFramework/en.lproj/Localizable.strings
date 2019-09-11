@@ -1,0 +1,78 @@
+/*
+ Localizable.strings
+ PhotoKeyboardEx
+ 
+ Created by Hiroki Taniguchi on 2019/09/10.
+ Copyright © 2019 Hiroki Taniguchi. All rights reserved.
+ */
+
+"test" = "TEST";
+"baseOK" = "OK";
+"baseCancel" = "Cansell";
+
+"tabMyBoard" = "MYBOARD";
+"tabNew" = "NEW";
+"tabPopular" = "POPULAR";
+"tabHumor" = "HOMOR";
+"tabCool" = "COOL";
+"tabCute" = "CUTE";
+"tabSerious" = "SERIOUS";
+"tabOther" = "OTHER";
+
+"navMyBoard" = "MYBOARD";
+"navNew" = "NEW";
+"nvaPopular" = "POPULAR";
+"navHumor" = "HUMOR";
+"navCool" = "COOL";
+"navCute" = "CUTE";
+"navSerious" = "SERIOUS";
+"navOther" = "OTHER";
+
+"doneUploadToast" = "Success upload!";
+"othersEmptyTitle" = "Not found...";
+"myBoardEmptyTitle" = "Ret's save photo \nin MYBOARD→";
+"adAlertTitle" = "Please show ad";
+"adAlertMessage" = "You can more save photo";
+
+"menuHome" = "Home";
+"menuSetting" = "Set up keyboard";
+"menuLine" = "Contact to LINE";
+"menuOfficial" = "Official web";
+"menuOther" = "About";
+
+"addNavTitle" = "Add photo";
+"addInputTitle" = "Title";
+"addInputGenre" = "Genre";
+"subGenreMyBoard" = "MYBOARD";
+"subGenreNew" = "NEW";
+"subGenrePopular" = "POPULAR";
+"genreHumor" = "HOMOR";
+"genreCool" = "COOL";
+"genreCute" = "CUTE";
+"genreSerious" = "SERIOUS";
+"genreOther" = "OTHER";
+"addDone" = "OK";
+
+"settingTitle" = "Set up keyboard";
+"settingFirstBoaldText" = " [Keyboards] ";
+"settingFirstNormalText" = "Tap";
+"settingSecondBoaldText" = " PKB ";
+"settingSecondNormalText" = "Turn on";
+"settingThirdBoaldText" = " Allow Full Access ";
+"settingThirdNormalText" = "Turn on";
+"settingDiscription" = "This lets you use PKB in your keyboard. If you can't set up PKB, plese conatct from [Menu] - [Contact to LINE].";
+"settingDone" = "GET STARTED";
+
+"welcomeTitle" = "PKB!!!";
+"welcomeFirst1" = "P";
+"welcomeFirst2" = "hoto wo";
+"welcomeFirst3" = "!";
+"welcomeSecond1" = "K";
+"welcomeSecond2" = "eyboard de";
+"welcomeSecond3" = "!";
+"welcomeThird1" = "B";
+"welcomeThird2" = "akyu----n";
+"welcomeThird3" = "!";
+"welcomeFourth" = "Yeaaaah!!!";
+"welcomeDiscription" = "Welcome to PKB!\nPKB is a keyboard app makes it easy to send photo posted like stamps.\nFirstly, [save] an photo posted by someone and add it to MYBOARD!";
+"welcomeDone" = "START";

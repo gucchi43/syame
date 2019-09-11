@@ -1,0 +1,79 @@
+/* 
+  Localizable.strings
+  PhotoKeyboardEx
+
+  Created by Hiroki Taniguchi on 2019/09/11.
+  Copyright © 2019 Hiroki Taniguchi. All rights reserved.
+*/
+
+"test" = "TEST";
+"baseOK" = "OK";
+"baseCancel" = "キャンセル";
+
+"tabMyBoard" = "マイボード";
+"tabNew" = "新着";
+"tabPopular" = "人気";
+"tabHumor" = "ユーモア";
+"tabCool" = "クール";
+"tabCute" = "かわいい";
+"tabSerious" = "シリアス";
+"tabOther" = "その他";
+
+//"navMyBoard" = "私の宝物！";
+"navMyBoard" = "日本語";
+"navNew" = "おニュー";
+"navPopular" = "キラキラ〜";
+"navHumor" = "ぷぷぷっ";
+"navCool" = "ふっ";
+"navCute" = "プリプリ〜";
+"navSerious" = "ぞわぞわっ";
+"navOther" = "色々〜";
+
+"doneUploadToast" = "アップロード完了";
+"othersEmptyTitle" = "カラッポ";
+"myBoardEmptyTitle" = "使いたい画像をsaveしよう →";
+"adAlertTitle" = "これ以上SAVEするには広告を見てね";
+"adAlertMessage" = "５枚画像を保存するごとにお願いしてるよ";
+
+"menuHome" = "ホーム";
+"menuSetting" = "キーボード設定方法";
+"menuLine" = "LINEでお問い合わせ";
+"menuOfficial" = "公式サイト";
+"menuOther" = "その他";
+
+"addNavTitle" = "Photoを追加";
+"addInputTitle" = "タイトル";
+"addInputGenre" = "ジャンル";
+"subGenreMyBoard" = "マイボード";
+"subGenreNew" = "新着";
+"subGenrePopular" = "人気";
+"genreHumor" = "ユーモア";
+"genreCool" = "クール";
+"genreCute" = "キュート";
+"genreSerious" = "シリアス";
+"genreOther" = "その他";
+"addDone" = "OK";
+
+"settingTitle" = "PKBの設定";
+"settingFirstBoaldText" = " [キーボード] ";
+"settingFirstNormalText" = "をタップする";
+"settingSecondBoaldText" = " PKB ";
+"settingSecondNormalText" = "を有効にする";
+"settingThirdBoaldText" = " [フルアクセスを許可] ";
+"settingThirdNormalText" = "をオンにする";
+"settingDiscription" = "これでPKBをキーボードから使えるようになります。\nもし設定方法がわからない場合は「LINEでお問い合わせ」からご連絡ください。";
+"settingDone" = "使ってみる";
+
+"welcomeTitle" = "PKB!!!";
+"welcomeFirst1" = "P";
+"welcomeFirst2" = "hotoを";
+"welcomeFirst3" = "!";
+"welcomeSecond1" = "K";
+"welcomeSecond2" = "eyboardで";
+"welcomeSecond3" = "!";
+"welcomeThird1" = "B";
+"welcomeThird2" = "akyu---n";
+"welcomeThird3" = "!";
+"welcomeFourth" = "ヒーーーーイアッ!!!";
+"welcomeDiscription" = "PKBへようこそ！\nPKBはみんなが投稿した画像をスタンプみたいにバキュ〜〜ンと簡単に送れるキーボードアプリです。\nまずは誰かが投稿した画像を「save」してマイキーボードに追加してみましょう！";
+"welcomeDone" = "フォトを登録して使う";

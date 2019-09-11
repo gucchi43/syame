@@ -4,7 +4,6 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -13,7 +12,6 @@
         <!--Usage View Controller-->
         <scene sceneID="WHg-rl-qlm">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="MsU-bV-UyJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="UsageViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="xjG-1S-jYU" customClass="UsageViewController" customModule="PhotoKeyboardEx" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Lf0-Uq-cDy">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
@@ -86,9 +84,9 @@
                                                 </subviews>
                                             </stackView>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nTL-Y8-1KJ">
-                                                <rect key="frame" x="159" y="512" width="96" height="40"/>
+                                                <rect key="frame" x="137" y="512" width="140" height="40"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="width" constant="96" id="ALz-FM-xaG"/>
+                                                    <constraint firstAttribute="width" constant="140" id="ALz-FM-xaG"/>
                                                     <constraint firstAttribute="height" constant="40" id="TiN-3I-OP2"/>
                                                 </constraints>
                                                 <state key="normal" title="使ってみる"/>
@@ -165,6 +163,7 @@
                         <outlet property="topConstraint" destination="UwV-S8-ghn" id="bVy-MK-1AJ"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="MsU-bV-UyJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1823.1884057971015" y="102.45535714285714"/>
         </scene>
