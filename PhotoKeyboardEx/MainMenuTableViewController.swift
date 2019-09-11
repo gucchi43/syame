@@ -14,6 +14,8 @@ class MyMenuTableViewController: UITableViewController {
     private let menuOptionCellId = "Cell"
     var selectedMenuItem : Int = 0
     
+    var menuWidth: CGFloat = 180.0
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.contentInset = UIEdgeInsets(top: 64.0, left: 0, bottom: 0, right: 0)
@@ -45,7 +47,7 @@ class MyMenuTableViewController: UITableViewController {
             selectedBackgroundView.backgroundColor = UIColor.gray.withAlphaComponent(0.2)
             cell!.selectedBackgroundView = selectedBackgroundView
         }
-        
+
         switch (indexPath.row) {
         case 0:
             cell!.textLabel?.text = LocalizeKey.menuHome.localizedString()
@@ -74,7 +76,7 @@ class MyMenuTableViewController: UITableViewController {
             let mainStoryboard: UIStoryboard = UIStoryboard(name: "Main",bundle: nil)
             let nvc = mainStoryboard.instantiateInitialViewController() as! UINavigationController
             destViewController = nvc.viewControllers.first as! MainTabViewController
-                    sideMenuController()?.setContentViewController(destViewController)
+            sideMenuController()?.setContentViewController(destViewController)
             break
         case 1:
             let mainStoryboard: UIStoryboard = UIStoryboard(name: "Usage",bundle: nil)

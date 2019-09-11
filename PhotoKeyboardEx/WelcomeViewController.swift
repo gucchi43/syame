@@ -29,6 +29,16 @@ class WelcomeViewController: UIViewController {
         settext()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(true)
+        if self.presentingViewController != nil {
+            // モーダルされたときの処理
+            nextButton.isHidden = false
+        } else {
+            nextButton.isHidden = true
+        }
+    }
+    
     func commonInit() {
         self.view.backgroundColor = .bgDark()
         titleLabel.textColor = .white
@@ -62,5 +72,7 @@ class WelcomeViewController: UIViewController {
     
     @IBAction func tapNextButton(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
+//        self.navigationController?.popToRootViewController(animated: true)
+        
     }
 }
