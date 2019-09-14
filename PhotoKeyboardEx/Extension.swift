@@ -25,3 +25,22 @@ extension Notification.Name {
     static let allRelaod = Notification.Name("allRelaod")
 }
 
+extension UIApplication {
+    // 表示中の一番上のViewControllerを取得
+    class func topViewController(controller: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
+        if let navigationController = controller as? UINavigationController {
+            return topViewController(controller: navigationController.visibleViewController)
+        }
+        if let tabController = controller as? UITabBarController {
+            if let selected = tabController.selectedViewController {
+                return topViewController(controller: selected)
+            }
+        }
+        if let presented = controller?.presentedViewController {
+            return topViewController(controller: presented)
+        }
+        return controller
+    }
+}
+
+

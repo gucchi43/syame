@@ -43,7 +43,7 @@ final class RootStore {
         #else
         mode = "/1"
         #endif
-        var root = Firestore.firestore().document(rootKey + "/1")
+        var root = Firestore.firestore().document(rootKey + mode)
         return root
     }
 }

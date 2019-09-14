@@ -31,7 +31,7 @@ abstract_target 'All' do
     use_frameworks!
 
     # Pods for PhotoKeyboardEx
-    pod 'Tabman', '~> 2.4'
+    pod 'Tabman', ' 2.5.0'
     pod 'ENSwiftSideMenu', '~> 0.1.4'
     pod 'Floaty', '~> 4.2.0'
     pod 'NotificationBannerSwift'

@@ -27,8 +27,6 @@
 		8258686622F2302D002941F4 /* MainKBView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8258685D22F2302D002941F4 /* MainKBView.xib */; };
 		8258686722F2302D002941F4 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8258685E22F2302D002941F4 /* Model.swift */; };
 		8258686922F2302D002941F4 /* PhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8258686022F2302D002941F4 /* PhotoCollectionViewCell.swift */; };
-		826530A222FDB610007A7F44 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 826530A122FDB610007A7F44 /* GoogleService-Info.plist */; };
-		826530A422FDB622007A7F44 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 826530A322FDB622007A7F44 /* GoogleService-Info.plist */; };
 		826D657F22F831B500F66583 /* RealmManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826D657E22F831B500F66583 /* RealmManager.swift */; };
 		826D658122F99EC500F66583 /* Pods_All_PhotoKeyboardFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826D658022F99EC500F66583 /* Pods_All_PhotoKeyboardFramework.framework */; };
 		8278D13A22EE5A700034C2CC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8278D13922EE5A700034C2CC /* AppDelegate.swift */; };
@@ -50,6 +48,11 @@
 		82C7AEEF22FD90520073570E /* PhotoKeyboardFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82F9F3FA22F6B2610062F451 /* PhotoKeyboardFramework.framework */; };
 		82EA891A2328D7280022832E /* CommonUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EA89192328D7280022832E /* CommonUtil.swift */; };
 		82EA891F2328D7E10022832E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 82EA89212328D7E10022832E /* Localizable.strings */; };
+		82EA8924232A8E380022832E /* UpdateExtention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EA8923232A8E380022832E /* UpdateExtention.swift */; };
+		82EA8926232AD4D10022832E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 82EA8925232AD4D10022832E /* GoogleService-Info.plist */; };
+		82EA8928232AD5030022832E /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 82EA8927232AD5020022832E /* GoogleService-Info.plist */; };
+		82EA896C232D53530022832E /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EA896B232D53530022832E /* NotificationService.swift */; };
+		82EA8970232D53540022832E /* ServiceNotification.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 82EA8969232D53530022832E /* ServiceNotification.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		82F9F3EE22F588290062F451 /* MainNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9F3ED22F588290062F451 /* MainNavigationViewController.swift */; };
 		82F9F3F022F589400062F451 /* MainMenuTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9F3EF22F589400062F451 /* MainMenuTableViewController.swift */; };
 		82F9F3F222F636FE0062F451 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9F3F122F636FE0062F451 /* Extension.swift */; };
@@ -83,6 +86,13 @@
 			remoteGlobalIDString = 8278D16A22EE5AC30034C2CC;
 			remoteInfo = PhotoKeyboardExOrigin;
 		};
+		82EA896E232D53540022832E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8278D12E22EE5A700034C2CC /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 82EA8968232D53530022832E;
+			remoteInfo = ServiceNotification;
+		};
 		82F9F40422F6B2610062F451 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 8278D12E22EE5A700034C2CC /* Project object */;
@@ -114,6 +124,7 @@
 			dstSubfolderSpec = 13;
 			files = (
 				8278D17222EE5AC30034C2CC /* PhotoKeyboardExOrigin.appex in Embed App Extensions */,
+				82EA8970232D53540022832E /* ServiceNotification.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -160,8 +171,6 @@
 		8258685D22F2302D002941F4 /* MainKBView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainKBView.xib; sourceTree = "<group>"; };
 		8258685E22F2302D002941F4 /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		8258686022F2302D002941F4 /* PhotoCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewCell.swift; sourceTree = "<group>"; };
-		826530A122FDB610007A7F44 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		826530A322FDB622007A7F44 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		826D657E22F831B500F66583 /* RealmManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmManager.swift; sourceTree = "<group>"; };
 		826D658022F99EC500F66583 /* Pods_All_PhotoKeyboardFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_All_PhotoKeyboardFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8278D13622EE5A700034C2CC /* PhotoKeyboardEx.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoKeyboardEx.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -191,6 +200,12 @@
 		82EA891E2328D7A40022832E /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
 		82EA89202328D7E10022832E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		82EA89222328D7FC0022832E /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
+		82EA8923232A8E380022832E /* UpdateExtention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateExtention.swift; sourceTree = "<group>"; };
+		82EA8925232AD4D10022832E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		82EA8927232AD5020022832E /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		82EA8969232D53530022832E /* ServiceNotification.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ServiceNotification.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		82EA896B232D53530022832E /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		82EA896D232D53530022832E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		82F9F3ED22F588290062F451 /* MainNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainNavigationViewController.swift; sourceTree = "<group>"; };
 		82F9F3EF22F589400062F451 /* MainMenuTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuTableViewController.swift; sourceTree = "<group>"; };
 		82F9F3F122F636FE0062F451 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
@@ -253,6 +268,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		82EA8966232D53530022832E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		82F9F3F722F6B2610062F451 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -281,6 +303,7 @@
 				8278D16C22EE5AC30034C2CC /* PhotoKeyboardExOrigin */,
 				82F9F3FB22F6B2610062F451 /* PhotoKeyboardFramework */,
 				82F9F40822F6B2610062F451 /* PhotoKeyboardFrameworkTests */,
+				82EA896A232D53530022832E /* ServiceNotification */,
 				8278D13722EE5A700034C2CC /* Products */,
 				E96BB11C0C049853094A3AC4 /* Pods */,
 				DEEDB2204F451E14EA336469 /* Frameworks */,
@@ -296,6 +319,7 @@
 				8278D16B22EE5AC30034C2CC /* PhotoKeyboardExOrigin.appex */,
 				82F9F3FA22F6B2610062F451 /* PhotoKeyboardFramework.framework */,
 				82F9F40222F6B2610062F451 /* PhotoKeyboardFrameworkTests.xctest */,
+				82EA8969232D53530022832E /* ServiceNotification.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -305,6 +329,7 @@
 			children = (
 				82F9F3F322F6AD8C0062F451 /* PhotoKeyboardEx.entitlements */,
 				8278D13922EE5A700034C2CC /* AppDelegate.swift */,
+				82EA8923232A8E380022832E /* UpdateExtention.swift */,
 				82F9F3F122F636FE0062F451 /* Extension.swift */,
 				8278D13D22EE5A700034C2CC /* Main.storyboard */,
 				8280C04422F47D400069BF8B /* MainTabViewController.swift */,
@@ -323,7 +348,7 @@
 				821ABDDD230F80D800B3DCFE /* WelcomeViewController.swift */,
 				8278D14222EE5A730034C2CC /* LaunchScreen.storyboard */,
 				8278D14022EE5A730034C2CC /* Assets.xcassets */,
-				826530A122FDB610007A7F44 /* GoogleService-Info.plist */,
+				82EA8927232AD5020022832E /* GoogleService-Info.plist */,
 				8278D14522EE5A730034C2CC /* Info.plist */,
 			);
 			path = PhotoKeyboardEx;
@@ -360,9 +385,18 @@
 				8258686022F2302D002941F4 /* PhotoCollectionViewCell.swift */,
 				8258685822F2302C002941F4 /* PhotoCollectionViewCell.xib */,
 				8280C03A22F24DE20069BF8B /* ColorManager.swift */,
-				826530A322FDB622007A7F44 /* GoogleService-Info.plist */,
+				82EA8925232AD4D10022832E /* GoogleService-Info.plist */,
 			);
 			path = PhotoKeyboardExOrigin;
+			sourceTree = "<group>";
+		};
+		82EA896A232D53530022832E /* ServiceNotification */ = {
+			isa = PBXGroup;
+			children = (
+				82EA896B232D53530022832E /* NotificationService.swift */,
+				82EA896D232D53530022832E /* Info.plist */,
+			);
+			path = ServiceNotification;
 			sourceTree = "<group>";
 		};
 		82F9F3FB22F6B2610062F451 /* PhotoKeyboardFramework */ = {
@@ -462,6 +496,7 @@
 			dependencies = (
 				8278D17122EE5AC30034C2CC /* PBXTargetDependency */,
 				82F9F40E22F6B2610062F451 /* PBXTargetDependency */,
+				82EA896F232D53540022832E /* PBXTargetDependency */,
 			);
 			name = PhotoKeyboardEx;
 			productName = PhotoKeyboardEx;
@@ -524,6 +559,23 @@
 			productReference = 8278D16B22EE5AC30034C2CC /* PhotoKeyboardExOrigin.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		82EA8968232D53530022832E /* ServiceNotification */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 82EA8973232D53540022832E /* Build configuration list for PBXNativeTarget "ServiceNotification" */;
+			buildPhases = (
+				82EA8965232D53530022832E /* Sources */,
+				82EA8966232D53530022832E /* Frameworks */,
+				82EA8967232D53530022832E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ServiceNotification;
+			productName = ServiceNotification;
+			productReference = 82EA8969232D53530022832E /* ServiceNotification.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		82F9F3F922F6B2610062F451 /* PhotoKeyboardFramework */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 82F9F41522F6B2610062F451 /* Build configuration list for PBXNativeTarget "PhotoKeyboardFramework" */;
@@ -578,6 +630,9 @@
 							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
 							};
+							com.apple.Push = {
+								enabled = 1;
+							};
 							com.apple.SafariKeychain = {
 								enabled = 0;
 							};
@@ -598,6 +653,9 @@
 								enabled = 1;
 							};
 						};
+					};
+					82EA8968232D53530022832E = {
+						CreatedOnToolsVersion = 10.2.1;
 					};
 					82F9F3F922F6B2610062F451 = {
 						CreatedOnToolsVersion = 10.2.1;
@@ -629,6 +687,7 @@
 				8278D13522EE5A700034C2CC /* PhotoKeyboardEx */,
 				82F9F3F922F6B2610062F451 /* PhotoKeyboardFramework */,
 				82F9F40122F6B2610062F451 /* PhotoKeyboardFrameworkTests */,
+				82EA8968232D53530022832E /* ServiceNotification */,
 			);
 		};
 /* End PBXProject section */
@@ -640,13 +699,13 @@
 			files = (
 				8278D14422EE5A730034C2CC /* LaunchScreen.storyboard in Resources */,
 				8280C04322F455170069BF8B /* PhotoCollectionViewCell.xib in Resources */,
+				82EA8928232AD5030022832E /* GoogleService-Info.plist in Resources */,
 				8278D14122EE5A730034C2CC /* Assets.xcassets in Resources */,
 				8280C04922F481490069BF8B /* ChildContent.storyboard in Resources */,
 				821ABDD8230C641600B3DCFE /* Usage.storyboard in Resources */,
 				821ABDE0230F80E300B3DCFE /* Welcome.storyboard in Resources */,
 				8280C03D22F454B80069BF8B /* Add.storyboard in Resources */,
 				8278D13F22EE5A700034C2CC /* Main.storyboard in Resources */,
-				826530A222FDB610007A7F44 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -670,9 +729,16 @@
 			files = (
 				8258686422F2302D002941F4 /* LottieFile in Resources */,
 				8258686122F2302D002941F4 /* PhotoCollectionViewCell.xib in Resources */,
-				826530A422FDB622007A7F44 /* GoogleService-Info.plist in Resources */,
+				82EA8926232AD4D10022832E /* GoogleService-Info.plist in Resources */,
 				8258686622F2302D002941F4 /* MainKBView.xib in Resources */,
 				8258686222F2302D002941F4 /* Media.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		82EA8967232D53530022832E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -898,6 +964,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				82F9F3F222F636FE0062F451 /* Extension.swift in Sources */,
+				82EA8924232A8E380022832E /* UpdateExtention.swift in Sources */,
 				82F9F3F022F589400062F451 /* MainMenuTableViewController.swift in Sources */,
 				821ABDDE230F80D900B3DCFE /* WelcomeViewController.swift in Sources */,
 				8280C04522F47D400069BF8B /* MainTabViewController.swift in Sources */,
@@ -935,6 +1002,14 @@
 				8258686322F2302D002941F4 /* KeyboardViewController.swift in Sources */,
 				8258686922F2302D002941F4 /* PhotoCollectionViewCell.swift in Sources */,
 				8280C03B22F24DE20069BF8B /* ColorManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		82EA8965232D53530022832E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				82EA896C232D53530022832E /* NotificationService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -978,6 +1053,11 @@
 			isa = PBXTargetDependency;
 			target = 8278D16A22EE5AC30034C2CC /* PhotoKeyboardExOrigin */;
 			targetProxy = 8278D17022EE5AC30034C2CC /* PBXContainerItemProxy */;
+		};
+		82EA896F232D53540022832E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 82EA8968232D53530022832E /* ServiceNotification */;
+			targetProxy = 82EA896E232D53540022832E /* PBXContainerItemProxy */;
 		};
 		82F9F40522F6B2610062F451 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1319,6 +1399,50 @@
 			};
 			name = Release;
 		};
+		82EA8971232D53540022832E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 48KBV2T232;
+				INFOPLIST_FILE = ServiceNotification/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx.ServiceNotification;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		82EA8972232D53540022832E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = 48KBV2T232;
+				INFOPLIST_FILE = ServiceNotification/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx.ServiceNotification;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		82F9F41122F6B2610062F451 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = B2CD32EF776C8A054A8B5991 /* Pods-All-PhotoKeyboardFramework.debug.xcconfig */;
@@ -1468,6 +1592,15 @@
 			buildConfigurations = (
 				8278D17422EE5AC30034C2CC /* Debug */,
 				8278D17522EE5AC30034C2CC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		82EA8973232D53540022832E /* Build configuration list for PBXNativeTarget "ServiceNotification" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				82EA8971232D53540022832E /* Debug */,
+				82EA8972232D53540022832E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
