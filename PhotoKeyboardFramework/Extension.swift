@@ -7,7 +7,36 @@
 //
 
 import UIKit
+import Firebase
+import Ballcap
 import Foundation
+
+public class Lang {
+    static let shared = Lang()
+    public class func rootKey() -> String {
+        var rootKey = ""
+        let type = NSLocale.preferredLanguages.first!
+        if type.suffix(2) == "JP"{
+            rootKey = "JP"
+        } else {
+            rootKey = "WORLD"
+        }
+        print("rootKey : ", rootKey)
+        return rootKey
+    }
+    
+    public class func langRootKey() -> String {
+        var rootKey = ""
+        let type = NSLocale.preferredLanguages.first!
+        if type.prefix(2) == "ja"{
+            rootKey = "JP"
+        } else {
+            rootKey = "WORLD"
+        }
+        print("rootKey : ", rootKey)
+        return rootKey
+    }
+}
 
 class Language {
     
@@ -38,7 +67,6 @@ class Language {
     func isEnglish() -> Bool {
         return self.get().contains("en") ? true : false
     }
-    
 }
 
 extension UIImage {

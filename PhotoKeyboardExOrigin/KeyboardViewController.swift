@@ -118,12 +118,19 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         self.nextKeyboardButton.addTarget(self, action: #selector(handleInputModeList(from:with:)), for: .allTouchEvents)
         self.notFullBGView.backgroundColor = .bgDark()
         self.notFullButton.backgroundColor = .acGreen()
-        self.notFullButton.setTitle("設定画面へ", for: .normal)
+        self.notFullButton.setTitle(LocalizeKey.notFullButton.localizedString(), for: .normal)
+        self.notFullButton.titleLabel?.adjustsFontSizeToFitWidth = true
         self.notFullButton.setTitleColor(.white, for: .normal)
         self.notFullButton.layer.cornerRadius = 8.0
-        let notFullLabelStrig = "[KPB]".withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) + "→".withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "[キーボード]".withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) +
-            "→".withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "[フルアクセスを許可する]".withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) + "をオンにしてください。".withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white)
-        self.notFullLabel.attributedText = notFullLabelStrig
+        if Lang.langRootKey() == "JP" {
+            let notFullLabelStrig = LocalizeKey.notFullLabelFirst.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) + LocalizeKey.notFullLabelSecond.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + LocalizeKey.notFullLabelThird.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) +
+                LocalizeKey.notFullLabelSecond.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + LocalizeKey.notFullLabelFourth.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + LocalizeKey.notFullLabelFifth.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white)
+            self.notFullLabel.attributedText = notFullLabelStrig
+        } else {
+            let notFullLabelStrig = LocalizeKey.notFullLabelFirst.localizedString() .withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) + LocalizeKey.notFullLabelSecond.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + LocalizeKey.notFullLabelThird.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) +
+                LocalizeKey.notFullLabelSecond.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + LocalizeKey.notFullLabelFifth.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + LocalizeKey.notFullLabelFourth.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white)
+            self.notFullLabel.attributedText = notFullLabelStrig
+        }
     }
     
     func collectionInit() {

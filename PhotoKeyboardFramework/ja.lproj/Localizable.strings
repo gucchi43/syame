@@ -19,8 +19,8 @@
 "tabSerious" = "シリアス";
 "tabOther" = "その他";
 
-//"navMyBoard" = "私の宝物！";
-"navMyBoard" = "日本語";
+//"navMyBoard" = "日本語";
+"navMyBoard" = "私の宝物！";
 "navNew" = "おニュー";
 "navPopular" = "キラキラ〜";
 "navHumor" = "ぷぷぷっ";
@@ -77,3 +77,11 @@
 "welcomeFourth" = "ヒーーーーイアッ!!!";
 "welcomeDiscription" = "PKBへようこそ！\nPKBはみんなが投稿した画像をスタンプみたいにバキュ〜〜ンと簡単に送れるキーボードアプリです。\nまずは誰かが投稿した画像を「save」してマイキーボードに追加してみましょう！";
 "welcomeDone" = "フォトを登録して使う";
+
+//キーボード側
+"notFullButton" = "設定画面へ";
+"notFullLabelFirst" = "[PKB]";
+"notFullLabelSecond" = "→";
+"notFullLabelThird" = "[キーボード]";
+"notFullLabelFourth" = "[フルアクセスを許可する]";
+"notFullLabelFifth" = "をオンにしてください。";

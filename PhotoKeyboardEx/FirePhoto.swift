@@ -28,22 +28,13 @@ struct OFirePhoto: Codable, Equatable {
 final class RootStore {
     static let shared = RootStore()
     class func rootDB() -> DocumentReference {
-        var rootKey = ""
         var mode = ""
-        let type = NSLocale.preferredLanguages.first!
-        if type.suffix(2) == "JP"{
-            rootKey = "JP"
-        } else {
-            rootKey = "WORLD"
-        }
-        print("rootKey : ", rootKey)
-        
         #if DEBUG
         mode = "/debug"
         #else
         mode = "/1"
         #endif
-        var root = Firestore.firestore().document(rootKey + mode)
+        var root = Firestore.firestore().document(Lang.rootKey() + mode)
         return root
     }
 }

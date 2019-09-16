@@ -80,6 +80,14 @@ public enum LocalizeKey: String {
     case welcomeDiscription
     case welcomeDone
     
+    //キーボード側
+    case notFullButton
+    case notFullLabelFirst
+    case notFullLabelSecond
+    case notFullLabelThird
+    case notFullLabelFourth
+    case notFullLabelFifth
+
     // selfの値をローカライズして返す
     public func localizedString() -> String {
         

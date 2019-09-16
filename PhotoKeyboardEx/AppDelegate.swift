@@ -24,18 +24,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var remoteConfig: RemoteConfig!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        if FirebaseApp.app() == nil {
+            FirebaseApp.configure()
+        }
+        // 省略
+        setRemoteConfig()
         setLayout()
         IQKeyboardManager.shared.enable = true
         GroupeDefaults.shared.incrementLaunchCount()
         GADMobileAds.sharedInstance().start(completionHandler: nil)
+//        setRemoteConfig()
         configureNotification()
         return true
     }
     
     override init() {
         super.init()
-        FirebaseApp.configure()
-        setRemoteConfig()
+        //        Firebas   if FirebaseApp.app() == nil {
+//        FirebaseApp.configuzre()
+//        if FirebaseApp.app() == nil {
+//            FirebaseApp.configure()
+//        }
+//        // 省略
+//        setRemoteConfig()
     }
     
     private func setLayout() {
@@ -61,21 +72,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
+        application.applicationIconBadgeNumber = 0
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         
          //環境言語取得テストコード
-//        let langFirstFromLocale:String = NSLocale.preferredLanguages.first!
-//        let langFirstFromBundle:String = Bundle.main.preferredLocalizations.first!
-//        
-//        let alertController = UIAlertController(title: "SettingCheck", message: String(format: "NSLocale:%@\n NSBundle:%@",langFirstFromLocale, langFirstFromBundle), preferredStyle: .alert)
-//        
-//        let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-//        alertController.addAction(defaultAction)
-//        
-//        let activeVc = UIApplication.shared.keyWindow?.rootViewController
-//        
-//        
-//        activeVc?.present(alertController, animated: true, completion: nil)
+        let langFirstFromLocale:String = NSLocale.preferredLanguages.first!
+        let langFirstFromBundle:String = Bundle.main.preferredLocalizations.first!
+        
+        let alertController = UIAlertController(title: "SettingCheck", message: String(format: "NSLocale:%@\n NSBundle:%@",langFirstFromLocale, langFirstFromBundle), preferredStyle: .alert)
+        
+        let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alertController.addAction(defaultAction)
+        
+        let activeVc = UIApplication.shared.keyWindow?.rootViewController
+        
+        
+        activeVc?.present(alertController, animated: true, completion: nil)
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
@@ -120,14 +132,8 @@ extension AppDelegate {
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         print("APNs token retrieved: \(deviceToken)")
         Messaging.messaging().apnsToken = deviceToken
-        var rootKey = ""
-        let type = NSLocale.preferredLanguages.first!
-        if type.suffix(2) == "JP"{
-            rootKey = "JP"
-        } else {
-            rootKey = "WORLD"
-        }
-        let topicKey = "local_" + rootKey
+        // ex) topicKey = local_JP, or local_WORLD
+        let topicKey = "local_" + Lang.rootKey()
         Messaging.messaging().subscribe(toTopic: topicKey) { (error) in
             if error == nil {
                 print("success set topic :", topicKey)

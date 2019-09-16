@@ -153,6 +153,10 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
                 print("Error retreiving collection: \(error)")
                 return
             }
+            
+            print("snapshot : ", snapshot)
+            print("snapshot.documents : ", snapshot.documents)
+            
             if let lastDoc = snapshot.documents.last {
                 self.lastDoc = lastDoc
             } else {

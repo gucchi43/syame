@@ -76,3 +76,12 @@
 "welcomeFourth" = "Yeaaaah!!!";
 "welcomeDiscription" = "Welcome to PKB!\nPKB is a keyboard app makes it easy to send photo posted like stamps.\nFirstly, [save] an photo posted by someone and add it to MYBOARD!";
 "welcomeDone" = "START";
+
+//キーボード側
+"notFullButton" = "Go to setting";
+"notFullLabelFirst" = "[PKB]";
+"notFullLabelSecond" = " → ";
+"notFullLabelThird" = "[Keyboards]";
+"notFullLabelFourth" = "[Allow Full Access]";
+"notFullLabelFifth" = "Turn on ";
+
