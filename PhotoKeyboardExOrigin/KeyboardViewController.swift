@@ -286,10 +286,10 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     @IBAction func tapHelpButton(_ sender: Any) {
         if self.hasFullAccess {
             print("FullAccess is true")
-            self.openAppSettings()
+            self.openOfficialLINE()
         } else {
             print("FullAccess is false")
-            self.openAppSettings()
+            self.openOfficialLINE()
         }
     }
     
@@ -306,7 +306,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
       openAppSettings()
     }
     
-    func openAppSettings() {
+    func getResponder() -> UIResponder? {
         var responder: UIResponder? = self
         var sharedApplication: UIResponder?
         while responder != nil {
@@ -316,18 +316,17 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
             }
             responder = responder?.next
         }
-        
-        guard let application = sharedApplication else { return }
-        
-        if #available(iOS 11.0, *) {
-            application.perform(#selector(UIApplication.openURL(_:)), with: URL(string: UIApplication.openSettingsURLString))
-        } else {
-            if #available(iOS 10.0, *) {
-                application.perform("openURL:", with: URL(string: "App-Prefs:root=General&path=Keyboard/KEYBOARDS"))
-            } else {
-                application.perform("openURL:", with: URL(string: "prefs:root=General&path=Keyboard/KEYBOARDS"))
-            }
-        }
+        return sharedApplication
+    }
+    
+    func openAppSettings() {
+        guard let application = getResponder() else { return }
+        application.perform(#selector(UIApplication.openURL(_:)), with: URL(string: UIApplication.openSettingsURLString))
+    }
+    
+    func openOfficialLINE() {
+        guard let application = getResponder() else { return }
+        application.perform(#selector(UIApplication.openURL(_:)), with: URL(string: "http://line.me/ti/p/%40gox9644r"))
     }
     
     
