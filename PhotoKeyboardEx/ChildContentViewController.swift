@@ -373,6 +373,10 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
             RealmManager.shared.delete(docId: id, success: { () in
                 NotificationCenter.default.post(name: .updateSaveState, object: nil, userInfo: ["id": id!, "saveFlag": false])
                 if self.tabPageIndex == 0  {
+                    // チュートリアルの時に入れていた画像のため例外処理
+                    if id == officialPhoto.id {
+                        return
+                    }
                     self.firePhotoCollection.document(id).getDocument(completion: { (snapshot, error) in
                         guard let snapshot = snapshot else { return }
                         let decoder = Firestore.Decoder()
@@ -413,9 +417,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
                 }
                 GroupeDefaults.shared.useSaveLife()
                 if GroupeDefaults.shared.isRateAlert() {
-                    if #available(iOS 10.3, *) {
-                        SKStoreReviewController.requestReview()
-                    }
+                    SKStoreReviewController.requestReview()
                 }
             }) { (error) in
                 print(error)

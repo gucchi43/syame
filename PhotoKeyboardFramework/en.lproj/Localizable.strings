@@ -9,6 +9,7 @@
 "test" = "TEST";
 "baseOK" = "OK";
 "baseCancel" = "Cansell";
+"baseBack" = "BACK";
 
 "tabMyBoard" = "MYBOARD";
 "tabNew" = "NEW";
@@ -21,7 +22,7 @@
 
 "navMyBoard" = "MYBOARD";
 "navNew" = "NEW";
-"nvaPopular" = "POPULAR";
+"navPopular" = "POPULAR";
 "navHumor" = "HUMOR";
 "navCool" = "COOL";
 "navCute" = "CUTE";
@@ -63,7 +64,7 @@
 "settingDiscription" = "This lets you use PKB in your keyboard. If you can't set up PKB, plese conatct from [Menu] - [Contact to LINE].";
 "settingDone" = "GET STARTED";
 
-"welcomeTitle" = "PKB!!!";
+"welcomeTitle" = "🎉Welcome to PKB!!!🎉";
 "welcomeFirst1" = "P";
 "welcomeFirst2" = "hoto wo";
 "welcomeFirst3" = "!";
@@ -75,7 +76,11 @@
 "welcomeThird3" = "!";
 "welcomeFourth" = "Yeaaaah!!!";
 "welcomeDiscription" = "Welcome to PKB!\nPKB is a keyboard app makes it easy to send photo posted like stamps.\nFirstly, [save] an photo posted by someone and add it to MYBOARD!";
-"welcomeDone" = "START";
+"welcomeDiscriptionFirst" = "Good job set up keyboard！\nLet's tell you how to keyboard from ";
+"welcomeDiscriptionSecond" = "PKB support stuff's KAWASAKI LINE";
+"welcomeDiscriptionThird" = "!!!";
+"welcomeDone" = "KAWASAKI's LINE";
+"welcomeSkip" = "Skip";
 
 //キーボード側
 "notFullButton" = "Go to setting";

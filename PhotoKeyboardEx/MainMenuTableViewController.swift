@@ -79,8 +79,9 @@ class MyMenuTableViewController: UITableViewController {
             sideMenuController()?.setContentViewController(destViewController)
             break
         case 1:
-            let mainStoryboard: UIStoryboard = UIStoryboard(name: "Usage",bundle: nil)
-            destViewController = mainStoryboard.instantiateViewController(withIdentifier: "UsageViewController") as! UsageViewController
+            let sb = UIStoryboard(name: "Usage",bundle: nil)
+            let nvc = sb.instantiateInitialViewController() as! UINavigationController
+            destViewController = nvc.viewControllers.first as! UsageViewController
             sideMenuController()?.setContentViewController(destViewController)
             break
         case 2:

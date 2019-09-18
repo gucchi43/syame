@@ -14,6 +14,7 @@ extension DefaultsKeys {
     public static let saveLife = DefaultsKey<Int>("saveLife", defaultValue: 5)
     public static let sendCount = DefaultsKey<Int>("sendCount", defaultValue: 0)
     public static let usageNeedFlag = DefaultsKey<Bool>("usageNeedFlag", defaultValue: true)
+    public static let welcomeNeedFlag = DefaultsKey<Bool>("welcomeNeedFlag", defaultValue: true)
 }
 
 public final class GroupeDefaults {
@@ -32,6 +33,18 @@ public final class GroupeDefaults {
     
     public func usageDone() {
         sharedDefaults[.usageNeedFlag] = false
+    }
+    
+    public func isWelcomePush() -> Bool {
+        if sharedDefaults[.welcomeNeedFlag] {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    public func welcomeDone() {
+        sharedDefaults[.welcomeNeedFlag] = false
     }
     
     public func incrementLaunchCount() {

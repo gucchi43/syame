@@ -13,6 +13,7 @@ import RealmSwift
 public protocol RealmManagerDelegate {
     func realmObjectDidChange()
 }
+
 public class RealmManager {
     public static let shared = RealmManager()
     

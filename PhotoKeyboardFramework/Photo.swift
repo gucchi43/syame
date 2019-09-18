@@ -11,6 +11,7 @@ import UIKit
 import Alamofire
 import RealmSwift
 import Realm
+import SwiftDate
 
 public class RealmPhoto: Object {
     // TESTデータ削除用
@@ -71,3 +72,10 @@ public class RealmPhoto: Object {
         return "id"
     }
 }
+
+public let officialPhoto = RealmPhoto.create(id: "FB717B84-D12B-467E-9494-1ED51F3C6BB2",
+                                             text: "おもんない！",
+                                             image: UIImage(named: "officialPhotoFirst")!,
+                                             imageHeight: 400,
+                                             imageWidth: 355,
+                                             getDay: Date().toString())

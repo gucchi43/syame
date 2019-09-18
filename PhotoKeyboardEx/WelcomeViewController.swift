@@ -1,4 +1,4 @@
-//
+ //
 //  WelcomeViewController.swift
 //  PhotoKeyboardEx
 //
@@ -23,6 +23,8 @@ class WelcomeViewController: UIViewController {
     @IBOutlet weak var explainLabel: UILabel!
     @IBOutlet weak var nextButton: UIButton!
     
+    @IBOutlet weak var skipButton: UIBarButtonItem!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         commonInit()
@@ -31,17 +33,21 @@ class WelcomeViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        if self.presentingViewController != nil {
-            // モーダルされたときの処理
-            nextButton.isHidden = false
-        } else {
-            nextButton.isHidden = true
+        if GroupeDefaults.shared.isWelcomePush() {
+            GroupeDefaults.shared.welcomeDone()
         }
+//        if self.presentingViewController != nil {
+//            // モーダルされたときの処理
+//            nextButton.isHidden = false
+//        } else {
+//            nextButton.isHidden = true
+//        }
     }
     
     func commonInit() {
         self.view.backgroundColor = .bgDark()
         titleLabel.textColor = .white
+        titleLabel.adjustsFontSizeToFitWidth = true
         firstLabel.textColor = .white
         secondLabel.textColor = .white
         thirdLabel.textColor = .white
@@ -55,6 +61,7 @@ class WelcomeViewController: UIViewController {
     }
     
     func settext() {
+        skipButton.title = LocalizeKey.welcomeSkip.localizedString()
         titleLabel.attributedText = LocalizeKey.welcomeTitle.localizedString().withTextColor(.acGreen()).withFont(Font.systemFont(ofSize: 40.0, weight: .bold))
         firstLabel.attributedText = LocalizeKey.welcomeFirst1.localizedString().withTextColor(.acGreen()).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
             + LocalizeKey.welcomeFirst2.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
@@ -66,13 +73,24 @@ class WelcomeViewController: UIViewController {
             + LocalizeKey.welcomeThird2.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
             + LocalizeKey.welcomeThird3.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
         fourthLabel.attributedText =  LocalizeKey.welcomeFourth.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
-        explainLabel.text = LocalizeKey.welcomeDiscription.localizedString()
+        
+        fourthLabel.attributedText =  LocalizeKey.welcomeFourth.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
+        explainLabel.attributedText = LocalizeKey.welcomeDiscriptionFirst.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 16.0, weight: .regular)) + LocalizeKey.welcomeDiscriptionSecond.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 24.0, weight: .bold)) + LocalizeKey.welcomeDiscriptionThird.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 16.0, weight: .regular))
+        
+//        explainLabel.text = LocalizeKey.welcomeDiscription.localizedString()
         explainLabel.numberOfLines = 0
     }
     
     @IBAction func tapNextButton(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
+        UIApplication.shared.open(URL(string: "http://line.me/ti/p/%40gox9644r")!)
+        UIApplication.shared.open(URL(string: "http://line.me/ti/p/%40gox9644r")!, options: [:]) { (done) in
+            self.dismiss(animated: true, completion: nil)
+        }
 //        self.navigationController?.popToRootViewController(animated: true)
-        
     }
-}
+    
+    
+    @IBAction func tapSkipButton(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
+    }
+ }

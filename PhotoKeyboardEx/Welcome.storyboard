@@ -4,7 +4,6 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -18,38 +17,38 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="G0F-XR-Fj1">
-                                <rect key="frame" x="0.0" y="64" width="320" height="252"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="G0F-XR-Fj1" userLabel="base1view">
+                                <rect key="frame" x="0.0" y="64" width="320" height="168"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="WuG-SO-8v7">
-                                        <rect key="frame" x="20" y="24" width="280" height="204"/>
+                                        <rect key="frame" x="20" y="24" width="280" height="120"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="  PKB！" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JyA-4i-5KK">
-                                                <rect key="frame" x="71.5" y="0.0" width="137" height="50"/>
-                                                <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="40"/>
-                                                <nil key="textColor"/>
-                                                <nil key="highlightedColor"/>
-                                            </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="フォトを" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Das-5V-hfd">
-                                                <rect key="frame" x="75.5" y="50" width="129.5" height="38.5"/>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" text="PKBへようこそ！" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JyA-4i-5KK">
+                                                <rect key="frame" x="11" y="0.0" width="258.5" height="120"/>
                                                 <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="32"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="キーボードで" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TMF-MP-oa5">
-                                                <rect key="frame" x="43" y="88.5" width="194" height="38.5"/>
+                                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="フォトを" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Das-5V-hfd">
+                                                <rect key="frame" x="75.5" y="0.0" width="129.5" height="0.0"/>
                                                 <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="32"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="バキュ〜〜ン！" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SHY-G8-FQw">
-                                                <rect key="frame" x="27" y="127" width="226.5" height="38.5"/>
+                                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="キーボードで" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TMF-MP-oa5">
+                                                <rect key="frame" x="43" y="0.0" width="194" height="0.0"/>
                                                 <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="32"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ひ〜〜〜〜〜いぁ！！！" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d3T-8Q-gT0">
-                                                <rect key="frame" x="0.0" y="165.5" width="280" height="38.5"/>
+                                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="バキュ〜〜ン！" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SHY-G8-FQw">
+                                                <rect key="frame" x="27" y="0.0" width="226.5" height="0.0"/>
+                                                <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="32"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ひ〜〜〜〜〜いぁ！！！" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d3T-8Q-gT0">
+                                                <rect key="frame" x="-38" y="0.0" width="356" height="0.0"/>
                                                 <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="32"/>
                                                 <nil key="textColor"/>
                                                 <nil key="highlightedColor"/>
@@ -66,19 +65,25 @@
                                     <constraint firstItem="WuG-SO-8v7" firstAttribute="top" secondItem="G0F-XR-Fj1" secondAttribute="top" constant="24" id="xe9-gx-3x2"/>
                                 </constraints>
                             </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="h84-SB-XgC" userLabel="base2view">
+                                <rect key="frame" x="0.0" y="232" width="320" height="168"/>
+                            </view>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8Wk-a3-ZI3" userLabel="base3view">
+                                <rect key="frame" x="0.0" y="400" width="320" height="168"/>
+                            </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iqh-1c-gk9">
-                                <rect key="frame" x="0.0" y="316" width="320" height="252"/>
+                                <rect key="frame" x="0.0" y="232" width="320" height="336"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fBo-f5-Dlq">
-                                        <rect key="frame" x="0.0" y="109.5" width="320" height="142.5"/>
+                                        <rect key="frame" x="0.0" y="245.5" width="320" height="90.5"/>
                                         <subviews>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8WD-e1-fFw">
-                                                <rect key="frame" x="90" y="51.5" width="140" height="40"/>
+                                                <rect key="frame" x="90" y="25.5" width="140" height="40"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="140" id="KZN-qW-wNd"/>
                                                     <constraint firstAttribute="height" constant="40" id="eBX-IK-6hp"/>
                                                 </constraints>
-                                                <state key="normal" title="フォトを登録する"/>
+                                                <state key="normal" title="カワサキのLINEへ"/>
                                                 <connections>
                                                     <action selector="tapNextButton:" destination="rGC-lD-OFf" eventType="touchUpInside" id="YH6-TA-QCn"/>
                                                 </connections>
@@ -89,9 +94,9 @@
                                             <constraint firstItem="8WD-e1-fFw" firstAttribute="centerX" secondItem="fBo-f5-Dlq" secondAttribute="centerX" id="blT-Dz-Zjx"/>
                                         </constraints>
                                     </view>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PKBを設定してくれてありがとうございます。PKBはみんなが投稿した画像をキーボードからLINEスタンプみたいに簡単に送れるキーボードアプリです。まずは誰かがあげてくれてる画像をsaveしてマイキーボードに追加しましょう！" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wZg-78-Zyz">
-                                        <rect key="frame" x="32" y="12" width="256" height="93.5"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PKBを設定してくれてありがとうございます。PKBはみんなが投稿した画像をキーボードからLINEスタンプみたいに簡単に送れるキーボードアプリです。" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="wZg-78-Zyz">
+                                        <rect key="frame" x="32" y="12" width="256" height="229.5"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="24"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
@@ -111,22 +116,37 @@
                         <constraints>
                             <constraint firstItem="iqh-1c-gk9" firstAttribute="trailing" secondItem="pLA-Fw-H2O" secondAttribute="trailing" id="4Lq-HN-Wh5"/>
                             <constraint firstItem="iqh-1c-gk9" firstAttribute="top" secondItem="G0F-XR-Fj1" secondAttribute="bottom" id="ABm-0M-DsO"/>
+                            <constraint firstItem="h84-SB-XgC" firstAttribute="height" secondItem="8Wk-a3-ZI3" secondAttribute="height" id="FHN-IQ-bRd"/>
+                            <constraint firstItem="8Wk-a3-ZI3" firstAttribute="bottom" secondItem="pLA-Fw-H2O" secondAttribute="bottom" id="Ip7-sm-nGh"/>
+                            <constraint firstItem="8Wk-a3-ZI3" firstAttribute="leading" secondItem="pLA-Fw-H2O" secondAttribute="leading" id="MAG-FE-3Ha"/>
                             <constraint firstAttribute="bottom" secondItem="iqh-1c-gk9" secondAttribute="bottom" id="NfF-ph-VNO"/>
+                            <constraint firstItem="8Wk-a3-ZI3" firstAttribute="top" secondItem="h84-SB-XgC" secondAttribute="bottom" id="VBr-ii-eCI"/>
+                            <constraint firstItem="h84-SB-XgC" firstAttribute="top" secondItem="G0F-XR-Fj1" secondAttribute="bottom" id="Vu5-jP-T3J"/>
+                            <constraint firstItem="G0F-XR-Fj1" firstAttribute="height" secondItem="h84-SB-XgC" secondAttribute="height" id="Z7e-Dy-fn7"/>
+                            <constraint firstItem="h84-SB-XgC" firstAttribute="trailing" secondItem="pLA-Fw-H2O" secondAttribute="trailing" id="feZ-N3-Sto"/>
                             <constraint firstItem="G0F-XR-Fj1" firstAttribute="trailing" secondItem="pLA-Fw-H2O" secondAttribute="trailing" id="i6O-gO-oTP"/>
-                            <constraint firstItem="iqh-1c-gk9" firstAttribute="height" secondItem="G0F-XR-Fj1" secondAttribute="height" id="k2J-iK-2IJ"/>
+                            <constraint firstItem="h84-SB-XgC" firstAttribute="leading" secondItem="pLA-Fw-H2O" secondAttribute="leading" id="nqx-3J-Sn8"/>
                             <constraint firstItem="G0F-XR-Fj1" firstAttribute="leading" secondItem="pLA-Fw-H2O" secondAttribute="leading" id="on3-fj-Vk3"/>
+                            <constraint firstItem="8Wk-a3-ZI3" firstAttribute="trailing" secondItem="pLA-Fw-H2O" secondAttribute="trailing" id="rgx-F0-u2h"/>
                             <constraint firstItem="G0F-XR-Fj1" firstAttribute="top" secondItem="pLA-Fw-H2O" secondAttribute="top" id="vRw-hc-LSu"/>
                             <constraint firstItem="iqh-1c-gk9" firstAttribute="leading" secondItem="pLA-Fw-H2O" secondAttribute="leading" id="vaq-zz-o8J"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="pLA-Fw-H2O"/>
                     </view>
-                    <navigationItem key="navigationItem" id="I21-11-HTl"/>
+                    <navigationItem key="navigationItem" id="I21-11-HTl">
+                        <barButtonItem key="rightBarButtonItem" title="Item" id="6dY-da-w8A">
+                            <connections>
+                                <action selector="tapSkipButton:" destination="rGC-lD-OFf" id="rYI-7s-d5K"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="explainLabel" destination="wZg-78-Zyz" id="3YK-de-ZKK"/>
                         <outlet property="firstLabel" destination="Das-5V-hfd" id="z9i-Ql-N7F"/>
                         <outlet property="fourthLabel" destination="d3T-8Q-gT0" id="pzO-Pg-2kp"/>
                         <outlet property="nextButton" destination="8WD-e1-fFw" id="v0W-TL-hwK"/>
                         <outlet property="secondLabel" destination="TMF-MP-oa5" id="1HK-ca-ewy"/>
+                        <outlet property="skipButton" destination="6dY-da-w8A" id="2Jl-cA-4On"/>
                         <outlet property="thirdLabel" destination="SHY-G8-FQw" id="vRY-Sc-quD"/>
                         <outlet property="titleLabel" destination="JyA-4i-5KK" id="AUG-4x-ohl"/>
                     </connections>

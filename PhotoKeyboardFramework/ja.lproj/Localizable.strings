@@ -64,7 +64,7 @@
 "settingDiscription" = "これでPKBをキーボードから使えるようになります。\nもし設定方法がわからない場合は「LINEでお問い合わせ」からご連絡ください。";
 "settingDone" = "使ってみる";
 
-"welcomeTitle" = "PKB!!!";
+"welcomeTitle" = "🎉ようこそPKBヘ🎉";
 "welcomeFirst1" = "P";
 "welcomeFirst2" = "hotoを";
 "welcomeFirst3" = "!";
@@ -75,8 +75,12 @@
 "welcomeThird2" = "akyu---n";
 "welcomeThird3" = "!";
 "welcomeFourth" = "ヒーーーーイアッ!!!";
-"welcomeDiscription" = "PKBへようこそ！\nPKBはみんなが投稿した画像をスタンプみたいにバキュ〜〜ンと簡単に送れるキーボードアプリです。\nまずは誰かが投稿した画像を「save」してマイキーボードに追加してみましょう！";
-"welcomeDone" = "フォトを登録して使う";
+//"welcomeDiscription" = "PKBへようこそ！\nPKBはみんなが投稿した画像をスタンプみたいにバキュ〜〜ンと簡単に送れるキーボードアプリです。\nまずは誰かが投稿した画像を「save」してマイキーボードに追加してみましょう！";
+"welcomeDiscriptionFirst" = "キーボード設定お疲れ様！\n最後にキーボードの使い方を";
+"welcomeDiscriptionSecond" = "PKBスタッフのカワサキさんのLINE";
+"welcomeDiscriptionThird" = "から教えてもらおう！";
+"welcomeDone" = "カワサキさんのLINEへ";
+"welcomeSkip" = "スキップ";
 
 //キーボード側
 "notFullButton" = "設定画面へ";

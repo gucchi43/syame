@@ -16,6 +16,8 @@ import Floaty
 import Realm
 import RealmSwift
 import Toast_Swift
+import UserNotifications
+import FirebaseMessaging
 
 struct TabHead {
     let title: String
@@ -85,9 +87,56 @@ class MainTabViewController: TabmanViewController, FloatyDelegate {
         if GroupeDefaults.shared.isUsagePush() {
             let sb = UIStoryboard(name: "Usage",bundle: nil)
             let nvc = sb.instantiateInitialViewController() as! UINavigationController
-            GroupeDefaults.shared.usageDone()
+//            GroupeDefaults.shared.usageDone()
             present(nvc, animated: true, completion: nil)
         }
+        if GroupeDefaults.shared.isUsagePush() == false && GroupeDefaults.shared.isWelcomePush() == true {
+            let sb = UIStoryboard(name: "Welcome",bundle: nil)
+            let nvc = sb.instantiateInitialViewController() as! UINavigationController
+            //            GroupeDefaults.shared.usageDone()
+            present(nvc, animated: true, completion: nil)
+        }
+        if GroupeDefaults.shared.isUsagePush() == false && GroupeDefaults.shared.isWelcomePush() == false {
+            requestPush()
+        }
+    }
+    
+    func requestPush() {
+//        Messaging.messaging().delegate = self
+//
+//        UNUserNotificationCenter.current().delegate = self
+        
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge], completionHandler: { (granted, error) in
+            if let error = error {
+                print(error.localizedDescription)
+            }
+            if granted {
+                print("プッシュ通知ダイアログ 許可")
+                UIApplication.shared.registerForRemoteNotifications()
+            } else {
+                print("プッシュ通知ダイアログ 拒否")
+            }
+        })
+        
+//        InstanceID.instanceID().instanceID { (result, error) in
+//            if let error = error {
+//                print("Error fetching remote instance ID: \(error)")
+//            } else if let result = result {
+//                print("Remote instance ID token: \(result.token)")
+//            }
+//        }
+        
+//        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge], completionHandler: { (granted, error) in
+//            if let error = error {
+//                print(error.localizedDescription)
+//            }
+//            if granted {
+//                print("プッシュ通知ダイアログ 許可")
+//                UIApplication.shared.registerForRemoteNotifications()
+//            } else {
+//                print("プッシュ通知ダイアログ 拒否")
+//            }
+//        })
     }
     
     @objc func finishToast(notification: Notification) {
@@ -230,7 +279,7 @@ extension MainTabViewController: PageboyViewControllerDataSource, TMBarDataSourc
     }
     
     func defaultPage(for pageboyViewController: PageboyViewController) -> PageboyViewController.Page? {
-        return nil
+        return .at(index: 1)
     }
     
     func barItem(for bar: TMBar, at index: Int) -> TMBarItemable {

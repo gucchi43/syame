@@ -12,6 +12,8 @@ import FontAwesome_swift
 import ENSwiftSideMenu
 import SwiftyAttributes
 import PhotoKeyboardFramework
+import Realm
+import RealmSwift
 
 class UsageViewController: UIViewController {
 
@@ -41,8 +43,11 @@ class UsageViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        if GroupeDefaults.shared.isUsagePush() {
+            self.setOfficialPhoto()
+            GroupeDefaults.shared.usageDone()
+        }
     }
-    
     func commonInit() {
         scrollView.backgroundColor = .bgDark()
         baseView.backgroundColor = .bgDark()
@@ -75,6 +80,15 @@ class UsageViewController: UIViewController {
             subLabel.text = LocalizeKey.settingDiscription.localizedString()
         }
     }
+    
+    func setOfficialPhoto() {
+        // Realmにsaveする
+        let photo = officialPhoto
+        RealmManager.shared.save(data: photo, success: {() in
+        }) { (error) in
+            print(error)
+        }
+    }
 
     @IBAction func tapNavBarButton(_ sender: Any) {
         toggleSideMenuView()
@@ -86,7 +100,9 @@ class UsageViewController: UIViewController {
         }
         if UIApplication.shared.canOpenURL(settingsUrl) {
             UIApplication.shared.open(settingsUrl)
-            goWelcomeView()
+            if GroupeDefaults.shared.isWelcomePush() {
+                goWelcomeView()
+            }
         }
     }
     

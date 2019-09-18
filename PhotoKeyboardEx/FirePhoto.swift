@@ -34,7 +34,8 @@ final class RootStore {
         #else
         mode = "/1"
         #endif
-        var root = Firestore.firestore().document(Lang.rootKey() + mode)
+//        var root = Firestore.firestore().document(Lang.rootKey() + mode)
+        var root = Firestore.firestore().document("official" + mode)
         return root
     }
 }
