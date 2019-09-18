@@ -169,7 +169,11 @@ extension AppDelegate : UNUserNotificationCenterDelegate {
         //NotificationCenter飛ばす
 //        let center = NotificationCenter.default
 //        center.post(name: .receiveHotwordNotification, object: nil, userInfo: userInfo)
+        #if DEBUG
         showNotificationAlert(userInfo: content.userInfo)
+        #else
+        
+        #endif
         completionHandler()
     }
 }
