@@ -74,8 +74,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidBecomeActive(_ application: UIApplication) {
         application.applicationIconBadgeNumber = 0
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        #if DEBUG
+        checkLangAlert()
+        #else
         
-         //環境言語取得テストコード
+        #endif
+    }
+
+    func applicationWillTerminate(_ application: UIApplication) {
+        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+    }
+    
+    func checkLangAlert() {
+        //環境言語取得テストコード
         let langFirstFromLocale:String = NSLocale.preferredLanguages.first!
         let langFirstFromBundle:String = Bundle.main.preferredLocalizations.first!
         
@@ -89,31 +100,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         activeVc?.present(alertController, animated: true, completion: nil)
     }
-
-    func applicationWillTerminate(_ application: UIApplication) {
-        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    }
 }
 
 // プッシュ通知許可関連
 extension AppDelegate {
     func configureNotification() {
         Messaging.messaging().delegate = self
-        
         UNUserNotificationCenter.current().delegate = self
-        
-//        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge], completionHandler: { (granted, error) in
-//            if let error = error {
-//                print(error.localizedDescription)
-//            }
-//            if granted {
-//                print("プッシュ通知ダイアログ 許可")
-//                UIApplication.shared.registerForRemoteNotifications()
-//            } else {
-//                print("プッシュ通知ダイアログ 拒否")
-//            }
-//        })
-//        
         InstanceID.instanceID().instanceID { (result, error) in
             if let error = error {
                 print("Error fetching remote instance ID: \(error)")

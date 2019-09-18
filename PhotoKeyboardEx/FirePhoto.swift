@@ -22,7 +22,7 @@ struct OFirePhoto: Codable, Equatable {
     var weeklySaveCount: Int = 0
     var weekStartDay: String = ""
     var createdAt: Timestamp = Timestamp(date: Date())
-    var updateAt: Timestamp = Timestamp(date: Date())
+    var updateAt: Timestamp = Timestamp(date: Date()) 
 }
 
 final class RootStore {
@@ -34,8 +34,8 @@ final class RootStore {
         #else
         mode = "/1"
         #endif
-//        var root = Firestore.firestore().document(Lang.rootKey() + mode)
-        var root = Firestore.firestore().document("official" + mode)
+        var root = Firestore.firestore().document(Lang.rootKey() + mode)
+//        var root = Firestore.firestore().document("official" + mode)
         return root
     }
 }

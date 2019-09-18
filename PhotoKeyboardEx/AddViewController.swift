@@ -21,14 +21,19 @@ class AddViewController: UIViewController {
 //    @IBOutlet weak var heightConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var genreLabel: UILabel!
+    @IBOutlet weak var publicLabel: UILabel!
     @IBOutlet weak var closeButton: UIBarButtonItem!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var doneButton: UIButton!
     @IBOutlet weak var genreListView: TagListView!
+    
+    @IBOutlet weak var publicSwitch: UISwitch!
     var choiceImage: UIImage!
     var postImage: UIImage!
     var selectedJenreTag: GenreTagType?
+    
+    var publicFlag = true
     
     private var firePhotoCollection : CollectionReference = RootStore.rootDB().collection("ofirephoto")
     
@@ -44,8 +49,10 @@ class AddViewController: UIViewController {
         doneButton.setTitle(LocalizeKey.addDone.localizedString() , for: .normal)
         titleLabel.text = LocalizeKey.addInputTitle.localizedString()
         genreLabel.text = LocalizeKey.addInputGenre.localizedString()
+        publicLabel.text = LocalizeKey.addPublicSwitchOn.localizedString()
         titleLabel.textColor = .white
         genreLabel.textColor = .white
+        publicLabel.textColor = .white
         view.backgroundColor = .bgDark()
         titleTextField.delegate = self
         titleTextField.addTarget(self, action: #selector(self.textFieldDidChange(_:)),
@@ -53,6 +60,12 @@ class AddViewController: UIViewController {
         if let image = choiceImage {
             imageView.image = image
         }
+//        publicSwitch.tintColor = UIColor.acGreen()
+//        publicSwitch.onTintColor = UIColor.white
+//        publicSwitch.thumbTintColor = UIColor.acGreen()
+        
+        publicSwitch.tintColor = UIColor.acGreen()
+        publicSwitch.onTintColor = UIColor.acGreen()
         closeButton.title = String.fontAwesomeIcon(name: .doorClosed)
         closeButton.setTitleTextAttributes([.font: UIFont.fontAwesome(ofSize: 24, style: .solid)], for: .normal)
         
@@ -106,6 +119,16 @@ class AddViewController: UIViewController {
         }
     }
     
+    @IBAction func switchChanged(_ sender: UISwitch) {
+        if sender.isOn {
+            publicLabel.text = LocalizeKey.addPublicSwitchOn.localizedString()
+        } else {
+            publicLabel.text = LocalizeKey.addPublicSwitchOff.localizedString()
+        }
+        publicFlag = sender.isOn
+    }
+    
+    
     func convertedImageSize(size: CGSize) -> CGSize{
         let w = size.width
         let h = size.height
@@ -130,16 +153,25 @@ class AddViewController: UIViewController {
     
 
     @IBAction func tapDoneButton(_ sender: Any) {
-        saveServer(success: {  (docId) in
-            print(docId)
-            self.saveRealm(id: docId, success: {
+        if publicFlag {
+            saveServer(success: {  (docId) in
+                print(docId)
+                self.saveRealm(id: docId, success: {
+                    print("アップドーロ成功！！")
+                    NotificationCenter.default.post(name: .finishUpload, object: nil, userInfo: nil)
+                }, failure: { (error) in
+                    print(error)
+                })
+            }) { (error) in
+                print(error)
+            }
+        } else {
+            savePrivateRealm(success: {
                 print("アップドーロ成功！！")
                 NotificationCenter.default.post(name: .finishUpload, object: nil, userInfo: nil)
-            }, failure: { (error) in
+            }) { (error) in
                 print(error)
-            })
-        }) { (error) in
-            print(error)
+            }
         }
         self.dismiss(animated: true, completion: nil)
     }
@@ -193,7 +225,23 @@ class AddViewController: UIViewController {
                                     image: postImage!,
                                     imageHeight: Int(postImage!.size.height),
                                     imageWidth: Int(postImage!.size.width),
-                                    getDay: Date().toString())
+                                    getDay: Date().toString(), isPublic: true)
+        RealmManager.shared.save(data: new, success: { () in
+            success()
+        }) { (error) in
+            print(error)
+            failure("realm save error")
+        }
+    }
+    
+    func savePrivateRealm(success: @escaping () -> Void, failure: @escaping (String) -> Void) {
+        let new = RealmPhoto.create(id: UUID().uuidString,
+                                    text: self.titleTextField.text!,
+                                    image: postImage!,
+                                    imageHeight: Int(postImage!.size.height),
+                                    imageWidth: Int(postImage!.size.width),
+                                    getDay: Date().toString(),
+                                    isPublic: false)
         RealmManager.shared.save(data: new, success: { () in
             success()
         }) { (error) in

@@ -102,10 +102,6 @@ class MainTabViewController: TabmanViewController, FloatyDelegate {
     }
     
     func requestPush() {
-//        Messaging.messaging().delegate = self
-//
-//        UNUserNotificationCenter.current().delegate = self
-        
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge], completionHandler: { (granted, error) in
             if let error = error {
                 print(error.localizedDescription)
@@ -117,26 +113,6 @@ class MainTabViewController: TabmanViewController, FloatyDelegate {
                 print("プッシュ通知ダイアログ 拒否")
             }
         })
-        
-//        InstanceID.instanceID().instanceID { (result, error) in
-//            if let error = error {
-//                print("Error fetching remote instance ID: \(error)")
-//            } else if let result = result {
-//                print("Remote instance ID token: \(result.token)")
-//            }
-//        }
-        
-//        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge], completionHandler: { (granted, error) in
-//            if let error = error {
-//                print(error.localizedDescription)
-//            }
-//            if granted {
-//                print("プッシュ通知ダイアログ 許可")
-//                UIApplication.shared.registerForRemoteNotifications()
-//            } else {
-//                print("プッシュ通知ダイアログ 拒否")
-//            }
-//        })
     }
     
     @objc func finishToast(notification: Notification) {

@@ -122,21 +122,44 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
             query = nil
         case .some(.new):
             if let lastDoc = lastDoc {
-                query = firePhotoCollection.order(by: "createdAt").limit(to: 5).start(afterDocument: lastDoc)
+                query = firePhotoCollection
+                    .order(by: "createdAt", descending: true)
+                    .limit(to: 20)
+                    .start(afterDocument: lastDoc)
             } else {
-                query = firePhotoCollection.order(by: "createdAt").limit(to: 5)
+                query = firePhotoCollection
+                    .order(by: "createdAt", descending: true)
+                    .limit(to: 20)
             }
         case .some(.popular):
+            let sevenBeforeDay = Date()-7.days
+            let sevenBeforeTimeStamp = Timestamp(date: sevenBeforeDay.date)
             if let lastDoc = lastDoc {
-                query = firePhotoCollection.order(by: "weeklySaveCount").limit(to: 5).start(afterDocument: lastDoc)
+                query = firePhotoCollection
+                    .whereField("updateAt", isGreaterThan: sevenBeforeTimeStamp)
+                    .order(by: "updateAt")
+                    .order(by: "weeklySaveCount")
+                    .limit(to: 20)
+                    .start(afterDocument: lastDoc)
             } else {
-                query = firePhotoCollection.order(by: "weeklySaveCount").limit(to: 5)
+                query = firePhotoCollection
+                    .whereField("updateAt", isGreaterThan: sevenBeforeTimeStamp)
+                    .order(by: "updateAt")
+                    .order(by: "weeklySaveCount")
+                    .limit(to: 20)
             }
         case .some(.humor), .some(.cool), .some(.cute), .some(.serious), .some(.other):
             if let lastDoc = lastDoc {
-                query = firePhotoCollection.whereField("genre", isEqualTo: currentGenreTag.getKey()).order(by: "title").limit(to: 20).start(afterDocument: lastDoc)
+                query = firePhotoCollection
+                    .whereField("genre", isEqualTo: currentGenreTag.getKey())
+                    .order(by: "title")
+                    .limit(to: 20)
+                    .start(afterDocument: lastDoc)
             } else {
-                query = firePhotoCollection.whereField("genre", isEqualTo: currentGenreTag.getKey()).order(by: "title").limit(to: 20)
+                query = firePhotoCollection
+                    .whereField("genre", isEqualTo: currentGenreTag.getKey())
+                    .order(by: "title")
+                    .limit(to: 20)
             }
         }
         return query
@@ -374,7 +397,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
                 NotificationCenter.default.post(name: .updateSaveState, object: nil, userInfo: ["id": id!, "saveFlag": false])
                 if self.tabPageIndex == 0  {
                     // チュートリアルの時に入れていた画像のため例外処理
-                    if id == officialPhoto.id {
+                    if self.realmPhotos![index].isPublic == false {
                         return
                     }
                     self.firePhotoCollection.document(id).getDocument(completion: { (snapshot, error) in
@@ -405,7 +428,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
                                             image: image,
                                             imageHeight: selectData.imageHeight,
                                             imageWidth: selectData.imageWidth,
-                                            getDay: Date().toString())
+                                            getDay: Date().toString(), isPublic: true)
             }
             // Realmにsaveする
             RealmManager.shared.save(data: photo, success: {() in

@@ -54,6 +54,8 @@ public enum LocalizeKey: String {
     case genreCute
     case genreSerious
     case genreOther
+    case addPublicSwitchOn
+    case addPublicSwitchOff
     case addDone
     
     case settingTitle

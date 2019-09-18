@@ -29,7 +29,7 @@
 "navSerious" = "ぞわぞわっ";
 "navOther" = "色々〜";
 
-"doneUploadToast" = "アップロード完了";
+"doneUploadToast" = "アップロード完了！";
 "othersEmptyTitle" = "カラッポ";
 "myBoardEmptyTitle" = "使いたい画像をsaveしよう →";
 "adAlertTitle" = "これ以上SAVEするには広告を見てね";
@@ -52,6 +52,8 @@
 "genreCute" = "キュート";
 "genreSerious" = "シリアス";
 "genreOther" = "その他";
+"addPublicSwitchOn" = "公開";
+"addPublicSwitchOff" = "非公開";
 "addDone" = "OK";
 
 "settingTitle" = "PKBの設定";
