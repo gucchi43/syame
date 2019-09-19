@@ -4,7 +4,6 @@
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -18,7 +17,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pkb_logo_v1" translatesAutoresizingMaskIntoConstraints="NO" id="bEq-Jf-f3n">
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pkb_app_logo3" translatesAutoresizingMaskIntoConstraints="NO" id="bEq-Jf-f3n">
                                 <rect key="frame" x="60" y="301" width="294" height="294"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="bEq-Jf-f3n" secondAttribute="height" multiplier="1:1" id="Fk7-MD-a5G"/>
@@ -41,6 +40,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="pkb_logo_v1" width="1024" height="1024"/>
+        <image name="pkb_app_logo3" width="1024" height="1024"/>
     </resources>
 </document>
