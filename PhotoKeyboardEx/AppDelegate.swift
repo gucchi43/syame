@@ -106,7 +106,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 extension AppDelegate {
     func configureNotification() {
         Messaging.messaging().delegate = self
-        UNUserNotificationCenter.current().delegate = self
+        let center = UNUserNotificationCenter.current()
+        center.delegate = self
+        // オプションに .provisional を追加.
+        center.requestAuthorization(options: [.alert, .sound, .provisional, .badge]) { granted, error in
+            if let error = error {
+                print(error.localizedDescription)
+            }
+            if granted {
+                print("プッシュ通知ダイアログ 許可")
+                UIApplication.shared.registerForRemoteNotifications()
+            } else {
+                print("プッシュ通知ダイアログ 拒否")
+            }
+        }
         InstanceID.instanceID().instanceID { (result, error) in
             if let error = error {
                 print("Error fetching remote instance ID: \(error)")

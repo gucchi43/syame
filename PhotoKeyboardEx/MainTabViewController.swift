@@ -87,32 +87,16 @@ class MainTabViewController: TabmanViewController, FloatyDelegate {
         if GroupeDefaults.shared.isUsagePush() {
             let sb = UIStoryboard(name: "Usage",bundle: nil)
             let nvc = sb.instantiateInitialViewController() as! UINavigationController
-//            GroupeDefaults.shared.usageDone()
             present(nvc, animated: true, completion: nil)
-        }
-        if GroupeDefaults.shared.isUsagePush() == false && GroupeDefaults.shared.isWelcomePush() == true {
+        } else if GroupeDefaults.shared.isWelcomePush() {
             let sb = UIStoryboard(name: "Welcome",bundle: nil)
             let nvc = sb.instantiateInitialViewController() as! UINavigationController
-            //            GroupeDefaults.shared.usageDone()
             present(nvc, animated: true, completion: nil)
-        }
-        if GroupeDefaults.shared.isUsagePush() == false && GroupeDefaults.shared.isWelcomePush() == false {
-            requestPush()
         }
     }
     
-    func requestPush() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge], completionHandler: { (granted, error) in
-            if let error = error {
-                print(error.localizedDescription)
-            }
-            if granted {
-                print("プッシュ通知ダイアログ 許可")
-                UIApplication.shared.registerForRemoteNotifications()
-            } else {
-                print("プッシュ通知ダイアログ 拒否")
-            }
-        })
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
     }
     
     @objc func finishToast(notification: Notification) {

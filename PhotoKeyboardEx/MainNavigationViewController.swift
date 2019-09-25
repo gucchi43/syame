@@ -35,7 +35,6 @@ class MainNavigationViewController: ENSideMenuNavigationController {
         // Dispose of any resources that can be recreated.
     }
     
-    
     @IBAction func tapMainTabButton(_ sender: Any) {
     }
 }

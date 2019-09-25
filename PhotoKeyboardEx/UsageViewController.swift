@@ -17,7 +17,6 @@ import RealmSwift
 
 class UsageViewController: UIViewController {
 
-    
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var baseView: UIView!
     @IBOutlet weak var firstLabel: UILabel!
@@ -48,6 +47,7 @@ class UsageViewController: UIViewController {
             GroupeDefaults.shared.usageDone()
         }
     }
+    
     func commonInit() {
         scrollView.backgroundColor = .bgDark()
         baseView.backgroundColor = .bgDark()
@@ -100,6 +100,7 @@ class UsageViewController: UIViewController {
         }
         if UIApplication.shared.canOpenURL(settingsUrl) {
             UIApplication.shared.open(settingsUrl)
+            UIApplication.shared.open(settingsUrl, options: [:], completionHandler: nil)
             if GroupeDefaults.shared.isWelcomePush() {
                 goWelcomeView()
             }

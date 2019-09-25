@@ -33,15 +33,23 @@ class WelcomeViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(true)
-        if GroupeDefaults.shared.isWelcomePush() {
-            GroupeDefaults.shared.welcomeDone()
-        }
+        
+        print("viewWillAppear welcomeViewController")
+        
+//        if GroupeDefaults.shared.isWelcomePush() {
+//            GroupeDefaults.shared.welcomeDone()
+//        }
 //        if self.presentingViewController != nil {
 //            // モーダルされたときの処理
 //            nextButton.isHidden = false
 //        } else {
 //            nextButton.isHidden = true
 //        }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        print("viewDidAppear welcomeViewController")
     }
     
     func commonInit() {
@@ -75,22 +83,27 @@ class WelcomeViewController: UIViewController {
         fourthLabel.attributedText =  LocalizeKey.welcomeFourth.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
         
         fourthLabel.attributedText =  LocalizeKey.welcomeFourth.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 32.0, weight: .bold))
+        
         explainLabel.attributedText = LocalizeKey.welcomeDiscriptionFirst.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 16.0, weight: .regular)) + LocalizeKey.welcomeDiscriptionSecond.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 24.0, weight: .bold)) + LocalizeKey.welcomeDiscriptionThird.localizedString().withTextColor(.white).withFont(Font.systemFont(ofSize: 16.0, weight: .regular))
         
-//        explainLabel.text = LocalizeKey.welcomeDiscription.localizedString()
         explainLabel.numberOfLines = 0
     }
     
     @IBAction func tapNextButton(_ sender: Any) {
-        UIApplication.shared.open(URL(string: "http://line.me/ti/p/%40gox9644r")!)
+//        UIApplication.shared.open(URL(string: "http://line.me/ti/p/%40gox9644r")!)
         UIApplication.shared.open(URL(string: "http://line.me/ti/p/%40gox9644r")!, options: [:]) { (done) in
             self.dismiss(animated: true, completion: nil)
+            if GroupeDefaults.shared.isWelcomePush() {
+                GroupeDefaults.shared.welcomeDone()
+            }
         }
-//        self.navigationController?.popToRootViewController(animated: true)
     }
     
     
     @IBAction func tapSkipButton(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
+        if GroupeDefaults.shared.isWelcomePush() {
+            GroupeDefaults.shared.welcomeDone()
+        }
     }
  }

@@ -26,7 +26,6 @@ class MyMenuTableViewController: UITableViewController {
         tableView.selectRow(at: IndexPath(row: selectedMenuItem, section: 0), animated: false, scrollPosition: .middle)
     }
     
-
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
