@@ -15,6 +15,7 @@ import TagListView
 import FontAwesome_swift
 import DynamicColor
 import Firebase
+import FirebaseFirestoreSwift
 
 class AddViewController: UIViewController {
 
@@ -29,8 +30,8 @@ class AddViewController: UIViewController {
     @IBOutlet weak var genreListView: TagListView!
     
     @IBOutlet weak var publicSwitch: UISwitch!
-    var choiceImage: UIImage!
-    var postImage: UIImage!
+    var choiceImage: UIImage! //選択された元画像
+//    var postImage: UIImage!
     var selectedJenreTag: GenreTagType?
     
     var publicFlag = true
@@ -129,22 +130,20 @@ class AddViewController: UIViewController {
     }
     
     
+    // 長い方の辺をmaxLengthに合わせる
     func convertedImageSize(size: CGSize) -> CGSize{
         let w = size.width
         let h = size.height
-        let maxLength = CGFloat(400)
-        if h > maxLength || w > maxLength {
-            var ratio: CGFloat!
-            if h > w {
-                ratio = maxLength / h
-            } else {
-                ratio = maxLength / w
-            }
-            let nW = w * ratio
-            let nH = h * ratio
-            return CGSize(width: nW, height: nH)
+        let maxLength = CGFloat(300)
+        var ratio: CGFloat!
+        if h > w {
+            ratio = maxLength / h
+        } else {
+            ratio = maxLength / w
         }
-        return size
+        let nW = w * ratio
+        let nH = h * ratio
+        return CGSize(width: nW, height: nH)
     }
     
     @IBAction func tapCloseButton(_ sender: Any) {
@@ -154,9 +153,9 @@ class AddViewController: UIViewController {
 
     @IBAction func tapDoneButton(_ sender: Any) {
         if publicFlag {
-            saveServer(success: {  (docId) in
+            saveServer(success: {  (docId, photo)  in
                 print(docId)
-                self.saveRealm(id: docId, success: {
+                self.saveRealm(id: docId, postedImage: photo, success: {
                     print("アップドーロ成功！！")
                     NotificationCenter.default.post(name: .finishUpload, object: nil, userInfo: nil)
                 }, failure: { (error) in
@@ -176,10 +175,10 @@ class AddViewController: UIViewController {
         self.dismiss(animated: true, completion: nil)
     }
     
-    func saveServer(success: @escaping (String) -> Void, failure: @escaping (String) -> Void) {
+    func saveServer(success: @escaping (_ id: String, _ photo: UIImage) -> Void, failure: @escaping (String) -> Void) {
         let originID = UUID().uuidString
-        postImage = choiceImage!.resize(size: convertedImageSize(size: choiceImage!.size))
-        let imageData = postImage.jpegData(compressionQuality: 0.5)!
+        let postImage = choiceImage!.resize(size: convertedImageSize(size: choiceImage!.size))!
+        let imageData = postImage.jpegData(compressionQuality: 0.3)!
         let storageRef = Storage.storage().reference(withPath: firePhotoCollection.path)
         let photoRef = storageRef.child(originID)
         let metadata = StorageMetadata()
@@ -194,16 +193,18 @@ class AddViewController: UIViewController {
                     print(error?.localizedDescription)
                     return failure("not found downloadURL")
                 }
-                var newPhoto = OFirePhoto()
-                newPhoto.id = originID
-                newPhoto.title = self.titleTextField.text!
-                newPhoto.genre = self.selectedJenreTag!.getKey()
-                newPhoto.totalSaveCount = 1
-                newPhoto.weeklySaveCount = 1
-                newPhoto.weekStartDay = Date().dateAt(.startOfWeek).toString()
-                newPhoto.imageHeight = Int(self.postImage!.size.height)
-                newPhoto.imageWidth = Int(self.postImage!.size.width)
-                newPhoto.imageUrl = downloadURL.absoluteString
+                let titleText = self.titleTextField.text!
+                var newPhoto = OFirePhoto(id: originID,
+                                          title: titleText,
+                                          imageHeight: Int(postImage.size.height),
+                                          imageWidth: Int(postImage.size.width),
+                                          imageUrl: downloadURL.absoluteString,
+                                          genre: self.selectedJenreTag!.getKey(),
+                                          totalSaveCount: 1,
+                                          weeklySaveCount: 1,
+                                          weekStartDay: Date().dateAt(.startOfWeek).toString(),
+                                          createdAt: Timestamp(date: Date()),
+                                          updateAt: Timestamp(date: Date()))
                 let encoder = Firestore.Encoder()
                 let newPhotoDoc = try! encoder.encode(newPhoto)
                 self.firePhotoCollection.document(originID).setData(newPhotoDoc, completion: { (error) in
@@ -212,19 +213,19 @@ class AddViewController: UIViewController {
                         failure("error save store")
                     } else {
                         print("success save firestore", originID)
-                        success(originID)
+                        success(originID, postImage)
                     }
                 })
             })
         }
     }
 
-    func saveRealm(id: String, success: @escaping () -> Void, failure: @escaping (String) -> Void) {
+    func saveRealm(id: String, postedImage: UIImage, success: @escaping () -> Void, failure: @escaping (String) -> Void) {
         let new = RealmPhoto.create(id: id,
                                     text: titleTextField.text!,
-                                    image: postImage!,
-                                    imageHeight: Int(postImage!.size.height),
-                                    imageWidth: Int(postImage!.size.width),
+                                    image: postedImage,
+                                    imageHeight: Int(postedImage.size.height),
+                                    imageWidth: Int(postedImage.size.width),
                                     getDay: Date().toString(), isPublic: true)
         RealmManager.shared.save(data: new, success: { () in
             success()
@@ -235,11 +236,13 @@ class AddViewController: UIViewController {
     }
     
     func savePrivateRealm(success: @escaping () -> Void, failure: @escaping (String) -> Void) {
+        
+        let postImage = choiceImage!.resize(size: convertedImageSize(size: choiceImage!.size))!
         let new = RealmPhoto.create(id: UUID().uuidString,
                                     text: self.titleTextField.text!,
-                                    image: postImage!,
-                                    imageHeight: Int(postImage!.size.height),
-                                    imageWidth: Int(postImage!.size.width),
+                                    image: postImage,
+                                    imageHeight: Int(postImage.size.height),
+                                    imageWidth: Int(postImage.size.width),
                                     getDay: Date().toString(),
                                     isPublic: false)
         RealmManager.shared.save(data: new, success: { () in

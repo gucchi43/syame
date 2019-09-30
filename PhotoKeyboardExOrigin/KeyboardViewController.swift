@@ -32,6 +32,8 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     @IBOutlet weak var notFullButton: UIButton!
     @IBOutlet weak var notFullLabel: UILabel!
     
+    let logoImage = UIImage(named: "photo_logo")!
+    
 //    @IBOutlet weak var searchBar: UISearchBar!
     //     var searchBar = UISearchBar()
     
@@ -255,22 +257,28 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         guard let lastSelectedIndex = lastSelectedIndex else {
             return
         }
-        let pasetImage = currentPhotos()[lastSelectedIndex.row].image!
+//        let pasetImage = currentPhotos()[lastSelectedIndex.row].image!
         // The Pasteboard is nil if full access is not granted
         // 'image' is the UIImage you about to copy to the pasteboard
+        let selectImage = currentPhotos()[lastSelectedIndex.row].image!
+        let pasetImage = selectImage.composite(image:logoImage)!
         
         print("pasetImage : ", pasetImage)
         
         let pb = UIPasteboard.general
-        let type = UIPasteboard.typeListImage[0] as! String
-        if !type.isEmpty {
-            pb.setData(pasetImage.pngData()!, forPasteboardType: type)
-            if let readData = pb.data(forPasteboardType: type) {
-                let readImage = UIImage(data: readData, scale: 2)
-                print("\(pasetImage) == \(String(describing: pb.image)) == \(String(describing: readImage))")
-                updateUseNum(index: lastSelectedIndex.row)
-            }
-        }
+               let type = UIPasteboard.typeListImage[0] as! String
+               if !type.isEmpty {
+                pb.setData(pasetImage.jpegData(compressionQuality: 0.3)!, forPasteboardType: type)
+//                pb.setData(pasetImage.pngData()!, forPasteboardType: type)
+//                   pb.setData(pasetImage.pngData()!, forPasteboardType: type)
+                   if let readData = pb.data(forPasteboardType: type) {
+                       let readImage = UIImage(data: readData, scale: 2)
+                       print("\(pasetImage) == \(String(describing: pb.image)) == \(String(describing: readImage))")
+                       updateUseNum(index: lastSelectedIndex.row)
+                   }
+               }
+        
+        
     }
     
     func updateUseNum(index: Int) {
@@ -334,12 +342,12 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     
     func openAppSettings() {
         guard let application = getResponder() else { return }
-        application.perform(#selector(UIApplication.openURL(_:)), with: URL(string: UIApplication.openSettingsURLString))
+        application.perform("openURL:", with: URL(string: UIApplication.openSettingsURLString))
     }
     
     func openOfficialLINE() {
         guard let application = getResponder() else { return }
-        application.perform(#selector(UIApplication.openURL(_:)), with: URL(string: "http://line.me/ti/p/%40gox9644r"))
+        application.perform("openURL:", with: URL(string: "http://line.me/ti/p/%40gox9644r")) 
     }
     
     

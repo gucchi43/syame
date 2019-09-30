@@ -13,6 +13,7 @@ import DZNEmptyDataSet
 import DynamicColor
 import FontAwesome_swift
 import Firebase
+import FirebaseFirestoreSwift
 import Realm
 import RealmSwift
 import CHTCollectionViewWaterfallLayout
@@ -47,6 +48,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
     private var firePhotoCollection : CollectionReference = RootStore.rootDB().collection("ofirephoto")
     private var oFirePhotos : [OFirePhoto] = []
     private var lastDoc: DocumentSnapshot?
+    let logoImage = UIImage(named: "photo_logo_appver2")!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -188,9 +190,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
             let decoder = Firestore.Decoder()
             let newFirePhotos = snapshot.documents.map{ oFirePhoto -> OFirePhoto in
                 let data = oFirePhoto.data()
-                var model = try! decoder.decode(OFirePhoto.self, from: data)
-                model.id = oFirePhoto.documentID
-                print("model : ", model)
+                    var model = try! decoder.decode(OFirePhoto.self, from: data)
                 return model
             }
             self.oFirePhotos = newFirePhotos
@@ -428,7 +428,8 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
                                             image: image,
                                             imageHeight: selectData.imageHeight,
                                             imageWidth: selectData.imageWidth,
-                                            getDay: Date().toString(), isPublic: true)
+                                            getDay: Date().toString(),
+                                            isPublic: true)
             }
             // Realmにsaveする
             RealmManager.shared.save(data: photo, success: {() in

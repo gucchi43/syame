@@ -8,21 +8,21 @@
 
 import Foundation
 import Firebase
-import Ballcap
+import FirebaseFirestoreSwift
 import PhotoKeyboardFramework
 
 struct OFirePhoto: Codable, Equatable {
-    var id: String = ""
-    var title: String = ""
-    var imageHeight = 0
-    var imageWidth = 0
-    var imageUrl: String = ""
-    var genre: String = ""
-    var totalSaveCount: Int = 0
-    var weeklySaveCount: Int = 0
-    var weekStartDay: String = ""
-    var createdAt: Timestamp = Timestamp(date: Date())
-    var updateAt: Timestamp = Timestamp(date: Date()) 
+    var id: String
+    var title: String
+    var imageHeight: Int
+    var imageWidth: Int
+    var imageUrl: String
+    var genre: String
+    var totalSaveCount: Int
+    var weeklySaveCount: Int
+    var weekStartDay: String
+    var createdAt: Timestamp
+    var updateAt: Timestamp
 }
 
 final class RootStore {

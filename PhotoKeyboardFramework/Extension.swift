@@ -8,7 +8,6 @@
 
 import UIKit
 import Firebase
-import Ballcap
 import Foundation
 
 public class Lang {
@@ -90,6 +89,23 @@ extension UIImage {
         UIGraphicsEndImageContext()
         
         return resizedImage
+    }
+
+    public func composite(image: UIImage) -> UIImage? {
+        UIGraphicsBeginImageContextWithOptions(self.size, false, 0)
+        self.draw(in: CGRect(x: 0, y: 0, width: self.size.width, height: self.size.height))
+        
+        // 画像を右下に重ねる
+        let rect = CGRect(x: (self.size.width - image.size.width),
+                          y: (self.size.height - image.size.height),
+                          width: image.size.width,
+                          height: image.size.height)
+        image.draw(in: rect)
+        
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return image
     }
 }
 

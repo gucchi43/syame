@@ -1,5 +1,5 @@
 #Uncomment the next line to define a global platform for your project
-platform :ios, '12.0'
+platform :ios, '13.0'
 
 abstract_target 'All' do
   use_frameworks!
@@ -15,6 +15,7 @@ abstract_target 'All' do
   pod 'Firebase'
   pod 'Firebase/Core'
   pod 'Firebase/Firestore’
+  pod 'FirebaseFirestoreSwift', :git => 'https://github.com/firebase/firebase-ios-sdk.git', :branch => 'master'
   pod 'Firebase/RemoteConfig'
   pod 'Firebase/Messaging'
   pod 'FirebaseUI/Storage', '~> 8.0'
@@ -61,7 +62,7 @@ abstract_target 'All' do
   target 'PhotoKeyboardFramework' do
     use_frameworks!
     pod 'RealmSwift'
-    pod 'Ballcap'
+    #pod 'Ballcap'
   end
 
 end

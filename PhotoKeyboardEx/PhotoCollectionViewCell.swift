@@ -22,7 +22,7 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var saveButton: UIButton!
     @IBOutlet weak var countIconLabel: UILabel!
     @IBOutlet weak var countNumLabel: UILabel!
-
+    
     @IBOutlet weak var baseView: UIView!
     
     override func awakeFromNib() {
