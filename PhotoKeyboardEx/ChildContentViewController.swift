@@ -48,7 +48,6 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
     private var firePhotoCollection : CollectionReference = RootStore.rootDB().collection("ofirephoto")
     private var oFirePhotos : [OFirePhoto] = []
     private var lastDoc: DocumentSnapshot?
-    let logoImage = UIImage(named: "photo_logo_appver2")!
     
     override func viewDidLoad() {
         super.viewDidLoad()
