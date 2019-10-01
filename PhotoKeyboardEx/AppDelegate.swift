@@ -10,6 +10,7 @@ import UIKit
 import PhotoKeyboardFramework
 import IQKeyboardManagerSwift
 import Firebase
+import FirebaseAuth
 import Alamofire
 import SwiftyJSON
 import GoogleMobileAds
@@ -28,6 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             FirebaseApp.configure()
         }
         // 省略
+        anonymousAuth()
         setRemoteConfig()
         setLayout()
         IQKeyboardManager.shared.enable = true
@@ -47,6 +49,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //        }
 //        // 省略
 //        setRemoteConfig()
+    }
+    
+    func anonymousAuth() {
+        if let user = Auth.auth().currentUser  {
+            print(user.uid, ", login")
+        } else {
+            Auth.auth().signInAnonymously { (authUser, err) in
+                if let authUser = authUser {
+                    GroupeDefaults.shared.setAuthUid(id: String(authUser.user.uid))
+                }
+            }
+        }
     }
     
     private func setLayout() {

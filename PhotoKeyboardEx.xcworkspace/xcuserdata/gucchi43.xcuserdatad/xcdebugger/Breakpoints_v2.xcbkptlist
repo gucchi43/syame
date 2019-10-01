@@ -30,8 +30,8 @@
             filePath = "PhotoKeyboardExOrigin/KeyboardViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "218"
-            endingLineNumber = "218"
+            startingLineNumber = "213"
+            endingLineNumber = "213"
             landmarkName = "setUpHeightConstraint()"
             landmarkType = "7">
          </BreakpointContent>

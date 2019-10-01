@@ -24,6 +24,7 @@ public class RealmPhoto: Object {
     @objc public dynamic var isPublic = true
     @objc public dynamic var imageHeight = 0
     @objc public dynamic var imageWidth = 0
+    @objc public dynamic var ownerId = ""
     @objc dynamic private var _image: UIImage? = nil
     @objc public dynamic var image: UIImage? {
         set{
@@ -47,7 +48,7 @@ public class RealmPhoto: Object {
     @objc dynamic private var imageData: Data? = nil
 
     
-    public static func create(id: String, text: String, image: UIImage, imageHeight: Int, imageWidth: Int, getDay: String, isPublic: Bool) -> RealmPhoto{
+    public static func create(id: String, text: String, image: UIImage, imageHeight: Int, imageWidth: Int, getDay: String, isPublic: Bool, ownerId: String) -> RealmPhoto{
         let realmPhoto = RealmPhoto()
         realmPhoto.id = id
         realmPhoto.text = text
@@ -56,6 +57,7 @@ public class RealmPhoto: Object {
         realmPhoto.imageWidth = imageWidth
         realmPhoto.getDay = getDay
         realmPhoto.isPublic = isPublic
+        realmPhoto.ownerId = ownerId
         return realmPhoto
     }
     
@@ -79,4 +81,6 @@ public let officialPhoto = RealmPhoto.create(id: "FB717B84-D12B-467E-9494-1ED51F
                                              image: UIImage(named: "officialPhotoFirst")!,
                                              imageHeight: 400,
                                              imageWidth: 355,
-                                             getDay: Date().toString(), isPublic: false)
+                                             getDay: Date().toString(),
+                                             isPublic: false,
+                                             ownerId: "official")

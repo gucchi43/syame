@@ -428,7 +428,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
                                             imageHeight: selectData.imageHeight,
                                             imageWidth: selectData.imageWidth,
                                             getDay: Date().toString(),
-                                            isPublic: true)
+                                            isPublic: true, ownerId: selectData.ownerId!)
             }
             // Realmにsaveする
             RealmManager.shared.save(data: photo, success: {() in

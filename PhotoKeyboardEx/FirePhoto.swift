@@ -23,6 +23,7 @@ struct OFirePhoto: Codable, Equatable {
     var weekStartDay: String
     var createdAt: Timestamp
     var updateAt: Timestamp
+    var ownerId: String?
 }
 
 final class RootStore {

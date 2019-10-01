@@ -13,6 +13,7 @@ abstract_target 'All' do
   pod 'DZNEmptyDataSet'
   pod 'FontAwesome.swift'
   pod 'Firebase'
+  pod 'Firebase/Auth'
   pod 'Firebase/Core'
   pod 'Firebase/Firestore’
   pod 'FirebaseFirestoreSwift', :git => 'https://github.com/firebase/firebase-ios-sdk.git', :branch => 'master'

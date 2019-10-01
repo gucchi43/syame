@@ -10,6 +10,7 @@ import UIKit
 import SwiftyUserDefaults
 
 extension DefaultsKeys {
+    public static let authUid = DefaultsKey<String>("authUid", defaultValue: "")
     public static let launchCount = DefaultsKey<Int>("launchCount", defaultValue: 0)
     public static let saveLife = DefaultsKey<Int>("saveLife", defaultValue: 5)
     public static let sendCount = DefaultsKey<Int>("sendCount", defaultValue: 0)
@@ -23,6 +24,17 @@ public final class GroupeDefaults {
     public static let shared = GroupeDefaults()
     public var sharedDefaults = UserDefaults(suiteName: "group.bocchi.PhotoKeyboardEx")!
 
+    public func authUid() -> String? {
+        if sharedDefaults[.authUid] == "" {
+            return nil
+        } else {
+            return sharedDefaults[.authUid]
+        }
+    }
+    public func setAuthUid(id: String) {
+        sharedDefaults[.authUid] = id
+    }
+    
     public func isUsagePush() -> Bool {
         if sharedDefaults[.usageNeedFlag] {
             return true

@@ -204,7 +204,8 @@ class AddViewController: UIViewController {
                                           weeklySaveCount: 1,
                                           weekStartDay: Date().dateAt(.startOfWeek).toString(),
                                           createdAt: Timestamp(date: Date()),
-                                          updateAt: Timestamp(date: Date()))
+                                          updateAt: Timestamp(date: Date()),
+                                          ownerId: GroupeDefaults.shared.authUid()!)
                 let encoder = Firestore.Encoder()
                 let newPhotoDoc = try! encoder.encode(newPhoto)
                 self.firePhotoCollection.document(originID).setData(newPhotoDoc, completion: { (error) in
@@ -226,7 +227,8 @@ class AddViewController: UIViewController {
                                     image: postedImage,
                                     imageHeight: Int(postedImage.size.height),
                                     imageWidth: Int(postedImage.size.width),
-                                    getDay: Date().toString(), isPublic: true)
+                                    getDay: Date().toString(), isPublic: true,
+                                    ownerId: GroupeDefaults.shared.authUid()!)
         RealmManager.shared.save(data: new, success: { () in
             success()
         }) { (error) in
@@ -244,7 +246,8 @@ class AddViewController: UIViewController {
                                     imageHeight: Int(postImage.size.height),
                                     imageWidth: Int(postImage.size.width),
                                     getDay: Date().toString(),
-                                    isPublic: false)
+                                    isPublic: false,
+                                    ownerId: GroupeDefaults.shared.authUid()!)
         RealmManager.shared.save(data: new, success: { () in
             success()
         }) { (error) in
