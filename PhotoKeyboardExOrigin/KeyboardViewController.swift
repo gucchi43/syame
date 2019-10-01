@@ -27,11 +27,13 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     @IBOutlet weak var helpButton: UIButton!
     @IBOutlet weak var sortRankButton: UIButton!
     @IBOutlet weak var sortABCButton: UIButton!
+    @IBOutlet weak var boardChangeButton: UIButton!
     
     @IBOutlet weak var notFullBGView: UIView!
     @IBOutlet weak var notFullButton: UIButton!
     @IBOutlet weak var notFullLabel: UILabel!
     
+    var textBoardFlag = false
     let logoImage = UIImage(named: "photo_logo")!
     
 //    @IBOutlet weak var searchBar: UISearchBar!
@@ -49,6 +51,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     
     let generator = UINotificationFeedbackGenerator()
     
+    let textArray = ["q","w","e","r","t","y","u","i","o","p","a","s","d","f","g","h","j","k","l","@","z","x","c","v","b","n","m","!","?","0","1","2","3","4","5","6","7","8","9","×"]
     override func updateViewConstraints() {
         super.updateViewConstraints()
 
@@ -61,27 +64,30 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         if FirebaseApp.app() == nil {
             FirebaseApp.configure()
         }
-        var nib = UINib(nibName:"MainKBView", bundle:nil)
-        var object = nib.instantiate(withOwner: self,options:nil)
-        var v = object[0] as! UIView
-        //                self.inputView!.addSubview(v)
-        //        self.view.addSubview(v)
-        view = v
+        baseSetUp()
         commonInit()
-        generator.prepare()
+        collectionInit()
         
         if self.hasFullAccess {
             print("FullAccess is true")
             favPhotos = RealmManager.shared.realmData.sorted(byKeyPath: "useNum")
             abcPhotos = RealmManager.shared.realmData.sorted(byKeyPath: "text")
             RealmManager.shared.delegate = self
-            collectionInit()
             notFullInit(notFull: false)
             sortState()
         } else {
             print("FullAccess is false")
             notFullInit(notFull: true)
         }
+    }
+        
+    func baseSetUp() {
+        var nib = UINib(nibName:"MainKBView", bundle:nil)
+        var object = nib.instantiate(withOwner: self,options:nil)
+        var v = object[0] as! UIView
+        //                self.inputView!.addSubview(v)
+        //        self.view.addSubview(v)
+        view = v
     }
     
     func notFullInit(notFull: Bool) {
@@ -114,6 +120,10 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         sortABCButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 20, style: .solid)
         sortABCButton.setTitle(String.fontAwesomeIcon(name: .sortAlphaDown), for: .normal)
         
+        boardChangeButton.setTitleColor(.acGreen(), for: .normal)
+        boardChangeButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 20, style: .solid)
+        boardChangeButton.setTitle(String.fontAwesomeIcon(name: .font), for: .normal)
+        
         self.nextKeyboardButton.setTitleColor(.acGreen(), for: .normal)
         self.nextKeyboardButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 20, style: .solid)
         self.nextKeyboardButton.setTitle(String.fontAwesomeIcon(name: .globe), for: .normal)
@@ -135,6 +145,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
                 "→".withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "Turn on ".withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "[Allow Full Access]".withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white)
             self.notFullLabel.attributedText = notFullLabelStrig
         }
+        generator.prepare()
         
         // 多言語対応がうまくいかずとりあえずコメントアウト
 //        if Lang.langRootKey() == "JP" {
@@ -150,6 +161,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     
     func collectionInit() {
         collectionView.register(UINib(nibName: "PhotoCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "PhotoCollectionViewCell")
+        collectionView.register(UINib(nibName: "TextCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "TextCollectionViewCell")
         collectionView.backgroundColor = .bgDark()
         collectionView.allowsMultipleSelection = false
         updateViewConstraints()
@@ -188,7 +200,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         } else {
             customHeight = UIScreen.main.bounds.height / 2
         }
-        
         if heightConstraint == nil {
             heightConstraint = NSLayoutConstraint(item: view,
                                                   attribute: .height,
@@ -327,6 +338,27 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
       openAppSettings()
     }
     
+    @IBAction func tapBoardChangeButton(_ sender: Any) {
+        textBoardFlag = !textBoardFlag
+        if textBoardFlag {
+            heightConstraint.constant = 200
+            boardChangeButton.setTitle(String.fontAwesomeIcon(name: .images), for: .normal)
+            notFullBGView.isHidden = true
+        } else {
+            heightConstraint.constant = UIScreen.main.bounds.height / 2
+            boardChangeButton.setTitle(String.fontAwesomeIcon(name: .font), for: .normal)
+            if self.hasFullAccess {
+                notFullBGView.isHidden = true
+            } else {
+                notFullBGView.isHidden = false
+            }
+        }
+        collectionView.reloadData {
+            print("collectionView 更新完了 textBoardFlag -> ",self.textBoardFlag)
+        }
+    }
+    
+    
     func getResponder() -> UIResponder? {
         var responder: UIResponder? = self
         var sharedApplication: UIResponder?
@@ -367,39 +399,67 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
 
 extension KeyboardViewController: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-//        return currentPhotos().count
-        return currentPhotos().count + 1
+        if textBoardFlag {
+            return textArray.count
+        } else {
+            if self.hasFullAccess {
+                // +1は最後のCellの追加ボタンCell分
+                return currentPhotos().count + 1
+            } else {
+                return 0
+            }
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCollectionViewCell", for: indexPath)
-        if let cell = cell as? PhotoCollectionViewCell {
-//            if let lastSelectedIndex = lastSelectedIndex, lastSelectedIndex == indexPath {
-//                cell.configure(photo: photos![indexPath.row], isSelected: true)
-//            } else {
-//                cell.configure(photo: photos![indexPath.row], isSelected: false)
-//            }
-            if indexPath.row == currentPhotos().count {
-                cell.addCellconfigure()
-            } else {
-                cell.configure(photo: currentPhotos()[indexPath.row])
-                cell.isCheck = false
+        
+        if textBoardFlag {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "TextCollectionViewCell", for: indexPath)
+            if let cell = cell as? TextCollectionViewCell {
+                cell.configure(content: textArray[indexPath.row])
             }
-//            }
-            print("cell 生成 index: ", indexPath.row)}
-        return cell
+            return cell
+        } else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCollectionViewCell", for: indexPath)
+            if let cell = cell as? PhotoCollectionViewCell {
+                //            if let lastSelectedIndex = lastSelectedIndex, lastSelectedIndex == indexPath {
+                //                cell.configure(photo: photos![indexPath.row], isSelected: true)
+                //            } else {
+                //                cell.configure(photo: photos![indexPath.row], isSelected: false)
+                //            }
+                if indexPath.row == currentPhotos().count {
+                    cell.addCellconfigure()
+                } else {
+                    cell.configure(photo: currentPhotos()[indexPath.row])
+                    cell.isCheck = false
+                }
+                //            }
+                print("cell 生成 index: ", indexPath.row)}
+            return cell
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
-        //　横幅を画面サイズの約半分にする
-        if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
-            let cellSize:CGFloat = self.view.bounds.width/4 - 1.5
-            return CGSize(width: cellSize, height: cellSize)
+        if textBoardFlag {
+            //　横幅を画面の10等分
+            if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
+                let cellSize:CGFloat = self.view.bounds.width/10 - 2.7
+                return CGSize(width: cellSize, height: cellSize)
+            } else {
+                let cellSize:CGFloat = self.view.bounds.width/10 - 2.7
+                return CGSize(width: cellSize, height: cellSize)
+            }
         } else {
-            let cellSize:CGFloat = self.view.bounds.width/2 - 0.5
-            return CGSize(width: cellSize, height: cellSize)
+            //　横幅を画面サイズの約半分にする
+            if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
+                let cellSize:CGFloat = self.view.bounds.width/4 - 1.5
+                return CGSize(width: cellSize, height: cellSize)
+            } else {
+                let cellSize:CGFloat = self.view.bounds.width/2 - 0.5
+                return CGSize(width: cellSize, height: cellSize)
+            }
         }
     }
     
@@ -416,76 +476,86 @@ extension KeyboardViewController: UICollectionViewDataSource, UICollectionViewDe
 
 extension KeyboardViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-//        var newValue = self.getModel(at: indexPath) as! Model
-//
-//        guard var newValue = self.getPhoto(at: indexPath) else { return }
-        
-        print("=========")
-        print("call didDeselectItemAt")
-        print("indexpath : ", indexPath)
-//        print("newValue : ", self.getPhoto(at: indexPath)!)
-        print("=========")
-        
-        print("didDeselectItemAt 更新前のphoto : ", currentPhotos()[indexPath.row])
-//        self.getPhoto(at: indexPath)!.isSelected = false
-        print("didDeselectItemAt 更新前のphoto : ", currentPhotos()[indexPath.row])
-//        newValue.isSelected = false
-//        models[indexPath.row] = newValue
-        
-        
-        guard let cell = collectionView.cellForItem(at: indexPath) as? PhotoCollectionViewCell else {
-            return //the cell is not visible
+        if textBoardFlag == false{
+            //        var newValue = self.getModel(at: indexPath) as! Model
+            //
+            //        guard var newValue = self.getPhoto(at: indexPath) else { return }
+            
+            print("=========")
+            print("call didDeselectItemAt")
+            print("indexpath : ", indexPath)
+            //        print("newValue : ", self.getPhoto(at: indexPath)!)
+            print("=========")
+            
+            print("didDeselectItemAt 更新前のphoto : ", currentPhotos()[indexPath.row])
+            //        self.getPhoto(at: indexPath)!.isSelected = false
+            print("didDeselectItemAt 更新前のphoto : ", currentPhotos()[indexPath.row])
+            //        newValue.isSelected = false
+            //        models[indexPath.row] = newValue
+            
+            
+            guard let cell = collectionView.cellForItem(at: indexPath) as? PhotoCollectionViewCell else {
+                return //the cell is not visible
+            }
+            cell.isCheck = false
         }
-        cell.isCheck = false
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let cell = collectionView.cellForItem(at: indexPath) as! PhotoCollectionViewCell
         
-        // AddCell,管理アプリへ遷移
-//        if indexPath.row == currentPhotos().count + 1 {
-        if indexPath.row == currentPhotos().count {
-            goMainApp()
+        if textBoardFlag {
+            if textArray[indexPath.row] == "×" {
+                self.textDocumentProxy.deleteBackward()
+            } else {
+                textDocumentProxy.insertText(textArray[indexPath.row])
+            }
         } else {
-            // 未選択->選択済み
-            guard let lastSelectedIndex = self.lastSelectedIndex, lastSelectedIndex == indexPath else {
+            let cell = collectionView.cellForItem(at: indexPath) as! PhotoCollectionViewCell
+            // AddCell,管理アプリへ遷移
+            //        if indexPath.row == currentPhotos().count + 1 {
+            if indexPath.row == currentPhotos().count {
+                goMainApp()
+            } else {
+                // 未選択->選択済み
+                guard let lastSelectedIndex = self.lastSelectedIndex, lastSelectedIndex == indexPath else {
+                    print("=========")
+                    print("call didSelectItemAt 通常モード")
+                    print("indexpath : ", indexPath)
+                    print("=========")
+                    self.lastSelectedIndex = indexPath
+                    cell.isCheck = true
+                    print("didSelectItemAt 通常モード 更新前のphoto : ", currentPhotos()[indexPath.row])
+                    //            let updateValue = numUpdatePhoto(current: currentPhotos()[indexPath.row])
+                    //            RealmManager.shared.update(data: updateValue, success: { () in
+                    //            }) { (error) in
+                    //                print(error)
+                    //            }
+                    print("didSelectItemAt 通常モード 更新後のphoto : ", currentPhotos()[indexPath.row])
+                    self.copyBoard()
+                    GroupeDefaults.shared.incrementSendCount()
+                    self.tapAnimation(cell: cell)
+                    return
+                }
+                // 選択済み->選択解除
                 print("=========")
-                print("call didSelectItemAt 通常モード")
+                print("call didSelectItemAt 解除モード")
                 print("indexpath : ", indexPath)
                 print("=========")
-                self.lastSelectedIndex = indexPath
-                cell.isCheck = true
-                print("didSelectItemAt 通常モード 更新前のphoto : ", currentPhotos()[indexPath.row])
-                //            let updateValue = numUpdatePhoto(current: currentPhotos()[indexPath.row])
-                //            RealmManager.shared.update(data: updateValue, success: { () in
-                //            }) { (error) in
-                //                print(error)
-                //            }
-                print("didSelectItemAt 通常モード 更新後のphoto : ", currentPhotos()[indexPath.row])
-                self.copyBoard()
-                GroupeDefaults.shared.incrementSendCount()
-                self.tapAnimation(cell: cell)
-                return
+                
+                self.collectionView.deselectItem(at: indexPath, animated: true)
+                self.lastSelectedIndex = nil
+                cell.isCheck = false
+                print("didSelectItemAt 解除モード 更新前のphoto : ", currentPhotos()[indexPath.row])
+                
+                //        guard var newValue = self.getPhoto(at: indexPath) else { return }
+                //        newValue.isSelected = false
+                RealmManager.shared.update(data: self.getPhoto(at: indexPath)!, success: { () in
+                    print()
+                }) { (error) in
+                    print(error)
+                }
+                print("didSelectItemAt 解除モード 更新後のphoto : ", currentPhotos()[indexPath.row])
             }
-            // 選択済み->選択解除
-            print("=========")
-            print("call didSelectItemAt 解除モード")
-            print("indexpath : ", indexPath)
-            print("=========")
-            
-            self.collectionView.deselectItem(at: indexPath, animated: true)
-            self.lastSelectedIndex = nil
-            cell.isCheck = false
-            print("didSelectItemAt 解除モード 更新前のphoto : ", currentPhotos()[indexPath.row])
-            
-            //        guard var newValue = self.getPhoto(at: indexPath) else { return }
-            //        newValue.isSelected = false
-            RealmManager.shared.update(data: self.getPhoto(at: indexPath)!, success: { () in
-                print()
-            }) { (error) in
-                print(error)
-            }
-            print("didSelectItemAt 解除モード 更新後のphoto : ", currentPhotos()[indexPath.row])
         }
     }
     

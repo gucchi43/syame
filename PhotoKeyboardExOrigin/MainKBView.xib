@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina4_7" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="KeyboardViewController" customModule="PhotoKeyboardExOrigin" customModuleProvider="target">
             <connections>
+                <outlet property="boardChangeButton" destination="4JH-JF-vgT" id="6jo-3F-Ycs"/>
                 <outlet property="collectionView" destination="0rY-Wd-Qi6" id="9Io-iw-EgY"/>
                 <outlet property="collectionViewBottomConstraint" destination="CxA-Lv-mtf" id="lv3-FP-MBE"/>
                 <outlet property="helpButton" destination="2dK-tC-E8q" id="upy-UF-Z6A"/>
@@ -129,6 +128,18 @@
                         <constraint firstItem="84v-GF-uTh" firstAttribute="leading" secondItem="uKr-7Y-y2u" secondAttribute="leading" constant="32" id="vDL-Gx-axO"/>
                     </constraints>
                 </view>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4JH-JF-vgT">
+                    <rect key="frame" x="252" y="0.0" width="36" height="36"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="36" id="Vgo-qn-4wZ"/>
+                        <constraint firstAttribute="width" constant="36" id="kG2-JB-Obf"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="15"/>
+                    <state key="normal" title="che"/>
+                    <connections>
+                        <action selector="tapBoardChangeButton:" destination="-1" eventType="touchUpInside" id="P5M-Ri-FB0"/>
+                    </connections>
+                </button>
             </subviews>
             <color key="backgroundColor" red="0.14117647059999999" green="0.015686274510000001" blue="0.25098039220000001" alpha="1" colorSpace="deviceRGB"/>
             <constraints>
@@ -136,6 +147,7 @@
                 <constraint firstItem="0rY-Wd-Qi6" firstAttribute="bottom" secondItem="iN0-l3-epB" secondAttribute="bottom" id="CxA-Lv-mtf"/>
                 <constraint firstItem="css-Gc-FnU" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="12" id="EFJ-79-YQE"/>
                 <constraint firstItem="2dK-tC-E8q" firstAttribute="leading" secondItem="sq0-76-pZQ" secondAttribute="trailing" id="ERA-Zy-MXs"/>
+                <constraint firstItem="0rY-Wd-Qi6" firstAttribute="top" secondItem="4JH-JF-vgT" secondAttribute="bottom" id="F1S-iS-hMX"/>
                 <constraint firstItem="2dK-tC-E8q" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="Fm1-J0-EWu"/>
                 <constraint firstItem="0rY-Wd-Qi6" firstAttribute="top" secondItem="Vdc-LT-Dm6" secondAttribute="bottom" id="Mya-gK-k8F"/>
                 <constraint firstItem="css-Gc-FnU" firstAttribute="top" secondItem="uKr-7Y-y2u" secondAttribute="bottom" id="QA2-eh-Zqi"/>
@@ -145,9 +157,11 @@
                 <constraint firstItem="Vdc-LT-Dm6" firstAttribute="leading" secondItem="2dK-tC-E8q" secondAttribute="trailing" id="ai6-Ro-JbC"/>
                 <constraint firstItem="sq0-76-pZQ" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="aro-Ub-KyH"/>
                 <constraint firstItem="0rY-Wd-Qi6" firstAttribute="top" secondItem="2dK-tC-E8q" secondAttribute="bottom" id="bfF-LB-Ccp"/>
+                <constraint firstItem="4JH-JF-vgT" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="csa-ON-6F5"/>
                 <constraint firstItem="uKr-7Y-y2u" firstAttribute="top" secondItem="sq0-76-pZQ" secondAttribute="bottom" id="f3k-U6-saQ"/>
                 <constraint firstItem="0rY-Wd-Qi6" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="ibc-7O-kCB"/>
                 <constraint firstItem="0rY-Wd-Qi6" firstAttribute="trailing" secondItem="iN0-l3-epB" secondAttribute="trailing" id="mxg-Mb-KNJ"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="4JH-JF-vgT" secondAttribute="trailing" constant="12" id="mzo-Hn-Uge"/>
                 <constraint firstItem="uKr-7Y-y2u" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" id="pFb-pH-tWl"/>
                 <constraint firstItem="duc-Sx-qUH" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" id="rTd-zb-fJM"/>
                 <constraint firstItem="0rY-Wd-Qi6" firstAttribute="top" secondItem="sq0-76-pZQ" secondAttribute="bottom" id="vy7-6L-jpQ"/>

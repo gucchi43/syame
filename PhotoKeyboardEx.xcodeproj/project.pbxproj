@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -29,6 +29,8 @@
 		8258686922F2302D002941F4 /* PhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8258686022F2302D002941F4 /* PhotoCollectionViewCell.swift */; };
 		826D657F22F831B500F66583 /* RealmManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826D657E22F831B500F66583 /* RealmManager.swift */; };
 		826D658122F99EC500F66583 /* Pods_All_PhotoKeyboardFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826D658022F99EC500F66583 /* Pods_All_PhotoKeyboardFramework.framework */; };
+		82725B7023421E5100CEA27F /* TextCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82725B6E23421E5100CEA27F /* TextCollectionViewCell.swift */; };
+		82725B7123421E5100CEA27F /* TextCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 82725B6F23421E5100CEA27F /* TextCollectionViewCell.xib */; };
 		8278D13A22EE5A700034C2CC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8278D13922EE5A700034C2CC /* AppDelegate.swift */; };
 		8278D13F22EE5A700034C2CC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8278D13D22EE5A700034C2CC /* Main.storyboard */; };
 		8278D14122EE5A730034C2CC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8278D14022EE5A730034C2CC /* Assets.xcassets */; };
@@ -173,6 +175,8 @@
 		8258686022F2302D002941F4 /* PhotoCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewCell.swift; sourceTree = "<group>"; };
 		826D657E22F831B500F66583 /* RealmManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmManager.swift; sourceTree = "<group>"; };
 		826D658022F99EC500F66583 /* Pods_All_PhotoKeyboardFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_All_PhotoKeyboardFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		82725B6E23421E5100CEA27F /* TextCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextCollectionViewCell.swift; sourceTree = "<group>"; };
+		82725B6F23421E5100CEA27F /* TextCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TextCollectionViewCell.xib; sourceTree = "<group>"; };
 		8278D13622EE5A700034C2CC /* PhotoKeyboardEx.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PhotoKeyboardEx.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8278D13922EE5A700034C2CC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		8278D13E22EE5A700034C2CC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -384,6 +388,8 @@
 				8258685A22F2302C002941F4 /* KeyboardViewController.swift */,
 				8258686022F2302D002941F4 /* PhotoCollectionViewCell.swift */,
 				8258685822F2302C002941F4 /* PhotoCollectionViewCell.xib */,
+				82725B6E23421E5100CEA27F /* TextCollectionViewCell.swift */,
+				82725B6F23421E5100CEA27F /* TextCollectionViewCell.xib */,
 				8280C03A22F24DE20069BF8B /* ColorManager.swift */,
 				82EA8925232AD4D10022832E /* GoogleService-Info.plist */,
 			);
@@ -729,6 +735,7 @@
 			files = (
 				8258686422F2302D002941F4 /* LottieFile in Resources */,
 				8258686122F2302D002941F4 /* PhotoCollectionViewCell.xib in Resources */,
+				82725B7123421E5100CEA27F /* TextCollectionViewCell.xib in Resources */,
 				82EA8926232AD4D10022832E /* GoogleService-Info.plist in Resources */,
 				8258686622F2302D002941F4 /* MainKBView.xib in Resources */,
 				8258686222F2302D002941F4 /* Media.xcassets in Resources */,
@@ -930,6 +937,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8258686722F2302D002941F4 /* Model.swift in Sources */,
+				82725B7023421E5100CEA27F /* TextCollectionViewCell.swift in Sources */,
 				8258686322F2302D002941F4 /* KeyboardViewController.swift in Sources */,
 				8258686922F2302D002941F4 /* PhotoCollectionViewCell.swift in Sources */,
 				8280C03B22F24DE20069BF8B /* ColorManager.swift in Sources */,
