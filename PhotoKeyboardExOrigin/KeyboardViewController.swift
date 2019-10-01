@@ -195,11 +195,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     
     func setUpHeightConstraint() {
         var customHeight: CGFloat!
-//        if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
-//            customHeight = UIScreen.main.bounds.height / 2
-//        } else {
-//            customHeight = UIScreen.main.bounds.height / 2
-//        }
         if textBoardFlag {
             customHeight = 200
         } else {
