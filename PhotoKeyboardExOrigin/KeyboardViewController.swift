@@ -34,7 +34,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     @IBOutlet weak var notFullLabel: UILabel!
     
     var textBoardFlag = false
-    let logoImage = UIImage(named: "photo_logo")!
+    let logoImage = UIImage(named: "photo_logo_2")!
     
 //    @IBOutlet weak var searchBar: UISearchBar!
     //     var searchBar = UISearchBar()
@@ -272,24 +272,18 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         // The Pasteboard is nil if full access is not granted
         // 'image' is the UIImage you about to copy to the pasteboard
         let selectImage = currentPhotos()[lastSelectedIndex.row].image!
-        let pasetImage = selectImage.composite(image:logoImage)!
-        
-        print("pasetImage : ", pasetImage)
-        
+        let pasetImage: UIImage
+        pasetImage = selectImage.composite(image:logoImage, rate: 1.0)!
         let pb = UIPasteboard.general
-               let type = UIPasteboard.typeListImage[0] as! String
-               if !type.isEmpty {
-                pb.setData(pasetImage.jpegData(compressionQuality: 0.3)!, forPasteboardType: type)
-//                pb.setData(pasetImage.pngData()!, forPasteboardType: type)
-//                   pb.setData(pasetImage.pngData()!, forPasteboardType: type)
-                   if let readData = pb.data(forPasteboardType: type) {
-                       let readImage = UIImage(data: readData, scale: 2)
-                       print("\(pasetImage) == \(String(describing: pb.image)) == \(String(describing: readImage))")
-                       updateUseNum(index: lastSelectedIndex.row)
-                   }
-               }
-        
-        
+        let type = UIPasteboard.typeListImage[0] as! String
+        if !type.isEmpty {
+            pb.setData(pasetImage.jpegData(compressionQuality: 0.3)!, forPasteboardType: type)
+            if let readData = pb.data(forPasteboardType: type) {
+                let readImage = UIImage(data: readData, scale: 2)
+                print("\(pasetImage) == \(String(describing: pb.image)) == \(String(describing: readImage))")
+                updateUseNum(index: lastSelectedIndex.row)
+            }
+        }
     }
     
     func updateUseNum(index: Int) {

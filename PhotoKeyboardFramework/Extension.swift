@@ -91,15 +91,14 @@ extension UIImage {
         return resizedImage
     }
 
-    public func composite(image: UIImage) -> UIImage? {
+    public func composite(image: UIImage, rate: CGFloat = 1.0) -> UIImage? {
         UIGraphicsBeginImageContextWithOptions(self.size, false, 0)
         self.draw(in: CGRect(x: 0, y: 0, width: self.size.width, height: self.size.height))
-        
         // 画像を右下に重ねる
-        let rect = CGRect(x: (self.size.width - image.size.width),
-                          y: (self.size.height - image.size.height),
-                          width: image.size.width,
-                          height: image.size.height)
+        let rect = CGRect(x: (self.size.width - image.size.width * rate),
+                          y: (self.size.height - image.size.height * rate),
+                          width: image.size.width * rate,
+                          height: image.size.height * rate)
         image.draw(in: rect)
         
         let image = UIGraphicsGetImageFromCurrentImageContext()

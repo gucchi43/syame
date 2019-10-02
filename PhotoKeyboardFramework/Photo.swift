@@ -76,11 +76,11 @@ public class RealmPhoto: Object {
     }
 }
 
-public let officialPhoto = RealmPhoto.create(id: "FB717B84-D12B-467E-9494-1ED51F3C6BB2",
+public let officialPhoto = RealmPhoto.create(id: "A04C59BD-F2CC-43ED-B0B5-39E55A03E283",
                                              text: "おもんない！",
                                              image: UIImage(named: "officialPhotoFirst")!,
-                                             imageHeight: 400,
-                                             imageWidth: 355,
+                                             imageHeight: 600,
+                                             imageWidth: 532,
                                              getDay: Date().toString(),
                                              isPublic: false,
                                              ownerId: "official")

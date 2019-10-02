@@ -24,12 +24,8 @@ public final class GroupeDefaults {
     public static let shared = GroupeDefaults()
     public var sharedDefaults = UserDefaults(suiteName: "group.bocchi.PhotoKeyboardEx")!
 
-    public func authUid() -> String? {
-        if sharedDefaults[.authUid] == "" {
-            return nil
-        } else {
-            return sharedDefaults[.authUid]
-        }
+    public func authUid() -> String {
+        return sharedDefaults[.authUid]
     }
     public func setAuthUid(id: String) {
         sharedDefaults[.authUid] = id

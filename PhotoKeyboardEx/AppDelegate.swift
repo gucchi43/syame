@@ -52,8 +52,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func anonymousAuth() {
+        print("uid: ", GroupeDefaults.shared.authUid())
         if let user = Auth.auth().currentUser  {
             print(user.uid, ", login")
+            GroupeDefaults.shared.setAuthUid(id: String(user.uid))
         } else {
             Auth.auth().signInAnonymously { (authUser, err) in
                 if let authUser = authUser {
