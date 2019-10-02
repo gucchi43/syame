@@ -471,23 +471,6 @@ extension KeyboardViewController: UICollectionViewDataSource, UICollectionViewDe
 extension KeyboardViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         if textBoardFlag == false{
-            //        var newValue = self.getModel(at: indexPath) as! Model
-            //
-            //        guard var newValue = self.getPhoto(at: indexPath) else { return }
-            
-            print("=========")
-            print("call didDeselectItemAt")
-            print("indexpath : ", indexPath)
-            //        print("newValue : ", self.getPhoto(at: indexPath)!)
-            print("=========")
-            
-            print("didDeselectItemAt 更新前のphoto : ", currentPhotos()[indexPath.row])
-            //        self.getPhoto(at: indexPath)!.isSelected = false
-            print("didDeselectItemAt 更新前のphoto : ", currentPhotos()[indexPath.row])
-            //        newValue.isSelected = false
-            //        models[indexPath.row] = newValue
-            
-            
             guard let cell = collectionView.cellForItem(at: indexPath) as? PhotoCollectionViewCell else {
                 return //the cell is not visible
             }
@@ -512,43 +495,22 @@ extension KeyboardViewController: UICollectionViewDelegate {
             } else {
                 // 未選択->選択済み
                 guard let lastSelectedIndex = self.lastSelectedIndex, lastSelectedIndex == indexPath else {
-                    print("=========")
-                    print("call didSelectItemAt 通常モード")
-                    print("indexpath : ", indexPath)
-                    print("=========")
                     self.lastSelectedIndex = indexPath
                     cell.isCheck = true
-                    print("didSelectItemAt 通常モード 更新前のphoto : ", currentPhotos()[indexPath.row])
-                    //            let updateValue = numUpdatePhoto(current: currentPhotos()[indexPath.row])
-                    //            RealmManager.shared.update(data: updateValue, success: { () in
-                    //            }) { (error) in
-                    //                print(error)
-                    //            }
-                    print("didSelectItemAt 通常モード 更新後のphoto : ", currentPhotos()[indexPath.row])
                     self.copyBoard()
                     GroupeDefaults.shared.incrementSendCount()
                     self.tapAnimation(cell: cell)
                     return
                 }
                 // 選択済み->選択解除
-                print("=========")
-                print("call didSelectItemAt 解除モード")
-                print("indexpath : ", indexPath)
-                print("=========")
-                
                 self.collectionView.deselectItem(at: indexPath, animated: true)
                 self.lastSelectedIndex = nil
                 cell.isCheck = false
-                print("didSelectItemAt 解除モード 更新前のphoto : ", currentPhotos()[indexPath.row])
-                
-                //        guard var newValue = self.getPhoto(at: indexPath) else { return }
-                //        newValue.isSelected = false
                 RealmManager.shared.update(data: self.getPhoto(at: indexPath)!, success: { () in
                     print()
                 }) { (error) in
                     print(error)
                 }
-                print("didSelectItemAt 解除モード 更新後のphoto : ", currentPhotos()[indexPath.row])
             }
         }
     }

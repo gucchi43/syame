@@ -25,7 +25,6 @@
 		8258686322F2302D002941F4 /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8258685A22F2302C002941F4 /* KeyboardViewController.swift */; };
 		8258686422F2302D002941F4 /* LottieFile in Resources */ = {isa = PBXBuildFile; fileRef = 8258685B22F2302C002941F4 /* LottieFile */; };
 		8258686622F2302D002941F4 /* MainKBView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8258685D22F2302D002941F4 /* MainKBView.xib */; };
-		8258686722F2302D002941F4 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8258685E22F2302D002941F4 /* Model.swift */; };
 		8258686922F2302D002941F4 /* PhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8258686022F2302D002941F4 /* PhotoCollectionViewCell.swift */; };
 		826D657F22F831B500F66583 /* RealmManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 826D657E22F831B500F66583 /* RealmManager.swift */; };
 		826D658122F99EC500F66583 /* Pods_All_PhotoKeyboardFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 826D658022F99EC500F66583 /* Pods_All_PhotoKeyboardFramework.framework */; };
@@ -171,7 +170,6 @@
 		8258685B22F2302C002941F4 /* LottieFile */ = {isa = PBXFileReference; lastKnownFileType = folder; path = LottieFile; sourceTree = "<group>"; };
 		8258685C22F2302D002941F4 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8258685D22F2302D002941F4 /* MainKBView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MainKBView.xib; sourceTree = "<group>"; };
-		8258685E22F2302D002941F4 /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		8258686022F2302D002941F4 /* PhotoCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewCell.swift; sourceTree = "<group>"; };
 		826D657E22F831B500F66583 /* RealmManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmManager.swift; sourceTree = "<group>"; };
 		826D658022F99EC500F66583 /* Pods_All_PhotoKeyboardFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Pods_All_PhotoKeyboardFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -383,7 +381,6 @@
 				8258685C22F2302D002941F4 /* Info.plist */,
 				8258685922F2302C002941F4 /* Media.xcassets */,
 				8258685B22F2302C002941F4 /* LottieFile */,
-				8258685E22F2302D002941F4 /* Model.swift */,
 				8258685D22F2302D002941F4 /* MainKBView.xib */,
 				8258685A22F2302C002941F4 /* KeyboardViewController.swift */,
 				8258686022F2302D002941F4 /* PhotoCollectionViewCell.swift */,
@@ -936,7 +933,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8258686722F2302D002941F4 /* Model.swift in Sources */,
 				82725B7023421E5100CEA27F /* TextCollectionViewCell.swift in Sources */,
 				8258686322F2302D002941F4 /* KeyboardViewController.swift in Sources */,
 				8258686922F2302D002941F4 /* PhotoCollectionViewCell.swift in Sources */,
