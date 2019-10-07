@@ -104,7 +104,7 @@ public class RealmManager {
                     realm.delete(currentData)
                     print("realm delete 成功")
                 }
-            }            
+            }
             success()
         } catch let error as NSError {
             assertionFailure("realm delete error: \(error)")

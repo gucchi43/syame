@@ -392,11 +392,17 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
         
         if checkSaved(index: index) {
             // Realmからdeleteする
+            // チュートリアルの時に入れていた画像のため例外処理
+            var tutorialDataFlag: Bool!
+            if self.realmPhotos![index].ownerId == "official" {
+                tutorialDataFlag = true
+            } else {
+                tutorialDataFlag = false
+            }
             RealmManager.shared.delete(docId: id, success: { () in
                 NotificationCenter.default.post(name: .updateSaveState, object: nil, userInfo: ["id": id!, "saveFlag": false])
                 if self.tabPageIndex == 0  {
-                    // チュートリアルの時に入れていた画像のため例外処理
-                    if self.realmPhotos![index].isPublic == false {
+                    if tutorialDataFlag == true {
                         return
                     }
                     self.firePhotoCollection.document(id).getDocument(completion: { (snapshot, error) in
@@ -428,7 +434,8 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
                                             imageHeight: selectData.imageHeight,
                                             imageWidth: selectData.imageWidth,
                                             getDay: Date().toString(),
-                                            isPublic: true, ownerId: selectData.ownerId!)
+                                            isPublic: true,
+                                            ownerId: selectData.ownerId!)
             }
             // Realmにsaveする
             RealmManager.shared.save(data: photo, success: {() in
