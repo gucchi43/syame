@@ -31,7 +31,7 @@ public class RealmPhoto: Object {
             self._image = newValue
             if let value = newValue {
 //                self.imageData = value.pngData()
-                self.imageData = value.jpegData(compressionQuality: 1.0)
+                self.imageData = value.jpegData(compressionQuality: 0.3)
             }
         }
         get{

@@ -27,7 +27,12 @@ public class RealmManager {
     private init() {
         configuration = Realm.Configuration()
         let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.bocchi.PhotoKeyboardEx")!
-        configuration.fileURL = url.appendingPathComponent("db.realm")
+//        configuration.fileURL = url.appendingPathComponent("db.realm")
+        if Lang.rootKey() == "JP" {
+            configuration.fileURL = url.appendingPathComponent("db.realm.jp")
+        } else {
+            configuration.fileURL = url.appendingPathComponent("db.realm.world")
+        }
         configuration.deleteRealmIfMigrationNeeded = true
         do {
             realm = try Realm(configuration: configuration)

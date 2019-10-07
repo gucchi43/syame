@@ -32,7 +32,6 @@ final class RootStore {
         var mode = ""
         #if DEBUG
         mode = "/debug"
-//        mode = "/1"
         #else
         mode = "/1"
         #endif
