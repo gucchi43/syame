@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="TVz-M5-DKo">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Top View Controller-->
+        <scene sceneID="rsD-lA-8kN">
+            <objects>
+                <viewController storyboardIdentifier="Top" id="TVz-M5-DKo" customClass="TopViewController" customModule="PhotoKeyboardEx" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="tpe-dJ-gG9">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ukd-8j-gJw">
+                                <rect key="frame" x="0.0" y="248" width="414" height="400"/>
+                                <subviews>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="pkb_app_logo" translatesAutoresizingMaskIntoConstraints="NO" id="Kvk-gY-weX">
+                                        <rect key="frame" x="60" y="53" width="294" height="294"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" secondItem="Kvk-gY-weX" secondAttribute="height" multiplier="1:1" id="Akf-a5-ZcM"/>
+                                        </constraints>
+                                    </imageView>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="400" id="6LB-O7-Ddq"/>
+                                    <constraint firstItem="Kvk-gY-weX" firstAttribute="centerY" secondItem="ukd-8j-gJw" secondAttribute="centerY" id="N4d-GH-UDB"/>
+                                    <constraint firstItem="Kvk-gY-weX" firstAttribute="centerX" secondItem="ukd-8j-gJw" secondAttribute="centerX" id="l1s-Wx-azg"/>
+                                    <constraint firstItem="Kvk-gY-weX" firstAttribute="leading" secondItem="ukd-8j-gJw" secondAttribute="leading" constant="60" id="yWg-mm-hDq"/>
+                                </constraints>
+                            </view>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="12" translatesAutoresizingMaskIntoConstraints="NO" id="1NS-dF-wc6">
+                                <rect key="frame" x="12" y="724" width="390" height="78"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8BQ-vn-sCG">
+                                        <rect key="frame" x="150.5" y="0.0" width="89" height="32"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="32" id="L5R-RT-Y1K"/>
+                                            <constraint firstAttribute="width" constant="89" id="yFc-ho-GFl"/>
+                                        </constraints>
+                                        <state key="normal" title="スタート"/>
+                                        <connections>
+                                            <action selector="tapStartButton:" destination="TVz-M5-DKo" eventType="touchUpInside" id="hFZ-eu-vXF"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="スタートすることで、利用規約、プライバシーポリシーに同意するものとします。" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3Kz-s9-H9p" customClass="TTTAttributedLabel">
+                                        <rect key="frame" x="2" y="44" width="386" height="34"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="3Kz-s9-H9p" firstAttribute="centerX" secondItem="1NS-dF-wc6" secondAttribute="centerX" id="Fov-Ql-sXS"/>
+                                    <constraint firstItem="8BQ-vn-sCG" firstAttribute="centerX" secondItem="1NS-dF-wc6" secondAttribute="centerX" id="c1f-bn-MKL"/>
+                                </constraints>
+                            </stackView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="画像をスタンプみたいに簡単に送れるキーボードアプリ" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Q3S-uU-mLF">
+                                <rect key="frame" x="60" y="405" width="294" height="86"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
+                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="0.14117647059999999" green="0.015686274510000001" blue="0.25098039220000001" alpha="1" colorSpace="deviceRGB"/>
+                        <constraints>
+                            <constraint firstItem="cdJ-aG-KRh" firstAttribute="bottom" secondItem="1NS-dF-wc6" secondAttribute="bottom" constant="60" id="02d-ik-M7m"/>
+                            <constraint firstItem="Q3S-uU-mLF" firstAttribute="centerY" secondItem="tpe-dJ-gG9" secondAttribute="centerY" id="F9n-I6-LtL"/>
+                            <constraint firstItem="1NS-dF-wc6" firstAttribute="centerX" secondItem="tpe-dJ-gG9" secondAttribute="centerX" id="Ghk-1L-PYN"/>
+                            <constraint firstItem="1NS-dF-wc6" firstAttribute="leading" secondItem="tpe-dJ-gG9" secondAttribute="leading" constant="12" id="WgW-jO-728"/>
+                            <constraint firstItem="ukd-8j-gJw" firstAttribute="leading" secondItem="cdJ-aG-KRh" secondAttribute="leading" id="fVJ-Lw-3IN"/>
+                            <constraint firstAttribute="trailing" secondItem="1NS-dF-wc6" secondAttribute="trailing" constant="12" id="h0r-3j-Nt6"/>
+                            <constraint firstItem="ukd-8j-gJw" firstAttribute="centerY" secondItem="tpe-dJ-gG9" secondAttribute="centerY" id="kg4-Ub-Bzb"/>
+                            <constraint firstAttribute="trailing" secondItem="Q3S-uU-mLF" secondAttribute="trailing" constant="60" id="mrY-r2-h84"/>
+                            <constraint firstItem="Q3S-uU-mLF" firstAttribute="leading" secondItem="tpe-dJ-gG9" secondAttribute="leading" constant="60" id="rWf-of-6Bp"/>
+                            <constraint firstItem="ukd-8j-gJw" firstAttribute="trailing" secondItem="cdJ-aG-KRh" secondAttribute="trailing" id="x3n-Vc-hkK"/>
+                            <constraint firstItem="ukd-8j-gJw" firstAttribute="centerX" secondItem="tpe-dJ-gG9" secondAttribute="centerX" id="xPl-XA-Zqg"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="cdJ-aG-KRh"/>
+                    </view>
+                    <connections>
+                        <outlet property="animateBaseView" destination="ukd-8j-gJw" id="8UT-zH-REc"/>
+                        <outlet property="heightConstraint" destination="N4d-GH-UDB" id="3VK-Kn-HSG"/>
+                        <outlet property="leftConstraint" destination="yWg-mm-hDq" id="G7e-yq-XpG"/>
+                        <outlet property="logoImage" destination="Kvk-gY-weX" id="mPK-Hl-6wO"/>
+                        <outlet property="registerStack" destination="1NS-dF-wc6" id="Snb-UZ-0ea"/>
+                        <outlet property="requestDescription" destination="3Kz-s9-H9p" id="Zps-4b-4Jq"/>
+                        <outlet property="startButton" destination="8BQ-vn-sCG" id="Wft-AB-xaP"/>
+                        <outlet property="subTitleLabel" destination="Q3S-uU-mLF" id="MGZ-Kx-XKu"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Iif-cp-BVn" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-73.913043478260875" y="-21.428571428571427"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="pkb_app_logo" width="1024" height="1024"/>
+    </resources>
+</document>

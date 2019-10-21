@@ -84,6 +84,15 @@ public enum LocalizeKey: String {
     case welcomeDiscriptionThird
     case welcomeDone
     case welcomeSkip
+    
+    case topSubtitle
+    case topStart
+    case topRequestFirst
+    case topRequestSecond
+    case topRequestThird
+    case topRequestFourth
+    case topRequestFifth
+    
     //キーボード側
     case notFullButton
     case notFullLabelFirst

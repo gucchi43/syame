@@ -84,6 +84,15 @@
 "welcomeDone" = "カワサキさんのLINEへ";
 "welcomeSkip" = "スキップ";
 
+"topSubtitle" = "画像をスタンプみたいに画像を送れるキーボードアプリ";
+"topStart" = "スタート";
+"topRequestFirst" = "スタートすることで";
+"topRequestSecond" = "利用規約";
+"topRequestThird" = "、";
+"topRequestFourth" = "プライバシーポリシー";
+"topRequestFifth" = "に同意することとします。";
+
+
 //キーボード側
 "notFullButton" = "設定画面へ";
 "notFullLabelFirst" = "[PKB]";

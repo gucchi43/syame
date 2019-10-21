@@ -77,14 +77,17 @@ class MainTabViewController: TabmanViewController, FloatyDelegate {
         layoutFAB()
         NotificationCenter.default.addObserver(self, selector: #selector(finishToast(notification:)), name: .finishUpload, object: nil)
     }
-    
+        
     override func viewWillAppear(_ animated: Bool) {
         bar.buttons.customize { (button) in
             button.selectedTintColor = .acGreen()
             button.tintColor = .white
         }
 
-        if GroupeDefaults.shared.isUsagePush() {
+        if GroupeDefaults.shared.isRegisterPush() {
+            let vc = UIStoryboard(name: "Top",bundle: nil).instantiateInitialViewController() as! TopViewController
+            present(vc, animated: false, completion: nil)
+        } else if GroupeDefaults.shared.isUsagePush() {
             let sb = UIStoryboard(name: "Usage",bundle: nil)
             let nvc = sb.instantiateInitialViewController() as! UINavigationController
             present(nvc, animated: true, completion: nil)

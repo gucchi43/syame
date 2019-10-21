@@ -195,6 +195,7 @@ PODS:
     - Pageboy (~> 3.2.3)
   - TagListView (1.4.0)
   - Toast-Swift (5.0.0)
+  - TTTAttributedLabel (2.0.0)
 
 DEPENDENCIES:
   - Alamofire (~> 5.0.0-beta.6)
@@ -225,6 +226,7 @@ DEPENDENCIES:
   - Tabman (= 2.5.0)
   - TagListView (~> 1.0)
   - Toast-Swift (~> 5.0.0)
+  - TTTAttributedLabel
 
 SPEC REPOS:
   trunk:
@@ -280,6 +282,7 @@ SPEC REPOS:
     - Tabman
     - TagListView
     - Toast-Swift
+    - TTTAttributedLabel
 
 EXTERNAL SOURCES:
   FirebaseFirestoreSwift:
@@ -345,7 +348,8 @@ SPEC CHECKSUMS:
   Tabman: 35f741ff663fb6654ed0a33870466b3c40668e35
   TagListView: 987b0bdbb16cd9d9e7c0e2ec32aff37ecba8b173
   Toast-Swift: 36f4720243c8582c2be243a60a51e193c761f541
+  TTTAttributedLabel: 8cffe8e127e4e82ff3af1e5386d4cd0ad000b656
 
-PODFILE CHECKSUM: d0654462e2c6587c2d15728b2d6ab8bec603c073
+PODFILE CHECKSUM: a9929dffbe84607c8629f91abb058b08f1b11620
 
 COCOAPODS: 1.8.1

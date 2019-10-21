@@ -84,6 +84,14 @@
 "welcomeDone" = "KAWASAKI's LINE";
 "welcomeSkip" = "Skip";
 
+"topSubtitle" = "You can send photo very easy & quickly from this keyboard app";
+"topStart" = "START";
+"topRequestFirst" = "By using this application,you agree to ";
+"topRequestSecond" = "the Terms of Service";
+"topRequestThird" = " and ";
+"topRequestFourth" = "Privacy Policy";
+"topRequestFifth" = ".";
+
 //キーボード側
 "notFullButton" = "Go to setting";
 "notFullLabelFirst" = "[PKB]";

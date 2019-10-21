@@ -16,6 +16,7 @@ extension DefaultsKeys {
     public static let sendCount = DefaultsKey<Int>("sendCount", defaultValue: 0)
     public static let usageNeedFlag = DefaultsKey<Bool>("usageNeedFlag", defaultValue: true)
     public static let welcomeNeedFlag = DefaultsKey<Bool>("welcomeNeedFlag", defaultValue: true)
+    public static let registerNeedFlag = DefaultsKey<Bool>("registerNeedFlag", defaultValue: true)
 }
 
 public final class GroupeDefaults {
@@ -29,6 +30,18 @@ public final class GroupeDefaults {
     }
     public func setAuthUid(id: String) {
         sharedDefaults[.authUid] = id
+    }
+    
+    public func isRegisterPush() -> Bool {
+        if sharedDefaults[.registerNeedFlag] {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    public func registerDone() {
+        sharedDefaults[.registerNeedFlag] = false
     }
     
     public func isUsagePush() -> Bool {

@@ -18,6 +18,8 @@
 		822137092302F1560046E095 /* GenreTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822137082302F1550046E095 /* GenreTag.swift */; };
 		8221370B2304D1A60046E095 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8221370A2304D1A60046E095 /* Extension.swift */; };
 		822F932F22F72A0C006998E2 /* Pods_All_PhotoKeyboardEx.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0903A86298C04802358C6F2B /* Pods_All_PhotoKeyboardEx.framework */; };
+		8235BE5C2358704A0040D2F5 /* Top.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8235BE5B2358704A0040D2F5 /* Top.storyboard */; };
+		8235BE5E235870620040D2F5 /* TopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8235BE5D235870620040D2F5 /* TopViewController.swift */; };
 		823FA91622FC39D10041F145 /* ColorMG.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823FA91522FC39D10041F145 /* ColorMG.swift */; };
 		824E1FC622FF79D2007D0883 /* FirePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E1FC522FF79D2007D0883 /* FirePhoto.swift */; };
 		8258686122F2302D002941F4 /* PhotoCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8258685822F2302C002941F4 /* PhotoCollectionViewCell.xib */; };
@@ -162,6 +164,8 @@
 		821ABDDF230F80E300B3DCFE /* Welcome.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Welcome.storyboard; sourceTree = "<group>"; };
 		822137082302F1550046E095 /* GenreTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreTag.swift; sourceTree = "<group>"; };
 		8221370A2304D1A60046E095 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
+		8235BE5B2358704A0040D2F5 /* Top.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Top.storyboard; sourceTree = "<group>"; };
+		8235BE5D235870620040D2F5 /* TopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopViewController.swift; sourceTree = "<group>"; };
 		823FA91522FC39D10041F145 /* ColorMG.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorMG.swift; sourceTree = "<group>"; };
 		824E1FC522FF79D2007D0883 /* FirePhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirePhoto.swift; sourceTree = "<group>"; };
 		8258685822F2302C002941F4 /* PhotoCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhotoCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -349,6 +353,8 @@
 				821ABDDF230F80E300B3DCFE /* Welcome.storyboard */,
 				821ABDDD230F80D800B3DCFE /* WelcomeViewController.swift */,
 				8278D14222EE5A730034C2CC /* LaunchScreen.storyboard */,
+				8235BE5B2358704A0040D2F5 /* Top.storyboard */,
+				8235BE5D235870620040D2F5 /* TopViewController.swift */,
 				8278D14022EE5A730034C2CC /* Assets.xcassets */,
 				82EA8927232AD5020022832E /* GoogleService-Info.plist */,
 				8278D14522EE5A730034C2CC /* Info.plist */,
@@ -704,6 +710,7 @@
 				8280C04322F455170069BF8B /* PhotoCollectionViewCell.xib in Resources */,
 				82EA8928232AD5030022832E /* GoogleService-Info.plist in Resources */,
 				8278D14122EE5A730034C2CC /* Assets.xcassets in Resources */,
+				8235BE5C2358704A0040D2F5 /* Top.storyboard in Resources */,
 				8280C04922F481490069BF8B /* ChildContent.storyboard in Resources */,
 				821ABDD8230C641600B3DCFE /* Usage.storyboard in Resources */,
 				821ABDE0230F80E300B3DCFE /* Welcome.storyboard in Resources */,
@@ -909,6 +916,7 @@
 				824E1FC622FF79D2007D0883 /* FirePhoto.swift in Sources */,
 				82F9F3EE22F588290062F451 /* MainNavigationViewController.swift in Sources */,
 				8280C04722F481420069BF8B /* ChildContentViewController.swift in Sources */,
+				8235BE5E235870620040D2F5 /* TopViewController.swift in Sources */,
 				8280C03F22F454D20069BF8B /* AddViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1168,7 +1176,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = PhotoKeyboardEx/PhotoKeyboardEx.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.7;
+				CURRENT_PROJECT_VERSION = 1.0.8;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = PhotoKeyboardEx/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -1176,7 +1184,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.7;
+				MARKETING_VERSION = 1.0.8;
 				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -1192,7 +1200,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = PhotoKeyboardEx/PhotoKeyboardEx.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.7;
+				CURRENT_PROJECT_VERSION = 1.0.8;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = PhotoKeyboardEx/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -1200,7 +1208,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.7;
+				MARKETING_VERSION = 1.0.8;
 				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -1300,7 +1308,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = PhotoKeyboardExOrigin/PhotoKeyboardExOrigin.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.7;
+				CURRENT_PROJECT_VERSION = 1.0.8;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = PhotoKeyboardExOrigin/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -1309,7 +1317,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.7;
+				MARKETING_VERSION = 1.0.8;
 				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx.PhotoKeyboardExOrigin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1324,7 +1332,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = PhotoKeyboardExOrigin/PhotoKeyboardExOrigin.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.7;
+				CURRENT_PROJECT_VERSION = 1.0.8;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = PhotoKeyboardExOrigin/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
@@ -1333,7 +1341,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.7;
+				MARKETING_VERSION = 1.0.8;
 				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx.PhotoKeyboardExOrigin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1347,7 +1355,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.7;
+				CURRENT_PROJECT_VERSION = 1.0.8;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = ServiceNotification/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -1356,7 +1364,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.7;
+				MARKETING_VERSION = 1.0.8;
 				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx.ServiceNotification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1371,7 +1379,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.7;
+				CURRENT_PROJECT_VERSION = 1.0.8;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = ServiceNotification/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
@@ -1380,7 +1388,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.7;
+				MARKETING_VERSION = 1.0.8;
 				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx.ServiceNotification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1398,7 +1406,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 1.0.8;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1412,7 +1420,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.7;
+				MARKETING_VERSION = 1.0.8;
 				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardFramework;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -1432,7 +1440,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 1.0.8;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1446,7 +1454,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.7;
+				MARKETING_VERSION = 1.0.8;
 				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardFramework;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
