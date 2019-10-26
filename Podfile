@@ -25,6 +25,7 @@ abstract_target 'All' do
   pod 'SwiftyUserDefaults', '~> 4.0'
   pod 'SwiftyAttributes'
   pod 'TTTAttributedLabel'  
+  pod 'ImageScrollView'
 
   pod 'SwiftyJSON', '~> 4.0'
   pod 'Toast-Swift', '~> 5.0.0'

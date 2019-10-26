@@ -92,6 +92,11 @@
 "topRequestFourth" = "Privacy Policy";
 "topRequestFifth" = ".";
 
+"reportContent" = "Report Contents";
+"spam" = "It's spam";
+"notContent" = "It's sensitive";
+"cancel" = "Cancel";
+
 //キーボード側
 "notFullButton" = "Go to setting";
 "notFullLabelFirst" = "[PKB]";

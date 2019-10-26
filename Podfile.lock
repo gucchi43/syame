@@ -162,6 +162,7 @@ PODS:
     - nanopb (~> 0.3)
   - gRPC-Core/Interface (1.21.0)
   - GTMSessionFetcher/Core (1.2.2)
+  - ImageScrollView (1.8)
   - IQKeyboardManagerSwift (6.5.1)
   - leveldb-library (1.22)
   - lottie-ios (3.1.3)
@@ -214,6 +215,7 @@ DEPENDENCIES:
   - FirebaseUI/Storage (~> 8.0)
   - Floaty (~> 4.2.0)
   - FontAwesome.swift
+  - ImageScrollView
   - IQKeyboardManagerSwift
   - lottie-ios
   - NotificationBannerSwift
@@ -262,6 +264,7 @@ SPEC REPOS:
     - "gRPC-C++"
     - gRPC-Core
     - GTMSessionFetcher
+    - ImageScrollView
     - IQKeyboardManagerSwift
     - leveldb-library
     - lottie-ios
@@ -328,6 +331,7 @@ SPEC CHECKSUMS:
   "gRPC-C++": 9dfe7b44821e7b3e44aacad2af29d2c21f7cde83
   gRPC-Core: c9aef9a261a1247e881b18059b84d597293c9947
   GTMSessionFetcher: 61bb0f61a4cb560030f1222021178008a5727a23
+  ImageScrollView: 82912273486297285682bdb2a806742f0d39940c
   IQKeyboardManagerSwift: 9ac7524fad9f9fe9a3b98c927e7772471ca546d2
   leveldb-library: 55d93ee664b4007aac644a782d11da33fba316f7
   lottie-ios: 496ac5cea1bbf1a7bd1f1f472f3232eb1b8d744b
@@ -350,6 +354,6 @@ SPEC CHECKSUMS:
   Toast-Swift: 36f4720243c8582c2be243a60a51e193c761f541
   TTTAttributedLabel: 8cffe8e127e4e82ff3af1e5386d4cd0ad000b656
 
-PODFILE CHECKSUM: a9929dffbe84607c8629f91abb058b08f1b11620
+PODFILE CHECKSUM: 8f7a4fb6b7762783dcff7eb55ae9240882677da4
 
 COCOAPODS: 1.8.1

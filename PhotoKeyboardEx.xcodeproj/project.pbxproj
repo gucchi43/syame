@@ -17,7 +17,10 @@
 		821ABDE0230F80E300B3DCFE /* Welcome.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 821ABDDF230F80E300B3DCFE /* Welcome.storyboard */; };
 		822137092302F1560046E095 /* GenreTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822137082302F1550046E095 /* GenreTag.swift */; };
 		8221370B2304D1A60046E095 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8221370A2304D1A60046E095 /* Extension.swift */; };
+		822B4DD323647E5800108FC1 /* FireReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822B4DD223647E5800108FC1 /* FireReport.swift */; };
 		822F932F22F72A0C006998E2 /* Pods_All_PhotoKeyboardEx.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0903A86298C04802358C6F2B /* Pods_All_PhotoKeyboardEx.framework */; };
+		82340958235E2EA60031E2BC /* PhotoDetail.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82340957235E2EA60031E2BC /* PhotoDetail.storyboard */; };
+		8234095A235E2EC70031E2BC /* PhotoDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340959235E2EC60031E2BC /* PhotoDetailViewController.swift */; };
 		8235BE5C2358704A0040D2F5 /* Top.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8235BE5B2358704A0040D2F5 /* Top.storyboard */; };
 		8235BE5E235870620040D2F5 /* TopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8235BE5D235870620040D2F5 /* TopViewController.swift */; };
 		823FA91622FC39D10041F145 /* ColorMG.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823FA91522FC39D10041F145 /* ColorMG.swift */; };
@@ -164,6 +167,9 @@
 		821ABDDF230F80E300B3DCFE /* Welcome.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Welcome.storyboard; sourceTree = "<group>"; };
 		822137082302F1550046E095 /* GenreTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreTag.swift; sourceTree = "<group>"; };
 		8221370A2304D1A60046E095 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
+		822B4DD223647E5800108FC1 /* FireReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireReport.swift; sourceTree = "<group>"; };
+		82340957235E2EA60031E2BC /* PhotoDetail.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PhotoDetail.storyboard; sourceTree = "<group>"; };
+		82340959235E2EC60031E2BC /* PhotoDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailViewController.swift; sourceTree = "<group>"; };
 		8235BE5B2358704A0040D2F5 /* Top.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Top.storyboard; sourceTree = "<group>"; };
 		8235BE5D235870620040D2F5 /* TopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopViewController.swift; sourceTree = "<group>"; };
 		823FA91522FC39D10041F145 /* ColorMG.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorMG.swift; sourceTree = "<group>"; };
@@ -343,9 +349,12 @@
 				82F9F3EF22F589400062F451 /* MainMenuTableViewController.swift */,
 				8280C04822F481490069BF8B /* ChildContent.storyboard */,
 				8280C04622F481410069BF8B /* ChildContentViewController.swift */,
+				82340957235E2EA60031E2BC /* PhotoDetail.storyboard */,
+				82340959235E2EC60031E2BC /* PhotoDetailViewController.swift */,
 				8280C04122F455170069BF8B /* PhotoCollectionViewCell.xib */,
 				8280C04022F455170069BF8B /* PhotoCollectionViewCell.swift */,
 				824E1FC522FF79D2007D0883 /* FirePhoto.swift */,
+				822B4DD223647E5800108FC1 /* FireReport.swift */,
 				8280C03C22F454B80069BF8B /* Add.storyboard */,
 				8280C03E22F454D20069BF8B /* AddViewController.swift */,
 				821ABDD7230C641600B3DCFE /* Usage.storyboard */,
@@ -710,6 +719,7 @@
 				8280C04322F455170069BF8B /* PhotoCollectionViewCell.xib in Resources */,
 				82EA8928232AD5030022832E /* GoogleService-Info.plist in Resources */,
 				8278D14122EE5A730034C2CC /* Assets.xcassets in Resources */,
+				82340958235E2EA60031E2BC /* PhotoDetail.storyboard in Resources */,
 				8235BE5C2358704A0040D2F5 /* Top.storyboard in Resources */,
 				8280C04922F481490069BF8B /* ChildContent.storyboard in Resources */,
 				821ABDD8230C641600B3DCFE /* Usage.storyboard in Resources */,
@@ -905,6 +915,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				822B4DD323647E5800108FC1 /* FireReport.swift in Sources */,
 				82F9F3F222F636FE0062F451 /* Extension.swift in Sources */,
 				82EA8924232A8E380022832E /* UpdateExtention.swift in Sources */,
 				82F9F3F022F589400062F451 /* MainMenuTableViewController.swift in Sources */,
@@ -915,6 +926,7 @@
 				8278D13A22EE5A700034C2CC /* AppDelegate.swift in Sources */,
 				824E1FC622FF79D2007D0883 /* FirePhoto.swift in Sources */,
 				82F9F3EE22F588290062F451 /* MainNavigationViewController.swift in Sources */,
+				8234095A235E2EC70031E2BC /* PhotoDetailViewController.swift in Sources */,
 				8280C04722F481420069BF8B /* ChildContentViewController.swift in Sources */,
 				8235BE5E235870620040D2F5 /* TopViewController.swift in Sources */,
 				8280C03F22F454D20069BF8B /* AddViewController.swift in Sources */,

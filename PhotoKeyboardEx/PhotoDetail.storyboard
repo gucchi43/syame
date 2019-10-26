@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="oSA-ia-Gok">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Photo Detail View Controller-->
+        <scene sceneID="IS8-WX-CVL">
+            <objects>
+                <viewController id="oSA-ia-Gok" customClass="PhotoDetailViewController" customModule="PhotoKeyboardEx" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="aVY-JG-jze">
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Zll-dI-fw2" customClass="ImageScrollView" customModule="ImageScrollView">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                                <viewLayoutGuide key="contentLayoutGuide" id="2k0-Ax-9wG"/>
+                                <viewLayoutGuide key="frameLayoutGuide" id="fik-rr-U1K"/>
+                            </scrollView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DEQ-tb-Dez">
+                                <rect key="frame" x="0.0" y="44" width="414" height="97.5"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lX6-u8-JMY">
+                                        <rect key="frame" x="16" y="32" width="382" height="33.5"/>
+                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="28"/>
+                                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                                <constraints>
+                                    <constraint firstItem="lX6-u8-JMY" firstAttribute="leading" secondItem="DEQ-tb-Dez" secondAttribute="leading" constant="16" id="fC0-lX-m4S"/>
+                                    <constraint firstAttribute="bottom" secondItem="lX6-u8-JMY" secondAttribute="bottom" constant="32" id="jLQ-eC-YdX"/>
+                                    <constraint firstItem="lX6-u8-JMY" firstAttribute="top" secondItem="DEQ-tb-Dez" secondAttribute="top" constant="32" id="kVw-mR-Grs"/>
+                                    <constraint firstAttribute="trailing" secondItem="lX6-u8-JMY" secondAttribute="trailing" constant="16" id="tNQ-nu-Umb"/>
+                                </constraints>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="apg-8p-i7j">
+                                <rect key="frame" x="344" y="808" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="tapOtherButton:" destination="oSA-ia-Gok" eventType="touchUpInside" id="CKf-gD-O0F"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a5Y-De-pqO">
+                                <rect key="frame" x="24" y="808" width="46" height="30"/>
+                                <state key="normal" title="Button"/>
+                                <connections>
+                                    <action selector="tapCloseButton:" destination="oSA-ia-Gok" eventType="touchUpInside" id="Hdc-Hy-SYK"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="aaw-Qd-yBr" firstAttribute="bottom" secondItem="apg-8p-i7j" secondAttribute="bottom" constant="24" id="9C4-YA-tfC"/>
+                            <constraint firstItem="DEQ-tb-Dez" firstAttribute="leading" secondItem="aaw-Qd-yBr" secondAttribute="leading" id="IQ8-1G-HTt"/>
+                            <constraint firstItem="Zll-dI-fw2" firstAttribute="trailing" secondItem="aaw-Qd-yBr" secondAttribute="trailing" id="OB5-Qf-cwl"/>
+                            <constraint firstItem="Zll-dI-fw2" firstAttribute="top" secondItem="aVY-JG-jze" secondAttribute="top" id="Q8J-Pa-9gV"/>
+                            <constraint firstItem="aaw-Qd-yBr" firstAttribute="trailing" secondItem="apg-8p-i7j" secondAttribute="trailing" constant="24" id="VSY-ik-ESB"/>
+                            <constraint firstItem="a5Y-De-pqO" firstAttribute="leading" secondItem="aaw-Qd-yBr" secondAttribute="leading" constant="24" id="ZSM-Zn-W0A"/>
+                            <constraint firstItem="DEQ-tb-Dez" firstAttribute="trailing" secondItem="aaw-Qd-yBr" secondAttribute="trailing" id="cZu-iG-7wE"/>
+                            <constraint firstItem="DEQ-tb-Dez" firstAttribute="top" secondItem="aaw-Qd-yBr" secondAttribute="top" id="i94-6E-p7w"/>
+                            <constraint firstItem="Zll-dI-fw2" firstAttribute="leading" secondItem="aaw-Qd-yBr" secondAttribute="leading" id="jvb-Zs-BAZ"/>
+                            <constraint firstItem="aaw-Qd-yBr" firstAttribute="bottom" secondItem="a5Y-De-pqO" secondAttribute="bottom" constant="24" id="qwq-UM-Lsd"/>
+                            <constraint firstAttribute="bottom" secondItem="Zll-dI-fw2" secondAttribute="bottom" id="tgc-OQ-aLT"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="aaw-Qd-yBr"/>
+                    </view>
+                    <connections>
+                        <outlet property="bgView" destination="DEQ-tb-Dez" id="spr-XM-nSa"/>
+                        <outlet property="captionLabel" destination="lX6-u8-JMY" id="93t-gi-NDh"/>
+                        <outlet property="closeButton" destination="a5Y-De-pqO" id="Wgk-y6-hmi"/>
+                        <outlet property="otherButton" destination="apg-8p-i7j" id="VhR-bK-yd2"/>
+                        <outlet property="scrollView" destination="Zll-dI-fw2" id="rZm-VK-giE"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="7gv-I8-lDy" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1997.1014492753625" y="-490.17857142857139"/>
+        </scene>
+    </scenes>
+</document>

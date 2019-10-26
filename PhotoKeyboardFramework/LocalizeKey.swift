@@ -93,6 +93,12 @@ public enum LocalizeKey: String {
     case topRequestFourth
     case topRequestFifth
     
+    case reportContent
+    case spam
+    case notContent
+    case cancel
+    
+    
     //キーボード側
     case notFullButton
     case notFullLabelFirst

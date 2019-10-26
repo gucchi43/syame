@@ -92,6 +92,11 @@
 "topRequestFourth" = "プライバシーポリシー";
 "topRequestFifth" = "に同意することとします。";
 
+"reportContent" = "報告する";
+"spam" = "スパムである";
+"notContent" = "不適切なコンテンツである";
+"cancel" = "キャンセル";
+
 
 //キーボード側
 "notFullButton" = "設定画面へ";

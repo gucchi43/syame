@@ -534,6 +534,14 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
             return CGSize(width: w, height: h * 2.0)
         }
     }
+    
+    func goPotoDetail(rPhoto: RealmPhoto?, fPhoto: OFirePhoto?) {
+        let sb = UIStoryboard(name: "PhotoDetail",bundle: nil)
+        let vc = sb.instantiateInitialViewController() as! PhotoDetailViewController
+        vc.rPhoto = rPhoto
+        vc.fPhoto = fPhoto
+        present(vc, animated: true, completion: nil)
+    }
 }
 
 extension ChildContentViewController: UICollectionViewDataSource {
@@ -592,6 +600,12 @@ extension ChildContentViewController: UICollectionViewDelegate {
         print("call didSelectItemAt 解除モード")
         print("indexpath : ", indexPath)
         print("=========")
+        if tabPageIndex == 0 {
+            goPotoDetail(rPhoto: realmPhotos![indexPath.row], fPhoto: nil)
+        } else {
+            goPotoDetail(rPhoto: nil, fPhoto: oFirePhotos[indexPath.row])
+        }
+        
     }
     
     fileprivate func getModel(at indexPath: IndexPath) -> OFirePhoto? {
