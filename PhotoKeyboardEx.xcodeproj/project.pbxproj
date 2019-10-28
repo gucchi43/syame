@@ -18,6 +18,7 @@
 		822137092302F1560046E095 /* GenreTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822137082302F1550046E095 /* GenreTag.swift */; };
 		8221370B2304D1A60046E095 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8221370A2304D1A60046E095 /* Extension.swift */; };
 		822B4DD323647E5800108FC1 /* FireReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822B4DD223647E5800108FC1 /* FireReport.swift */; };
+		822B4DDF23678B1900108FC1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 822B4DE123678B1900108FC1 /* InfoPlist.strings */; };
 		822F932F22F72A0C006998E2 /* Pods_All_PhotoKeyboardEx.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0903A86298C04802358C6F2B /* Pods_All_PhotoKeyboardEx.framework */; };
 		82340958235E2EA60031E2BC /* PhotoDetail.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82340957235E2EA60031E2BC /* PhotoDetail.storyboard */; };
 		8234095A235E2EC70031E2BC /* PhotoDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82340959235E2EC60031E2BC /* PhotoDetailViewController.swift */; };
@@ -168,6 +169,8 @@
 		822137082302F1550046E095 /* GenreTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreTag.swift; sourceTree = "<group>"; };
 		8221370A2304D1A60046E095 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
 		822B4DD223647E5800108FC1 /* FireReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireReport.swift; sourceTree = "<group>"; };
+		822B4DE023678B1900108FC1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		822B4DE223678B2300108FC1 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		82340957235E2EA60031E2BC /* PhotoDetail.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PhotoDetail.storyboard; sourceTree = "<group>"; };
 		82340959235E2EC60031E2BC /* PhotoDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoDetailViewController.swift; sourceTree = "<group>"; };
 		8235BE5B2358704A0040D2F5 /* Top.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Top.storyboard; sourceTree = "<group>"; };
@@ -367,6 +370,7 @@
 				8278D14022EE5A730034C2CC /* Assets.xcassets */,
 				82EA8927232AD5020022832E /* GoogleService-Info.plist */,
 				8278D14522EE5A730034C2CC /* Info.plist */,
+				822B4DE123678B1900108FC1 /* InfoPlist.strings */,
 			);
 			path = PhotoKeyboardEx;
 			sourceTree = "<group>";
@@ -716,6 +720,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8278D14422EE5A730034C2CC /* LaunchScreen.storyboard in Resources */,
+				822B4DDF23678B1900108FC1 /* InfoPlist.strings in Resources */,
 				8280C04322F455170069BF8B /* PhotoCollectionViewCell.xib in Resources */,
 				82EA8928232AD5030022832E /* GoogleService-Info.plist in Resources */,
 				8278D14122EE5A730034C2CC /* Assets.xcassets in Resources */,
@@ -1032,6 +1037,15 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		822B4DE123678B1900108FC1 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				822B4DE023678B1900108FC1 /* en */,
+				822B4DE223678B2300108FC1 /* ja */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
 		8278D13D22EE5A700034C2CC /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (

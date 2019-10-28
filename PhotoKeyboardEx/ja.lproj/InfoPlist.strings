@@ -1,0 +1,11 @@
+/* 
+  InfoPlist.strings
+  PhotoKeyboardEx
+
+  Created by Hiroki Taniguchi on 2019/10/29.
+  Copyright © 2019 Hiroki Taniguchi. All rights reserved.
+*/
+"CFBundleDisplayName" = "PKB";
+"NSCameraUsageDescription" = "カメラアクセスします";
+"NSPhotoLibraryAddUsageDescription" = "カメラロールに画像を追加します";
+"NSPhotoLibraryUsageDescription" = "カメラロールにアクセスします";

@@ -67,7 +67,7 @@ class AddViewController: UIViewController {
         
         publicSwitch.tintColor = UIColor.acGreen()
         publicSwitch.onTintColor = UIColor.acGreen()
-        closeButton.title = String.fontAwesomeIcon(name: .doorClosed)
+        closeButton.title = String.fontAwesomeIcon(name: .times)
         closeButton.setTitleTextAttributes([.font: UIFont.fontAwesome(ofSize: 24, style: .solid)], for: .normal)
         
         genreListView.delegate = self

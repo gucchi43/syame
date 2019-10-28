@@ -61,10 +61,10 @@ class PhotoDetailViewController: UIViewController {
             }
         }
         
-        closeButton.tintColor = .white
+        closeButton.tintColor = UIColor.acGreen()
         closeButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 24, style: .solid)
         closeButton.setTitle(String.fontAwesomeIcon(name: .times), for: .normal)
-        otherButton.tintColor = .white
+        otherButton.tintColor = UIColor.acGreen()
         otherButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 24, style: .solid)
         otherButton.setTitle(String.fontAwesomeIcon(name: .ellipsisH), for: .normal)
         otherButton.titleLabel?.shadowColor = .black
