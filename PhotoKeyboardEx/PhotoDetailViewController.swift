@@ -38,6 +38,7 @@ class PhotoDetailViewController: UIViewController {
     @IBOutlet weak var captionLabel: UILabel!
     var rPhoto: RealmPhoto?
     var fPhoto: OFirePhoto?
+    var savedFlag: Bool!
     
     private var fireReportCollection : CollectionReference = RootStore.rootDB().collection("report")
     
@@ -96,11 +97,23 @@ class PhotoDetailViewController: UIViewController {
     func showOtherSheat() {
         let sheat = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let reportAction = UIAlertAction(title: LocalizeKey.reportContent.localizedString(), style: .default) { (action) in
-            self.showReportSheat()
+            if self.savedFlag {
+                self.showUnSaveAlert()
+            } else {
+                self.showReportSheat()
+            }
+        }
+        let blockContentAction = UIAlertAction(title: LocalizeKey.blockContent.localizedString(), style: .default) { (action) in
+            if self.savedFlag {
+                self.showUnSaveAlert()
+            } else {
+                self.showBlockAlert()
+            }
         }
         let cancelAction = UIAlertAction(title: LocalizeKey.cancel.localizedString(), style: .cancel) { (action) in
         }
         sheat.addAction(reportAction)
+        sheat.addAction(blockContentAction)
         sheat.addAction(cancelAction)
         self.present(sheat, animated: true, completion: nil)
     }
@@ -120,6 +133,43 @@ class PhotoDetailViewController: UIViewController {
         sheat.addAction(notContentAction)
         sheat.addAction(cancelAction)
         self.present(sheat, animated: true, completion: nil)
+    }
+    
+    func showBlockAlert() {
+        let sheat = UIAlertController(title: LocalizeKey.blockContent.localizedString(), message: LocalizeKey.blockMessage.localizedString(), preferredStyle: .alert)
+
+        let okAction = UIAlertAction(title: LocalizeKey.blockOK.localizedString(), style: .destructive) { (action) in
+            self.blockPhoto()
+        }
+        let cancelAction = UIAlertAction(title: LocalizeKey.blockCancel.localizedString(), style: .cancel) { (action) in
+        }
+        sheat.addAction(okAction)
+        sheat.addAction(cancelAction)
+        self.present(sheat, animated: true, completion: nil)
+    }
+    
+    func showUnSaveAlert() {
+        let sheat = UIAlertController(title: LocalizeKey.butSavedContent.localizedString(), message: nil, preferredStyle: .alert)
+
+        let okAction = UIAlertAction(title: LocalizeKey.butSavedOK.localizedString(), style: .default) { (action) in
+            return
+        }
+        sheat.addAction(okAction)
+        self.present(sheat, animated: true, completion: nil)
+    }
+    
+    func blockPhoto() {
+        var id: String?
+        if let fPhoto = fPhoto {
+            id = fPhoto.id
+        } else if let rPhoto = rPhoto {
+            id = rPhoto.id
+        } else {
+            id = nil
+        }
+        guard let blockId = id else { return }
+        GroupeDefaults.shared.addBlockContents(id: blockId)
+        self.dismiss(animated: true, completion: nil)
     }
     
     func sendReport(reason: String) {
@@ -151,6 +201,7 @@ class PhotoDetailViewController: UIViewController {
                 print("success save firestore", originID)
             }
         })
+        blockPhoto()
     }
 }
 

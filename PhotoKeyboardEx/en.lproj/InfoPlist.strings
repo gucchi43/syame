@@ -6,6 +6,6 @@
   Copyright © 2019 Hiroki Taniguchi. All rights reserved.
 */
 "CFBundleDisplayName" = "PKB";
-"NSCameraUsageDescription" = "I will access camera";
-"NSPhotoLibraryAddUsageDescription" = "I will add photos";
-"NSPhotoLibraryUsageDescription" = "I will access photos";
+"NSCameraUsageDescription" = "You can post photos taken with the camera";
+"NSPhotoLibraryAddUsageDescription" = "You can add photos in camera rool";
+"NSPhotoLibraryUsageDescription" = "You can add photos in camera rool";

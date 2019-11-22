@@ -73,6 +73,15 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
         updateIndexLabel()
         if pageboyPageIndex == 0 {
             collectionView.reloadData()
+        } else {
+            let blockIncludes = self.mutedArray(origin: self.oFirePhotos)
+            let blockIncludeIds = blockIncludes.map { $0.id }
+            let currntIds = self.oFirePhotos.map { $0.id }
+            if currntIds != blockIncludeIds {
+                oFirePhotos = blockIncludes
+                guard let collectionView = self.collectionView else { return }
+                collectionView.reloadData()
+            }
         }
     }
     
@@ -189,14 +198,23 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
             let decoder = Firestore.Decoder()
             let newFirePhotos = snapshot.documents.map{ oFirePhoto -> OFirePhoto in
                 let data = oFirePhoto.data()
-                    var model = try! decoder.decode(OFirePhoto.self, from: data)
+                var model = try! decoder.decode(OFirePhoto.self, from: data)
                 return model
             }
-            self.oFirePhotos = newFirePhotos
-            print("self.oFirePhotos : ", self.oFirePhotos)
+            self.oFirePhotos = self.mutedArray(origin: newFirePhotos)
             guard let collectionView = self.collectionView else { return }
             collectionView.reloadData()
         }
+    }
+    
+    func mutedArray(origin: [OFirePhoto]) -> [OFirePhoto] {
+//        var test = ["afag", "avcgab", "A9CA905E-8D31-411A-AC0E-D6E994F68AE6"]
+        let blockArray = GroupeDefaults.shared.getBlockContens()
+        print("originだよ : ", origin)
+        let newArray = origin.filter { (model) -> Bool in
+            return !blockArray.contains(model.id)
+        }
+        return newArray
     }
     
     func nextLoad() {
@@ -227,7 +245,8 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
                 model.id = oFirePhoto.documentID
                 return model
             }
-            self.oFirePhotos += newFirePhotos
+            
+            self.oFirePhotos += self.mutedArray(origin: newFirePhotos)
             guard let collectionView = self.collectionView else { return }
             collectionView.reloadData()
         }
@@ -241,7 +260,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
             firePhotoInit()
         }
     }
-    
+
     @objc func reloadSaveState(notification: Notification) -> Void {
         if let info = notification.userInfo {
             let id = info["id"] as! String
@@ -315,14 +334,14 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
                 self.lastDoc = nil
             }
             let decoder = Firestore.Decoder()
-            self.oFirePhotos = snapshot.documents.map{ oFirePhoto -> OFirePhoto in
+            let newFirePhotos = snapshot.documents.map{ oFirePhoto -> OFirePhoto in
                 let data = oFirePhoto.data()
                 var model = try! decoder.decode(OFirePhoto.self, from: data)
                 model.id = oFirePhoto.documentID
                 print("model : ", model)
                 return model
             }
-            print("self.oFirePhotos : ", self.oFirePhotos)
+            self.oFirePhotos = self.mutedArray(origin: newFirePhotos)
             guard let collectionView = self.collectionView else { return }
             collectionView.reloadData {
                 sender.endRefreshing()
@@ -535,11 +554,16 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
         }
     }
     
-    func goPotoDetail(rPhoto: RealmPhoto?, fPhoto: OFirePhoto?) {
+    func goPotoDetail(rPhoto: RealmPhoto?, fPhoto: OFirePhoto?, index: Int) {
         let sb = UIStoryboard(name: "PhotoDetail",bundle: nil)
         let vc = sb.instantiateInitialViewController() as! PhotoDetailViewController
         vc.rPhoto = rPhoto
         vc.fPhoto = fPhoto
+        if checkSaved(index: index) {
+            vc.savedFlag = true
+        } else {
+            vc.savedFlag = false
+        }
         present(vc, animated: true, completion: nil)
     }
 }
@@ -597,13 +621,13 @@ extension ChildContentViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print("=========")
-        print("call didSelectItemAt 解除モード")
+        print("call didSelectItemAt")
         print("indexpath : ", indexPath)
         print("=========")
         if tabPageIndex == 0 {
-            goPotoDetail(rPhoto: realmPhotos![indexPath.row], fPhoto: nil)
+            goPotoDetail(rPhoto: realmPhotos![indexPath.row], fPhoto: nil, index: indexPath.row)
         } else {
-            goPotoDetail(rPhoto: nil, fPhoto: oFirePhotos[indexPath.row])
+            goPotoDetail(rPhoto: nil, fPhoto: oFirePhotos[indexPath.row], index: indexPath.row)
         }
         
     }

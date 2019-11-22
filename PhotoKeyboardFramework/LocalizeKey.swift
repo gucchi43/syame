@@ -94,6 +94,12 @@ public enum LocalizeKey: String {
     case topRequestFifth
     
     case reportContent
+    case blockContent
+    case blockMessage
+    case blockOK
+    case blockCancel
+    case butSavedContent
+    case butSavedOK
     case spam
     case notContent
     case cancel

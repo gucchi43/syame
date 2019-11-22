@@ -93,6 +93,12 @@
 "topRequestFifth" = "に同意することとします。";
 
 "reportContent" = "報告する";
+"blockContent" = "ブロックする";
+"blockMessage" = "このコンテンツは非表示になります";
+"blockOK" = "OK";
+"blockCancel" = "キャンセル";
+"butSavedContent" = "このコンテンツはsaveしてるためできません";
+"butSavedOK" = "OK";
 "spam" = "スパムである";
 "notContent" = "不適切なコンテンツである";
 "cancel" = "キャンセル";

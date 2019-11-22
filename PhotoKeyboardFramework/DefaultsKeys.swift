@@ -17,6 +17,7 @@ extension DefaultsKeys {
     public static let usageNeedFlag = DefaultsKey<Bool>("usageNeedFlag", defaultValue: true)
     public static let welcomeNeedFlag = DefaultsKey<Bool>("welcomeNeedFlag", defaultValue: true)
     public static let registerNeedFlag = DefaultsKey<Bool>("registerNeedFlag", defaultValue: true)
+    public static let blockContents = DefaultsKey<[String]>("blockContents", defaultValue: [])
 }
 
 public final class GroupeDefaults {
@@ -99,6 +100,14 @@ public final class GroupeDefaults {
         } else {
             return false
         }
+    }
+    
+    public func addBlockContents(id: String) {
+        sharedDefaults[.blockContents].append(id)
+    }
+    
+    public func getBlockContens() -> [String] {
+        return sharedDefaults[.blockContents]
     }
 }
 

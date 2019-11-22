@@ -93,6 +93,12 @@
 "topRequestFifth" = ".";
 
 "reportContent" = "Report Contents";
+"blockContent" = "This content will be hidden";
+"blockMessage" = "Shall you ";
+"blockOK" = "OK";
+"blockCancel" = "Cancel";
+"butSavedContent" = "Can't do it because it's saved";
+"butSavedOK" = "OK";
 "spam" = "It's spam";
 "notContent" = "It's sensitive";
 "cancel" = "Cancel";
