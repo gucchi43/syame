@@ -1,18 +1,8 @@
-//
-//  TestFirePhoto.swift
-//  PhotoKeyboardEx
-//
-//  Created by Hiroki Taniguchi on 2019/08/11.
-//  Copyright © 2019 Hiroki Taniguchi. All rights reserved.
-//
-
 import Foundation
-import Firebase
-import FirebaseFirestoreSwift
 import PhotoKeyboardFramework
 
-struct OFirePhoto: Codable, Equatable {
-    var id: String
+struct Photo: Codable, Equatable {
+    var id: UUID
     var title: String
     var imageHeight: Int
     var imageWidth: Int
@@ -20,24 +10,27 @@ struct OFirePhoto: Codable, Equatable {
     var genre: String
     var totalSaveCount: Int
     var weeklySaveCount: Int
-    var weekStartDay: String
-    var createdAt: Timestamp
-    var updateAt: Timestamp
-    var ownerId: String?
-}
+    var weekStartDay: String?
+    var ownerId: UUID?
+    var locale: String
+    var isDebug: Bool
+    var createdAt: Date
+    var updatedAt: Date
 
-final class RootStore {
-    static let shared = RootStore()
-    class func rootDB() -> DocumentReference {
-        var mode = ""
-        #if DEBUG
-        mode = "/debug"
-        #else
-        mode = "/1"
-        #endif
-        var root = Firestore.firestore().document(Lang.rootKey() + mode)
-//        var root = Firestore.firestore().document("official" + mode)
-        return root
+    enum CodingKeys: String, CodingKey {
+        case id, title, genre, locale
+        case imageHeight = "image_height"
+        case imageWidth = "image_width"
+        case imageUrl = "image_url"
+        case totalSaveCount = "total_save_count"
+        case weeklySaveCount = "weekly_save_count"
+        case weekStartDay = "week_start_day"
+        case ownerId = "owner_id"
+        case isDebug = "is_debug"
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
     }
 }
 
+// OFirePhoto との互換用typealias
+typealias OFirePhoto = Photo

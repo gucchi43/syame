@@ -7,19 +7,15 @@
 //
 
 import UIKit
+import StoreKit
 import PhotoKeyboardFramework
 import SwiftDate
-import DZNEmptyDataSet
 import DynamicColor
-import FontAwesome_swift
-import Firebase
-import FirebaseFirestoreSwift
 import Realm
 import RealmSwift
-import CHTCollectionViewWaterfallLayout
 import GoogleMobileAds
 
-class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCollectionViewDelegateWaterfallLayout {
+class ChildContentViewController: UIViewController, RealmManagerDelegate {
     
     enum chengeType {
         case update
@@ -45,9 +41,9 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
     #else
     let addId = "ca-app-pub-2311091333372031/6162073771"
     #endif
-    private var firePhotoCollection : CollectionReference = RootStore.rootDB().collection("ofirephoto")
+    private let supabase = SupabaseManager.shared
     private var oFirePhotos : [OFirePhoto] = []
-    private var lastDoc: DocumentSnapshot?
+    private var currentOffset: Int = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -61,7 +57,6 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
         NotificationCenter.default.addObserver(self, selector: #selector(reloadSaveState(notification:)), name: .updateSaveState, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadAfterPost(notification:)), name: .allRelaod, object: nil)
         commonInit()
-        emptyDataSetInit()
         if pageboyPageIndex != 0 {
             firePhotoInit()
         }
@@ -73,6 +68,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
         updateIndexLabel()
         if pageboyPageIndex == 0 {
             collectionView.reloadData()
+            updateEmptyState()
         } else {
             let blockIncludes = self.mutedArray(origin: self.oFirePhotos)
             let blockIncludeIds = blockIncludes.map { $0.id }
@@ -101,154 +97,166 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
     
     //MARK: - CollectionView UI Setup
     func setupCollectionView(){
-        
-        // Create a waterfall layout
-        let layout = CHTCollectionViewWaterfallLayout()
-        
-        // Change individual layout attributes for the spacing between cells
-        layout.minimumColumnSpacing = 8.0
-        layout.minimumInteritemSpacing = 8.0
-        layout.sectionInset = UIEdgeInsets(top: 8.0, left: 8.0, bottom: 88.0, right: 8.0)
-        
-        // Collection view attributes
+        let layout = createWaterfallLayout()
         collectionView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         collectionView.alwaysBounceVertical = true
-        
-        // Add the waterfall layout to your collection view
         collectionView.collectionViewLayout = layout
     }
-    
-    func emptyDataSetInit(){
-        collectionView.emptyDataSetDelegate = self
-        collectionView.emptyDataSetSource = self
-    }
-    
-    func createQuery(lastDoc: DocumentSnapshot? = nil) -> Query? {
-        var query: Query?
-        switch currentGenreTag {
-        case .none:
-            query = nil
-        case .some(.myBoard):
-            query = nil
-        case .some(.new):
-            if let lastDoc = lastDoc {
-                query = firePhotoCollection
-                    .order(by: "createdAt", descending: true)
-                    .limit(to: 20)
-                    .start(afterDocument: lastDoc)
-            } else {
-                query = firePhotoCollection
-                    .order(by: "createdAt", descending: true)
-                    .limit(to: 20)
-            }
-        case .some(.popular):
-            let sevenBeforeDay = Date()-7.days
-            let sevenBeforeTimeStamp = Timestamp(date: sevenBeforeDay.date)
-            if let lastDoc = lastDoc {
-                query = firePhotoCollection
-                    .whereField("updateAt", isGreaterThan: sevenBeforeTimeStamp)
-                    .order(by: "updateAt")
-                    .order(by: "weeklySaveCount")
-                    .limit(to: 20)
-                    .start(afterDocument: lastDoc)
-            } else {
-                query = firePhotoCollection
-                    .whereField("updateAt", isGreaterThan: sevenBeforeTimeStamp)
-                    .order(by: "updateAt")
-                    .order(by: "weeklySaveCount")
-                    .limit(to: 20)
-            }
-        case .some(.humor), .some(.cool), .some(.cute), .some(.serious), .some(.other):
-            if let lastDoc = lastDoc {
-                query = firePhotoCollection
-                    .whereField("genre", isEqualTo: currentGenreTag.getKey())
-                    .order(by: "title")
-                    .limit(to: 20)
-                    .start(afterDocument: lastDoc)
-            } else {
-                query = firePhotoCollection
-                    .whereField("genre", isEqualTo: currentGenreTag.getKey())
-                    .order(by: "title")
-                    .limit(to: 20)
-            }
+
+    private func createWaterfallLayout() -> UICollectionViewCompositionalLayout {
+        let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, environment in
+            let itemSize = NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(0.5),
+                heightDimension: .estimated(200)
+            )
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
+
+            let groupSize = NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1.0),
+                heightDimension: .estimated(200)
+            )
+            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+            group.interItemSpacing = .fixed(8.0)
+
+            let section = NSCollectionLayoutSection(group: group)
+            section.interGroupSpacing = 8.0
+            section.contentInsets = NSDirectionalEdgeInsets(top: 8.0, leading: 8.0, bottom: 88.0, trailing: 8.0)
+            return section
         }
-        return query
+        return layout
     }
     
+    func updateEmptyState() {
+        let itemCount: Int
+        if tabPageIndex == 0 {
+            itemCount = realmPhotos?.count ?? 0
+        } else {
+            itemCount = oFirePhotos.count
+        }
+
+        if itemCount == 0 {
+            let emptyView = UIView(frame: collectionView.bounds)
+            emptyView.backgroundColor = .bgDark()
+
+            let stackView = UIStackView()
+            stackView.axis = .vertical
+            stackView.alignment = .center
+            stackView.spacing = 16
+            stackView.translatesAutoresizingMaskIntoConstraints = false
+
+            let imageView = UIImageView()
+            imageView.image = UIImage.fontAwesomeIcon(name: .grinTears, style: .solid, textColor: .acGreen(), size: CGSize(width: 80, height: 80))
+            imageView.translatesAutoresizingMaskIntoConstraints = false
+            imageView.widthAnchor.constraint(equalToConstant: 80).isActive = true
+            imageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
+
+            let titleLabel = UILabel()
+            var title = LocalizeKey.othersEmptyTitle.localizedString()
+            if pageboyPageIndex == 0 {
+                title = LocalizeKey.myBoardEmptyTitle.localizedString()
+            }
+            titleLabel.attributedText = NSAttributedString(
+                string: title,
+                attributes: [
+                    .font: UIFont.boldSystemFont(ofSize: 19),
+                    .foregroundColor: UIColor.acGreen()
+                ]
+            )
+            titleLabel.textAlignment = .center
+
+            stackView.addArrangedSubview(imageView)
+            stackView.addArrangedSubview(titleLabel)
+            emptyView.addSubview(stackView)
+
+            NSLayoutConstraint.activate([
+                stackView.centerXAnchor.constraint(equalTo: emptyView.centerXAnchor),
+                stackView.centerYAnchor.constraint(equalTo: emptyView.centerYAnchor, constant: -60)
+            ])
+
+            collectionView.backgroundView = emptyView
+        } else {
+            collectionView.backgroundView = nil
+        }
+    }
+    
+    func fetchPhotos(offset: Int = 0) async throws -> [OFirePhoto] {
+        let client = supabase.client
+
+        switch currentGenreTag {
+        case .none, .some(.myBoard):
+            return []
+        case .some(.new):
+            return try await client.from("photos")
+                .select()
+                .eq("locale", value: supabase.locale)
+                .eq("is_debug", value: supabase.isDebug)
+                .order("created_at", ascending: false)
+                .range(from: offset, to: offset + 19)
+                .execute()
+                .value
+        case .some(.popular):
+            let sevenDaysAgo = ISO8601DateFormatter().string(from: Date().addingTimeInterval(-7 * 24 * 60 * 60))
+            return try await client.from("photos")
+                .select()
+                .eq("locale", value: supabase.locale)
+                .eq("is_debug", value: supabase.isDebug)
+                .gt("updated_at", value: sevenDaysAgo)
+                .order("weekly_save_count", ascending: false)
+                .range(from: offset, to: offset + 19)
+                .execute()
+                .value
+        case .some(.humor), .some(.cool), .some(.cute), .some(.serious), .some(.other):
+            return try await client.from("photos")
+                .select()
+                .eq("locale", value: supabase.locale)
+                .eq("is_debug", value: supabase.isDebug)
+                .eq("genre", value: currentGenreTag.getKey())
+                .order("title")
+                .range(from: offset, to: offset + 19)
+                .execute()
+                .value
+        }
+    }
+
     func firePhotoInit() {
-        guard let currentQuery = createQuery() else { return }
-        currentQuery.getDocuments { (snapshot, error) in
-            guard let snapshot = snapshot else {
-                print("Error fetching snapshots: \(error!)")
-                return
+        currentOffset = 0
+        Task {
+            do {
+                let photos = try await fetchPhotos()
+                self.oFirePhotos = self.mutedArray(origin: photos)
+                self.currentOffset = photos.count
+                guard let collectionView = self.collectionView else { return }
+                await MainActor.run {
+                    collectionView.reloadData()
+                }
+            } catch {
+                print("Error fetching photos: \(error)")
             }
-            if let error = error {
-                print("Error retreiving collection: \(error)")
-                return
-            }
-            
-            print("snapshot : ", snapshot)
-            print("snapshot.documents : ", snapshot.documents)
-            
-            if let lastDoc = snapshot.documents.last {
-                self.lastDoc = lastDoc
-            } else {
-                self.lastDoc = nil
-            }
-            let decoder = Firestore.Decoder()
-            let newFirePhotos = snapshot.documents.map{ oFirePhoto -> OFirePhoto in
-                let data = oFirePhoto.data()
-                var model = try! decoder.decode(OFirePhoto.self, from: data)
-                return model
-            }
-            self.oFirePhotos = self.mutedArray(origin: newFirePhotos)
-            guard let collectionView = self.collectionView else { return }
-            collectionView.reloadData()
         }
     }
     
     func mutedArray(origin: [OFirePhoto]) -> [OFirePhoto] {
-//        var test = ["afag", "avcgab", "A9CA905E-8D31-411A-AC0E-D6E994F68AE6"]
         let blockArray = GroupeDefaults.shared.getBlockContens()
-        print("originだよ : ", origin)
         let newArray = origin.filter { (model) -> Bool in
-            return !blockArray.contains(model.id)
+            return !blockArray.contains(model.id.uuidString)
         }
         return newArray
     }
     
     func nextLoad() {
-        guard let lastDoc = lastDoc else {
-            print("not next data")
-            return
-        }
-        guard let currentQuery = createQuery(lastDoc: lastDoc) else { return }
-        currentQuery.getDocuments { (snapshot, error) in
-            guard let snapshot = snapshot else {
-                print("Error fetching snapshots: \(error!)")
-                return
+        Task {
+            do {
+                let photos = try await fetchPhotos(offset: currentOffset)
+                guard !photos.isEmpty else { return }
+                self.oFirePhotos += self.mutedArray(origin: photos)
+                self.currentOffset += photos.count
+                guard let collectionView = self.collectionView else { return }
+                await MainActor.run {
+                    collectionView.reloadData()
+                }
+            } catch {
+                print("Error loading next: \(error)")
             }
-            if let error = error {
-                print("Error retreiving collection: \(error)")
-                return
-            }
-            if let lastDoc = snapshot.documents.last {
-                self.lastDoc = lastDoc
-            } else {
-                self.lastDoc = nil
-            }
-            // モデルに当て込み
-            let decoder = Firestore.Decoder()
-            let newFirePhotos = snapshot.documents.map{ oFirePhoto -> OFirePhoto in
-                let data = oFirePhoto.data()
-                var model = try! decoder.decode(OFirePhoto.self, from: data)
-                model.id = oFirePhoto.documentID
-                return model
-            }
-            
-            self.oFirePhotos += self.mutedArray(origin: newFirePhotos)
-            guard let collectionView = self.collectionView else { return }
-            collectionView.reloadData()
         }
     }
     
@@ -273,7 +281,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
                 print("realmPhotos :", realmPhotos)
                 return collectionView.reloadData()
             } else {
-                changeIndex = oFirePhotos.enumerated().filter{ $0.1.id == id }.map { IndexPath(row: $0.0, section: 0) }
+                changeIndex = oFirePhotos.enumerated().filter{ $0.1.id.uuidString == id }.map { IndexPath(row: $0.0, section: 0) }
             }
             print("changeIndex: ", changeIndex)
             if let indexPath = changeIndex.first {
@@ -312,39 +320,26 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
     }
     
     @objc func refresh(sender: UIRefreshControl) {
-        // refresh処理
         if tabPageIndex == 0 {
             return collectionView.reloadData {
                 sender.endRefreshing()
             }
         }
-        guard let currentQuery = createQuery() else { return }
-        currentQuery.getDocuments { (snapshot, error) in
-            guard let snapshot = snapshot else {
-                print("Error fetching snapshots: \(error!)")
-                return
-            }
-            if let error = error {
-                print("Error retreiving collection: \(error)")
-                return
-            }
-            if let lastDoc = snapshot.documents.last {
-                self.lastDoc = lastDoc
-            } else {
-                self.lastDoc = nil
-            }
-            let decoder = Firestore.Decoder()
-            let newFirePhotos = snapshot.documents.map{ oFirePhoto -> OFirePhoto in
-                let data = oFirePhoto.data()
-                var model = try! decoder.decode(OFirePhoto.self, from: data)
-                model.id = oFirePhoto.documentID
-                print("model : ", model)
-                return model
-            }
-            self.oFirePhotos = self.mutedArray(origin: newFirePhotos)
-            guard let collectionView = self.collectionView else { return }
-            collectionView.reloadData {
-                sender.endRefreshing()
+        currentOffset = 0
+        Task {
+            do {
+                let photos = try await fetchPhotos()
+                self.oFirePhotos = self.mutedArray(origin: photos)
+                self.currentOffset = photos.count
+                guard let collectionView = self.collectionView else { return }
+                await MainActor.run {
+                    collectionView.reloadData {
+                        sender.endRefreshing()
+                    }
+                }
+            } catch {
+                print("Error refreshing: \(error)")
+                await MainActor.run { sender.endRefreshing() }
             }
         }
     }
@@ -354,45 +349,47 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
             return true
         } else {
             let currentFirePhoto = oFirePhotos[index]
-            print("currentFirePhoto.id : ", currentFirePhoto.id)
-            let selectSavedPhotos = realmPhotos?.filter { $0.id == currentFirePhoto.id}
-            if selectSavedPhotos!.count > 0 {
-                return true
-            } else {
-                return false
-            }
+            let photoId = currentFirePhoto.id.uuidString
+            let selectSavedPhotos = realmPhotos?.filter { $0.id == photoId }
+            return (selectSavedPhotos?.count ?? 0) > 0
         }
     }
-    
+
     func updateSaveCount(doc: OFirePhoto, up: Bool) {
-        let beforeStartDay = doc.weekStartDay
+        var newTotal = doc.totalSaveCount
+        var newWeekly = doc.weeklySaveCount
         let currentStartDay = Date().dateAt(.startOfWeek).toString()
-        var updateDoc = doc
-        if beforeStartDay != currentStartDay {
-            updateDoc.weeklySaveCount = 0
-            updateDoc.weekStartDay = currentStartDay
+        if doc.weekStartDay != currentStartDay {
+            newWeekly = 0
         }
-        print("baforeStartDay : ", beforeStartDay)
-        print("currentStartDay : ", currentStartDay)
         if up {
-            updateDoc.totalSaveCount += 1
-            updateDoc.weeklySaveCount += 1
+            newTotal += 1
+            newWeekly += 1
         } else {
-            if doc.totalSaveCount > 0 {
-                updateDoc.totalSaveCount -= 1
-            }
-            if doc.weeklySaveCount > 0 {
-                updateDoc.weeklySaveCount -= 1
-            }
+            if newTotal > 0 { newTotal -= 1 }
+            if newWeekly > 0 { newWeekly -= 1 }
         }
-        updateDoc.updateAt = Timestamp(date: Date())
-        let encoder = Firestore.Encoder()
-        let updatePhotoDoc = try! encoder.encode(updateDoc)
-        firePhotoCollection.document(doc.id).setData(updatePhotoDoc, merge: true) { (error) in
-            if let error = error {
-                print(error)
-            } else {
-                print("savecont update success")
+        struct SaveCountUpdate: Codable {
+            let total_save_count: Int
+            let weekly_save_count: Int
+            let week_start_day: String
+            let updated_at: String
+        }
+        let update = SaveCountUpdate(
+            total_save_count: newTotal,
+            weekly_save_count: newWeekly,
+            week_start_day: currentStartDay,
+            updated_at: ISO8601DateFormatter().string(from: Date())
+        )
+        Task {
+            do {
+                try await supabase.client.from("photos")
+                    .update(update)
+                    .eq("id", value: doc.id.uuidString)
+                    .execute()
+                print("savecount update success")
+            } catch {
+                print("savecount update error: \(error)")
             }
         }
     }
@@ -406,7 +403,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
         if tabPageIndex == 0 {
             id = realmPhotos![index].id
         } else {
-            id = oFirePhotos[index].id
+            id = oFirePhotos[index].id.uuidString
         }
         
         if checkSaved(index: index) {
@@ -424,12 +421,22 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
                     if tutorialDataFlag == true {
                         return
                     }
-                    self.firePhotoCollection.document(id).getDocument(completion: { (snapshot, error) in
-                        guard let snapshot = snapshot else { return }
-                        let decoder = Firestore.Decoder()
-                        let updatePhotoDoc = try! decoder.decode(OFirePhoto.self, from: snapshot.data()!)
-                        self.updateSaveCount(doc: updatePhotoDoc, up: false)
-                    })
+                    Task {
+                        do {
+                            let photos: [OFirePhoto] = try await self.supabase.client
+                                .from("photos")
+                                .select()
+                                .eq("id", value: id!)
+                                .limit(1)
+                                .execute()
+                                .value
+                            if let photo = photos.first {
+                                self.updateSaveCount(doc: photo, up: false)
+                            }
+                        } catch {
+                            print("fetch photo error: \(error)")
+                        }
+                    }
                 } else {
                     self.updateSaveCount(doc: self.oFirePhotos[index], up: false)
                 }
@@ -447,14 +454,14 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
                 let selectData = oFirePhotos[index]
                 guard let image = cell.photoImageView.image else { return }
                 print("selectData.id : ", selectData.id)
-                photo = RealmPhoto.create(id: selectData.id,
+                photo = RealmPhoto.create(id: selectData.id.uuidString,
                                             text: selectData.title,
                                             image: image,
                                             imageHeight: selectData.imageHeight,
                                             imageWidth: selectData.imageWidth,
                                             getDay: Date().toString(),
                                             isPublic: true,
-                                            ownerId: selectData.ownerId!)
+                                            ownerId: selectData.ownerId?.uuidString ?? "")
             }
             // Realmにsaveする
             RealmManager.shared.save(data: photo, success: {() in
@@ -479,7 +486,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
         let ok = UIAlertAction(title: LocalizeKey.baseOK.localizedString(), style: .default, handler: { (action) in
             // 広告流す
             print("call add")
-            GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: self)
+            self.showRewardedAd()
             
 //            if self.rewardedAd?.isReady == true {
 //                GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: self)
@@ -522,37 +529,6 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate, CHTCol
         })
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAtIndexPath indexPath: IndexPath) -> CGSize {
-        var size: CGSize!
-        if tabPageIndex == 0 {
-            let w = realmPhotos![indexPath.row].imageWidth
-            let h = realmPhotos![indexPath.row].imageHeight
-            size = CGSize(width: w, height: h)
-        } else {
-            let w = oFirePhotos[indexPath.row].imageWidth
-            let h = oFirePhotos[indexPath.row].imageHeight
-            size = CGSize(width: w, height: h)
-        }
-        return convertBestSize(before: size)
-    }
-    
-    private func convertBestSize(before: CGSize) -> CGSize {
-        let w = before.width
-        let h = before.height
-        if w * 1.8 < h {
-            return CGSize(width: w, height: h * 0.8)
-        } else if w * 1.5 < h {
-            return CGSize(width: w, height: h * 1.0)
-        } else if w < h {
-            return CGSize(width: w, height: h * 1.2)
-        } else if w * 0.8 < h {
-            return CGSize(width: w, height: h * 1.5)
-        }else if w * 0.5 < h {
-            return CGSize(width: w, height: h * 1.8)
-        } else {
-            return CGSize(width: w, height: h * 2.0)
-        }
-    }
     
     func goPotoDetail(rPhoto: RealmPhoto?, fPhoto: OFirePhoto?, index: Int) {
         let sb = UIStoryboard(name: "PhotoDetail",bundle: nil)
@@ -653,86 +629,39 @@ extension ChildContentViewController {
     }
 }
 
-extension ChildContentViewController: DZNEmptyDataSetSource {
-    func backgroundColor(forEmptyDataSet scrollView: UIScrollView!) -> UIColor! {
-        return .bgDark()
-    }
-    
-    /// データが空の状態の時に表示したい画像
-    func image(forEmptyDataSet scrollView: UIScrollView!) -> UIImage! {
-        let image = UIImage.fontAwesomeIcon(name: .grinTears, style: .solid, textColor: .acGreen(), size: CGSize(width: 80, height: 80))
-        return  image
-    }
-    //
-    /// データが空の状態の時に表示したい属性付きタイトル文字列
-    func title(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
-        var title = LocalizeKey.othersEmptyTitle.localizedString()
-        if pageboyPageIndex == 0 {
-            title = LocalizeKey.myBoardEmptyTitle.localizedString()
-        }
-        let attributes: [NSAttributedString.Key: Any]
-            = [.font: UIFont.boldSystemFont(ofSize: 19),
-               .foregroundColor: UIColor.acGreen()]
-        return NSAttributedString(string: title, attributes: attributes)
-    }
-    
-    func verticalOffset(forEmptyDataSet scrollView: UIScrollView!) -> CGFloat {
-        let deviceHeight = UIScreen.main.bounds.size.height
-        let statusBarHeight = UIApplication.shared.statusBarFrame.size.height
-        guard let navigationBarHeight = self.navigationController?.navigationBar.frame.size.height else { return 0.0 }
-        let barHeight = deviceHeight - (collectionView.contentSize.height + statusBarHeight + navigationBarHeight)
-        return -navigationBarHeight*2
-    }
-}
 
-/// データが空の状態の時に表示したい属性付き説明文字列
-//    func description(forEmptyDataSet scrollView: UIScrollView!) -> NSAttributedString! {
-//        let text = """
-//        まだマイキーボードに何も登録できてないよ
-//        正直やばいよ、君だけだよ
-//        まずは「人気」欄から登録してみよう！
-//        """
-//
-//        let paragraphStyle = NSMutableParagraphStyle()
-//        paragraphStyle.alignment = .natural
-//        paragraphStyle.lineBreakMode = .byWordWrapping
-//        let attributes: [NSAttributedString.Key: Any]
-//            = [.font: UIFont.boldSystemFont(ofSize: 19),
-//               .foregroundColor: UIColor..acGreen(),
-//               .paragraphStyle: paragraphStyle]
-//
-//        return NSAttributedString(string: text, attributes: attributes)
-//    }
-
-extension ChildContentViewController: DZNEmptyDataSetDelegate {
-    /// EmptyDataSetViewがタップされた時の動作
-    func emptyDataSet(_ scrollView: UIScrollView!, didTap view: UIView!) {
-        // 何かの動作
+extension ChildContentViewController {
+    private var rewardedAd: GADRewardedAd? {
+        get { objc_getAssociatedObject(self, &rewardedAdKey) as? GADRewardedAd }
+        set { objc_setAssociatedObject(self, &rewardedAdKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC) }
     }
-}
 
-extension ChildContentViewController: GADRewardBasedVideoAdDelegate {
-    func rewardBasedVideoAd(_ rewardBasedVideoAd: GADRewardBasedVideoAd, didRewardUserWith reward: GADAdReward) {
-        print("Reward received with currency: \(reward.type), amount \(reward.amount).")
-        GroupeDefaults.shared.chargeSaveLife(amount: Int(truncating: reward.amount))
-    }
-    
     func setUpAd() {
-        GADRewardBasedVideoAd.sharedInstance().delegate = self
-        GADRewardBasedVideoAd.sharedInstance().load(GADRequest(),
-                                                    withAdUnitID: addId)
+        loadRewardedAd()
     }
-    
-    func rewardedAdDidPresent(_ rewardedAd: GADRewardedAd) {
-        print("Rewarded ad presented.")
+
+    func loadRewardedAd() {
+        GADRewardedAd.load(withAdUnitID: addId, request: GADRequest()) { [weak self] ad, error in
+            if let error = error {
+                print("Failed to load rewarded ad: \(error.localizedDescription)")
+                return
+            }
+            self?.rewardedAd = ad
+        }
     }
-    
-    func rewardedAdDidDismiss(_ rewardedAd: GADRewardedAd) {
-        print("Rewarded ad dismissed.")
-    }
-    
-    func rewardBasedVideoAdDidClose(_ rewardBasedVideoAd: GADRewardBasedVideoAd) {
-        GADRewardBasedVideoAd.sharedInstance().load(GADRequest(),
-                                                    withAdUnitID: addId)
+
+    func showRewardedAd() {
+        guard let rewardedAd = rewardedAd else {
+            print("Rewarded ad not ready")
+            return
+        }
+        rewardedAd.present(fromRootViewController: self) { [weak self] in
+            let reward = rewardedAd.adReward
+            print("Reward received: \(reward.type), amount \(reward.amount)")
+            GroupeDefaults.shared.chargeSaveLife(amount: Int(truncating: reward.amount))
+        }
+        loadRewardedAd()
     }
 }
+
+private var rewardedAdKey: UInt8 = 0

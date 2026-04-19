@@ -8,9 +8,6 @@
 
 import UIKit
 import DynamicColor
-import FontAwesome_swift
-import ENSwiftSideMenu
-import SwiftyAttributes
 import PhotoKeyboardFramework
 import Realm
 import RealmSwift
@@ -91,7 +88,7 @@ class UsageViewController: UIViewController {
     }
 
     @IBAction func tapNavBarButton(_ sender: Any) {
-        toggleSideMenuView()
+        (navigationController as? MainNavigationViewController)?.toggleSideMenu()
     }
     
     @IBAction func tapNextButton(_ sender: Any) {

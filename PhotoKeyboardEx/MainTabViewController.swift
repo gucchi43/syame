@@ -9,15 +9,10 @@
 import UIKit
 import Tabman
 import Pageboy
-import ENSwiftSideMenu
-import FontAwesome_swift
 import PhotoKeyboardFramework
-import Floaty
 import Realm
 import RealmSwift
-import Toast_Swift
-import UserNotifications
-import FirebaseMessaging
+import Toast
 
 struct TabHead {
     let title: String
@@ -25,7 +20,7 @@ struct TabHead {
     let badge: String?
 }
 
-class MainTabViewController: TabmanViewController, FloatyDelegate {
+class MainTabViewController: TabmanViewController {
     var tabHeads = GenreTagType.getAllGenreTags()
     var titles = [LocalizeKey.navMyBoard.localizedString(),
                   LocalizeKey.navNew.localizedString(),
@@ -47,7 +42,7 @@ class MainTabViewController: TabmanViewController, FloatyDelegate {
     
     var firstFlag = true
     
-    var floaty = Floaty()
+    var fabButton = UIButton(type: .custom)
     
     let bar = TMBar.TabBar()
 //    let bar = TMBar.ButtonBar()
@@ -120,64 +115,37 @@ class MainTabViewController: TabmanViewController, FloatyDelegate {
     }
     
     func layoutFAB() {
-        floaty.buttonColor = .acGreen()
-        floaty.plusColor = .white
-        floaty.sticky = true
-        floaty.hasShadow = true
-        let cameraImage = UIImage.fontAwesomeIcon(name: .camera, style: .solid, textColor: .acGreen(), size: CGSize(width: 20, height: 20))
-        floaty.addItem(icon: cameraImage) { (item) in
-            if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum) {
-                let picker = UIImagePickerController()
-                picker.sourceType = .camera
-                picker.delegate = self
-                self.present(picker, animated: true, completion: {
-                    self.floaty.close()
-                })
-            } else {
-                self.floaty.close()
-            }
-        }
-        let photoImage = UIImage.fontAwesomeIcon(name: .images, style: .solid, textColor: .acGreen(), size: CGSize(width: 20, height: 20))
-        floaty.addItem(icon: photoImage) { (item) in
-            if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum) {
-                let picker = UIImagePickerController()
-                picker.sourceType = .photoLibrary
-                picker.delegate = self
-                self.present(picker, animated: true, completion: {
-                    self.floaty.close()
-                })
-            } else {
-                self.floaty.close()
-            }
-        }
-        self.view.addSubview(floaty)
+        let size: CGFloat = 56
+        fabButton.frame = CGRect(x: 0, y: 0, width: size, height: size)
+        fabButton.backgroundColor = .acGreen()
+        fabButton.layer.cornerRadius = size / 2
+        fabButton.layer.shadowColor = UIColor.black.cgColor
+        fabButton.layer.shadowOffset = CGSize(width: 0, height: 2)
+        fabButton.layer.shadowOpacity = 0.3
+        fabButton.layer.shadowRadius = 4
+        fabButton.setTitle("+", for: .normal)
+        fabButton.setTitleColor(.white, for: .normal)
+        fabButton.titleLabel?.font = UIFont.systemFont(ofSize: 28, weight: .light)
+        fabButton.addTarget(self, action: #selector(tapFAB), for: .touchUpInside)
+        fabButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(fabButton)
+        NSLayoutConstraint.activate([
+            fabButton.widthAnchor.constraint(equalToConstant: size),
+            fabButton.heightAnchor.constraint(equalToConstant: size),
+            fabButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            fabButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
+        ])
     }
-    
-    // MARK: - Floaty Delegate Methods
-    func floatyWillOpen(_ floaty: Floaty) {
-        
-        print("Floaty Will Open")
+
+    @objc func tapFAB() {
         let sb = UIStoryboard(name: "Add", bundle: .main)
         let vc = sb.instantiateInitialViewController() as! AddViewController
-        present(vc, animated: true) {
-        }
-    }
-    
-    func floatyDidOpen(_ floaty: Floaty) {
-        print("Floaty Did Open")
-    }
-    
-    func floatyWillClose(_ floaty: Floaty) {
-        print("Floaty Will Close")
-    }
-    
-    func floatyDidClose(_ floaty: Floaty) {
-        print("Floaty Did Close")
+        present(vc, animated: true)
     }
     
     
     @IBAction func tapBarMenuButton(_ sender: Any) {
-        toggleSideMenuView()
+        (navigationController as? MainNavigationViewController)?.toggleSideMenu()
     }
     
     
@@ -258,28 +226,6 @@ extension MainTabViewController: PageboyViewControllerDataSource, TMBarDataSourc
     }
 }
 
-extension MainTabViewController: ENSideMenuDelegate {
-    func sideMenuWillOpen() {
-        print("sideMenuWillOpen")
-    }
-    
-    func sideMenuWillClose() {
-        print("sideMenuWillClose")
-    }
-    
-    func sideMenuShouldOpenSideMenu() -> Bool {
-        print("sideMenuShouldOpenSideMenu")
-        return true
-    }
-    
-    func sideMenuDidClose() {
-        print("sideMenuDidClose")
-    }
-    
-    func sideMenuDidOpen() {
-        print("sideMenuDidOpen")
-    }
-}
 
 extension MainTabViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     

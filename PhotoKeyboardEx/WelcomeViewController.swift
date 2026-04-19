@@ -8,7 +8,6 @@
 
 import UIKit
 import DynamicColor
-import SwiftyAttributes
 import PhotoKeyboardFramework
 
 class WelcomeViewController: UIViewController {

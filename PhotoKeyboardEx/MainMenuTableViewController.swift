@@ -69,26 +69,23 @@ class MyMenuTableViewController: UITableViewController {
             return
         }
         selectedMenuItem = indexPath.row
-        var destViewController : UIViewController
+        let mainNav = parent as? MainNavigationViewController
+            ?? navigationController as? MainNavigationViewController
         switch (indexPath.row) {
         case 0:
             let mainStoryboard: UIStoryboard = UIStoryboard(name: "Main",bundle: nil)
             let nvc = mainStoryboard.instantiateInitialViewController() as! UINavigationController
-            destViewController = nvc.viewControllers.first as! MainTabViewController
-            sideMenuController()?.setContentViewController(destViewController)
-            break
+            let destVC = nvc.viewControllers.first as! MainTabViewController
+            mainNav?.setContentViewController(destVC)
         case 1:
             let sb = UIStoryboard(name: "Usage",bundle: nil)
             let nvc = sb.instantiateInitialViewController() as! UINavigationController
-            destViewController = nvc.viewControllers.first as! UsageViewController
-            sideMenuController()?.setContentViewController(destViewController)
-            break
+            let destVC = nvc.viewControllers.first as! UsageViewController
+            mainNav?.setContentViewController(destVC)
         case 2:
             UIApplication.shared.open(URL(string: "http://line.me/ti/p/%40gox9644r")!)
-            break
         default:
             UIApplication.shared.open(URL(string: "https://pkbkeyboard.studio.design")!)
-            break
         }
     }
     

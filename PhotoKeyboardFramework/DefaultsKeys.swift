@@ -7,107 +7,98 @@
 //
 
 import UIKit
-import SwiftyUserDefaults
-
-extension DefaultsKeys {
-    public static let authUid = DefaultsKey<String>("authUid", defaultValue: "")
-    public static let launchCount = DefaultsKey<Int>("launchCount", defaultValue: 0)
-    public static let saveLife = DefaultsKey<Int>("saveLife", defaultValue: 5)
-    public static let sendCount = DefaultsKey<Int>("sendCount", defaultValue: 0)
-    public static let usageNeedFlag = DefaultsKey<Bool>("usageNeedFlag", defaultValue: true)
-    public static let welcomeNeedFlag = DefaultsKey<Bool>("welcomeNeedFlag", defaultValue: true)
-    public static let registerNeedFlag = DefaultsKey<Bool>("registerNeedFlag", defaultValue: true)
-    public static let blockContents = DefaultsKey<[String]>("blockContents", defaultValue: [])
-}
 
 public final class GroupeDefaults {
-    fileprivate init() {
-    }
+    fileprivate init() {}
     public static let shared = GroupeDefaults()
     public var sharedDefaults = UserDefaults(suiteName: "group.bocchi.PhotoKeyboardEx")!
 
+    private enum Keys: String {
+        case authUid, launchCount, saveLife, sendCount
+        case usageNeedFlag, welcomeNeedFlag, registerNeedFlag
+        case blockContents
+    }
+
     public func authUid() -> String {
-        return sharedDefaults[.authUid]
+        return sharedDefaults.string(forKey: Keys.authUid.rawValue) ?? ""
     }
     public func setAuthUid(id: String) {
-        sharedDefaults[.authUid] = id
+        sharedDefaults.set(id, forKey: Keys.authUid.rawValue)
     }
-    
+
     public func isRegisterPush() -> Bool {
-        if sharedDefaults[.registerNeedFlag] {
+        if sharedDefaults.object(forKey: Keys.registerNeedFlag.rawValue) == nil {
             return true
-        } else {
-            return false
         }
+        return sharedDefaults.bool(forKey: Keys.registerNeedFlag.rawValue)
     }
-    
+
     public func registerDone() {
-        sharedDefaults[.registerNeedFlag] = false
+        sharedDefaults.set(false, forKey: Keys.registerNeedFlag.rawValue)
     }
-    
+
     public func isUsagePush() -> Bool {
-        if sharedDefaults[.usageNeedFlag] {
+        if sharedDefaults.object(forKey: Keys.usageNeedFlag.rawValue) == nil {
             return true
-        } else {
-            return false
         }
+        return sharedDefaults.bool(forKey: Keys.usageNeedFlag.rawValue)
     }
-    
+
     public func usageDone() {
-        sharedDefaults[.usageNeedFlag] = false
+        sharedDefaults.set(false, forKey: Keys.usageNeedFlag.rawValue)
     }
-    
+
     public func isWelcomePush() -> Bool {
-        if sharedDefaults[.welcomeNeedFlag] {
+        if sharedDefaults.object(forKey: Keys.welcomeNeedFlag.rawValue) == nil {
             return true
-        } else {
-            return false
         }
+        return sharedDefaults.bool(forKey: Keys.welcomeNeedFlag.rawValue)
     }
-    
+
     public func welcomeDone() {
-        sharedDefaults[.welcomeNeedFlag] = false
+        sharedDefaults.set(false, forKey: Keys.welcomeNeedFlag.rawValue)
     }
-    
+
     public func incrementLaunchCount() {
-        sharedDefaults[.launchCount] += 1
+        let count = sharedDefaults.integer(forKey: Keys.launchCount.rawValue)
+        sharedDefaults.set(count + 1, forKey: Keys.launchCount.rawValue)
     }
-    
+
     public func incrementSendCount() {
-        sharedDefaults[.sendCount] += 1
+        let count = sharedDefaults.integer(forKey: Keys.sendCount.rawValue)
+        sharedDefaults.set(count + 1, forKey: Keys.sendCount.rawValue)
     }
-    
+
     public func isAddCount() -> Bool {
-        if sharedDefaults[.saveLife] > 0 {
-            return false
-        } else {
-            return true
-        }
+        let life = sharedDefaults.object(forKey: Keys.saveLife.rawValue) == nil ? 5 : sharedDefaults.integer(forKey: Keys.saveLife.rawValue)
+        return life <= 0
     }
-    
+
     public func useSaveLife() {
-        sharedDefaults[.saveLife] -= 1
+        let life = sharedDefaults.object(forKey: Keys.saveLife.rawValue) == nil ? 5 : sharedDefaults.integer(forKey: Keys.saveLife.rawValue)
+        sharedDefaults.set(life - 1, forKey: Keys.saveLife.rawValue)
     }
-    
+
     public func chargeSaveLife(amount: Int) {
-        sharedDefaults[.saveLife] = amount
+        sharedDefaults.set(amount, forKey: Keys.saveLife.rawValue)
     }
-    
+
     public func isRateAlert() -> Bool {
-        if sharedDefaults[.sendCount] > 7 {
-            sharedDefaults[.sendCount] = 0
+        let count = sharedDefaults.integer(forKey: Keys.sendCount.rawValue)
+        if count > 7 {
+            sharedDefaults.set(0, forKey: Keys.sendCount.rawValue)
             return true
-        } else {
-            return false
         }
+        return false
     }
-    
+
     public func addBlockContents(id: String) {
-        sharedDefaults[.blockContents].append(id)
+        var list = sharedDefaults.stringArray(forKey: Keys.blockContents.rawValue) ?? []
+        list.append(id)
+        sharedDefaults.set(list, forKey: Keys.blockContents.rawValue)
     }
-    
+
     public func getBlockContens() -> [String] {
-        return sharedDefaults[.blockContents]
+        return sharedDefaults.stringArray(forKey: Keys.blockContents.rawValue) ?? []
     }
 }
-
