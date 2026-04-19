@@ -12,10 +12,7 @@ import Realm
 import PhotoKeyboardFramework
 import SwiftDate
 import TagListView
-import FontAwesome_swift
 import DynamicColor
-import Firebase
-import FirebaseFirestoreSwift
 
 class AddViewController: UIViewController {
 
@@ -36,7 +33,7 @@ class AddViewController: UIViewController {
     
     var publicFlag = true
     
-    private var firePhotoCollection : CollectionReference = RootStore.rootDB().collection("ofirephoto")
+    private let supabase = SupabaseManager.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -176,48 +173,51 @@ class AddViewController: UIViewController {
     }
     
     func saveServer(success: @escaping (_ id: String, _ photo: UIImage) -> Void, failure: @escaping (String) -> Void) {
-        let originID = UUID().uuidString
+        let originID = UUID()
         let postImage = choiceImage!.resize(size: convertedImageSize(size: choiceImage!.size))!
         let imageData = postImage.jpegData(compressionQuality: 0.3)!
-        let storageRef = Storage.storage().reference(withPath: firePhotoCollection.path)
-        let photoRef = storageRef.child(originID)
-        let metadata = StorageMetadata()
-        metadata.contentType = "image/jpeg"
-        let uploadTask = photoRef.putData(imageData, metadata: metadata) { (metadata, error) in
-            guard let metadata = metadata else {
-                return failure("error upload storage")
-            }
-            print("metadata : ", metadata)
-            photoRef.downloadURL(completion: { (url, error) in
-                guard let downloadURL = url else {
-                    print(error?.localizedDescription)
-                    return failure("not found downloadURL")
-                }
+        let filePath = "\(supabase.locale)/\(originID.uuidString).jpg"
+
+        Task {
+            do {
+                // Supabase Storageにアップロード
+                try await supabase.client.storage.from("photos")
+                    .upload(filePath, data: imageData, options: .init(contentType: "image/jpeg"))
+
+                // 公開URLを取得
+                let publicURL = try supabase.client.storage.from("photos")
+                    .getPublicURL(path: filePath)
+
                 let titleText = self.titleTextField.text!
-                var newPhoto = OFirePhoto(id: originID,
-                                          title: titleText,
-                                          imageHeight: Int(postImage.size.height),
-                                          imageWidth: Int(postImage.size.width),
-                                          imageUrl: downloadURL.absoluteString,
-                                          genre: self.selectedJenreTag!.getKey(),
-                                          totalSaveCount: 1,
-                                          weeklySaveCount: 1,
-                                          weekStartDay: Date().dateAt(.startOfWeek).toString(),
-                                          createdAt: Timestamp(date: Date()),
-                                          updateAt: Timestamp(date: Date()),
-                                          ownerId: GroupeDefaults.shared.authUid())
-                let encoder = Firestore.Encoder()
-                let newPhotoDoc = try! encoder.encode(newPhoto)
-                self.firePhotoCollection.document(originID).setData(newPhotoDoc, completion: { (error) in
-                    if let error = error {
-                        print(error.localizedDescription)
-                        failure("error save store")
-                    } else {
-                        print("success save firestore", originID)
-                        success(originID, postImage)
-                    }
-                })
-            })
+                let ownerId = UUID(uuidString: GroupeDefaults.shared.authUid())
+
+                // DBに保存
+                try await supabase.client.from("photos")
+                    .insert([
+                        "id": originID.uuidString,
+                        "title": titleText,
+                        "image_height": String(Int(postImage.size.height)),
+                        "image_width": String(Int(postImage.size.width)),
+                        "image_url": publicURL.absoluteString,
+                        "genre": self.selectedJenreTag!.getKey(),
+                        "total_save_count": "1",
+                        "weekly_save_count": "1",
+                        "week_start_day": Date().dateAt(.startOfWeek).toString(),
+                        "owner_id": ownerId?.uuidString ?? "",
+                        "locale": supabase.locale,
+                        "is_debug": supabase.isDebug ? "true" : "false"
+                    ])
+                    .execute()
+
+                await MainActor.run {
+                    success(originID.uuidString, postImage)
+                }
+            } catch {
+                print("saveServer error: \(error)")
+                await MainActor.run {
+                    failure("error: \(error.localizedDescription)")
+                }
+            }
         }
     }
 

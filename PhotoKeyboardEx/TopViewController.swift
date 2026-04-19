@@ -8,23 +8,21 @@
 
 import UIKit
 import PhotoKeyboardFramework
-import SwiftyAttributes
-import TTTAttributedLabel
 
-class TopViewController: UIViewController, TTTAttributedLabelDelegate {
+class TopViewController: UIViewController, UITextViewDelegate {
 
     @IBOutlet weak var logoImage: UIImageView!
-    
+
     @IBOutlet weak var animateBaseView: UIView!
     @IBOutlet weak var heightConstraint: NSLayoutConstraint!
     @IBOutlet weak var leftConstraint: NSLayoutConstraint!
-    
+
     @IBOutlet weak var subTitleLabel: UILabel!
-    
+
     @IBOutlet weak var registerStack: UIStackView!
     @IBOutlet weak var startButton: UIButton!
-    
-    @IBOutlet weak var requestDescription: TTTAttributedLabel!
+
+    @IBOutlet weak var requestDescription: UITextView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,10 +34,11 @@ class TopViewController: UIViewController, TTTAttributedLabelDelegate {
         animateLogo()
     }
     
-    func attributedLabel(_ label: TTTAttributedLabel!, didSelectLinkWith url: URL!) {
-        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+    func textView(_ textView: UITextView, shouldInteractWith URL: URL, in characterRange: NSRange, interaction: UITextItemInteraction) -> Bool {
+        UIApplication.shared.open(URL, options: [:], completionHandler: nil)
+        return false
     }
-    
+
     func initLayout() {
         logoImage.alpha = 0.0
         subTitleLabel.alpha = 0.0
@@ -49,22 +48,34 @@ class TopViewController: UIViewController, TTTAttributedLabelDelegate {
         startButton.backgroundColor = .acGreen()
         startButton.titleLabel?.adjustsFontSizeToFitWidth = true
         startButton.setTitle(LocalizeKey.topStart.localizedString(), for: .normal)
+
         let firstAtr = LocalizeKey.topRequestFirst.localizedString()
         let secondAtr = LocalizeKey.topRequestSecond.localizedString()
         let thirdAtr = LocalizeKey.topRequestThird.localizedString()
         let fourthAtr = LocalizeKey.topRequestFourth.localizedString()
         let fifthAtr = LocalizeKey.topRequestFifth.localizedString()
-        let string = firstAtr + secondAtr + thirdAtr + fourthAtr + fifthAtr
-        requestDescription.text = string
-        requestDescription.linkAttributes = [NSAttributedString.Key.foregroundColor.rawValue: UIColor.acGreen().cgColor]
-        requestDescription.activeLinkAttributes = [NSAttributedString.Key.foregroundColor.rawValue: UIColor.acGreen().cgColor]
-        let nstring = string as NSString
-        let firstRange = nstring.range(of: secondAtr)
-        let firstUrl = URL(string: "https://pkbkeyboard.studio.design/terms")
-        requestDescription.addLink(to: firstUrl, with: firstRange)
-        let secondRange = nstring.range(of: fourthAtr)
-        let secondUrl = URL(string: "https://pkbkeyboard.studio.design/privacy")
-        requestDescription.addLink(to: secondUrl, with: secondRange)
+        let fullString = firstAtr + secondAtr + thirdAtr + fourthAtr + fifthAtr
+
+        let attributedString = NSMutableAttributedString(string: fullString)
+        let fullRange = NSRange(location: 0, length: (fullString as NSString).length)
+        attributedString.addAttribute(.foregroundColor, value: UIColor.white, range: fullRange)
+        attributedString.addAttribute(.font, value: UIFont.systemFont(ofSize: 14), range: fullRange)
+
+        let nstring = fullString as NSString
+        if let termsUrl = URL(string: "https://pkbkeyboard.studio.design/terms") {
+            let termsRange = nstring.range(of: secondAtr)
+            attributedString.addAttribute(.link, value: termsUrl, range: termsRange)
+        }
+        if let privacyUrl = URL(string: "https://pkbkeyboard.studio.design/privacy") {
+            let privacyRange = nstring.range(of: fourthAtr)
+            attributedString.addAttribute(.link, value: privacyUrl, range: privacyRange)
+        }
+
+        requestDescription.attributedText = attributedString
+        requestDescription.linkTextAttributes = [.foregroundColor: UIColor.acGreen()]
+        requestDescription.isEditable = false
+        requestDescription.isScrollEnabled = false
+        requestDescription.backgroundColor = .clear
         requestDescription.delegate = self
     }
     

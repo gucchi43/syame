@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import FontAwesome_swift
 //import ActionClosurable
 
 extension UIImage {
@@ -26,20 +25,23 @@ extension Notification.Name {
 }
 
 extension UIApplication {
-    // 表示中の一番上のViewControllerを取得
-    class func topViewController(controller: UIViewController? = UIApplication.shared.keyWindow?.rootViewController) -> UIViewController? {
-        if let navigationController = controller as? UINavigationController {
+    class func topViewController(controller: UIViewController? = nil) -> UIViewController? {
+        let root = controller ?? UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap { $0.windows }
+            .first { $0.isKeyWindow }?.rootViewController
+        if let navigationController = root as? UINavigationController {
             return topViewController(controller: navigationController.visibleViewController)
         }
-        if let tabController = controller as? UITabBarController {
+        if let tabController = root as? UITabBarController {
             if let selected = tabController.selectedViewController {
                 return topViewController(controller: selected)
             }
         }
-        if let presented = controller?.presentedViewController {
+        if let presented = root?.presentedViewController {
             return topViewController(controller: presented)
         }
-        return controller
+        return root
     }
 }
 

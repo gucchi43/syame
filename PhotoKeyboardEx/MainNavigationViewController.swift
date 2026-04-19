@@ -7,57 +7,101 @@
 //
 
 import UIKit
-import ENSwiftSideMenu
 
-class MainNavigationViewController: ENSideMenuNavigationController {
-    
+protocol SideMenuDelegate: AnyObject {
+    func sideMenuWillOpen()
+    func sideMenuDidOpen()
+    func sideMenuWillClose()
+    func sideMenuDidClose()
+}
+
+class MainNavigationViewController: UINavigationController {
+
+    private var menuViewController: UIViewController?
+    private var menuContainerView: UIView?
+    private var dimmingView: UIView?
+    var menuWidth: CGFloat = 180.0
+    weak var sideMenuDelegate: SideMenuDelegate?
+    private(set) var isMenuOpen = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Create a table view controller
+
         let tableViewController = MyMenuTableViewController()
-        
-        // Create side menu
-        sideMenu = ENSideMenu(sourceView: view, menuViewController: tableViewController, menuPosition:.left)
-        
-        // Set a delegate
-        sideMenu?.delegate = self
-        
-        // Configure side menu
-        sideMenu?.menuWidth = 180.0
-        
-        // Show navigation bar above side menu
+        menuViewController = tableViewController
+
+        setupSideMenu()
         view.bringSubviewToFront(navigationBar)
     }
-    
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+
+    private func setupSideMenu() {
+        guard let menuVC = menuViewController else { return }
+
+        let dimming = UIView(frame: view.bounds)
+        dimming.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+        dimming.alpha = 0
+        dimming.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDimmingTap))
+        dimming.addGestureRecognizer(tapGesture)
+        view.addSubview(dimming)
+        dimmingView = dimming
+
+        let container = UIView(frame: CGRect(x: -menuWidth, y: 0, width: menuWidth, height: view.bounds.height))
+        container.autoresizingMask = [.flexibleHeight]
+        container.backgroundColor = UIColor.bgDark()
+        view.addSubview(container)
+        menuContainerView = container
+
+        addChild(menuVC)
+        menuVC.view.frame = container.bounds
+        menuVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        container.addSubview(menuVC.view)
+        menuVC.didMove(toParent: self)
     }
-    
-    @IBAction func tapMainTabButton(_ sender: Any) {
+
+    @objc private func handleDimmingTap() {
+        closeSideMenu()
+    }
+
+    func toggleSideMenu() {
+        if isMenuOpen {
+            closeSideMenu()
+        } else {
+            openSideMenu()
+        }
+    }
+
+    func openSideMenu() {
+        guard !isMenuOpen else { return }
+        sideMenuDelegate?.sideMenuWillOpen()
+        isMenuOpen = true
+        view.bringSubviewToFront(dimmingView!)
+        view.bringSubviewToFront(menuContainerView!)
+        view.bringSubviewToFront(navigationBar)
+
+        UIView.animate(withDuration: 0.3, animations: {
+            self.menuContainerView?.frame.origin.x = 0
+            self.dimmingView?.alpha = 1
+        }) { _ in
+            self.sideMenuDelegate?.sideMenuDidOpen()
+        }
+    }
+
+    func closeSideMenu() {
+        guard isMenuOpen else { return }
+        sideMenuDelegate?.sideMenuWillClose()
+
+        UIView.animate(withDuration: 0.3, animations: {
+            self.menuContainerView?.frame.origin.x = -self.menuWidth
+            self.dimmingView?.alpha = 0
+        }) { _ in
+            self.isMenuOpen = false
+            self.sideMenuDelegate?.sideMenuDidClose()
+        }
+    }
+
+    func setContentViewController(_ viewController: UIViewController) {
+        closeSideMenu()
+        setViewControllers([viewController], animated: false)
     }
 }
-
-extension MainNavigationViewController: ENSideMenuDelegate {
-    func sideMenuWillOpen() {
-        print("sideMenuWillOpen")
-    }
-    
-    func sideMenuWillClose() {
-        print("sideMenuWillClose")
-    }
-    
-    func sideMenuDidClose() {
-        print("sideMenuDidClose")
-    }
-    
-    func sideMenuDidOpen() {
-        print("sideMenuDidOpen")
-    }
-    
-    func sideMenuShouldOpenSideMenu() -> Bool {
-        return true
-    }
-}
-

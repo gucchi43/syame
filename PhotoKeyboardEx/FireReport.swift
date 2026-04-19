@@ -1,20 +1,22 @@
-//
-//  FireReport.swift
-//  PhotoKeyboardEx
-//
-//  Created by Hiroki Taniguchi on 2019/10/26.
-//  Copyright © 2019 Hiroki Taniguchi. All rights reserved.
-//
-
 import Foundation
-import Firebase
-import FirebaseFirestoreSwift
 import PhotoKeyboardFramework
 
-struct FireReport: Codable, Equatable {
-    var userId: String
+struct Report: Codable, Equatable {
+    var id: UUID?
+    var userId: UUID?
     var ownerId: String
-    var contentId: String
+    var contentId: UUID?
     var reason: String
     var imageUrl: String?
+
+    enum CodingKeys: String, CodingKey {
+        case id, reason
+        case userId = "user_id"
+        case ownerId = "owner_id"
+        case contentId = "content_id"
+        case imageUrl = "image_url"
+    }
 }
+
+// FireReport との互換用typealias
+typealias FireReport = Report

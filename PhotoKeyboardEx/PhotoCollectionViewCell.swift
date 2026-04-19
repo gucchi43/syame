@@ -7,12 +7,8 @@
 //
 
 import UIKit
-import FontAwesome_swift
 import PhotoKeyboardFramework
 import DynamicColor
-import FirebaseFirestore
-import FirebaseStorage
-import FirebaseUI
 
 class PhotoCollectionViewCell: UICollectionViewCell {
 
@@ -57,8 +53,14 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     func configure(doc: OFirePhoto? , saved: Bool) {
         self.photoImageView.image = nil
         guard let doc = doc else { return }
-        let storageref = Storage.storage().reference(forURL: doc.imageUrl)
-        photoImageView.sd_setImage(with: storageref)
+        if let url = URL(string: doc.imageUrl) {
+            URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
+                guard let self = self, let data = data else { return }
+                DispatchQueue.main.async {
+                    self.photoImageView.image = UIImage(data: data)
+                }
+            }.resume()
+        }
         titleLabel.text = doc.title
         titleLabel.sizeToFit()
         countNumLabel.text = String(doc.totalSaveCount)

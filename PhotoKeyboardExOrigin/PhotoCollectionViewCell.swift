@@ -10,11 +10,10 @@ import UIKit
 import Lottie
 import DynamicColor
 import PhotoKeyboardFramework
-import FontAwesome_swift
 
 class PhotoCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var photoImageView: UIImageView!
-    @IBOutlet weak var choiceCoverView: AnimationView!
+    @IBOutlet weak var choiceCoverView: LottieAnimationView!
     @IBOutlet weak var choiceCover2View: UIView!
     @IBOutlet weak var choiceCoverLabel: UILabel!
     @IBOutlet weak var titleLabel: UILabel!
@@ -46,7 +45,7 @@ class PhotoCollectionViewCell: UICollectionViewCell {
         photoImageView.contentMode = .scaleAspectFill
         titleLabel.textColor = .white
         titleLabel.text = photo.text
-        let animation = Animation.named("fireworks", subdirectory: "LottieFile")
+        let animation = LottieAnimation.named("fireworks", subdirectory: "LottieFile")
         choiceCoverView.animation = animation
         choiceCover2View.alpha = 0.3
     }

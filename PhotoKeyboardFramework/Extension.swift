@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Firebase
 import Foundation
 
 public class Lang {
@@ -107,6 +106,39 @@ extension UIImage {
         return image
     }
 }
+
+// MARK: - NSAttributedString helpers (SwiftyAttributes代替)
+public extension String {
+    func withFont(_ font: UIFont) -> NSAttributedString {
+        return NSAttributedString(string: self, attributes: [.font: font])
+    }
+
+    func withTextColor(_ color: UIColor) -> NSAttributedString {
+        return NSAttributedString(string: self, attributes: [.foregroundColor: color])
+    }
+}
+
+public extension NSAttributedString {
+    func withFont(_ font: UIFont) -> NSAttributedString {
+        let mutable = NSMutableAttributedString(attributedString: self)
+        mutable.addAttribute(.font, value: font, range: NSRange(location: 0, length: mutable.length))
+        return mutable
+    }
+
+    func withTextColor(_ color: UIColor) -> NSAttributedString {
+        let mutable = NSMutableAttributedString(attributedString: self)
+        mutable.addAttribute(.foregroundColor, value: color, range: NSRange(location: 0, length: mutable.length))
+        return mutable
+    }
+
+    static func + (lhs: NSAttributedString, rhs: NSAttributedString) -> NSAttributedString {
+        let result = NSMutableAttributedString(attributedString: lhs)
+        result.append(rhs)
+        return result
+    }
+}
+
+public typealias Font = UIFont
 
 /// Array拡張メソッド
 public extension Array {

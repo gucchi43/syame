@@ -7,12 +7,9 @@
 //
 
 import UIKit
-import FontAwesome_swift
 import PhotoKeyboardFramework
-import Firebase
 import Realm
 import RealmSwift
-import SwiftyAttributes
 
 class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmManagerDelegate {
 
@@ -61,9 +58,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if FirebaseApp.app() == nil {
-            FirebaseApp.configure()
-        }
         baseSetUp()
         commonInit()
         collectionInit()

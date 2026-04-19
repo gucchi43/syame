@@ -8,12 +8,7 @@
 
 import UIKit
 import PhotoKeyboardFramework
-import FirebaseFirestore
-import FirebaseStorage
-import FirebaseUI
-import FontAwesome_swift
 import DynamicColor
-import ImageScrollView
 
 enum reason : String{
     case spam = "spam"
@@ -31,34 +26,50 @@ enum reason : String{
 
 class PhotoDetailViewController: UIViewController {
     
-    @IBOutlet weak var scrollView: ImageScrollView!
+    @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var otherButton: UIButton!
     @IBOutlet weak var bgView: UIView!
     @IBOutlet weak var captionLabel: UILabel!
+    private var zoomImageView: UIImageView!
     var rPhoto: RealmPhoto?
     var fPhoto: OFirePhoto?
     var savedFlag: Bool!
     
-    private var fireReportCollection : CollectionReference = RootStore.rootDB().collection("report")
+    private let supabase = SupabaseManager.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        scrollView.setup()
-        scrollView.imageScrollViewDelegate = self
-        scrollView.imageContentMode = .aspectFit
-        scrollView.initialOffset = .center
-        
+
+        scrollView.delegate = self
+        scrollView.minimumZoomScale = 1.0
+        scrollView.maximumZoomScale = 4.0
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.showsHorizontalScrollIndicator = false
+
+        zoomImageView = UIImageView()
+        zoomImageView.contentMode = .scaleAspectFit
+        zoomImageView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.addSubview(zoomImageView)
+        NSLayoutConstraint.activate([
+            zoomImageView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            zoomImageView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            zoomImageView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            zoomImageView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            zoomImageView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+            zoomImageView.heightAnchor.constraint(equalTo: scrollView.frameLayoutGuide.heightAnchor)
+        ])
+
         if let rPhoto = rPhoto {
-            scrollView.display(image: rPhoto.image!)
+            zoomImageView.image = rPhoto.image
         } else if let fPhoto = fPhoto {
-            let storageref = Storage.storage().reference(forURL: fPhoto.imageUrl)
-            //            contentImageView = UIImageView(image: nil)
-            storageref.getData(maxSize: 1 * 512 * 512) { (data, error) in
-                if let data = data {
-                    self.scrollView.display(image: UIImage(data: data)!)
-                }
+            if let url = URL(string: fPhoto.imageUrl) {
+                URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
+                    guard let data = data else { return }
+                    DispatchQueue.main.async {
+                        self?.zoomImageView.image = UIImage(data: data)
+                    }
+                }.resume()
             }
         }
         
@@ -161,7 +172,7 @@ class PhotoDetailViewController: UIViewController {
     func blockPhoto() {
         var id: String?
         if let fPhoto = fPhoto {
-            id = fPhoto.id
+            id = fPhoto.id.uuidString
         } else if let rPhoto = rPhoto {
             id = rPhoto.id
         } else {
@@ -171,50 +182,47 @@ class PhotoDetailViewController: UIViewController {
         GroupeDefaults.shared.addBlockContents(id: blockId)
         self.dismiss(animated: true, completion: nil)
     }
-    
+
     func sendReport(reason: String) {
-        let originID = UUID().uuidString
-        let userId = GroupeDefaults.shared.authUid()
-        let contentId: String!
-        let ownerId: String!
+        let userId = UUID(uuidString: GroupeDefaults.shared.authUid())
+        let contentId: UUID?
+        let ownerId: String
         let imageUrl: String?
         if let fPhoto = fPhoto {
             contentId = fPhoto.id
-            ownerId = fPhoto.ownerId
+            ownerId = fPhoto.ownerId?.uuidString ?? "unknown"
             imageUrl = fPhoto.imageUrl
         } else if let rPhoto = rPhoto {
-            contentId = rPhoto.id
+            contentId = UUID(uuidString: rPhoto.id)
             ownerId = rPhoto.ownerId
             imageUrl = nil
         } else {
-            contentId = "unknown"
+            contentId = nil
             ownerId = "unknown"
             imageUrl = nil
         }
-        let newReport = FireReport(userId: userId, ownerId: ownerId, contentId: contentId, reason: reason, imageUrl: imageUrl)
-        let encoder = Firestore.Encoder()
-        let newReportDoc = try! encoder.encode(newReport)
-        self.fireReportCollection.document(originID).setData(newReportDoc, completion: { (error) in
-            if let error = error {
-                print(error.localizedDescription)
-            } else {
-                print("success save firestore", originID)
+
+        Task {
+            do {
+                let report = Report(
+                    userId: userId,
+                    ownerId: ownerId,
+                    contentId: contentId,
+                    reason: reason,
+                    imageUrl: imageUrl
+                )
+                try await supabase.client.from("reports").insert(report).execute()
+                print("success save report")
+            } catch {
+                print("report save error: \(error)")
             }
-        })
+        }
         blockPhoto()
     }
 }
 
-extension PhotoDetailViewController: ImageScrollViewDelegate {
-    func imageScrollViewDidChangeOrientation(imageScrollView: ImageScrollView) {
-        print("Did change orientation")
-    }
-    
-    func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-        print("scrollViewDidEndZooming at scale \(scale)")
-    }
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        print("scrollViewDidScroll at offset \(scrollView.contentOffset)")
+extension PhotoDetailViewController: UIScrollViewDelegate {
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return zoomImageView
     }
 }
