@@ -21,6 +21,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         checkAppVersion()
         setLayout()
         GroupeDefaults.shared.incrementLaunchCount()
+        if let keyboardResult = GroupeDefaults.shared.lastKeyboardOpenResult() {
+            print("[keyboard openURL] \(keyboardResult)")
+        }
         GADMobileAds.sharedInstance().start()
         return true
     }

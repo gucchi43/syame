@@ -22,6 +22,17 @@ public final class GroupeDefaults {
         case authUid, launchCount, saveLife, sendCount
         case usageNeedFlag, welcomeNeedFlag, registerNeedFlag
         case blockContents
+        case lastKeyboardOpenResult
+    }
+
+    /// キーボード拡張はデバッガを繋ぎにくいため、URLオープンの結果だけApp Group経由で
+    /// アプリ側に渡し、起動時のログで確認できるようにする
+    public func setLastKeyboardOpenResult(_ result: String) {
+        sharedDefaults.set(result, forKey: Keys.lastKeyboardOpenResult.rawValue)
+    }
+
+    public func lastKeyboardOpenResult() -> String? {
+        return sharedDefaults.string(forKey: Keys.lastKeyboardOpenResult.rawValue)
     }
 
     public func authUid() -> String {

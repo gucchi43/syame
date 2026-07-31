@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import os.log
 import PhotoKeyboardFramework
 import Realm
 import RealmSwift
@@ -282,10 +283,22 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     /// 拡張から画面遷移する正規の方法は extensionContext.open。
     /// 外部URLは直接開けないことがあるので、その場合はコンテナアプリ経由で開かせる。
     private func open(_ url: URL) {
-        extensionContext?.open(url) { [weak self] success in
+        guard let context = extensionContext else {
+            KeyboardViewController.log("extensionContext is nil: \(url)")
+            return
+        }
+        context.open(url) { [weak self] success in
+            KeyboardViewController.log("extensionContext.open(\(url)) -> \(success)")
             guard !success else { return }
             self?.openViaContainerApp(url)
         }
+    }
+
+    /// 拡張は実機でデバッガを繋ぎにくいため、URLオープンの結果を端末のログと
+    /// App Group の両方に残し、アプリ側からも確認できるようにする
+    static func log(_ message: String) {
+        os_log("%{public}@", log: OSLog(subsystem: "bocchi.PhotoKeyboardEx.PhotoKeyboardExOrigin", category: "openURL"), type: .info, message)
+        GroupeDefaults.shared.setLastKeyboardOpenResult(message)
     }
 
     /// コンテナアプリを起動し、開きたいURLを渡して代わりに開いてもらう
@@ -295,14 +308,16 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         components.host = "open"
         components.queryItems = [URLQueryItem(name: "url", value: url.absoluteString)]
         guard let forwardURL = components.url else { return }
-        extensionContext?.open(forwardURL, completionHandler: nil)
+        extensionContext?.open(forwardURL) { success in
+            KeyboardViewController.log("container app fallback(\(forwardURL)) -> \(success)")
+        }
     }
 
     private static let containerAppScheme = "photokeyboardex-app"
 
     func goMainApp() {
         guard let url = URL(string: "\(KeyboardViewController.containerAppScheme)://") else { return }
-        extensionContext?.open(url, completionHandler: nil)
+        open(url)
     }
     
     @IBAction func tapHomeButton(_ sender: Any) {
