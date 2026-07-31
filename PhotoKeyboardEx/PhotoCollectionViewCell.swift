@@ -21,9 +21,22 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var baseView: UIView!
     
+    private var imageTask: URLSessionDataTask?
+    /// 非同期取得の完了時に、セルが別の写真へ再利用されていないか判定するための現在のURL
+    private var currentImageURL: URL?
+
     override func awakeFromNib() {
         super.awakeFromNib()
         baseLayout()
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageTask?.cancel()
+        imageTask = nil
+        currentImageURL = nil
+        photoImageView.image = nil
+        titleLabel.text = nil
     }
     
     func baseLayout() {
@@ -51,15 +64,18 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     }
     
     func configure(doc: OFirePhoto? , saved: Bool) {
+        imageTask?.cancel()
+        imageTask = nil
         self.photoImageView.image = nil
+        currentImageURL = nil
         guard let doc = doc else { return }
         if let url = URL(string: doc.imageUrl) {
-            URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
-                guard let self = self, let data = data else { return }
-                DispatchQueue.main.async {
-                    self.photoImageView.image = UIImage(data: data)
-                }
-            }.resume()
+            currentImageURL = url
+            imageTask = RemoteImageLoader.shared.load(url: url) { [weak self] image in
+                // 取得中にセルが別の写真へ再利用されていたら反映しない
+                guard let self = self, self.currentImageURL == url else { return }
+                self.photoImageView.image = image
+            }
         }
         titleLabel.text = doc.title
         titleLabel.sizeToFit()

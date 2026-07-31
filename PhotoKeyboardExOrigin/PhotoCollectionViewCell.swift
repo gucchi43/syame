@@ -33,28 +33,39 @@ class PhotoCollectionViewCell: UICollectionViewCell {
         }
     }
     
+    /// セル再利用のたびにJSONをパースし直さないよう一度だけ読み込む
+    private static let fireworksAnimation = LottieAnimation.named("fireworks", subdirectory: "LottieFile")
+
     override func awakeFromNib() {
         super.awakeFromNib()
         self.backgroundColor = UIColor.bgDark().lighter(amount: 0.1)
         photoImageView.backgroundColor = UIColor.bgDark().lighter(amount: 0.2)
         titleLabel.textColor = .white
+        choiceCoverView.animation = PhotoCollectionViewCell.fireworksAnimation
     }
-    
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        // 解放しないと古い画像がメモリに残り続け、キーボード拡張のメモリ上限を圧迫する
+        photoImageView.image = nil
+        titleLabel.text = nil
+    }
+
     func configure(photo: RealmPhoto) {
-        photoImageView.image = photo.image
+        // フル解像度をデコードするとスクロールだけでメモリ上限に達するため縮小版を使う
+        let maxPixelSize = max(bounds.width, bounds.height) * UIScreen.main.scale
+        photoImageView.image = photo.thumbnail(maxPixelSize: maxPixelSize) ?? photo.image
         photoImageView.contentMode = .scaleAspectFill
         titleLabel.textColor = .white
         titleLabel.text = photo.text
-        let animation = LottieAnimation.named("fireworks", subdirectory: "LottieFile")
-        choiceCoverView.animation = animation
         choiceCover2View.alpha = 0.3
     }
-    
+
     func addCellconfigure() {
         photoImageView.image = UIImage.fontAwesomeIcon(name: .plus, style: .solid, textColor: .acGreen(), size: CGSize(width: 88, height: 88))
         photoImageView.contentMode = .center
         titleLabel.textColor = .acGreen()
-        titleLabel.text = "アプリから画像を追加"
+        titleLabel.text = LocalizeKey.addPhotoFromApp.localizedString()
         choiceCover2View.isHidden = true
         choiceCoverLabel.isHidden = true
     }

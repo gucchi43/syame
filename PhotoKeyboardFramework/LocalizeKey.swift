@@ -112,6 +112,12 @@ public enum LocalizeKey: String {
     case notFullLabelThird
     case notFullLabelFourth
     case notFullLabelFifth
+    case addPhotoFromApp
+
+    case updateAlertTitle
+    case updateAlertMessage
+    case updateAlertUpdate
+    case updateAlertLater
 
     // selfの値をローカライズして返す
     public func localizedString() -> String {

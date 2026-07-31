@@ -80,7 +80,7 @@ class UsageViewController: UIViewController {
     
     func setOfficialPhoto() {
         // Realmにsaveする
-        let photo = officialPhoto
+        guard let photo = makeOfficialPhoto() else { return }
         RealmManager.shared.save(data: photo, success: {() in
         }) { (error) in
             print(error)
@@ -96,7 +96,6 @@ class UsageViewController: UIViewController {
             return
         }
         if UIApplication.shared.canOpenURL(settingsUrl) {
-            UIApplication.shared.open(settingsUrl)
             UIApplication.shared.open(settingsUrl, options: [:], completionHandler: nil)
             if GroupeDefaults.shared.isWelcomePush() {
                 goWelcomeView()

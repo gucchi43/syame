@@ -7,57 +7,87 @@
 //
 
 import UserNotifications
+import UniformTypeIdentifiers
 
 class NotificationService: UNNotificationServiceExtension {
 
-    var contentHandler: ((UNNotificationContent) -> Void)?
-    var bestAttemptContent: UNMutableNotificationContent?
+    /// 通知拡張のメモリ上限は約24MB。大きな画像を掴むと表示前に強制終了する。
+    private static let maxImageByteCount = 5 * 1024 * 1024
+
+    private var contentHandler: ((UNNotificationContent) -> Void)?
+    private var bestAttemptContent: UNMutableNotificationContent?
+    private var session: URLSession?
+    private var task: URLSessionDataTask?
 
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
-        bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
-        if let imageUrl = request.content.userInfo["imageUrl"] as? String {
-            let session = URLSession(configuration: URLSessionConfiguration.default)
-            let task = session.dataTask(with: URL(string: imageUrl)!, completionHandler: { (data, response, error) in
-                do {
-                    if let writePath = NSURL(fileURLWithPath:NSTemporaryDirectory())
-                        .appendingPathComponent("tmp.jpg") {
-                        try data?.write(to: writePath)
-                        
-                        if let bestAttemptContent = self.bestAttemptContent {
-//                            bestAttemptContent.title = "\(bestAttemptContent.title) [modified]"
-                            let attachment = try UNNotificationAttachment(identifier: "tiqav", url: writePath, options: nil)
-                            bestAttemptContent.attachments = [attachment]
-                            contentHandler(bestAttemptContent)
-                        }
-                    } else {
-                        // error: writePath is not URL
-                        if let bestAttemptContent = self.bestAttemptContent {
-                            contentHandler(bestAttemptContent)
-                        }
-                    }
-                } catch _ {
-                    // error: data write error or create UNNotificationAttachment error
-                    if let bestAttemptContent = self.bestAttemptContent {
-                        contentHandler(bestAttemptContent)
-                    }
-                }
-            })
-            task.resume()
-        } else {
-            if let bestAttemptContent = self.bestAttemptContent {
-                bestAttemptContent.title = "\(bestAttemptContent.title) [modified]"
-                contentHandler(bestAttemptContent)
+        let content = (request.content.mutableCopy() as? UNMutableNotificationContent)
+        bestAttemptContent = content
+
+        // 添付画像がないペイロードはそのまま配信する
+        guard let content = content,
+              let imageUrl = request.content.userInfo["imageUrl"] as? String,
+              // リモート由来の文字列。不正な値で拡張がクラッシュしないよう強制アンラップしない。
+              let url = URL(string: imageUrl),
+              url.scheme == "https" else {
+            deliver()
+            return
+        }
+
+        let session = URLSession(configuration: .default)
+        self.session = session
+        task = session.dataTask(with: url) { [weak self] data, response, error in
+            guard let self = self else { return }
+            defer { self.deliver() }
+
+            guard error == nil,
+                  let statusCode = (response as? HTTPURLResponse)?.statusCode,
+                  (200..<300).contains(statusCode),
+                  let data = data,
+                  data.count <= NotificationService.maxImageByteCount else {
+                return
+            }
+
+            // ファイル名を固定にすると同時に届いた通知同士で書き込みが競合する
+            let fileExtension = NotificationService.fileExtension(for: response)
+            let writePath = URL(fileURLWithPath: NSTemporaryDirectory())
+                .appendingPathComponent("\(UUID().uuidString).\(fileExtension)")
+            do {
+                try data.write(to: writePath)
+                let attachment = try UNNotificationAttachment(identifier: writePath.lastPathComponent,
+                                                              url: writePath,
+                                                              options: nil)
+                content.attachments = [attachment]
+            } catch {
+                try? FileManager.default.removeItem(at: writePath)
             }
         }
-    }
-    
-    
-    // 画像ダウンロードの時間切れ
-    override func serviceExtensionTimeWillExpire() {
-        if let contentHandler = contentHandler, let bestAttemptContent =  bestAttemptContent {
-            contentHandler(bestAttemptContent)
-        }
+        task?.resume()
     }
 
+    // 画像ダウンロードの時間切れ
+    override func serviceExtensionTimeWillExpire() {
+        // 残しておくと contentHandler が二重に呼ばれる
+        task?.cancel()
+        deliver()
+    }
+
+    /// contentHandler は一度しか呼べないため、呼び出し後に破棄する
+    private func deliver() {
+        guard let contentHandler = contentHandler, let bestAttemptContent = bestAttemptContent else { return }
+        self.contentHandler = nil
+        session?.finishTasksAndInvalidate()
+        session = nil
+        contentHandler(bestAttemptContent)
+    }
+
+    /// 拡張子が実体と食い違うと UNNotificationAttachment の検証で弾かれる
+    private static func fileExtension(for response: URLResponse?) -> String {
+        guard let mimeType = response?.mimeType,
+              let type = UTType(mimeType: mimeType),
+              let preferred = type.preferredFilenameExtension else {
+            return "jpg"
+        }
+        return preferred
+    }
 }

@@ -6,6 +6,6 @@
   Copyright © 2019 Hiroki Taniguchi. All rights reserved.
 */
 "CFBundleDisplayName" = "PKB";
-"NSCameraUsageDescription" = "You can post photos taken with the camera";
-"NSPhotoLibraryAddUsageDescription" = "You can add photos in camera rool";
-"NSPhotoLibraryUsageDescription" = "You can add photos in camera rool";
+"NSCameraUsageDescription" = "Used to take a photo to add to your keyboard.";
+"NSPhotoLibraryAddUsageDescription" = "Used to save images from your keyboard to your photo library.";
+"NSPhotoLibraryUsageDescription" = "Used to choose a photo from your library to add to your keyboard.";

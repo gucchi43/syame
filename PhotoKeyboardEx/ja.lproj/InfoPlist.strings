@@ -6,6 +6,6 @@
   Copyright © 2019 Hiroki Taniguchi. All rights reserved.
 */
 "CFBundleDisplayName" = "PKB";
-"NSCameraUsageDescription" = "カメラで撮影した写真が投稿できるよ";
-"NSPhotoLibraryAddUsageDescription" = "カメラロールに写真を追加できるよ";
-"NSPhotoLibraryUsageDescription" = "カメラロールに写真を追加できるよ";
+"NSCameraUsageDescription" = "キーボードに登録する画像をその場で撮影するためにカメラを使用します。";
+"NSPhotoLibraryAddUsageDescription" = "キーボードに登録した画像を写真ライブラリへ保存するために使用します。";
+"NSPhotoLibraryUsageDescription" = "キーボードに登録する画像を選択するために写真ライブラリを使用します。";

@@ -43,6 +43,9 @@ class MainTabViewController: TabmanViewController {
     var firstFlag = true
     
     var fabButton = UIButton(type: .custom)
+
+    /// 起動時に最初に表示するページ。defaultPage(for:) と見出しの初期値で共有する。
+    static let defaultPageIndex = 1
     
     let bar = TMBar.TabBar()
 //    let bar = TMBar.ButtonBar()
@@ -64,37 +67,40 @@ class MainTabViewController: TabmanViewController {
         barMenuButton.title = String.fontAwesomeIcon(name: .bars)
         barMenuButton.setTitleTextAttributes([.font: UIFont.fontAwesome(ofSize: 24, style: .solid)], for: .normal)
         
-        if let pageboyPageIndex = pageboyPageIndex {
-            self.navigationItem.title = titles[pageboyPageIndex]
-        } else {
-            self.navigationItem.title = titles.first
-        }
+        // 起動直後は pageboyPageIndex がまだ確定していないため defaultPage と同じ位置の見出しを出す
+        let initialIndex = pageboyPageIndex ?? MainTabViewController.defaultPageIndex
+        self.navigationItem.title = initialIndex < titles.count ? titles[initialIndex] : titles.first
         layoutFAB()
         NotificationCenter.default.addObserver(self, selector: #selector(finishToast(notification:)), name: .finishUpload, object: nil)
     }
         
     override func viewWillAppear(_ animated: Bool) {
+        // PageboyViewController はここでページ位置の復元を行うため super の呼び出しが必須
+        super.viewWillAppear(animated)
         bar.buttons.customize { (button) in
             button.selectedTintColor = .acGreen()
             button.tintColor = .white
         }
-
-        if GroupeDefaults.shared.isRegisterPush() {
-            let vc = UIStoryboard(name: "Top",bundle: nil).instantiateInitialViewController() as! TopViewController
-            present(vc, animated: false, completion: nil)
-        } else if GroupeDefaults.shared.isUsagePush() {
-            let sb = UIStoryboard(name: "Usage",bundle: nil)
-            let nvc = sb.instantiateInitialViewController() as! UINavigationController
-            present(nvc, animated: true, completion: nil)
-        } else if GroupeDefaults.shared.isWelcomePush() {
-            let sb = UIStoryboard(name: "Welcome",bundle: nil)
-            let nvc = sb.instantiateInitialViewController() as! UINavigationController
-            present(nvc, animated: true, completion: nil)
-        }
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        // viewWillAppear での present は遷移中に失敗するため viewDidAppear で行う
+        presentOnboardingIfNeeded()
+    }
+
+    private func presentOnboardingIfNeeded() {
+        guard presentedViewController == nil else { return }
+        if GroupeDefaults.shared.isRegisterPush() {
+            guard let vc = UIStoryboard(name: "Top", bundle: nil).instantiateInitialViewController() else { return }
+            present(vc, animated: false, completion: nil)
+        } else if GroupeDefaults.shared.isUsagePush() {
+            guard let nvc = UIStoryboard(name: "Usage", bundle: nil).instantiateInitialViewController() else { return }
+            present(nvc, animated: true, completion: nil)
+        } else if GroupeDefaults.shared.isWelcomePush() {
+            guard let nvc = UIStoryboard(name: "Welcome", bundle: nil).instantiateInitialViewController() else { return }
+            present(nvc, animated: true, completion: nil)
+        }
     }
     
     @objc func finishToast(notification: Notification) {
@@ -138,9 +144,12 @@ class MainTabViewController: TabmanViewController {
     }
 
     @objc func tapFAB() {
-        let sb = UIStoryboard(name: "Add", bundle: .main)
-        let vc = sb.instantiateInitialViewController() as! AddViewController
-        present(vc, animated: true)
+        // 画像を選んでから投稿画面へ進む。画像未選択のままでは完了ボタンが有効にならない。
+        guard UIImagePickerController.isSourceTypeAvailable(.photoLibrary) else { return }
+        let picker = UIImagePickerController()
+        picker.sourceType = .photoLibrary
+        picker.delegate = self
+        present(picker, animated: true)
     }
     
     
@@ -170,7 +179,7 @@ class MainTabViewController: TabmanViewController {
                                     animated: animated)
         //        print("didScrollToPosition: \(position)")
         
-        let relativePosition = navigationOrientation == .vertical ? position.y : position.x
+//        let relativePosition = navigationOrientation == .vertical ? position.y : position.x
 //        gradient?.gradientOffset = gradientOffset(for: relativePosition)
 //        statusView.currentPosition = relativePosition
     }
@@ -204,13 +213,13 @@ extension MainTabViewController: PageboyViewControllerDataSource, TMBarDataSourc
     
     func viewController(for pageboyViewController: PageboyViewController,
                         at index: PageboyViewController.PageIndex) -> UIViewController? {
-        let vc = viewControllers[index] as! ChildContentViewController
+        guard let vc = viewControllers[index] as? ChildContentViewController else { return nil }
         vc.tabPageIndex = index
         return vc
     }
-    
+
     func defaultPage(for pageboyViewController: PageboyViewController) -> PageboyViewController.Page? {
-        return .at(index: 1)
+        return .at(index: MainTabViewController.defaultPageIndex)
     }
     
     func barItem(for bar: TMBar, at index: Int) -> TMBarItemable {
@@ -231,20 +240,22 @@ extension MainTabViewController: UIImagePickerControllerDelegate, UINavigationCo
     
     // 画像選択
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        let image = info[.originalImage] as! UIImage
-        
-        // カメラロールに保存する
-        // UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
-        
-        self.dismiss(animated: true)
-        
-        let sb = UIStoryboard(name: "Add", bundle: nil)
-        let nvc = sb.instantiateInitialViewController() as! UINavigationController
-        let vc = nvc.viewControllers.first as! AddViewController
-        vc.choiceImage = image
-        present(nvc, animated: true) {
-            
+        guard let image = info[.originalImage] as? UIImage else {
+            picker.dismiss(animated: true)
+            return
         }
+        // dismissの完了を待たずにpresentすると遷移が失敗するため完了ハンドラで繋ぐ
+        picker.dismiss(animated: true) { [weak self] in
+            self?.presentAddViewController(with: image)
+        }
+    }
+
+    private func presentAddViewController(with image: UIImage) {
+        let sb = UIStoryboard(name: "Add", bundle: .main)
+        guard let nvc = sb.instantiateInitialViewController() as? UINavigationController,
+              let vc = nvc.viewControllers.first as? AddViewController else { return }
+        vc.choiceImage = image
+        present(nvc, animated: true)
     }
     //キャンセル
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {

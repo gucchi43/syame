@@ -34,10 +34,15 @@ class PhotoDetailViewController: UIViewController {
     private var zoomImageView: UIImageView!
     var rPhoto: RealmPhoto?
     var fPhoto: OFirePhoto?
-    var savedFlag: Bool!
-    
+    var savedFlag: Bool = false
+
     private let supabase = SupabaseManager.shared
-    
+    private var imageTask: URLSessionDataTask?
+
+    deinit {
+        imageTask?.cancel()
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -64,12 +69,9 @@ class PhotoDetailViewController: UIViewController {
             zoomImageView.image = rPhoto.image
         } else if let fPhoto = fPhoto {
             if let url = URL(string: fPhoto.imageUrl) {
-                URLSession.shared.dataTask(with: url) { [weak self] data, _, _ in
-                    guard let data = data else { return }
-                    DispatchQueue.main.async {
-                        self?.zoomImageView.image = UIImage(data: data)
-                    }
-                }.resume()
+                imageTask = RemoteImageLoader.shared.load(url: url) { [weak self] image in
+                    self?.zoomImageView.image = image
+                }
             }
         }
         
@@ -184,7 +186,6 @@ class PhotoDetailViewController: UIViewController {
     }
 
     func sendReport(reason: String) {
-        let userId = UUID(uuidString: GroupeDefaults.shared.authUid())
         let contentId: UUID?
         let ownerId: String
         let imageUrl: String?
@@ -202,8 +203,11 @@ class PhotoDetailViewController: UIViewController {
             imageUrl = nil
         }
 
-        Task {
+        Task { [weak self] in
+            guard let self = self else { return }
             do {
+                // 未認証のままだと user_id が nil になり RLS を通らず通報が黙って捨てられる
+                let userId = try await SupabaseManager.shared.ensureSignedIn()
                 let report = Report(
                     userId: userId,
                     ownerId: ownerId,
@@ -211,13 +215,21 @@ class PhotoDetailViewController: UIViewController {
                     reason: reason,
                     imageUrl: imageUrl
                 )
-                try await supabase.client.from("reports").insert(report).execute()
-                print("success save report")
+                try await self.supabase.client.from("reports").insert(report).execute()
+                // 送信できたときだけブロックして閉じる
+                self.blockPhoto()
             } catch {
-                print("report save error: \(error)")
+                self.showReportError(error)
             }
         }
-        blockPhoto()
+    }
+
+    private func showReportError(_ error: Error) {
+        let alert = UIAlertController(title: nil,
+                                      message: error.localizedDescription,
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: LocalizeKey.baseOK.localizedString(), style: .default))
+        present(alert, animated: true)
     }
 }
 

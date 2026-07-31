@@ -8,7 +8,7 @@
 
 import Foundation
 import UIKit
-import Alamofire
+import ImageIO
 import RealmSwift
 import Realm
 import SwiftDate
@@ -38,14 +38,40 @@ public class RealmPhoto: Object {
             if let image = self._image {
                 return image
             }
-            if let data = self.imageData {
-                self._image = UIImage(data: data)
-                return self._image
-            }
-            return nil
+            // デコード結果をインスタンスに保持すると、一覧をスクロールするだけで
+            // 非圧縮ビットマップが積み上がりキーボード拡張のメモリ上限を超えるためキャッシュしない。
+            guard let data = self.imageData else { return nil }
+            return UIImage(data: data)
         }
     }
     @objc dynamic private var imageData: Data? = nil
+
+    private static let thumbnailCache: NSCache<NSString, UIImage> = {
+        let cache = NSCache<NSString, UIImage>()
+        cache.countLimit = 60
+        return cache
+    }()
+
+    /// 一覧表示用の縮小画像。フル解像度をデコードせずに済むためメモリ消費を大幅に抑えられる。
+    public func thumbnail(maxPixelSize: CGFloat) -> UIImage? {
+        let pixelSize = max(1, Int(maxPixelSize.rounded()))
+        let cacheKey = "\(id)-\(pixelSize)" as NSString
+        if let cached = RealmPhoto.thumbnailCache.object(forKey: cacheKey) {
+            return cached
+        }
+        guard let data = self.imageData as CFData?,
+              let source = CGImageSourceCreateWithData(data, nil) else { return nil }
+        let options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceShouldCacheImmediately: true,
+            kCGImageSourceThumbnailMaxPixelSize: pixelSize
+        ]
+        guard let cgImage = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else { return nil }
+        let image = UIImage(cgImage: cgImage)
+        RealmPhoto.thumbnailCache.setObject(image, forKey: cacheKey)
+        return image
+    }
 
     
     public static func create(id: String, text: String, image: UIImage, imageHeight: Int, imageWidth: Int, getDay: String, isPublic: Bool, ownerId: String) -> RealmPhoto{
@@ -76,11 +102,17 @@ public class RealmPhoto: Object {
     }
 }
 
-public let officialPhoto = RealmPhoto.create(id: "A04C59BD-F2CC-43ED-B0B5-39E55A03E283",
-                                             text: "おもんない！",
-                                             image: UIImage(named: "officialPhotoFirst")!,
-                                             imageHeight: 600,
-                                             imageWidth: 532,
-                                             getDay: Date().toString(),
-                                             isPublic: false,
-                                             ownerId: "official")
+/// チュートリアル用の初期画像。
+/// officialPhotoFirst はアプリ本体のAssetsにしか含まれずキーボード拡張からは解決できないため、
+/// 強制アンラップせず画像が見つからない場合は nil を返す。
+public func makeOfficialPhoto() -> RealmPhoto? {
+    guard let image = UIImage(named: "officialPhotoFirst") else { return nil }
+    return RealmPhoto.create(id: "A04C59BD-F2CC-43ED-B0B5-39E55A03E283",
+                             text: "おもんない！",
+                             image: image,
+                             imageHeight: 600,
+                             imageWidth: 532,
+                             getDay: Date().toString(),
+                             isPublic: false,
+                             ownerId: "official")
+}

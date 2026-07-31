@@ -95,7 +95,9 @@ public extension UIFont {
     /// - returns: A UIFont object of FontAwesome.
     class func fontAwesome(ofSize fontSize: CGFloat, style: FontAwesomeStyle) -> UIFont {
         loadFontAwesome(ofStyle: style)
-        return UIFont(name: style.fontName(), size: fontSize)!
+        // フォントの読み込みに失敗してもアイコンが出ないだけで済むようにする。
+        // 強制アンラップするとキーボード拡張が起動と同時にクラッシュする。
+        return UIFont(name: style.fontName(), size: fontSize) ?? .systemFont(ofSize: fontSize)
     }
 
     /// Loads the FontAwesome font in to memory.
@@ -117,7 +119,7 @@ public extension UIFont {
         let userFont = UIFontDescriptor.preferredFontDescriptor(withTextStyle: textStyle)
         let pointSize = userFont.pointSize
         loadFontAwesome(ofStyle: style)
-        let awesomeFont = UIFont(name: style.fontName(), size: pointSize)!
+        let awesomeFont = UIFont(name: style.fontName(), size: pointSize) ?? .systemFont(ofSize: pointSize)
         
         if #available(iOS 11.0, *), #available(watchOSApplicationExtension 4.0, *), #available(tvOS 11.0, *) {
             return UIFontMetrics.default.scaledFont(for: awesomeFont)
@@ -200,7 +202,8 @@ public extension UIImage {
         attributedString.draw(in: CGRect(x: 0, y: (size.height - fontSize) / 2, width: size.width, height: fontSize))
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
-        return image!
+        // コンテキスト生成に失敗してもクラッシュさせず空画像を返す
+        return image ?? UIImage()
     }
 
     /// Get a FontAwesome image with the given icon css code, text color, size and an optional background color.
@@ -250,24 +253,22 @@ private class FontLoader {
 
         var error: Unmanaged<CFError>?
         if !CTFontManagerRegisterFontsForURL(fontURL, .process, &error) {
-            let errorDescription: CFString = CFErrorCopyDescription(error!.takeUnretainedValue())
-            guard let nsError = error?.takeUnretainedValue() as AnyObject as? NSError else { return }
-            NSException(name: NSExceptionName.internalInconsistencyException, reason: errorDescription as String, userInfo: [NSUnderlyingErrorKey: nsError]).raise()
+            // 登録に失敗しても例外を投げない。呼び出し側がシステムフォントにフォールバックする。
+            error?.release()
         }
     }
 }
 
 extension URL {
     static func fontURL(for fontName: String) -> URL? {
-        let bundle = Bundle(for: FontLoader.self)
+        // .otf は PhotoKeyboardFramework の Resources に含まれる。
+        // Bundle.main はアプリ本体/拡張自身を指すため、フレームワークのバンドルを先に見る。
+        let candidates: [Bundle] = [Bundle(for: FontLoader.self), Bundle.main]
 
-        if let fontURL = bundle.url(forResource: fontName, withExtension: "otf") {
-            return fontURL
-        }
-
-        // If this framework is added using CocoaPods, resources is placed under a subdirectory
-        if let fontURL = bundle.url(forResource: fontName, withExtension: "otf", subdirectory: "FontAwesome.swift.bundle") {
-            return fontURL
+        for bundle in candidates {
+            if let fontURL = bundle.url(forResource: fontName, withExtension: "otf") {
+                return fontURL
+            }
         }
 
         return nil

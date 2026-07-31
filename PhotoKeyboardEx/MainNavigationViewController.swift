@@ -28,6 +28,7 @@ class MainNavigationViewController: UINavigationController {
         super.viewDidLoad()
 
         let tableViewController = MyMenuTableViewController()
+        tableViewController.sideMenuHost = self
         menuViewController = tableViewController
 
         setupSideMenu()
@@ -52,11 +53,12 @@ class MainNavigationViewController: UINavigationController {
         view.addSubview(container)
         menuContainerView = container
 
-        addChild(menuVC)
+        // UINavigationController の children は viewControllers と対応するため、
+        // addChild するとメニューがナビゲーションスタックの一部とみなされ全画面表示されてしまう。
+        // VC は menuViewController が強参照で保持し、ここではビューだけをコンテナに載せる。
         menuVC.view.frame = container.bounds
         menuVC.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         container.addSubview(menuVC.view)
-        menuVC.didMove(toParent: self)
     }
 
     @objc private func handleDimmingTap() {
