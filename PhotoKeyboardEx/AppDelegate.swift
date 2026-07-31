@@ -45,4 +45,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidBecomeActive(_ application: UIApplication) {
         UNUserNotificationCenter.current().setBadgeCount(0)
     }
+
+    /// キーボード拡張から渡されたURLを開く。
+    /// 拡張から外部URL(LINEなど)を直接開けない場合に、
+    /// photokeyboardex-app://open?url=... の形でアプリへ委譲されてくる。
+    func application(_ app: UIApplication,
+                     open url: URL,
+                     options: [UIApplication.OpenURLOptionsKey: Any] = [:]) -> Bool {
+        guard url.host == "open",
+              let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              let forwarded = components.queryItems?.first(where: { $0.name == "url" })?.value,
+              let target = URL(string: forwarded) else {
+            // スキームだけで開かれた場合はアプリを起動するだけでよい
+            return true
+        }
+        UIApplication.shared.open(target, options: [:], completionHandler: nil)
+        return true
+    }
 }
