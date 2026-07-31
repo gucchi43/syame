@@ -92,7 +92,7 @@ class AddViewController: UIViewController {
     }
     
     func addButtonState() {
-        if titleTextField.text!.count > 0 && choiceImage != nil && selectedJenreTag != nil {
+        if !(titleTextField.text ?? "").isEmpty && choiceImage != nil && selectedJenreTag != nil {
             doneButton.isEnabled = true
             doneButton.backgroundColor = .acGreen()
             doneButton.setTitleColor(.white, for: .normal)
@@ -148,115 +148,122 @@ class AddViewController: UIViewController {
     }
     
 
-    @IBAction func tapDoneButton(_ sender: Any) {
-        if publicFlag {
-            saveServer(success: {  (docId, photo)  in
-                print(docId)
-                self.saveRealm(id: docId, postedImage: photo, success: {
-                    print("アップドーロ成功！！")
-                    NotificationCenter.default.post(name: .finishUpload, object: nil, userInfo: nil)
-                }, failure: { (error) in
-                    print(error)
-                })
-            }) { (error) in
-                print(error)
-            }
-        } else {
-            savePrivateRealm(success: {
-                print("アップドーロ成功！！")
-                NotificationCenter.default.post(name: .finishUpload, object: nil, userInfo: nil)
-            }) { (error) in
-                print(error)
+    private enum UploadError: LocalizedError {
+        case invalidImage
+        case realmSaveFailed
+
+        var errorDescription: String? {
+            switch self {
+            case .invalidImage: return "画像を処理できませんでした"
+            case .realmSaveFailed: return "端末への保存に失敗しました"
             }
         }
-        self.dismiss(animated: true, completion: nil)
     }
-    
-    func saveServer(success: @escaping (_ id: String, _ photo: UIImage) -> Void, failure: @escaping (String) -> Void) {
+
+    /// insert のペイロード。辞書で送ると数値・真偽値まで文字列になり暗黙キャストに依存してしまう。
+    private struct PhotoInsert: Encodable {
+        let id: String
+        let title: String
+        let image_height: Int
+        let image_width: Int
+        let image_url: String
+        let genre: String
+        let total_save_count: Int
+        let weekly_save_count: Int
+        // week_start_day はクライアントとサーバで書式が食い違うため送らない(DBの既定値に任せる)
+        let owner_id: String
+        let locale: String
+        let is_debug: Bool
+    }
+
+    @IBAction func tapDoneButton(_ sender: Any) {
+        // UIKitの値はメインスレッドで読み取ってからTaskに渡す
+        guard let sourceImage = choiceImage,
+              let postImage = sourceImage.resize(size: convertedImageSize(size: sourceImage.size)),
+              let genre = selectedJenreTag else {
+            return
+        }
+        let titleText = titleTextField.text ?? ""
+        doneButton.isEnabled = false
+
+        Task { [weak self] in
+            guard let self = self else { return }
+            do {
+                let id: String
+                if self.publicFlag {
+                    id = try await self.uploadToServer(title: titleText, genre: genre, postImage: postImage)
+                } else {
+                    // 非公開投稿はサーバに存在しないため端末内でIDを採番する
+                    id = UUID().uuidString
+                }
+                guard self.saveRealm(id: id, title: titleText, postedImage: postImage, isPublic: self.publicFlag) else {
+                    throw UploadError.realmSaveFailed
+                }
+                NotificationCenter.default.post(name: .finishUpload, object: nil, userInfo: nil)
+                self.dismiss(animated: true, completion: nil)
+            } catch {
+                // 完了を待たずに閉じると失敗がユーザーに伝わらない
+                self.doneButton.isEnabled = true
+                self.showUploadError(error)
+            }
+        }
+    }
+
+    private func uploadToServer(title: String, genre: GenreTagType, postImage: UIImage) async throws -> String {
+        // 認証完了前に投稿すると owner_id が空になり RLS を通らないため先に待つ
+        let ownerId = try await SupabaseManager.shared.ensureSignedIn()
+        guard let imageData = postImage.jpegData(compressionQuality: 0.3) else {
+            throw UploadError.invalidImage
+        }
         let originID = UUID()
-        let postImage = choiceImage!.resize(size: convertedImageSize(size: choiceImage!.size))!
-        let imageData = postImage.jpegData(compressionQuality: 0.3)!
         let filePath = "\(supabase.locale)/\(originID.uuidString).jpg"
 
-        Task {
-            do {
-                // Supabase Storageにアップロード
-                try await supabase.client.storage.from("photos")
-                    .upload(filePath, data: imageData, options: .init(contentType: "image/jpeg"))
+        try await supabase.client.storage.from("photos")
+            .upload(filePath, data: imageData, options: .init(contentType: "image/jpeg"))
 
-                // 公開URLを取得
-                let publicURL = try supabase.client.storage.from("photos")
-                    .getPublicURL(path: filePath)
-
-                let titleText = self.titleTextField.text!
-                let ownerId = UUID(uuidString: GroupeDefaults.shared.authUid())
-
-                // DBに保存
-                try await supabase.client.from("photos")
-                    .insert([
-                        "id": originID.uuidString,
-                        "title": titleText,
-                        "image_height": String(Int(postImage.size.height)),
-                        "image_width": String(Int(postImage.size.width)),
-                        "image_url": publicURL.absoluteString,
-                        "genre": self.selectedJenreTag!.getKey(),
-                        "total_save_count": "1",
-                        "weekly_save_count": "1",
-                        "week_start_day": Date().dateAt(.startOfWeek).toString(),
-                        "owner_id": ownerId?.uuidString ?? "",
-                        "locale": supabase.locale,
-                        "is_debug": supabase.isDebug ? "true" : "false"
-                    ])
-                    .execute()
-
-                await MainActor.run {
-                    success(originID.uuidString, postImage)
-                }
-            } catch {
-                print("saveServer error: \(error)")
-                await MainActor.run {
-                    failure("error: \(error.localizedDescription)")
-                }
-            }
+        do {
+            let publicURL = try supabase.client.storage.from("photos").getPublicURL(path: filePath)
+            let payload = PhotoInsert(id: originID.uuidString,
+                                      title: title,
+                                      image_height: Int(postImage.size.height),
+                                      image_width: Int(postImage.size.width),
+                                      image_url: publicURL.absoluteString,
+                                      genre: genre.getKey(),
+                                      total_save_count: 1,
+                                      weekly_save_count: 1,
+                                      owner_id: ownerId.uuidString,
+                                      locale: supabase.locale,
+                                      is_debug: supabase.isDebug)
+            try await supabase.client.from("photos").insert(payload).execute()
+            return originID.uuidString
+        } catch {
+            // DB登録に失敗するとStorage上のファイルが孤児になるため取り消す
+            _ = try? await supabase.client.storage.from("photos").remove(paths: [filePath])
+            throw error
         }
     }
 
-    func saveRealm(id: String, postedImage: UIImage, success: @escaping () -> Void, failure: @escaping (String) -> Void) {
-        
-        
-        
+    @discardableResult
+    private func saveRealm(id: String, title: String, postedImage: UIImage, isPublic: Bool) -> Bool {
         let new = RealmPhoto.create(id: id,
-                                    text: titleTextField.text!,
+                                    text: title,
                                     image: postedImage,
                                     imageHeight: Int(postedImage.size.height),
                                     imageWidth: Int(postedImage.size.width),
-                                    getDay: Date().toString(), isPublic: true,
-                                    ownerId: GroupeDefaults.shared.authUid())
-        RealmManager.shared.save(data: new, success: { () in
-            success()
-        }) { (error) in
-            print(error)
-            failure("realm save error")
-        }
-    }
-    
-    func savePrivateRealm(success: @escaping () -> Void, failure: @escaping (String) -> Void) {
-        
-        let postImage = choiceImage!.resize(size: convertedImageSize(size: choiceImage!.size))!
-        let new = RealmPhoto.create(id: UUID().uuidString,
-                                    text: self.titleTextField.text!,
-                                    image: postImage,
-                                    imageHeight: Int(postImage.size.height),
-                                    imageWidth: Int(postImage.size.width),
                                     getDay: Date().toString(),
-                                    isPublic: false,
+                                    isPublic: isPublic,
                                     ownerId: GroupeDefaults.shared.authUid())
-        RealmManager.shared.save(data: new, success: { () in
-            success()
-        }) { (error) in
-            print(error)
-            failure("realm save error")
-        }
+        var saved = false
+        RealmManager.shared.save(data: new, success: { saved = true }, failure: { _ in saved = false })
+        return saved
+    }
+
+    private func showUploadError(_ error: Error) {
+        let alert = UIAlertController(title: nil,
+                                      message: error.localizedDescription,
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: LocalizeKey.baseOK.localizedString(), style: .default))
+        present(alert, animated: true)
     }
 }
 
@@ -273,8 +280,7 @@ extension AddViewController: TagListViewDelegate {
             selectedJenreTag = nil
             tagView.isSelected = false
         } else if selectedJenreTag != nil {
-            let beforeSeletedTag = genreListView.selectedTags().first
-            beforeSeletedTag!.isSelected = false
+            genreListView.selectedTags().first?.isSelected = false
             selectedJenreTag = newTag
             tagView.isSelected = true
         } else {

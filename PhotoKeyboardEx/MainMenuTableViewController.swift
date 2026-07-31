@@ -15,7 +15,10 @@ class MyMenuTableViewController: UITableViewController {
     var selectedMenuItem : Int = 0
     
     var menuWidth: CGFloat = 180.0
-    
+
+    /// ナビゲーションスタックを壊さないため子VCにはしていないので、参照を直接持つ
+    weak var sideMenuHost: MainNavigationViewController?
+
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.contentInset = UIEdgeInsets(top: 64.0, left: 0, bottom: 0, right: 0)
@@ -36,28 +39,27 @@ class MyMenuTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        var cell = tableView.dequeueReusableCell(withIdentifier: menuOptionCellId)
-        
-        if (cell == nil) {
-            cell = UITableViewCell(style:.default, reuseIdentifier: menuOptionCellId)
-            cell!.backgroundColor = .clear
-            cell!.textLabel?.textColor = .white
-            let selectedBackgroundView = UIView(frame: CGRect(x: 0, y: 0, width: cell!.frame.size.width, height: cell!.frame.size.height))
-            selectedBackgroundView.backgroundColor = UIColor.gray.withAlphaComponent(0.2)
-            cell!.selectedBackgroundView = selectedBackgroundView
-        }
+        let cell = tableView.dequeueReusableCell(withIdentifier: menuOptionCellId)
+            ?? UITableViewCell(style: .default, reuseIdentifier: menuOptionCellId)
+
+        // 再利用されたセルにも適用されるよう if cell == nil の外で設定する
+        cell.backgroundColor = .clear
+        cell.textLabel?.textColor = .white
+        let selectedBackgroundView = UIView()
+        selectedBackgroundView.backgroundColor = UIColor.gray.withAlphaComponent(0.2)
+        cell.selectedBackgroundView = selectedBackgroundView
 
         switch (indexPath.row) {
         case 0:
-            cell!.textLabel?.text = LocalizeKey.menuHome.localizedString()
+            cell.textLabel?.text = LocalizeKey.menuHome.localizedString()
         case 1:
-            cell!.textLabel?.text = LocalizeKey.menuSetting.localizedString()
+            cell.textLabel?.text = LocalizeKey.menuSetting.localizedString()
         case 2:
-            cell!.textLabel?.text = LocalizeKey.menuLine.localizedString()
+            cell.textLabel?.text = LocalizeKey.menuLine.localizedString()
         default:
-            cell!.textLabel?.text = LocalizeKey.menuOfficial.localizedString()
+            cell.textLabel?.text = LocalizeKey.menuOfficial.localizedString()
         }
-        return cell!
+        return cell
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -65,27 +67,34 @@ class MyMenuTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if (indexPath.row == selectedMenuItem) {
-            return
-        }
-        selectedMenuItem = indexPath.row
-        let mainNav = parent as? MainNavigationViewController
+        let mainNav = sideMenuHost
+            ?? parent as? MainNavigationViewController
             ?? navigationController as? MainNavigationViewController
+
         switch (indexPath.row) {
         case 0:
-            let mainStoryboard: UIStoryboard = UIStoryboard(name: "Main",bundle: nil)
-            let nvc = mainStoryboard.instantiateInitialViewController() as! UINavigationController
-            let destVC = nvc.viewControllers.first as! MainTabViewController
+            guard indexPath.row != selectedMenuItem else { return }
+            selectedMenuItem = indexPath.row
+            let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
+            guard let nvc = mainStoryboard.instantiateInitialViewController() as? UINavigationController,
+                  let destVC = nvc.viewControllers.first as? MainTabViewController else { return }
             mainNav?.setContentViewController(destVC)
         case 1:
-            let sb = UIStoryboard(name: "Usage",bundle: nil)
-            let nvc = sb.instantiateInitialViewController() as! UINavigationController
-            let destVC = nvc.viewControllers.first as! UsageViewController
+            guard indexPath.row != selectedMenuItem else { return }
+            selectedMenuItem = indexPath.row
+            let sb = UIStoryboard(name: "Usage", bundle: nil)
+            guard let nvc = sb.instantiateInitialViewController() as? UINavigationController,
+                  let destVC = nvc.viewControllers.first as? UsageViewController else { return }
             mainNav?.setContentViewController(destVC)
-        case 2:
-            UIApplication.shared.open(URL(string: "http://line.me/ti/p/%40gox9644r")!)
         default:
-            UIApplication.shared.open(URL(string: "https://pkbkeyboard.studio.design")!)
+            // 外部リンクは画面を差し替えないので選択状態は変えず、メニューは閉じる
+            tableView.selectRow(at: IndexPath(row: selectedMenuItem, section: 0), animated: false, scrollPosition: .none)
+            mainNav?.closeSideMenu()
+            let urlString = indexPath.row == 2
+                ? "https://line.me/ti/p/%40gox9644r"
+                : "https://pkbkeyboard.studio.design"
+            guard let url = URL(string: urlString) else { return }
+            UIApplication.shared.open(url)
         }
     }
     

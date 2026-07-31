@@ -1,90 +1,116 @@
 import UIKit
-import Alamofire
-import SwiftyJSON
 import PhotoKeyboardFramework
 
 // アプリバージョン管理 (Supabase app_config テーブル使用)
 extension AppDelegate {
 
-    func checkAppVersion() {
-        let storeUrl = URL(string: "http://itunes.apple.com/lookup?id=1477807463")
-        AF.request(storeUrl!).responseJSON { (response) in
-            guard let object = response.value else { return }
-            let json = JSON(object)
-            guard let storeVersion = json["results"][0]["version"].string else { return }
-            let currentversion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as! String
-            let currentArray = currentversion.split { $0 == "." }.map { String($0) }.map { Int($0) ?? 0 }
-            let storeArray = storeVersion.split { $0 == "." }.map { String($0) }.map { Int($0) ?? 0 }
+    /// App Store のアプリID。lookup と itms-apps の遷移先で別々のIDを使っていたため一箇所にまとめる。
+    private static let appStoreId = "1477807463"
 
-            guard let storeFirst = storeArray.first, let currentFirst = currentArray.first else { return }
-            if storeFirst > currentFirst {
-                self.mustUpdateCheck(currentVersion: currentversion)
-            } else if storeArray.count > 1 && (currentArray.count <= 1 || storeArray[1] > currentArray[1]) {
-                self.mustUpdateCheck(currentVersion: currentversion)
-            } else if storeArray.count > 2 && (currentArray.count <= 2 || storeArray[1] == currentArray[1] && storeArray[2] > currentArray[2]) {
-                self.mustUpdateCheck(currentVersion: currentversion)
+    private struct LookupResponse: Decodable {
+        struct Result: Decodable {
+            let version: String
+        }
+        let results: [Result]
+    }
+
+    func checkAppVersion() {
+        // http:// のままだと ATS にブロックされ、バージョンチェックが無言で機能しなくなる
+        guard let storeUrl = URL(string: "https://itunes.apple.com/lookup?id=\(AppDelegate.appStoreId)"),
+              let currentVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String else {
+            return
+        }
+
+        Task {
+            do {
+                let (data, response) = try await URLSession.shared.data(from: storeUrl)
+                guard let statusCode = (response as? HTTPURLResponse)?.statusCode,
+                      (200..<300).contains(statusCode) else { return }
+                let lookup = try JSONDecoder().decode(LookupResponse.self, from: data)
+                guard let storeVersion = lookup.results.first?.version else { return }
+                guard AppDelegate.isVersion(currentVersion, olderThan: storeVersion) else { return }
+                await mustUpdateCheck(currentVersion: currentVersion)
+            } catch {
+                print("app version check error: \(error)")
             }
         }
     }
 
-    func mustUpdateCheck(currentVersion: String) {
+    func mustUpdateCheck(currentVersion: String) async {
         let supabase = SupabaseManager.shared.client
-        Task {
-            do {
-                let configs: [AppConfig] = try await supabase
-                    .from("app_config")
-                    .select()
-                    .execute()
-                    .value
+        do {
+            let configs: [AppConfig] = try await supabase
+                .from("app_config")
+                .select()
+                .execute()
+                .value
 
-                let configMap = Dictionary(uniqueKeysWithValues: configs.map { ($0.key, $0.value) })
-                let mustUpdateVersion = configMap["must_update_ver"] ?? "1.0.0"
-                let mustUpdateMessage = configMap["must_update_message"] ?? ""
-
-                let currentArray = currentVersion.split { $0 == "." }.map { String($0) }.map { Int($0) ?? 0 }
-                let mustArray = mustUpdateVersion.split { $0 == "." }.map { String($0) }.map { Int($0) ?? 0 }
-
-                guard let mustFirst = mustArray.first, let currentFirst = currentArray.first else { return }
-                if mustFirst > currentFirst {
-                    await showMustUpdateAlert(message: mustUpdateMessage)
-                } else if mustArray.count > 1 && (currentArray.count <= 1 || mustArray[1] > currentArray[1]) {
-                    await showMustUpdateAlert(message: mustUpdateMessage)
-                } else if mustArray.count > 2 && (currentArray.count <= 2 || mustArray[1] == currentArray[1] && mustArray[2] > currentArray[2]) {
-                    await showMustUpdateAlert(message: mustUpdateMessage)
-                } else {
-                    await showUpdateAlert()
-                }
-            } catch {
-                print("app_config fetch error: \(error)")
+            // キーが重複していてもクラッシュしないよう後勝ちでまとめる
+            var configMap: [String: String] = [:]
+            for config in configs {
+                configMap[config.key] = config.value
             }
+            let mustUpdateVersion = configMap["must_update_ver"] ?? "1.0.0"
+            let mustUpdateMessage = configMap["must_update_message"] ?? ""
+
+            if AppDelegate.isVersion(currentVersion, olderThan: mustUpdateVersion) {
+                await showMustUpdateAlert(message: mustUpdateMessage)
+            } else {
+                await showUpdateAlert()
+            }
+        } catch {
+            print("app_config fetch error: \(error)")
         }
+    }
+
+    /// "1.9.0" と "2.0.0" のようにメジャー番号だけが違うケースも正しく比較する
+    static func isVersion(_ lhs: String, olderThan rhs: String) -> Bool {
+        let left = lhs.split(separator: ".").map { Int($0) ?? 0 }
+        let right = rhs.split(separator: ".").map { Int($0) ?? 0 }
+        for index in 0..<max(left.count, right.count) {
+            let leftValue = index < left.count ? left[index] : 0
+            let rightValue = index < right.count ? right[index] : 0
+            if leftValue != rightValue { return leftValue < rightValue }
+        }
+        return false
+    }
+
+    @MainActor
+    private func openAppStore() {
+        guard let url = URL(string: "itms-apps://apps.apple.com/app/id\(AppDelegate.appStoreId)") else { return }
+        UIApplication.shared.open(url)
     }
 
     @MainActor
     func showUpdateAlert() {
         let alert = UIAlertController(
-            title: "アップデートしてください",
-            message: "手間かけさせて悪いね",
+            title: LocalizeKey.updateAlertTitle.localizedString(),
+            message: LocalizeKey.updateAlertMessage.localizedString(),
             preferredStyle: .alert)
-        let updateAction = UIAlertAction(title: "アプデする", style: .default) { _ in
-            UIApplication.shared.open(URL(string: "itms-apps://ax.itunes.apple.com/WebObjects/MZStore.woa/wa/viewSoftwareUpdate?id=1281328373")!)
-        }
-        alert.addAction(updateAction)
-        alert.addAction(UIAlertAction(title: "絶対しない", style: .destructive))
-        self.window?.rootViewController?.present(alert, animated: true, completion: nil)
+        alert.addAction(UIAlertAction(title: LocalizeKey.updateAlertUpdate.localizedString(), style: .default) { [weak self] _ in
+            self?.openAppStore()
+        })
+        alert.addAction(UIAlertAction(title: LocalizeKey.updateAlertLater.localizedString(), style: .cancel))
+        present(alert)
     }
 
     @MainActor
     func showMustUpdateAlert(message: String) {
         let alert = UIAlertController(
-            title: "アップデートしてください",
+            title: LocalizeKey.updateAlertTitle.localizedString(),
             message: message,
             preferredStyle: .alert)
-        let updateAction = UIAlertAction(title: "アプデする", style: .default) { _ in
-            UIApplication.shared.open(URL(string: "itms-apps://ax.itunes.apple.com/WebObjects/MZStore.woa/wa/viewSoftwareUpdate?id=1281328373")!)
-        }
-        alert.addAction(updateAction)
-        self.window?.rootViewController?.present(alert, animated: true, completion: nil)
+        alert.addAction(UIAlertAction(title: LocalizeKey.updateAlertUpdate.localizedString(), style: .default) { [weak self] _ in
+            self?.openAppStore()
+        })
+        present(alert)
+    }
+
+    /// rootViewController が既に別の画面を表示していると present に失敗するため最前面を使う
+    @MainActor
+    private func present(_ alert: UIAlertController) {
+        guard let topController = UIApplication.topViewController() else { return }
+        topController.present(alert, animated: true, completion: nil)
     }
 }
 

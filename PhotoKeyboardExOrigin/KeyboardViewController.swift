@@ -31,15 +31,17 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     @IBOutlet weak var notFullLabel: UILabel!
     
     var textBoardFlag = false
-    let logoImage = UIImage(named: "photo_logo_2")!
+    /// アセットが解決できなくてもキーボードの初期化自体は失敗させない
+    let logoImage = UIImage(named: "photo_logo_2")
     
 //    @IBOutlet weak var searchBar: UISearchBar!
     //     var searchBar = UISearchBar()
     
     // photosの中にfavPhotos or abcPhotos が入る
     var favSortFlag = false
-    var favPhotos: Results<RealmPhoto>!
-    var abcPhotos: Results<RealmPhoto>!
+    // フルアクセス未許可でも currentPhotos() が nil 参照にならないよう遅延生成にする
+    lazy var favPhotos: Results<RealmPhoto> = RealmManager.shared.realmData.sorted(byKeyPath: "useNum")
+    lazy var abcPhotos: Results<RealmPhoto> = RealmManager.shared.realmData.sorted(byKeyPath: "text")
     
     var items : NSArray = []
     private var searchResult = [String]()
@@ -63,24 +65,19 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         collectionInit()
         
         if self.hasFullAccess {
-            print("FullAccess is true")
-            favPhotos = RealmManager.shared.realmData.sorted(byKeyPath: "useNum")
-            abcPhotos = RealmManager.shared.realmData.sorted(byKeyPath: "text")
             RealmManager.shared.delegate = self
             notFullInit(notFull: false)
             sortState()
         } else {
-            print("FullAccess is false")
             notFullInit(notFull: true)
         }
     }
-        
+
     func baseSetUp() {
-        var nib = UINib(nibName:"MainKBView", bundle:nil)
-        var object = nib.instantiate(withOwner: self,options:nil)
-        var v = object[0] as! UIView
-        //                self.inputView!.addSubview(v)
-        //        self.view.addSubview(v)
+        let nib = UINib(nibName: "MainKBView", bundle: nil)
+        let object = nib.instantiate(withOwner: self, options: nil)
+        // xibが読み込めない場合でもクラッシュさせず、既定のviewのまま続行する
+        guard let v = object.first as? UIView else { return }
         view = v
     }
     
@@ -237,8 +234,10 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     }
     
     func realmObjectDidChange() {
-        print("realmデータの変更を検知")
-//        collectionView.reloadData()
+        // 本体アプリで画像を追加/削除した結果をキーボードにも反映する
+        DispatchQueue.main.async { [weak self] in
+            self?.collectionView.reloadData()
+        }
     }
     
     override func textWillChange(_ textInput: UITextInput?) {
@@ -259,28 +258,24 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     }
     
     func copyBoard() {
-        guard let lastSelectedIndex = lastSelectedIndex else {
+        // The Pasteboard is nil if full access is not granted
+        guard let lastSelectedIndex = lastSelectedIndex,
+              let photo = getPhoto(at: lastSelectedIndex),
+              let selectImage = photo.image else {
             return
         }
-//        let pasetImage = currentPhotos()[lastSelectedIndex.row].image!
-        // The Pasteboard is nil if full access is not granted
-        // 'image' is the UIImage you about to copy to the pasteboard
-        let selectImage = currentPhotos()[lastSelectedIndex.row].image!
-        let pasetImage: UIImage
-        pasetImage = selectImage.composite(image:logoImage, rate: 1.0)!
-        let pb = UIPasteboard.general
-        let type = UIPasteboard.typeListImage[0] as! String
-        if !type.isEmpty {
-            pb.setData(pasetImage.jpegData(compressionQuality: 0.3)!, forPasteboardType: type)
-            if let readData = pb.data(forPasteboardType: type) {
-                let readImage = UIImage(data: readData, scale: 2)
-                print("\(pasetImage) == \(String(describing: pb.image)) == \(String(describing: readImage))")
-                updateUseNum(index: lastSelectedIndex.row)
-            }
+        // ロゴが取得できない場合は合成せず元画像をそのまま貼り付ける
+        let pasetImage = logoImage.flatMap { selectImage.composite(image: $0, rate: 1.0) } ?? selectImage
+        guard let type = UIPasteboard.typeListImage.first as? String, !type.isEmpty,
+              let data = pasetImage.jpegData(compressionQuality: 0.3) else {
+            return
         }
+        UIPasteboard.general.setData(data, forPasteboardType: type)
+        updateUseNum(index: lastSelectedIndex.row)
     }
     
     func updateUseNum(index: Int) {
+        guard index >= 0 && index < currentPhotos().count else { return }
         let updateValue = numUpdatePhoto(current: currentPhotos()[index])
         RealmManager.shared.update(data: updateValue, success: { () in
         }) { (error) in
@@ -304,13 +299,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     }
     
     @IBAction func tapHelpButton(_ sender: Any) {
-        if self.hasFullAccess {
-            print("FullAccess is true")
-            self.openOfficialLINE()
-        } else {
-            print("FullAccess is false")
-            self.openOfficialLINE()
-        }
+        self.openOfficialLINE()
     }
     
     @IBAction func tapSortRankButton(_ sender: Any) {
@@ -367,10 +356,10 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     
     func openOfficialLINE() {
         guard let application = getResponder() else { return }
-        application.perform("openURL:", with: URL(string: "http://line.me/ti/p/%40gox9644r")) 
+        application.perform("openURL:", with: URL(string: "https://line.me/ti/p/%40gox9644r"))
     }
-    
-    
+
+
     func numUpdatePhoto(current: RealmPhoto) -> RealmPhoto {
         let new = RealmPhoto()
         new.id = current.id
@@ -380,6 +369,9 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         new.imageWidth = current.imageWidth
         new.getDay = current.getDay
         new.useNum = current.useNum + 1
+        // コピーし忘れると公開状態と投稿者が初期値に戻り、サーバ上のデータと紐付かなくなる
+        new.isPublic = current.isPublic
+        new.ownerId = current.ownerId
         return new
     }
 }
@@ -422,7 +414,7 @@ extension KeyboardViewController: UICollectionViewDataSource, UICollectionViewDe
                     cell.isCheck = false
                 }
                 //            }
-                print("cell 生成 index: ", indexPath.row)}
+            }
             return cell
         }
     }
@@ -481,12 +473,15 @@ extension KeyboardViewController: UICollectionViewDelegate {
                 textDocumentProxy.insertText(textArray[indexPath.row])
             }
         } else {
-            let cell = collectionView.cellForItem(at: indexPath) as! PhotoCollectionViewCell
             // AddCell,管理アプリへ遷移
             //        if indexPath.row == currentPhotos().count + 1 {
             if indexPath.row == currentPhotos().count {
                 goMainApp()
             } else {
+                // 画面外のセルや種類の異なるセルではnilになるためクラッシュさせない
+                guard let cell = collectionView.cellForItem(at: indexPath) as? PhotoCollectionViewCell else {
+                    return
+                }
                 // 未選択->選択済み
                 guard let lastSelectedIndex = self.lastSelectedIndex, lastSelectedIndex == indexPath else {
                     self.lastSelectedIndex = indexPath
@@ -500,8 +495,8 @@ extension KeyboardViewController: UICollectionViewDelegate {
                 self.collectionView.deselectItem(at: indexPath, animated: true)
                 self.lastSelectedIndex = nil
                 cell.isCheck = false
-                RealmManager.shared.update(data: self.getPhoto(at: indexPath)!, success: { () in
-                    print()
+                guard let photo = self.getPhoto(at: indexPath) else { return }
+                RealmManager.shared.update(data: photo, success: { () in
                 }) { (error) in
                     print(error)
                 }
@@ -511,9 +506,8 @@ extension KeyboardViewController: UICollectionViewDelegate {
     
     private func tapAnimation(cell: PhotoCollectionViewCell) {
         cell.choiceCoverView.play()
-        cell.choiceCoverView.play { (finish) in
-            self.generator.notificationOccurred(.success)
-            print("コール アニメーション row: ")
+        cell.choiceCoverView.play { [weak self] (finish) in
+            self?.generator.notificationOccurred(.success)
 //            let choiceColor = ColorManager.shared.acRandom()
 //            cell.choiceCoverLabel.textColor = choiceColor
 //            cell.choiceCover2View.backgroundColor = choiceColor
@@ -523,7 +517,8 @@ extension KeyboardViewController: UICollectionViewDelegate {
     }
     
     fileprivate func getPhoto(at indexPath: IndexPath) ->  RealmPhoto? {
-        guard !self.currentPhotos().isEmpty && indexPath.row >= 0 && indexPath.row <= self.currentPhotos().count else { return nil }
+        // 末尾の要素番号は count - 1。count と等しい場合は追加ボタンのセルなので範囲外。
+        guard indexPath.row >= 0 && indexPath.row < self.currentPhotos().count else { return nil }
         return self.currentPhotos()[indexPath.row]
     }
 }

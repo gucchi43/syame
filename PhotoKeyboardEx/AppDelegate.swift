@@ -7,9 +7,8 @@
 //
 
 import UIKit
+import UserNotifications
 import PhotoKeyboardFramework
-import Alamofire
-import SwiftyJSON
 import GoogleMobileAds
 
 @UIApplicationMain
@@ -26,27 +25,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
-    override init() {
-        super.init()
-    }
-
     func anonymousAuth() {
-        let supabase = SupabaseManager.shared.client
         Task {
             do {
-                let session = try await supabase.auth.session
-                let uid = session.user.id.uuidString
-                print(uid, ", login")
-                GroupeDefaults.shared.setAuthUid(id: uid)
+                try await SupabaseManager.shared.ensureSignedIn()
             } catch {
-                do {
-                    let session = try await supabase.auth.signInAnonymously()
-                    let uid = session.user.id.uuidString
-                    GroupeDefaults.shared.setAuthUid(id: uid)
-                    print("anonymous sign in success: \(uid)")
-                } catch {
-                    print("anonymous sign in error: \(error)")
-                }
+                // 投稿時に再試行するためここでは記録のみ
+                print("anonymous sign in error: \(error)")
             }
         }
     }
@@ -58,22 +43,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
-        application.applicationIconBadgeNumber = 0
-        #if DEBUG
-        checkLangAlert()
-        #endif
-    }
-
-    func checkLangAlert() {
-        let langFirstFromLocale: String = NSLocale.preferredLanguages.first!
-        let langFirstFromBundle: String = Bundle.main.preferredLocalizations.first!
-
-        let alertController = UIAlertController(title: "SettingCheck", message: String(format: "NSLocale:%@\n NSBundle:%@", langFirstFromLocale, langFirstFromBundle), preferredStyle: .alert)
-        let defaultAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-        alertController.addAction(defaultAction)
-
-        if let topController = UIApplication.topViewController() {
-            topController.present(alertController, animated: true, completion: nil)
-        }
+        UNUserNotificationCenter.current().setBadgeCount(0)
     }
 }
