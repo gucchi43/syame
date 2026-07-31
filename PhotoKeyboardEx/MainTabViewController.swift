@@ -179,7 +179,7 @@ class MainTabViewController: TabmanViewController {
                                     animated: animated)
         //        print("didScrollToPosition: \(position)")
         
-        let relativePosition = navigationOrientation == .vertical ? position.y : position.x
+//        let relativePosition = navigationOrientation == .vertical ? position.y : position.x
 //        gradient?.gradientOffset = gradientOffset(for: relativePosition)
 //        statusView.currentPosition = relativePosition
     }

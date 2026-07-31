@@ -36,6 +36,7 @@ extension AppDelegate {
         }
     }
 
+    @MainActor
     func mustUpdateCheck(currentVersion: String) async {
         let supabase = SupabaseManager.shared.client
         do {
@@ -54,9 +55,9 @@ extension AppDelegate {
             let mustUpdateMessage = configMap["must_update_message"] ?? ""
 
             if AppDelegate.isVersion(currentVersion, olderThan: mustUpdateVersion) {
-                await showMustUpdateAlert(message: mustUpdateMessage)
+                showMustUpdateAlert(message: mustUpdateMessage)
             } else {
-                await showUpdateAlert()
+                showUpdateAlert()
             }
         } catch {
             print("app_config fetch error: \(error)")

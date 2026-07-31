@@ -87,7 +87,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
     }
 
     private func createWaterfallLayout() -> UICollectionViewCompositionalLayout {
-        let layout = UICollectionViewCompositionalLayout { [weak self] sectionIndex, environment in
+        let layout = UICollectionViewCompositionalLayout { sectionIndex, environment in
             let itemSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(0.5),
                 heightDimension: .estimated(200)
@@ -256,7 +256,6 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
     
     @objc func reloadAfterPost(notification: Notification) -> Void {
         if tabPageIndex == 0 {
-            print("realmPhotos :", realmPhotos)
             collectionView.reloadData()
         } else {
             firePhotoInit()
@@ -534,9 +533,8 @@ extension ChildContentViewController {
             print("Rewarded ad not ready")
             return
         }
-        rewardedAd.present(fromRootViewController: self) { [weak self] in
+        rewardedAd.present(fromRootViewController: self) {
             let reward = rewardedAd.adReward
-            print("Reward received: \(reward.type), amount \(reward.amount)")
             GroupeDefaults.shared.chargeSaveLife(amount: Int(truncating: reward.amount))
         }
         loadRewardedAd()

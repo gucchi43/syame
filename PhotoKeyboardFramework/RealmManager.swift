@@ -54,12 +54,16 @@ public class RealmManager {
 
     // MARK: - Realm の生成
 
-    /// ディスク上のRealmを開けない場合でもアプリ・キーボードが起動不能にならないようメモリ上のRealmへ退避する
+    /// 書き込み用。メモリ上のRealmに書いても消えるだけなので、開けない場合は nil を返して
+    /// 呼び出し側に失敗として扱わせる。
+    private func diskRealm() -> Realm? {
+        return try? Realm(configuration: configuration)
+    }
+
+    /// 読み取り用。ディスク上のRealmを開けない場合でもアプリ・キーボードが起動不能にならないよう
+    /// メモリ上のRealmへ退避する。
     private func realm() -> Realm {
-        if let realm = try? Realm(configuration: configuration) {
-            return realm
-        }
-        return RealmManager.makeFallbackRealm()
+        return diskRealm() ?? RealmManager.makeFallbackRealm()
     }
 
     private static func makeFallbackRealm() -> Realm {
@@ -70,9 +74,10 @@ public class RealmManager {
         return try! Realm(configuration: fallback)
     }
 
-    private static func makeConfiguration(fileURL: URL) -> Realm.Configuration {
+    private static func makeConfiguration(fileURL: URL, readOnly: Bool = false) -> Realm.Configuration {
         var configuration = Realm.Configuration()
         configuration.fileURL = fileURL
+        configuration.readOnly = readOnly
         configuration.schemaVersion = schemaVersion
         configuration.migrationBlock = { _, _ in
             // スキーマを変更したらここに移行処理を追加する。
@@ -111,11 +116,19 @@ public class RealmManager {
             .filter { fileManager.fileExists(atPath: $0.path) }
         guard let primary = legacyURLs.first else { return }
 
+        // 直接 target へ書くと途中で失敗したときに壊れたファイルが残り、次回以降は
+        // 「statごと存在する」ため統合がスキップされて永久に復旧できなくなる。
+        // 一時ファイルへ書いてから原子的に差し替える。
+        let temporaryURL = target.appendingPathExtension("tmp")
+        try? fileManager.removeItem(at: temporaryURL)
         do {
-            let primaryRealm = try Realm(configuration: makeConfiguration(fileURL: primary))
-            try primaryRealm.writeCopy(toFile: target)
+            // 旧ファイルはインプレース移行させたくないので読み取り専用で開く
+            let primaryRealm = try Realm(configuration: makeConfiguration(fileURL: primary, readOnly: true))
+            try primaryRealm.writeCopy(toFile: temporaryURL)
+            try fileManager.moveItem(at: temporaryURL, to: target)
         } catch {
             // 統合できない場合は空のファイルとして開始する(旧ファイルは残すので復旧は可能)
+            try? fileManager.removeItem(at: temporaryURL)
             return
         }
 
@@ -137,7 +150,7 @@ public class RealmManager {
 
     private static func importPhotos(from source: URL, into target: URL) {
         do {
-            let sourceRealm = try Realm(configuration: makeConfiguration(fileURL: source))
+            let sourceRealm = try Realm(configuration: makeConfiguration(fileURL: source, readOnly: true))
             let targetRealm = try Realm(configuration: makeConfiguration(fileURL: target))
             let existingIds = Set(targetRealm.objects(RealmPhoto.self).map { $0.id })
             let missing = sourceRealm.objects(RealmPhoto.self).filter { !existingIds.contains($0.id) }
@@ -169,8 +182,11 @@ public class RealmManager {
 
     // データを保存するための処理
     public func save(data: RealmPhoto, success: @escaping () -> Void, failure: @escaping (String) -> Void) {
+        guard let realm = diskRealm() else {
+            failure("failure save...")
+            return
+        }
         do {
-            let realm = self.realm()
             try realm.write {
                 realm.add(data, update: .modified)
             }
@@ -182,8 +198,11 @@ public class RealmManager {
 
     // データを更新するための処理
     public func update(data: RealmPhoto, success: @escaping () -> Void, failure: @escaping (String) -> Void) {
+        guard let realm = diskRealm() else {
+            failure("failure update...")
+            return
+        }
         do {
-            let realm = self.realm()
             try realm.write {
                 realm.add(data, update: .modified)
             }
@@ -193,10 +212,24 @@ public class RealmManager {
         }
     }
 
+    /// 使用回数だけを更新する。
+    /// 未管理のコピーを作って上書きすると `image` の setter が走ってJPEGを再エンコードするため、
+    /// 使うたびに画質が劣化し、キーボード拡張ではデコード/エンコードでメモリも消費する。
+    public func incrementUseNum(id: String) {
+        guard let realm = diskRealm(),
+              let photo = realm.object(ofType: RealmPhoto.self, forPrimaryKey: id) else { return }
+        try? realm.write {
+            photo.useNum += 1
+        }
+    }
+
     // データを削除するための処理
     public func delete(docId: String, success: @escaping () -> Void, failure: @escaping (String) -> Void) {
+        guard let realm = diskRealm() else {
+            failure("failure delete...")
+            return
+        }
         do {
-            let realm = self.realm()
             guard let currentData = realm.object(ofType: RealmPhoto.self, forPrimaryKey: docId) else {
                 success()
                 return

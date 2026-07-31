@@ -276,11 +276,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     
     func updateUseNum(index: Int) {
         guard index >= 0 && index < currentPhotos().count else { return }
-        let updateValue = numUpdatePhoto(current: currentPhotos()[index])
-        RealmManager.shared.update(data: updateValue, success: { () in
-        }) { (error) in
-            print(error)
-        }
+        RealmManager.shared.incrementUseNum(id: currentPhotos()[index].id)
     }
     
     func goMainApp() {
@@ -360,20 +356,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     }
 
 
-    func numUpdatePhoto(current: RealmPhoto) -> RealmPhoto {
-        let new = RealmPhoto()
-        new.id = current.id
-        new.text = current.text
-        new.image = current.image
-        new.imageHeight = current.imageHeight
-        new.imageWidth = current.imageWidth
-        new.getDay = current.getDay
-        new.useNum = current.useNum + 1
-        // コピーし忘れると公開状態と投稿者が初期値に戻り、サーバ上のデータと紐付かなくなる
-        new.isPublic = current.isPublic
-        new.ownerId = current.ownerId
-        return new
-    }
 }
 
 
