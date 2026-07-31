@@ -266,11 +266,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         }
         // ロゴが取得できない場合は合成せず元画像をそのまま貼り付ける
         let pasetImage = logoImage.flatMap { selectImage.composite(image: $0, rate: 1.0) } ?? selectImage
-        guard let type = UIPasteboard.typeListImage.first as? String, !type.isEmpty,
-              let data = pasetImage.jpegData(compressionQuality: 0.3) else {
-            return
-        }
-        UIPasteboard.general.setData(data, forPasteboardType: type)
+        pasetImage.copyToGeneralPasteboard()
         updateUseNum(index: lastSelectedIndex.row)
     }
     

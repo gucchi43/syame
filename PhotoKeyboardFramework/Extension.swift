@@ -83,6 +83,16 @@ extension UIImage {
         return resizedImage
     }
 
+    /// 画像を汎用ペーストボードへ書き込む。
+    ///
+    /// `UIPasteboard.typeListImage` の先頭は "public.png" のため、そこへ `jpegData(...)` の
+    /// バイト列を書き込むと宣言した型と実体が食い違う。書き込み自体は成功するが、貼り付ける側は
+    /// PNGとしてデコードしようとして失敗するため「コピーできたのに貼れない」状態になる。
+    /// 型の指定を誤らないよう UIPasteboard の image プロパティに委ねる。
+    public func copyToGeneralPasteboard() {
+        UIPasteboard.general.image = self
+    }
+
     public func composite(image: UIImage, rate: CGFloat = 1.0) -> UIImage? {
         // scaleに0(デバイススケール)を渡すと2000pxの画像で6000x6000のコンテキストを確保してしまい、
         // メモリ上限の厳しいキーボード拡張が強制終了する。1.0で固定する。
