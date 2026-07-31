@@ -111,3 +111,8 @@
 "notFullLabelThird" = "[キーボード]";
 "notFullLabelFourth" = "[フルアクセスを許可する]";
 "notFullLabelFifth" = "をオンにしてください。";
+"addPhotoFromApp" = "アプリから画像を追加";
+"updateAlertTitle" = "アップデートのお知らせ";
+"updateAlertMessage" = "新しいバージョンが公開されています。";
+"updateAlertUpdate" = "アップデート";
+"updateAlertLater" = "あとで";

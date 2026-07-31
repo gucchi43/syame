@@ -111,3 +111,8 @@
 "notFullLabelFourth" = "[Allow Full Access]";
 "notFullLabelFifth" = "Turn on ";
 
+"addPhotoFromApp" = "Add images from the app";
+"updateAlertTitle" = "Update available";
+"updateAlertMessage" = "A new version of the app is available.";
+"updateAlertUpdate" = "Update";
+"updateAlertLater" = "Later";

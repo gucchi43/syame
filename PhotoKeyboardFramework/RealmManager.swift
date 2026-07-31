@@ -10,109 +10,202 @@ import UIKit
 import Realm
 import RealmSwift
 
-public protocol RealmManagerDelegate {
+public protocol RealmManagerDelegate: AnyObject {
     func realmObjectDidChange()
 }
 
 public class RealmManager {
     public static let shared = RealmManager()
-    
-    public var delegate: RealmManagerDelegate?
 
-    public var realmData: Results<RealmPhoto>!
-    private var realm: Realm!
-    private var configuration: Realm.Configuration!
+    /// シングルトンがViewControllerを保持し続けないようweakにする
+    public weak var delegate: RealmManagerDelegate?
+
+    private static let appGroupIdentifier = "group.bocchi.PhotoKeyboardEx"
+    /// ロケールに依存しない統合後のRealmファイル名
+    private static let realmFileName = "db.realm.shared"
+    /// 旧バージョンがロケールごとに分けて作成していたファイル
+    private static let legacyJPFileName = "db.realm.jp"
+    private static let legacyWorldFileName = "db.realm.world"
+    private static let legacyOriginalFileName = "db.realm"
+    private static let schemaVersion: UInt64 = 1
+
+    private let configuration: Realm.Configuration
+    /// 変更通知の購読はメインスレッドのRealmに紐づくため、その参照を保持しておく
+    private var observedRealm: Realm?
     private var token: NotificationToken?
-    
-    private init() {
-        configuration = Realm.Configuration()
-        let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.bocchi.PhotoKeyboardEx")!
-//        configuration.fileURL = url.appendingPathComponent("db.realm")
-        if Lang.rootKey() == "JP" {
-            configuration.fileURL = url.appendingPathComponent("db.realm.jp")
-        } else {
-            configuration.fileURL = url.appendingPathComponent("db.realm.world")
-        }
-        configuration.deleteRealmIfMigrationNeeded = true
-        do {
-            realm = try Realm(configuration: configuration)
-            token = realm.observe{ notification, realm in
-                print("notification :", notification)
-                print("realm :", realm)
-                print("token :", self.token)
-                self.delegate?.realmObjectDidChange()
-            }
-        } catch let error as NSError{
-            assertionFailure("realm error: \(error)")
 
-            // dbリセット, migrationするコードらへん
-            // 参考:  https://ja.stackoverflow.com/questions/24905/realmswift%E3%81%AE%E3%83%9E%E3%82%A4%E3%82%B0%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6
-//            var configuration = self.configuration
-//            configuration!.deleteRealmIfMigrationNeeded = true
-//            realm = try? Realm(configuration: configuration!)
-        }
-        
-        realmData = realm.objects(RealmPhoto.self)
-        print("realm init done!!!")
-        print("realmData : ", realmData)
-        print("realm.configuration.fileURL : ", realm.configuration.fileURL)
-
+    /// スレッド拘束を避けるため、常に呼び出しスレッドのRealmから取得する
+    public var realmData: Results<RealmPhoto> {
+        return realm().objects(RealmPhoto.self)
     }
-    
-    
+
+    private init() {
+        let container = RealmManager.containerURL()
+        RealmManager.applyFileProtection(to: container)
+        let fileURL = container.appendingPathComponent(RealmManager.realmFileName)
+        RealmManager.consolidateLegacyFilesIfNeeded(container: container, target: fileURL)
+        configuration = RealmManager.makeConfiguration(fileURL: fileURL)
+        startObserving()
+    }
+
+    deinit {
+        token?.invalidate()
+    }
+
+    // MARK: - Realm の生成
+
+    /// ディスク上のRealmを開けない場合でもアプリ・キーボードが起動不能にならないようメモリ上のRealmへ退避する
+    private func realm() -> Realm {
+        if let realm = try? Realm(configuration: configuration) {
+            return realm
+        }
+        return RealmManager.makeFallbackRealm()
+    }
+
+    private static func makeFallbackRealm() -> Realm {
+        var fallback = Realm.Configuration()
+        fallback.inMemoryIdentifier = "PhotoKeyboardFrameworkFallback"
+        fallback.objectTypes = [RealmPhoto.self]
+        // メモリ上のRealmはファイルI/Oを伴わないため生成に失敗する現実的な経路はない
+        return try! Realm(configuration: fallback)
+    }
+
+    private static func makeConfiguration(fileURL: URL) -> Realm.Configuration {
+        var configuration = Realm.Configuration()
+        configuration.fileURL = fileURL
+        configuration.schemaVersion = schemaVersion
+        configuration.migrationBlock = { _, _ in
+            // スキーマを変更したらここに移行処理を追加する。
+            // deleteRealmIfMigrationNeeded はユーザーの保存画像を消してしまうため使わない。
+        }
+        configuration.objectTypes = [RealmPhoto.self]
+        return configuration
+    }
+
+    private static func containerURL() -> URL {
+        if let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier) {
+            return url
+        }
+        // App Group が使えない環境でも起動は継続させる(拡張とのデータ共有はできない)
+        return FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+            ?? URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+    }
+
+    /// 端末ロック中でもキーボード拡張からRealmを開けるようにする
+    private static func applyFileProtection(to directory: URL) {
+        try? FileManager.default.setAttributes(
+            [.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication],
+            ofItemAtPath: directory.path
+        )
+    }
+
+    // MARK: - 旧ロケール別ファイルの統合
+
+    /// 旧バージョンは端末のロケールで db.realm.jp / db.realm.world を切り替えていたため、
+    /// 言語設定を変えると保存済みの画像が消えたように見えていた。初回起動時に1つのファイルへ統合する。
+    private static func consolidateLegacyFilesIfNeeded(container: URL, target: URL) {
+        let fileManager = FileManager.default
+        guard !fileManager.fileExists(atPath: target.path) else { return }
+
+        let legacyURLs = orderedLegacyURLs(container: container)
+            .filter { fileManager.fileExists(atPath: $0.path) }
+        guard let primary = legacyURLs.first else { return }
+
+        do {
+            let primaryRealm = try Realm(configuration: makeConfiguration(fileURL: primary))
+            try primaryRealm.writeCopy(toFile: target)
+        } catch {
+            // 統合できない場合は空のファイルとして開始する(旧ファイルは残すので復旧は可能)
+            return
+        }
+
+        for url in legacyURLs.dropFirst() {
+            importPhotos(from: url, into: target)
+        }
+    }
+
+    /// 現在のロケールに対応するファイルを優先して統合元にする
+    private static func orderedLegacyURLs(container: URL) -> [URL] {
+        let names: [String]
+        if Lang.rootKey() == Lang.japaneseRootKey {
+            names = [legacyJPFileName, legacyWorldFileName, legacyOriginalFileName]
+        } else {
+            names = [legacyWorldFileName, legacyJPFileName, legacyOriginalFileName]
+        }
+        return names.map { container.appendingPathComponent($0) }
+    }
+
+    private static func importPhotos(from source: URL, into target: URL) {
+        do {
+            let sourceRealm = try Realm(configuration: makeConfiguration(fileURL: source))
+            let targetRealm = try Realm(configuration: makeConfiguration(fileURL: target))
+            let existingIds = Set(targetRealm.objects(RealmPhoto.self).map { $0.id })
+            let missing = sourceRealm.objects(RealmPhoto.self).filter { !existingIds.contains($0.id) }
+            guard !missing.isEmpty else { return }
+            try targetRealm.write {
+                for photo in missing {
+                    targetRealm.create(RealmPhoto.self, value: photo, update: .modified)
+                }
+            }
+        } catch {
+            // 取り込めなかった旧ファイルはそのまま残す
+        }
+    }
+
+    // MARK: - 変更通知
+
+    private func startObserving() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            let realm = self.realm()
+            self.observedRealm = realm
+            self.token = realm.observe { [weak self] _, _ in
+                self?.delegate?.realmObjectDidChange()
+            }
+        }
+    }
+
+    // MARK: - CRUD
+
     // データを保存するための処理
     public func save(data: RealmPhoto, success: @escaping () -> Void, failure: @escaping (String) -> Void) {
         do {
+            let realm = self.realm()
             try realm.write {
-                realm.add(data)
+                realm.add(data, update: .modified)
             }
-            print("realm save 成功")
             success()
-        } catch let error as NSError {
-            assertionFailure("realm save error: \(error)")
+        } catch {
             failure("failure save...")
         }
     }
-    
+
     // データを更新するための処理
     public func update(data: RealmPhoto, success: @escaping () -> Void, failure: @escaping (String) -> Void) {
-        
-        print("call realm update:", data)
-        
         do {
-            let savedData = realmData.filter{$0.id == data.id}
-            if var currentData = savedData.first {
-                try realm.write {
-                    realm.add(data, update: .all)
-                    print("realm update 成功")
-                }
+            let realm = self.realm()
+            try realm.write {
+                realm.add(data, update: .modified)
             }
             success()
-        } catch let error as NSError {
-            assertionFailure("realm delete error: \(error)")
-            failure("failure delete...")
+        } catch {
+            failure("failure update...")
         }
     }
-    
+
     // データを削除するための処理
-    public func delete(docId:  String, success: @escaping () -> Void, failure: @escaping (String) -> Void) {
-//        let realm = try! Realm()
-//        let data = realm.objects(Human).last!
-        
+    public func delete(docId: String, success: @escaping () -> Void, failure: @escaping (String) -> Void) {
         do {
-            let savedData = realmData.filter{$0.id == docId}
-            if let currentData = savedData.first {
-                try realm.write {
-                    print("idがマッチしたphotoデータのarray: ", savedData)
-                    print("削除するrealmdata: ", currentData)
-                    
-                    realm.delete(currentData)
-                    print("realm delete 成功")
-                }
+            let realm = self.realm()
+            guard let currentData = realm.object(ofType: RealmPhoto.self, forPrimaryKey: docId) else {
+                success()
+                return
+            }
+            try realm.write {
+                realm.delete(currentData)
             }
             success()
-        } catch let error as NSError {
-            assertionFailure("realm delete error: \(error)")
+        } catch {
             failure("failure delete...")
         }
     }

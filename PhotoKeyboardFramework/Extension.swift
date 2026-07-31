@@ -11,28 +11,20 @@ import Foundation
 
 public class Lang {
     static let shared = Lang()
+
+    public static let japaneseRootKey = "JP"
+    public static let worldRootKey = "WORLD"
+
+    /// 端末の言語コードが日本語かどうかで判定する。
+    /// 以前は rootKey() が地域コード(末尾2文字が "JP")、langRootKey() が言語コード(先頭2文字が "ja")を見ており、
+    /// 地域サフィックスのない "ja" の端末でUIとデータ参照先が食い違っていた。
     public class func rootKey() -> String {
-        var rootKey = ""
-        let type = NSLocale.preferredLanguages.first!
-        if type.suffix(2) == "JP"{
-            rootKey = "JP"
-        } else {
-            rootKey = "WORLD"
-        }
-        print("rootKey : ", rootKey)
-        return rootKey
+        guard let type = NSLocale.preferredLanguages.first else { return worldRootKey }
+        return type.prefix(2) == "ja" ? japaneseRootKey : worldRootKey
     }
-    
+
     public class func langRootKey() -> String {
-        var rootKey = ""
-        let type = NSLocale.preferredLanguages.first!
-        if type.prefix(2) == "ja"{
-            rootKey = "JP"
-        } else {
-            rootKey = "WORLD"
-        }
-        print("rootKey : ", rootKey)
-        return rootKey
+        return rootKey()
     }
 }
 
@@ -82,7 +74,8 @@ extension UIImage {
         
         let resizedSize = CGSize(width: size.width * ratio, height: size.height * ratio)
         
-        UIGraphicsBeginImageContextWithOptions(resizedSize, false, 0.0) // 変更
+        // scaleに0(デバイススケール)を渡すと3x端末で9倍のピクセル数になりメモリを浪費するため1.0で固定する
+        UIGraphicsBeginImageContextWithOptions(resizedSize, false, 1.0)
         draw(in: CGRect(origin: .zero, size: resizedSize))
         let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
@@ -91,7 +84,9 @@ extension UIImage {
     }
 
     public func composite(image: UIImage, rate: CGFloat = 1.0) -> UIImage? {
-        UIGraphicsBeginImageContextWithOptions(self.size, false, 0)
+        // scaleに0(デバイススケール)を渡すと2000pxの画像で6000x6000のコンテキストを確保してしまい、
+        // メモリ上限の厳しいキーボード拡張が強制終了する。1.0で固定する。
+        UIGraphicsBeginImageContextWithOptions(self.size, false, 1.0)
         self.draw(in: CGRect(x: 0, y: 0, width: self.size.width, height: self.size.height))
         // 画像を右下に重ねる
         let rect = CGRect(x: (self.size.width - image.size.width * rate),

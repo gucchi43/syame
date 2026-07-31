@@ -11,7 +11,12 @@ import UIKit
 public final class GroupeDefaults {
     fileprivate init() {}
     public static let shared = GroupeDefaults()
-    public var sharedDefaults = UserDefaults(suiteName: "group.bocchi.PhotoKeyboardEx")!
+    public static let appGroupIdentifier = "group.bocchi.PhotoKeyboardEx"
+    /// App Group が利用できない環境でもクラッシュせず standard にフォールバックする(拡張とは共有されない)
+    public let sharedDefaults = UserDefaults(suiteName: GroupeDefaults.appGroupIdentifier) ?? .standard
+
+    /// saveLife の初期値
+    private static let initialSaveLife = 5
 
     private enum Keys: String {
         case authUid, launchCount, saveLife, sendCount
@@ -69,18 +74,24 @@ public final class GroupeDefaults {
         sharedDefaults.set(count + 1, forKey: Keys.sendCount.rawValue)
     }
 
+    private func currentSaveLife() -> Int {
+        guard sharedDefaults.object(forKey: Keys.saveLife.rawValue) != nil else {
+            return GroupeDefaults.initialSaveLife
+        }
+        return sharedDefaults.integer(forKey: Keys.saveLife.rawValue)
+    }
+
     public func isAddCount() -> Bool {
-        let life = sharedDefaults.object(forKey: Keys.saveLife.rawValue) == nil ? 5 : sharedDefaults.integer(forKey: Keys.saveLife.rawValue)
-        return life <= 0
+        return currentSaveLife() <= 0
     }
 
     public func useSaveLife() {
-        let life = sharedDefaults.object(forKey: Keys.saveLife.rawValue) == nil ? 5 : sharedDefaults.integer(forKey: Keys.saveLife.rawValue)
-        sharedDefaults.set(life - 1, forKey: Keys.saveLife.rawValue)
+        sharedDefaults.set(currentSaveLife() - 1, forKey: Keys.saveLife.rawValue)
     }
 
+    /// 広告視聴などで得た報酬を加算する。上書きすると報酬量が既存のライフより少ないときに減ってしまう。
     public func chargeSaveLife(amount: Int) {
-        sharedDefaults.set(amount, forKey: Keys.saveLife.rawValue)
+        sharedDefaults.set(currentSaveLife() + amount, forKey: Keys.saveLife.rawValue)
     }
 
     public func isRateAlert() -> Bool {
@@ -94,6 +105,7 @@ public final class GroupeDefaults {
 
     public func addBlockContents(id: String) {
         var list = sharedDefaults.stringArray(forKey: Keys.blockContents.rawValue) ?? []
+        guard !list.contains(id) else { return }
         list.append(id)
         sharedDefaults.set(list, forKey: Keys.blockContents.rawValue)
     }
