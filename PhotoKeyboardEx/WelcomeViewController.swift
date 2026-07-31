@@ -89,9 +89,8 @@ class WelcomeViewController: UIViewController {
     }
     
     @IBAction func tapNextButton(_ sender: Any) {
-//        UIApplication.shared.open(URL(string: "https://line.me/ti/p/%40gox9644r")!)
-        UIApplication.shared.open(URL(string: "https://line.me/ti/p/%40gox9644r")!, options: [:]) { (done) in
-            self.dismiss(animated: true, completion: nil)
+        UIApplication.shared.openOfficialLINE { [weak self] _ in
+            self?.dismiss(animated: true, completion: nil)
             if GroupeDefaults.shared.isWelcomePush() {
                 GroupeDefaults.shared.welcomeDone()
             }

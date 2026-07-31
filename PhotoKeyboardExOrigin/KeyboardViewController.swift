@@ -155,7 +155,9 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
                 KeyboardViewController.log("tapped home link")
             }
         }
-        if let url = URL(string: KeyboardViewController.officialLINEURLString) {
+        // 拡張では canOpenURL が使えずLINEの有無を判定できない。
+        // Safariを経由させないことを優先し、直接アプリを開くスキームを使う
+        if let url = OfficialLINE.appURL {
             KeyboardLinkOverlayView.attach(url: url, to: helpButton, in: view) {
                 KeyboardViewController.log("tapped LINE link")
             }
@@ -357,7 +359,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     }
 
     static let containerAppScheme = "photokeyboardex-app"
-    static let officialLINEURLString = "https://line.me/ti/p/%40gox9644r"
 
     static var containerAppURL: URL? {
         return URL(string: "\(containerAppScheme)://")

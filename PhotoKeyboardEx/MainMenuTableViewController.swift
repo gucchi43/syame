@@ -90,11 +90,11 @@ class MyMenuTableViewController: UITableViewController {
             // 外部リンクは画面を差し替えないので選択状態は変えず、メニューは閉じる
             tableView.selectRow(at: IndexPath(row: selectedMenuItem, section: 0), animated: false, scrollPosition: .none)
             mainNav?.closeSideMenu()
-            let urlString = indexPath.row == 2
-                ? "https://line.me/ti/p/%40gox9644r"
-                : "https://pkbkeyboard.studio.design"
-            guard let url = URL(string: urlString) else { return }
-            UIApplication.shared.open(url)
+            if indexPath.row == 2 {
+                UIApplication.shared.openOfficialLINE()
+            } else if let url = URL(string: "https://pkbkeyboard.studio.design") {
+                UIApplication.shared.open(url)
+            }
         }
     }
     

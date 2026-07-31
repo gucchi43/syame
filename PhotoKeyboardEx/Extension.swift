@@ -7,7 +7,7 @@
 //
 
 import UIKit
-//import ActionClosurable
+import PhotoKeyboardFramework
 
 extension UIImage {
     class func imageWithLabel(_ label: UILabel) -> UIImage {
@@ -15,6 +15,23 @@ extension UIImage {
         defer { UIGraphicsEndImageContext() }
         label.layer.render(in: UIGraphicsGetCurrentContext()!)
         return UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
+    }
+}
+
+extension UIApplication {
+    /// 公式LINEを開く。
+    /// インストール済みならSafariを経由せず直接アプリを開き、無ければWebにフォールバックする。
+    /// canOpenURL には Info.plist の LSApplicationQueriesSchemes への登録が必要。
+    func openOfficialLINE(completion: ((Bool) -> Void)? = nil) {
+        if let appURL = OfficialLINE.appURL, canOpenURL(appURL) {
+            open(appURL, options: [:], completionHandler: completion)
+            return
+        }
+        guard let webURL = OfficialLINE.webURL else {
+            completion?(false)
+            return
+        }
+        open(webURL, options: [:], completionHandler: completion)
     }
 }
 
