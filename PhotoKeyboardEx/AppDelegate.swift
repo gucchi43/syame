@@ -8,8 +8,10 @@
 
 import UIKit
 import UserNotifications
+import AppTrackingTransparency
 import PhotoKeyboardFramework
 import GoogleMobileAds
+import UserMessagingPlatform
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -24,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let keyboardResult = GroupeDefaults.shared.lastKeyboardOpenResult() {
             print("[keyboard openURL] \(keyboardResult)")
         }
-        GADMobileAds.sharedInstance().start()
+        requestAdConsentThenStartAds()
         return true
     }
 
@@ -35,6 +37,46 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             } catch {
                 // 投稿時に再試行するためここでは記録のみ
                 print("anonymous sign in error: \(error)")
+            }
+        }
+    }
+
+    /// 広告の同意取得と初期化。
+    ///
+    /// GDPR等の対象地域では、広告を出す前に UMP で同意を取る必要がある。
+    /// また iOS 14.5 以降、IDFA を使うには ATT の許諾が必要で、
+    /// これを取らずに広告SDKを動かすと審査で弾かれる。
+    /// 同意フォームの結果に関わらず広告自体は初期化する(非パーソナライズ広告になる)。
+    private func requestAdConsentThenStartAds() {
+        let parameters = UMPRequestParameters()
+        #if DEBUG
+        // 実機で同意フォームを確認できるようにする
+        let debugSettings = UMPDebugSettings()
+        debugSettings.geography = .EEA
+        parameters.debugSettings = debugSettings
+        #endif
+
+        UMPConsentInformation.sharedInstance.requestConsentInfoUpdate(with: parameters) { [weak self] error in
+            if let error = error {
+                print("UMP consent info error: \(error)")
+                self?.requestTrackingAuthorizationThenStartAds()
+                return
+            }
+            UMPConsentForm.loadAndPresentIfRequired(from: nil) { [weak self] formError in
+                if let formError = formError {
+                    print("UMP consent form error: \(formError)")
+                }
+                self?.requestTrackingAuthorizationThenStartAds()
+            }
+        }
+    }
+
+    private func requestTrackingAuthorizationThenStartAds() {
+        // UMPの同意フォームと重ならないよう、フォームを閉じてから要求する
+        ATTrackingManager.requestTrackingAuthorization { _ in
+            DispatchQueue.main.async {
+                GADMobileAds.sharedInstance().start(completionHandler: nil)
+                NotificationCenter.default.post(name: .adsDidStart, object: nil)
             }
         }
     }

@@ -36,6 +36,9 @@ extension UIApplication {
 }
 
 extension Notification.Name {
+    /// 同意取得と広告SDKの初期化が終わったことを知らせる。
+    /// 初期化前に広告を読み込むと必ず失敗するため、これを待ってから読み込む。
+    static let adsDidStart = Notification.Name("adsDidStart")
     static let updateSaveState = Notification.Name("updateSaveState")
     static let finishUpload = Notification.Name("finishUpload")
     static let allRelaod = Notification.Name("allRelaod")

@@ -539,6 +539,13 @@ extension ChildContentViewController {
     }
 
     func setUpAd() {
+        // 同意取得と初期化が終わる前に読み込むと必ず失敗するため、完了を待つ。
+        // 起動より後にこの画面が作られた場合は既に初期化済みなのでそのまま読み込む。
+        NotificationCenter.default.addObserver(forName: .adsDidStart,
+                                               object: nil,
+                                               queue: .main) { [weak self] _ in
+            self?.loadRewardedAd()
+        }
         loadRewardedAd()
     }
 

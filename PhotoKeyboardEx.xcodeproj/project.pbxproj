@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AA0100000000000000000002 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000001 /* PrivacyInfo.xcprivacy */; };
 		02A314993B494854ABDC85A1 /* FontAwesomeTabBarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FC86A59CAF642EEBADF3417 /* FontAwesomeTabBarItem.swift */; };
 		0DCDE157A8684CE5B1245DAF /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = DBE2F314B6894F9D8465E945 /* Supabase */; };
 		11CA999BD200428E9A6FCA9A /* FontAwesomeImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD5B131840E44AFE87140329 /* FontAwesomeImageView.swift */; };
@@ -185,6 +186,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AA0100000000000000000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		064271A801D94F1EBBC9D3E7 /* Font Awesome 5 Free-Regular-400.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Font Awesome 5 Free-Regular-400.otf"; sourceTree = "<group>"; };
 		13AB836859E84F5382B13A6A /* Font Awesome 5 Brands-Regular-400.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Font Awesome 5 Brands-Regular-400.otf"; sourceTree = "<group>"; };
 		19FAA1BE5FEF4CA3A096C54E /* Enum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Enum.swift; sourceTree = "<group>"; };
@@ -432,6 +434,7 @@
 				8235BE5D235870620040D2F5 /* TopViewController.swift */,
 				8278D14022EE5A730034C2CC /* Assets.xcassets */,
 				8278D14522EE5A730034C2CC /* Info.plist */,
+				AA0100000000000000000001 /* PrivacyInfo.xcprivacy */,
 				822B4DE123678B1900108FC1 /* InfoPlist.strings */,
 			);
 			path = PhotoKeyboardEx;
@@ -783,6 +786,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8278D14422EE5A730034C2CC /* LaunchScreen.storyboard in Resources */,
+				AA0100000000000000000002 /* PrivacyInfo.xcprivacy in Resources */,
 				822B4DDF23678B1900108FC1 /* InfoPlist.strings in Resources */,
 				8280C04322F455170069BF8B /* PhotoCollectionViewCell.xib in Resources */,
 				8278D14122EE5A730034C2CC /* Assets.xcassets in Resources */,
@@ -1376,6 +1380,8 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = PhotoKeyboardFramework/Info.plist;
+				SUPABASE_URL = "rmolayttdgofyoshhzhm.supabase.co";
+				SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtb2xheXR0ZGdvZnlvc2hoemhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0ODk2NTYsImV4cCI6MjA5MjA2NTY1Nn0.f1_l4bOzBKfdK3vUbECIperYoTkH4Qk_YEWRPxfxQJ4";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1410,6 +1416,8 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = PhotoKeyboardFramework/Info.plist;
+				SUPABASE_URL = "rmolayttdgofyoshhzhm.supabase.co";
+				SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtb2xheXR0ZGdvZnlvc2hoemhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0ODk2NTYsImV4cCI6MjA5MjA2NTY1Nn0.f1_l4bOzBKfdK3vUbECIperYoTkH4Qk_YEWRPxfxQJ4";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (

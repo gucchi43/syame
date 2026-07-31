@@ -9,3 +9,4 @@
 "NSCameraUsageDescription" = "キーボードに登録する画像をその場で撮影するためにカメラを使用します。";
 "NSPhotoLibraryAddUsageDescription" = "キーボードに登録した画像を写真ライブラリへ保存するために使用します。";
 "NSPhotoLibraryUsageDescription" = "キーボードに登録する画像を選択するために写真ライブラリを使用します。";
+"NSUserTrackingUsageDescription" = "広告をあなたの興味に合わせて表示するために使用します。許可しない場合も広告は表示されますが、内容は最適化されません。";
