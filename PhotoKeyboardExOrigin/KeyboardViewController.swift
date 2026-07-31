@@ -10,7 +10,6 @@ import UIKit
 import SwiftUI
 import os.log
 import PhotoKeyboardFramework
-import Realm
 import RealmSwift
 
 /// キーボード拡張からURLを開くための透明なオーバーレイ。
@@ -87,10 +86,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     var textBoardFlag = false
     /// アセットが解決できなくてもキーボードの初期化自体は失敗させない
     let logoImage = UIImage(named: "photo_logo_2")
-    
-//    @IBOutlet weak var searchBar: UISearchBar!
-    //     var searchBar = UISearchBar()
-    
+
     // photosの中にfavPhotos or abcPhotos が入る
     var favSortFlag = false
     // フルアクセス未許可でも currentPhotos() が nil 参照にならないよう遅延生成にする
@@ -203,27 +199,16 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         
         if Lang.langRootKey() == "JP" {
             self.notFullButton.setTitle("設定画面へ", for: .normal)
-            let notFullLabelStrig = "[PKB]".withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) + "→".withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "[キーボード]".withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) +
-                "→".withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "[フルアクセスを許可する]".withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) + "をオンにしてください。".withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white)
+            let notFullLabelStrig = "[PKB]".withFont(UIFont.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) + "→".withFont(UIFont.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "[キーボード]".withFont(UIFont.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) +
+                "→".withFont(UIFont.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "[フルアクセスを許可する]".withFont(UIFont.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) + "をオンにしてください。".withFont(UIFont.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white)
             self.notFullLabel.attributedText = notFullLabelStrig
         } else {
             self.notFullButton.setTitle("Go to setting", for: .normal)
-            let notFullLabelStrig = "[PKB]".withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) + "→".withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "[Keyboards]".withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) +
-                "→".withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "Turn on ".withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "[Allow Full Access]".withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white)
+            let notFullLabelStrig = "[PKB]".withFont(UIFont.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) + "→".withFont(UIFont.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "[Keyboards]".withFont(UIFont.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) +
+                "→".withFont(UIFont.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "Turn on ".withFont(UIFont.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "[Allow Full Access]".withFont(UIFont.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white)
             self.notFullLabel.attributedText = notFullLabelStrig
         }
         generator.prepare()
-        
-        // 多言語対応がうまくいかずとりあえずコメントアウト
-//        if Lang.langRootKey() == "JP" {
-//            let notFullLabelStrig = LocalizeKey.notFullLabelFirst.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) + LocalizeKey.notFullLabelSecond.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + LocalizeKey.notFullLabelThird.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) +
-//                LocalizeKey.notFullLabelSecond.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + LocalizeKey.notFullLabelFourth.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + LocalizeKey.notFullLabelFifth.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white)
-//            self.notFullLabel.attributedText = notFullLabelStrig
-//        } else {
-//            let notFullLabelStrig = LocalizeKey.notFullLabelFirst.localizedString() .withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) + LocalizeKey.notFullLabelSecond.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + LocalizeKey.notFullLabelThird.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) +
-//                LocalizeKey.notFullLabelSecond.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + LocalizeKey.notFullLabelFifth.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + LocalizeKey.notFullLabelFourth.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white)
-//            self.notFullLabel.attributedText = notFullLabelStrig
-//        }
     }
     
     func collectionInit() {
@@ -237,9 +222,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     }
     
     override func viewWillLayoutSubviews() {
-////        commonInit()
-//
-//        self.nextKeyboardButton.isHidden = !self.needsInputModeSwitchKey
         super.viewWillLayoutSubviews()
     }
     
@@ -322,15 +304,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     
     override func textDidChange(_ textInput: UITextInput?) {
         // The app has just changed the document's contents, the document context has been updated.
-        
-//        var textColor: UIColor
-//        let proxy = self.textDocumentProxy
-//        if proxy.keyboardAppearance == UIKeyboardAppearance.dark {
-//            textColor = UIColor.white
-//        } else {
-//            textColor = .bgDark()
-//        }
-//        self.nextKeyboardButton.setTitleColor(textColor, for: [])
     }
     
     func copyBoard() {
@@ -427,11 +400,6 @@ extension KeyboardViewController: UICollectionViewDataSource, UICollectionViewDe
         } else {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCollectionViewCell", for: indexPath)
             if let cell = cell as? PhotoCollectionViewCell {
-                //            if let lastSelectedIndex = lastSelectedIndex, lastSelectedIndex == indexPath {
-                //                cell.configure(photo: photos![indexPath.row], isSelected: true)
-                //            } else {
-                //                cell.configure(photo: photos![indexPath.row], isSelected: false)
-                //            }
                 if indexPath.row == currentPhotos().count {
                     cell.addCellconfigure()
                     if let url = KeyboardViewController.containerAppURL {
@@ -443,7 +411,6 @@ extension KeyboardViewController: UICollectionViewDataSource, UICollectionViewDe
                     cell.configure(photo: currentPhotos()[indexPath.row])
                     cell.isCheck = false
                 }
-                //            }
             }
             return cell
         }
@@ -536,11 +503,6 @@ extension KeyboardViewController: UICollectionViewDelegate {
         cell.choiceCoverView.stop()
         cell.choiceCoverView.play { [weak self] (finish) in
             self?.generator.notificationOccurred(.success)
-//            let choiceColor = ColorManager.shared.acRandom()
-//            cell.choiceCoverLabel.textColor = choiceColor
-//            cell.choiceCover2View.backgroundColor = choiceColor
-//            cell.choiceCover2View.isHidden = false
-//            cell.choiceCoverLabel.isHidden = false
         }
     }
     

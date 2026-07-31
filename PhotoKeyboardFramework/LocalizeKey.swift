@@ -6,21 +6,12 @@
 //  Copyright © 2019 Hiroki Taniguchi. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 public enum LocalizeKey: String {
     
     case baseOK
     case baseCancel
-    
-    case tabMyBoard
-    case tabNew
-    case tabPopular
-    case tabHumor
-    case tabCool
-    case tabCute
-    case tabSerious
-    case tabOther
     
     case navMyBoard
     case navNew
@@ -41,8 +32,7 @@ public enum LocalizeKey: String {
     case menuSetting
     case menuLine
     case menuOfficial
-    case menuOther
-    
+
     case addNavTitle
     case addInputTitle
     case addInputGenre

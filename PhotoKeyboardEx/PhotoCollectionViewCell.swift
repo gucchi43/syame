@@ -41,8 +41,6 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     func baseLayout() {
         self.contentView.layer.cornerRadius = 8
         self.contentView.clipsToBounds = true
-//        self.contentView.layer.borderWidth = 1.0
-//        self.contentView.layer.borderColor = UIColor.acGreen().cgColor
         let bgkDarkLight = UIColor.bgDark().lighter(amount: 0.1)
         self.contentView.backgroundColor = bgkDarkLight
         photoImageView.contentMode = .scaleAspectFill
@@ -72,12 +70,12 @@ class PhotoCollectionViewCell: UICollectionViewCell {
         saveButtonState(saved: saved)
     }
 
-    func configure(doc: OFirePhoto? , saved: Bool) {
+    func configure(serverPhoto: Photo?, saved: Bool) {
         imageTask?.cancel()
         imageTask = nil
         self.photoImageView.image = nil
         currentImageURL = nil
-        guard let doc = doc else { return }
+        guard let doc = serverPhoto else { return }
         if let url = URL(string: doc.imageUrl) {
             currentImageURL = url
             imageTask = RemoteImageLoader.shared.load(url: url) { [weak self] image in

@@ -11,7 +11,6 @@ import StoreKit
 import PhotoKeyboardFramework
 import SwiftDate
 import DynamicColor
-import Realm
 import RealmSwift
 import GoogleMobileAds
 
@@ -29,7 +28,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
     let addId = "ca-app-pub-2311091333372031/6162073771"
     #endif
     private let supabase = SupabaseManager.shared
-    private var oFirePhotos : [OFirePhoto] = []
+    private var serverPhotos: [Photo] = []
     private var currentOffset: Int = 0
     /// 取得中に重ねてリクエストしないためのフラグ
     private var isLoading = false
@@ -41,10 +40,10 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         let genreTags = GenreTagType.getAllGenreTags()
         currentGenreTag = tabPageIndex < genreTags.count ? genreTags[tabPageIndex] : genreTags[0]
         NotificationCenter.default.addObserver(self, selector: #selector(reloadSaveState(notification:)), name: .updateSaveState, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadAfterPost(notification:)), name: .allRelaod, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadAfterPost(notification:)), name: .allReload, object: nil)
         commonInit()
         if tabPageIndex != 0 {
-            firePhotoInit()
+            fetchServerPhotos()
         }
         setUpAd()
     }
@@ -54,9 +53,9 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         if tabPageIndex == 0 {
             collectionView.reloadData()
         } else {
-            let blockIncludes = self.mutedArray(origin: self.oFirePhotos)
-            if blockIncludes.map({ $0.id }) != self.oFirePhotos.map({ $0.id }) {
-                oFirePhotos = blockIncludes
+            let blockIncludes = self.mutedArray(origin: self.serverPhotos)
+            if blockIncludes.map({ $0.id }) != self.serverPhotos.map({ $0.id }) {
+                serverPhotos = blockIncludes
                 collectionView?.reloadData()
             }
         }
@@ -138,7 +137,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         if tabPageIndex == 0 {
             itemCount = realmPhotos?.count ?? 0
         } else {
-            itemCount = oFirePhotos.count
+            itemCount = serverPhotos.count
         }
 
         if itemCount == 0 {
@@ -186,7 +185,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         }
     }
     
-    func fetchPhotos(offset: Int = 0) async throws -> [OFirePhoto] {
+    func fetchPhotos(offset: Int = 0) async throws -> [Photo] {
         let client = supabase.client
 
         switch currentGenreTag {
@@ -225,7 +224,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         }
     }
 
-    func firePhotoInit() {
+    func fetchServerPhotos() {
         guard !isLoading else { return }
         isLoading = true
         currentOffset = 0
@@ -236,7 +235,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
                 let photos = try await self.fetchPhotos()
                 // 配列の書き換えと読み出し(データソース)は必ずメインスレッドに揃える
                 await MainActor.run {
-                    self.oFirePhotos = self.mutedArray(origin: photos)
+                    self.serverPhotos = self.mutedArray(origin: photos)
                     self.currentOffset = photos.count
                     self.collectionView?.reloadData()
                     self.updateEmptyState()
@@ -247,7 +246,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         }
     }
 
-    func mutedArray(origin: [OFirePhoto]) -> [OFirePhoto] {
+    func mutedArray(origin: [Photo]) -> [Photo] {
         let blockArray = GroupeDefaults.shared.getBlockContens()
         let newArray = origin.filter { (model) -> Bool in
             return !blockArray.contains(model.id.uuidString)
@@ -266,9 +265,9 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
                 let photos = try await self.fetchPhotos(offset: self.currentOffset)
                 guard !photos.isEmpty else { return }
                 await MainActor.run {
-                    let known = Set(self.oFirePhotos.map { $0.id })
+                    let known = Set(self.serverPhotos.map { $0.id })
                     let additions = self.mutedArray(origin: photos).filter { !known.contains($0.id) }
-                    self.oFirePhotos += additions
+                    self.serverPhotos += additions
                     self.currentOffset += photos.count
                     self.collectionView?.reloadData()
                 }
@@ -282,7 +281,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         if tabPageIndex == 0 {
             collectionView.reloadData()
         } else {
-            firePhotoInit()
+            fetchServerPhotos()
         }
     }
 
@@ -294,7 +293,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
             updateEmptyState()
             return
         }
-        guard let row = oFirePhotos.firstIndex(where: { $0.id.uuidString == id }) else { return }
+        guard let row = serverPhotos.firstIndex(where: { $0.id.uuidString == id }) else { return }
         collectionView.reloadItems(at: [IndexPath(row: row, section: 0)])
     }
     
@@ -326,7 +325,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
             do {
                 let photos = try await self.fetchPhotos()
                 await MainActor.run {
-                    self.oFirePhotos = self.mutedArray(origin: photos)
+                    self.serverPhotos = self.mutedArray(origin: photos)
                     self.currentOffset = photos.count
                     self.updateEmptyState()
                     self.collectionView?.reloadData {
@@ -344,8 +343,8 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         if tabPageIndex == 0 {
             return true
         } else {
-            let currentFirePhoto = oFirePhotos[index]
-            let photoId = currentFirePhoto.id.uuidString
+            let currentPhoto = serverPhotos[index]
+            let photoId = currentPhoto.id.uuidString
             let selectSavedPhotos = realmPhotos?.filter { $0.id == photoId }
             return (selectSavedPhotos?.count ?? 0) > 0
         }
@@ -383,8 +382,8 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
             guard let realmPhoto = savedPhoto(at: index) else { return }
             id = realmPhoto.id
         } else {
-            guard index < oFirePhotos.count else { return }
-            id = oFirePhotos[index].id.uuidString
+            guard index < serverPhotos.count else { return }
+            id = serverPhotos[index].id.uuidString
         }
 
         if checkSaved(index: index) {
@@ -406,8 +405,8 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
                 guard let saved = savedPhoto(at: index) else { return }
                 photo = saved
             } else {
-                guard index < oFirePhotos.count else { return }
-                let selectData = oFirePhotos[index]
+                guard index < serverPhotos.count else { return }
+                let selectData = serverPhotos[index]
                 guard let image = cell.photoImageView.image else { return }
                 photo = RealmPhoto.create(id: selectData.id.uuidString,
                                             text: selectData.title,
@@ -448,23 +447,11 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
     }
     
     func showAdd() {
-        let alert = UIAlertController(title:LocalizeKey.adAlertTitle.localizedString(), message: LocalizeKey.adAlertTitle.localizedString(), preferredStyle: .alert)
+        let alert = UIAlertController(title: LocalizeKey.adAlertTitle.localizedString(), message: LocalizeKey.adAlertMessage.localizedString(), preferredStyle: .alert)
         let ok = UIAlertAction(title: LocalizeKey.baseOK.localizedString(), style: .default, handler: { (action) in
             // 広告流す
             print("call add")
             self.showRewardedAd()
-            
-//            if self.rewardedAd?.isReady == true {
-//                GADRewardBasedVideoAd.sharedInstance().present(fromRootViewController: self)
-////                self.rewardedAd?.present(fromRootViewController: self, delegate:self)
-//            } else {
-//                UIAlertView(title: "Rewarded video not ready",
-//                            message: "The rewarded video didn't finish loading or failed to load",
-//                            delegate: self,
-//                            cancelButtonTitle: "Drat").show()
-//            }
-            
-//            GroupeDefaults.shared.chargeSaveLife()
         })
         let cancell = UIAlertAction(title: LocalizeKey.baseCancel.localizedString(), style: .default, handler: { (action) in
             print("cancell cell add")
@@ -475,11 +462,11 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         }
     }
     
-    func goPotoDetail(rPhoto: RealmPhoto?, fPhoto: OFirePhoto?, index: Int) {
+    func showPhotoDetail(rPhoto: RealmPhoto?, serverPhoto: Photo?, index: Int) {
         let sb = UIStoryboard(name: "PhotoDetail",bundle: nil)
         guard let vc = sb.instantiateInitialViewController() as? PhotoDetailViewController else { return }
         vc.rPhoto = rPhoto
-        vc.fPhoto = fPhoto
+        vc.serverPhoto = serverPhoto
         if checkSaved(index: index) {
             vc.savedFlag = true
         } else {
@@ -494,7 +481,7 @@ extension ChildContentViewController: UICollectionViewDataSource {
         if tabPageIndex == 0 {
             return realmPhotos?.count ?? 0
         } else {
-            return oFirePhotos.count
+            return serverPhotos.count
         }
     }
 
@@ -505,8 +492,8 @@ extension ChildContentViewController: UICollectionViewDataSource {
                 guard let photo = savedPhoto(at: indexPath.row) else { return cell }
                 cell.configure(photo: photo, saved: true)
             } else {
-                guard indexPath.row < oFirePhotos.count else { return cell }
-                cell.configure(doc: oFirePhotos[indexPath.row], saved: checkSaved(index: indexPath.row))
+                guard indexPath.row < serverPhotos.count else { return cell }
+                cell.configure(serverPhoto: serverPhotos[indexPath.row], saved: checkSaved(index: indexPath.row))
             }
             cell.saveButton.tag = indexPath.row
             cell.saveButton.addTarget(self, action: #selector(self.tapCellSaveButton(sender: )), for: .touchUpInside)
@@ -524,10 +511,10 @@ extension ChildContentViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if tabPageIndex == 0 {
             guard let photo = savedPhoto(at: indexPath.row) else { return }
-            goPotoDetail(rPhoto: photo, fPhoto: nil, index: indexPath.row)
+            showPhotoDetail(rPhoto: photo, serverPhoto: nil, index: indexPath.row)
         } else {
-            guard indexPath.row < oFirePhotos.count else { return }
-            goPotoDetail(rPhoto: nil, fPhoto: oFirePhotos[indexPath.row], index: indexPath.row)
+            guard indexPath.row < serverPhotos.count else { return }
+            showPhotoDetail(rPhoto: nil, serverPhoto: serverPhotos[indexPath.row], index: indexPath.row)
         }
     }
 }
@@ -539,6 +526,13 @@ extension ChildContentViewController {
     }
 
     func setUpAd() {
+        // 同意取得と初期化が終わる前に読み込むと必ず失敗するため、完了を待つ。
+        // 起動より後にこの画面が作られた場合は既に初期化済みなのでそのまま読み込む。
+        NotificationCenter.default.addObserver(forName: .adsDidStart,
+                                               object: nil,
+                                               queue: .main) { [weak self] _ in
+            self?.loadRewardedAd()
+        }
         loadRewardedAd()
     }
 

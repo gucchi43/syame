@@ -1,5 +1,4 @@
 import Foundation
-import PhotoKeyboardFramework
 
 struct Report: Codable, Equatable {
     var id: UUID?
@@ -17,6 +16,3 @@ struct Report: Codable, Equatable {
         case imageUrl = "image_url"
     }
 }
-
-// FireReport との互換用typealias
-typealias FireReport = Report

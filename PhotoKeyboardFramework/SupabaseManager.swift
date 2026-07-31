@@ -10,10 +10,27 @@ public final class SupabaseManager {
     private var signInTask: Task<UUID, Error>?
     private let signInLock = NSLock()
 
+    /// 接続情報はビルド設定 (SUPABASE_URL / SUPABASE_ANON_KEY) からフレームワークの
+    /// Info.plist を経由して渡す。ソースに直書きすると鍵のローテーションのたびに
+    /// コード変更が必要になり、開発用と本番用のプロジェクトを分けることもできない。
+    private static func configurationValue(for key: String) -> String {
+        let bundle = Bundle(for: SupabaseManager.self)
+        guard let value = bundle.object(forInfoDictionaryKey: key) as? String,
+              !value.isEmpty else {
+            // ビルド設定の指定漏れは起動直後に気付けるようにする
+            fatalError("\(key) がビルド設定に定義されていません")
+        }
+        return value
+    }
+
     private init() {
+        let host = SupabaseManager.configurationValue(for: "SupabaseURL")
+        guard let url = URL(string: "https://\(host)") else {
+            fatalError("SUPABASE_URL が不正です: \(host)")
+        }
         client = SupabaseClient(
-            supabaseURL: URL(string: "https://rmolayttdgofyoshhzhm.supabase.co")!,
-            supabaseKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtb2xheXR0ZGdvZnlvc2hoemhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0ODk2NTYsImV4cCI6MjA5MjA2NTY1Nn0.f1_l4bOzBKfdK3vUbECIperYoTkH4Qk_YEWRPxfxQJ4",
+            supabaseURL: url,
+            supabaseKey: SupabaseManager.configurationValue(for: "SupabaseAnonKey"),
             // 保存済みセッションを起動直後のイベントとして流し、ネットワーク待ちで認証が止まらないようにする
             options: .init(auth: .init(emitLocalSessionAsInitialSession: true))
         )

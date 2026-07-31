@@ -10,7 +10,6 @@ import Foundation
 import UIKit
 import ImageIO
 import RealmSwift
-import Realm
 import SwiftDate
 
 public class RealmPhoto: Object {
@@ -19,9 +18,6 @@ public class RealmPhoto: Object {
     /// この値は投稿時のアップロードと端末内の保存の両方で使う。
     public static let jpegCompressionQuality: CGFloat = 0.85
 
-    // TESTデータ削除用
-//    @objc public dynamic var reset = ""
-    
     @objc public dynamic var id = ""
     @objc public dynamic var text = ""
     @objc public dynamic var getDay = ""
@@ -35,7 +31,6 @@ public class RealmPhoto: Object {
         set{
             self._image = newValue
             if let value = newValue {
-//                self.imageData = value.pngData()
                 self.imageData = value.jpegData(compressionQuality: RealmPhoto.jpegCompressionQuality)
             }
         }
@@ -91,11 +86,7 @@ public class RealmPhoto: Object {
         realmPhoto.ownerId = ownerId
         return realmPhoto
     }
-    
-//    convenience init(name: String) {
-//        self.init()
-//        self.name = name
-//    }
+
     //   ["image", "_image"]を無視する設定
     override public static func ignoredProperties() -> [String] {
         return ["image", "_image"]

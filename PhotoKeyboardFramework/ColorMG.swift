@@ -9,8 +9,6 @@
 import UIKit
 import DynamicColor
 
-import UIKit
-
 extension UIColor {
      public class func bgDark() -> UIColor{
         return UIColor.init(hexString: "240440")

@@ -6,7 +6,7 @@
 //  Copyright © 2019 Hiroki Taniguchi. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 public final class GroupeDefaults {
     fileprivate init() {}
