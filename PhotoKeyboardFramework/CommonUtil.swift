@@ -18,6 +18,24 @@ public class CommonUtil
     public let bundle: Bundle
 }
 
+/// 公式LINEアカウントへの導線。
+///
+/// https://line.me/ti/p/... は一度Safariが開いてから転送されるため、
+/// LINEがインストールされている場合は直接アプリを開くカスタムスキームを使う。
+public enum OfficialLINE {
+    private static let basicId = "%40gox9644r"
+
+    /// LINEアプリを直接開く。インストールされていない場合は何も起きない
+    public static var appURL: URL? {
+        return URL(string: "line://ti/p/\(basicId)")
+    }
+
+    /// LINEが無い環境向け。/R/ はLINEがアプリを開くために用意しているパス
+    public static var webURL: URL? {
+        return URL(string: "https://line.me/R/ti/p/\(basicId)")
+    }
+}
+
 extension String
 {
     public var localized: String

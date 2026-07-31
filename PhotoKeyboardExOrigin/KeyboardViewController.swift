@@ -7,10 +7,63 @@
 //
 
 import UIKit
+import SwiftUI
 import os.log
 import PhotoKeyboardFramework
 import Realm
 import RealmSwift
+
+/// キーボード拡張からURLを開くための透明なオーバーレイ。
+///
+/// iOS 18 以降、拡張からURLを開く手段は SwiftUI の `Link` しか残っていない。
+/// レスポンダチェーンを辿って `openURL:` を perform する方法は塞がれ、
+/// `extensionContext.open` はコンテナアプリのURLスキームに対しても false を返す
+/// (実機で確認済み)。そのため既存のボタンの上にこのビューを重ね、タップを肩代わりさせる。
+final class KeyboardLinkOverlayView: UIView {
+    private let hostingController: UIHostingController<AnyView>
+
+    init(url: URL, onTap: @escaping () -> Void) {
+        hostingController = UIHostingController(rootView: AnyView(
+            Link(destination: url) {
+                // 見た目は下のボタンのままにしたいので透明にする。
+                // contentShape を与えないと透明部分がタップを受け取らない。
+                Color.clear.contentShape(Rectangle())
+            }
+            .simultaneousGesture(TapGesture().onEnded { onTap() })
+        ))
+        super.init(frame: .zero)
+
+        backgroundColor = .clear
+        let hosted = hostingController.view
+        hosted?.backgroundColor = .clear
+        hosted?.translatesAutoresizingMaskIntoConstraints = false
+        guard let hosted = hosted else { return }
+        addSubview(hosted)
+        NSLayoutConstraint.activate([
+            hosted.leadingAnchor.constraint(equalTo: leadingAnchor),
+            hosted.trailingAnchor.constraint(equalTo: trailingAnchor),
+            hosted.topAnchor.constraint(equalTo: topAnchor),
+            hosted.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
+    }
+
+    required init?(coder: NSCoder) {
+        return nil
+    }
+
+    /// 対象のビューにぴったり重ねる
+    static func attach(url: URL, to target: UIView, in container: UIView, onTap: @escaping () -> Void) {
+        let overlay = KeyboardLinkOverlayView(url: url, onTap: onTap)
+        overlay.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(overlay)
+        NSLayoutConstraint.activate([
+            overlay.leadingAnchor.constraint(equalTo: target.leadingAnchor),
+            overlay.trailingAnchor.constraint(equalTo: target.trailingAnchor),
+            overlay.topAnchor.constraint(equalTo: target.topAnchor),
+            overlay.bottomAnchor.constraint(equalTo: target.bottomAnchor)
+        ])
+    }
+}
 
 class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmManagerDelegate {
 
@@ -64,7 +117,8 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         baseSetUp()
         commonInit()
         collectionInit()
-        
+        attachLinkOverlays()
+
         if self.hasFullAccess {
             RealmManager.shared.delegate = self
             notFullInit(notFull: false)
@@ -94,6 +148,27 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         }
     }
     
+    /// URLを開くボタンにはSwiftUIのLinkを重ねる。詳細は KeyboardLinkOverlayView を参照。
+    private func attachLinkOverlays() {
+        if let url = URL(string: "\(KeyboardViewController.containerAppScheme)://") {
+            KeyboardLinkOverlayView.attach(url: url, to: homeButton, in: view) {
+                KeyboardViewController.log("tapped home link")
+            }
+        }
+        // 拡張では canOpenURL が使えずLINEの有無を判定できない。
+        // Safariを経由させないことを優先し、直接アプリを開くスキームを使う
+        if let url = OfficialLINE.appURL {
+            KeyboardLinkOverlayView.attach(url: url, to: helpButton, in: view) {
+                KeyboardViewController.log("tapped LINE link")
+            }
+        }
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            KeyboardLinkOverlayView.attach(url: url, to: notFullButton, in: view) {
+                KeyboardViewController.log("tapped settings link")
+            }
+        }
+    }
+
     func commonInit() {
         self.view.backgroundColor = .bgDark()
         homeButton.setTitleColor(.acGreen(), for: .normal)
@@ -276,58 +351,24 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         RealmManager.shared.incrementUseNum(id: currentPhotos()[index].id)
     }
     
-    /// キーボード拡張からURLを開く。
-    ///
-    /// 以前はレスポンダチェーンを遡って `openURL:` を perform していたが、現行のiOSでは
-    /// 拡張のレスポンダチェーンに UIApplication が存在しないため何も起きない。
-    /// 拡張から画面遷移する正規の方法は extensionContext.open。
-    /// 外部URLは直接開けないことがあるので、その場合はコンテナアプリ経由で開かせる。
-    private func open(_ url: URL) {
-        guard let context = extensionContext else {
-            KeyboardViewController.log("extensionContext is nil: \(url)")
-            return
-        }
-        context.open(url) { [weak self] success in
-            KeyboardViewController.log("extensionContext.open(\(url)) -> \(success)")
-            guard !success else { return }
-            self?.openViaContainerApp(url)
-        }
-    }
-
-    /// 拡張は実機でデバッガを繋ぎにくいため、URLオープンの結果を端末のログと
+    /// 拡張は実機でデバッガを繋ぎにくいため、操作の記録を端末のログと
     /// App Group の両方に残し、アプリ側からも確認できるようにする
     static func log(_ message: String) {
         os_log("%{public}@", log: OSLog(subsystem: "bocchi.PhotoKeyboardEx.PhotoKeyboardExOrigin", category: "openURL"), type: .info, message)
         GroupeDefaults.shared.setLastKeyboardOpenResult(message)
     }
 
-    /// コンテナアプリを起動し、開きたいURLを渡して代わりに開いてもらう
-    private func openViaContainerApp(_ url: URL) {
-        var components = URLComponents()
-        components.scheme = KeyboardViewController.containerAppScheme
-        components.host = "open"
-        components.queryItems = [URLQueryItem(name: "url", value: url.absoluteString)]
-        guard let forwardURL = components.url else { return }
-        extensionContext?.open(forwardURL) { success in
-            KeyboardViewController.log("container app fallback(\(forwardURL)) -> \(success)")
-        }
-    }
+    static let containerAppScheme = "photokeyboardex-app"
 
-    private static let containerAppScheme = "photokeyboardex-app"
+    static var containerAppURL: URL? {
+        return URL(string: "\(containerAppScheme)://")
+    }
+    
+    // ホーム/ヘルプ/設定への遷移は、ボタンに重ねた SwiftUI の Link が担当する。
+    // 拡張から imperative に URL を開く手段が残っていないため、
+    // これらの IBAction はタップを受け取らない。
 
-    func goMainApp() {
-        guard let url = URL(string: "\(KeyboardViewController.containerAppScheme)://") else { return }
-        open(url)
-    }
-    
-    @IBAction func tapHomeButton(_ sender: Any) {
-        goMainApp()
-    }
-    
-    @IBAction func tapHelpButton(_ sender: Any) {
-        self.openOfficialLINE()
-    }
-    
+
     @IBAction func tapSortRankButton(_ sender: Any) {
         favSortFlag = true
         sortState()
@@ -335,10 +376,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     @IBAction func tapSortABCButton(_ sender: Any) {
         favSortFlag = false
         sortState()
-    }
-    
-    @IBAction func tapNotFullButton(_ sender: Any) {
-      openAppSettings()
     }
     
     @IBAction func tapBoardChangeButton(_ sender: Any) {
@@ -362,17 +399,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     }
     
     
-    func openAppSettings() {
-        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
-        open(url)
-    }
-
-    func openOfficialLINE() {
-        guard let url = URL(string: "https://line.me/ti/p/%40gox9644r") else { return }
-        open(url)
-    }
-
-
 }
 
 
@@ -408,6 +434,11 @@ extension KeyboardViewController: UICollectionViewDataSource, UICollectionViewDe
                 //            }
                 if indexPath.row == currentPhotos().count {
                     cell.addCellconfigure()
+                    if let url = KeyboardViewController.containerAppURL {
+                        cell.attachOpenAppLink(url: url) {
+                            KeyboardViewController.log("tapped add-photo cell link")
+                        }
+                    }
                 } else {
                     cell.configure(photo: currentPhotos()[indexPath.row])
                     cell.isCheck = false
@@ -472,10 +503,10 @@ extension KeyboardViewController: UICollectionViewDelegate {
                 textDocumentProxy.insertText(textArray[indexPath.row])
             }
         } else {
-            // AddCell,管理アプリへ遷移
-            //        if indexPath.row == currentPhotos().count + 1 {
+            // AddCell への遷移はセルに重ねた SwiftUI の Link が担当するため、
+            // ここでは何もしない
             if indexPath.row == currentPhotos().count {
-                goMainApp()
+                return
             } else {
                 // 画面外のセルや種類の異なるセルではnilになるためクラッシュさせない
                 guard let cell = collectionView.cellForItem(at: indexPath) as? PhotoCollectionViewCell else {
