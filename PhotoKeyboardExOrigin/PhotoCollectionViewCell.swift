@@ -44,11 +44,32 @@ class PhotoCollectionViewCell: UICollectionViewCell {
         choiceCoverView.animation = PhotoCollectionViewCell.fireworksAnimation
     }
 
+    private var linkOverlay: UIView?
+
+    /// 「アプリから画像を追加」セル用。拡張から imperative に URL を開けないため、
+    /// セル全体に SwiftUI の Link を重ねてタップを受け取らせる。
+    func attachOpenAppLink(url: URL, onTap: @escaping () -> Void) {
+        guard linkOverlay == nil else { return }
+        let overlay = KeyboardLinkOverlayView(url: url, onTap: onTap)
+        overlay.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(overlay)
+        NSLayoutConstraint.activate([
+            overlay.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            overlay.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            overlay.topAnchor.constraint(equalTo: contentView.topAnchor),
+            overlay.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+        ])
+        linkOverlay = overlay
+    }
+
     override func prepareForReuse() {
         super.prepareForReuse()
         // 解放しないと古い画像がメモリに残り続け、キーボード拡張のメモリ上限を圧迫する
         photoImageView.image = nil
         titleLabel.text = nil
+        // 写真セルに使い回されたときにリンクが残らないようにする
+        linkOverlay?.removeFromSuperview()
+        linkOverlay = nil
         // 止めないと再生中のアニメーションが、そのセルを使い回す別の写真へ引き継がれ、
         // 隣のセルをタップしたように見えてしまう
         choiceCoverView.stop()
