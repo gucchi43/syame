@@ -38,7 +38,7 @@ extension UIApplication {
 extension Notification.Name {
     static let updateSaveState = Notification.Name("updateSaveState")
     static let finishUpload = Notification.Name("finishUpload")
-    static let allRelaod = Notification.Name("allRelaod")
+    static let allReload = Notification.Name("allReload")
 }
 
 extension UIApplication {

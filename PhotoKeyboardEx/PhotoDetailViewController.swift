@@ -10,10 +10,10 @@ import UIKit
 import PhotoKeyboardFramework
 import DynamicColor
 
-enum reason : String{
+enum Reason: String {
     case spam = "spam"
     case notContent = "notContent"
-    
+
     func getTitle() -> String {
         switch self {
         case .spam:
@@ -33,7 +33,7 @@ class PhotoDetailViewController: UIViewController {
     @IBOutlet weak var captionLabel: UILabel!
     private var zoomImageView: UIImageView!
     var rPhoto: RealmPhoto?
-    var fPhoto: OFirePhoto?
+    var serverPhoto: Photo?
     var savedFlag: Bool = false
 
     private let supabase = SupabaseManager.shared
@@ -67,8 +67,8 @@ class PhotoDetailViewController: UIViewController {
 
         if let rPhoto = rPhoto {
             zoomImageView.image = rPhoto.image
-        } else if let fPhoto = fPhoto {
-            if let url = URL(string: fPhoto.imageUrl) {
+        } else if let serverPhoto = serverPhoto {
+            if let url = URL(string: serverPhoto.imageUrl) {
                 imageTask = RemoteImageLoader.shared.load(url: url) { [weak self] image in
                     self?.zoomImageView.image = image
                 }
@@ -94,8 +94,8 @@ class PhotoDetailViewController: UIViewController {
         captionLabel.shadowOffset = CGSize(width: 1, height: 1)
         if let rPhoto = rPhoto {
             captionLabel.text = rPhoto.text
-        } else if let fPhoto = fPhoto {
-            captionLabel.text = fPhoto.title
+        } else if let serverPhoto = serverPhoto {
+            captionLabel.text = serverPhoto.title
         }
     }
     
@@ -134,11 +134,11 @@ class PhotoDetailViewController: UIViewController {
     func showReportSheat() {
         let sheat = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
-        let spamAction = UIAlertAction(title: reason.spam.getTitle(), style: .destructive) { (action) in
-            self.sendReport(reason: reason.spam.rawValue)
+        let spamAction = UIAlertAction(title: Reason.spam.getTitle(), style: .destructive) { (action) in
+            self.sendReport(reason: Reason.spam.rawValue)
         }
-        let notContentAction = UIAlertAction(title: reason.notContent.getTitle(), style: .destructive) { (action) in
-            self.sendReport(reason: reason.notContent.rawValue)
+        let notContentAction = UIAlertAction(title: Reason.notContent.getTitle(), style: .destructive) { (action) in
+            self.sendReport(reason: Reason.notContent.rawValue)
         }
         let cancelAction = UIAlertAction(title: LocalizeKey.cancel.localizedString(), style: .cancel) { (action) in
         }
@@ -173,8 +173,8 @@ class PhotoDetailViewController: UIViewController {
     
     func blockPhoto() {
         var id: String?
-        if let fPhoto = fPhoto {
-            id = fPhoto.id.uuidString
+        if let serverPhoto = serverPhoto {
+            id = serverPhoto.id.uuidString
         } else if let rPhoto = rPhoto {
             id = rPhoto.id
         } else {
@@ -189,10 +189,10 @@ class PhotoDetailViewController: UIViewController {
         let contentId: UUID?
         let ownerId: String
         let imageUrl: String?
-        if let fPhoto = fPhoto {
-            contentId = fPhoto.id
-            ownerId = fPhoto.ownerId?.uuidString ?? "unknown"
-            imageUrl = fPhoto.imageUrl
+        if let serverPhoto = serverPhoto {
+            contentId = serverPhoto.id
+            ownerId = serverPhoto.ownerId?.uuidString ?? "unknown"
+            imageUrl = serverPhoto.imageUrl
         } else if let rPhoto = rPhoto {
             contentId = UUID(uuidString: rPhoto.id)
             ownerId = rPhoto.ownerId

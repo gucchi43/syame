@@ -6,7 +6,7 @@
 //  Copyright © 2019 Hiroki Taniguchi. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 public enum GenreTagType: String, CaseIterable {
     case myBoard = "マイボード"
@@ -92,10 +92,6 @@ public enum GenreTagType: String, CaseIterable {
     
     public static func getAllGenreTags() -> [GenreTagType] {
         return GenreTagType.allCases
-    }
-    
-    public static func getAllGenreTitles() -> [String] {
-        return GenreTagType.allCases.map {$0.rawValue}
     }
     
     public static func getAddAllGenreTitles() -> [String] {
