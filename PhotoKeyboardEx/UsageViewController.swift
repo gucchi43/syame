@@ -7,10 +7,7 @@
 //
 
 import UIKit
-import DynamicColor
 import PhotoKeyboardFramework
-import Realm
-import RealmSwift
 
 class UsageViewController: UIViewController {
 
@@ -64,16 +61,16 @@ class UsageViewController: UIViewController {
     
     func setText() {
         if Lang.langRootKey() == "JP" {
-            firstLabel.attributedText = LocalizeKey.settingTitle.localizedString().withFont(Font.systemFont(ofSize: 24, weight: .bold))
-            secondLabel.attributedText = LocalizeKey.settingFirstBoaldText.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .bold)) + LocalizeKey.settingFirstNormalText.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular))
-            thirdLabel.attributedText = LocalizeKey.settingSecondBoaldText.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .bold)) + LocalizeKey.settingSecondNormalText.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular))
-            fourthLabel.attributedText = LocalizeKey.settingThirdBoaldText.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .bold)) + LocalizeKey.settingThirdNormalText.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular))
+            firstLabel.attributedText = LocalizeKey.settingTitle.localizedString().withFont(UIFont.systemFont(ofSize: 24, weight: .bold))
+            secondLabel.attributedText = LocalizeKey.settingFirstBoaldText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .bold)) + LocalizeKey.settingFirstNormalText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .regular))
+            thirdLabel.attributedText = LocalizeKey.settingSecondBoaldText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .bold)) + LocalizeKey.settingSecondNormalText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .regular))
+            fourthLabel.attributedText = LocalizeKey.settingThirdBoaldText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .bold)) + LocalizeKey.settingThirdNormalText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .regular))
             subLabel.text = LocalizeKey.settingDiscription.localizedString()
         } else {
-            firstLabel.attributedText = LocalizeKey.settingTitle.localizedString().withFont(Font.systemFont(ofSize: 24, weight: .bold))
-            secondLabel.attributedText = LocalizeKey.settingFirstNormalText.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular)) +  LocalizeKey.settingFirstBoaldText.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .bold))
-            thirdLabel.attributedText = LocalizeKey.settingSecondNormalText.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular)) +  LocalizeKey.settingSecondBoaldText.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .bold))
-            fourthLabel.attributedText = LocalizeKey.settingThirdNormalText.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .regular)) + LocalizeKey.settingThirdBoaldText.localizedString().withFont(Font.systemFont(ofSize: 14, weight: .bold))
+            firstLabel.attributedText = LocalizeKey.settingTitle.localizedString().withFont(UIFont.systemFont(ofSize: 24, weight: .bold))
+            secondLabel.attributedText = LocalizeKey.settingFirstNormalText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .regular)) +  LocalizeKey.settingFirstBoaldText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .bold))
+            thirdLabel.attributedText = LocalizeKey.settingSecondNormalText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .regular)) +  LocalizeKey.settingSecondBoaldText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .bold))
+            fourthLabel.attributedText = LocalizeKey.settingThirdNormalText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .regular)) + LocalizeKey.settingThirdBoaldText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .bold))
             subLabel.text = LocalizeKey.settingDiscription.localizedString()
         }
     }

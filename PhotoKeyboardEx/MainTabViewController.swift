@@ -10,8 +10,6 @@ import UIKit
 import Tabman
 import Pageboy
 import PhotoKeyboardFramework
-import Realm
-import RealmSwift
 import Toast
 
 struct TabHead {
@@ -48,8 +46,8 @@ class MainTabViewController: TabmanViewController {
     static let defaultPageIndex = 1
     
     let bar = TMBar.TabBar()
-//    let bar = TMBar.ButtonBar()
-    
+
+
     override func viewDidLoad() {
         super.viewDidLoad()
         commonInit()
@@ -112,7 +110,7 @@ class MainTabViewController: TabmanViewController {
         style.cornerRadius = 20.0
         style.horizontalPadding = 20.0
         self.view.makeToast(LocalizeKey.doneUploadToast.localizedString(), duration: 3.0, position: .top, style: style)
-        NotificationCenter.default.post(name: .allRelaod, object: nil, userInfo: nil)
+        NotificationCenter.default.post(name: .allReload, object: nil, userInfo: nil)
     }
         
     func makeChildViewController() -> ChildContentViewController {
@@ -166,7 +164,6 @@ class MainTabViewController: TabmanViewController {
                                     willScrollToPageAt: index,
                                     direction: direction,
                                     animated: animated)
-        //        print("willScrollToPageAtIndex: \(index)")
     }
     
     override func pageboyViewController(_ pageboyViewController: PageboyViewController,
@@ -177,11 +174,6 @@ class MainTabViewController: TabmanViewController {
                                     didScrollTo: position,
                                     direction: direction,
                                     animated: animated)
-        //        print("didScrollToPosition: \(position)")
-        
-//        let relativePosition = navigationOrientation == .vertical ? position.y : position.x
-//        gradient?.gradientOffset = gradientOffset(for: relativePosition)
-//        statusView.currentPosition = relativePosition
     }
     
     override func pageboyViewController(_ pageboyViewController: PageboyViewController,
@@ -228,8 +220,6 @@ extension MainTabViewController: PageboyViewControllerDataSource, TMBarDataSourc
         let emojiLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 24, height: 24))
         emojiLabel.text = curretTabHead.getEmoji()
         let image = UIImage.imageWithLabel(emojiLabel)
-        // TODO: 今後つけるかも
-//        let badge = nil
         let item = TMBarItem(title: title, image: image, badgeValue: nil)
         return item
     }

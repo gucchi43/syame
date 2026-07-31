@@ -31,8 +31,6 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>FirebaseScreenReportingEnabled</key>
-	<false/>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionAttributes</key>

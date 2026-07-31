@@ -1,5 +1,4 @@
 import Foundation
-import PhotoKeyboardFramework
 
 struct Photo: Codable, Equatable {
     var id: UUID
@@ -31,6 +30,3 @@ struct Photo: Codable, Equatable {
         case updatedAt = "updated_at"
     }
 }
-
-// OFirePhoto との互換用typealias
-typealias OFirePhoto = Photo

@@ -36,16 +36,6 @@ public enum OfficialLINE {
     }
 }
 
-extension String
-{
-    public var localized: String
-    {
-        let bundle = CommonUtil.shared.bundle
-        let result = NSLocalizedString(self, tableName: "Localizable", bundle: bundle, value: "", comment: self)
-        return result
-    }
-}
-
 /// リモート画像のキャッシュ付きローダー。
 /// キャッシュがないとコレクションビューをリロードするたびに全画像を再ダウンロードしてしまう。
 public final class RemoteImageLoader {

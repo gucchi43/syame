@@ -41,7 +41,7 @@ extension Notification.Name {
     static let adsDidStart = Notification.Name("adsDidStart")
     static let updateSaveState = Notification.Name("updateSaveState")
     static let finishUpload = Notification.Name("finishUpload")
-    static let allRelaod = Notification.Name("allRelaod")
+    static let allReload = Notification.Name("allReload")
 }
 
 extension UIApplication {

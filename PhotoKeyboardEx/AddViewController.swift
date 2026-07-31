@@ -7,8 +7,6 @@
 //
 
 import UIKit
-import RealmSwift
-import Realm
 import PhotoKeyboardFramework
 import SwiftDate
 import TagListView
@@ -16,7 +14,6 @@ import DynamicColor
 
 class AddViewController: UIViewController {
 
-//    @IBOutlet weak var heightConstraint: NSLayoutConstraint!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var genreLabel: UILabel!
     @IBOutlet weak var publicLabel: UILabel!
@@ -28,7 +25,6 @@ class AddViewController: UIViewController {
     
     @IBOutlet weak var publicSwitch: UISwitch!
     var choiceImage: UIImage! //選択された元画像
-//    var postImage: UIImage!
     var selectedJenreTag: GenreTagType?
     
     var publicFlag = true
@@ -41,8 +37,6 @@ class AddViewController: UIViewController {
     }
     
     func commonInit() {
-        //        let height  = UIScreen.main.bounds.size.height
-        //        heightConstraint.constant = height
         navigationItem.title = LocalizeKey.addNavTitle.localizedString()
         doneButton.setTitle(LocalizeKey.addDone.localizedString() , for: .normal)
         titleLabel.text = LocalizeKey.addInputTitle.localizedString()
@@ -58,10 +52,6 @@ class AddViewController: UIViewController {
         if let image = choiceImage {
             imageView.image = image
         }
-//        publicSwitch.tintColor = UIColor.acGreen()
-//        publicSwitch.onTintColor = UIColor.white
-//        publicSwitch.thumbTintColor = UIColor.acGreen()
-        
         publicSwitch.tintColor = UIColor.acGreen()
         publicSwitch.onTintColor = UIColor.acGreen()
         closeButton.title = String.fontAwesomeIcon(name: .times)
