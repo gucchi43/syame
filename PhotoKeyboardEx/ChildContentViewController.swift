@@ -80,33 +80,57 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
     
     //MARK: - CollectionView UI Setup
     func setupCollectionView(){
-        let layout = createWaterfallLayout()
+        let layout = createGridLayout()
         collectionView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         collectionView.alwaysBounceVertical = true
         collectionView.collectionViewLayout = layout
     }
 
-    private func createWaterfallLayout() -> UICollectionViewCompositionalLayout {
-        let layout = UICollectionViewCompositionalLayout { sectionIndex, environment in
-            let itemSize = NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(0.5),
-                heightDimension: .estimated(200)
-            )
-            let item = NSCollectionLayoutItem(layoutSize: itemSize)
+    private static let gridSpacing: CGFloat = 8
+    private static let gridColumns = 2
+    /// セル下部の情報エリア(タイトル・保存数・saveボタン)の高さ。xibで固定されている値
+    private static let cellInfoHeight: CGFloat = 68
 
-            let groupSize = NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1.0),
-                heightDimension: .estimated(200)
+    /// 1行の高さを求める。画像は正方形にし、その下に情報エリアを積む。
+    /// 高さを可変(estimated)にすると、同じ行の2つのセルで高さが揃わず隙間ができる。
+    static func gridMetrics(containerWidth: CGFloat) -> (itemWidth: CGFloat, rowHeight: CGFloat) {
+        let columns = CGFloat(gridColumns)
+        // 左右の余白と列間の間隔を引いた残りを列数で割る
+        let available = containerWidth - gridSpacing * (columns + 1)
+        let itemWidth = max((available / columns).rounded(.down), 1)
+        return (itemWidth, itemWidth + cellInfoHeight)
+    }
+
+    private func createGridLayout() -> UICollectionViewCompositionalLayout {
+        return UICollectionViewCompositionalLayout { _, environment in
+            let spacing = ChildContentViewController.gridSpacing
+            let metrics = ChildContentViewController.gridMetrics(
+                containerWidth: environment.container.effectiveContentSize.width
             )
-            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-            group.interItemSpacing = .fixed(8.0)
+
+            // 幅を算出済みの絶対値で指定する。fractionalWidth や count 指定では
+            // 列間の間隔ぶんが考慮されず、はみ出してしまう
+            let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(
+                widthDimension: .absolute(metrics.itemWidth),
+                heightDimension: .fractionalHeight(1.0)
+            ))
+            let group = NSCollectionLayoutGroup.horizontal(
+                layoutSize: NSCollectionLayoutSize(
+                    widthDimension: .fractionalWidth(1.0),
+                    heightDimension: .absolute(metrics.rowHeight)
+                ),
+                subitems: Array(repeating: item, count: ChildContentViewController.gridColumns)
+            )
+            group.interItemSpacing = .fixed(spacing)
 
             let section = NSCollectionLayoutSection(group: group)
-            section.interGroupSpacing = 8.0
-            section.contentInsets = NSDirectionalEdgeInsets(top: 8.0, leading: 8.0, bottom: 88.0, trailing: 8.0)
+            section.interGroupSpacing = spacing
+            section.contentInsets = NSDirectionalEdgeInsets(top: spacing,
+                                                            leading: spacing,
+                                                            bottom: 88.0,
+                                                            trailing: spacing)
             return section
         }
-        return layout
     }
     
     func updateEmptyState() {

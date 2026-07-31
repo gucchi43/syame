@@ -12,30 +12,31 @@ import UIKit
 
 class PhotoKeyboardExTests: XCTestCase {
 
-    // MARK: - 一覧セルの高さ
+    // MARK: - 一覧のグリッド
 
-    /// セルの高さは画像の実寸ではなく縦横比から決めること。
-    /// 画像ビューに高さの制約が無いと、画像が読み込み済みかどうかで高さが変わり、
-    /// キャッシュ済みのタブだけ極端に高くなる(1080pxの画像で1080ptのセルになる)。
-    func testAspectRatioIsClampedSoCellsDoNotBecomeTall() {
-        let tall = PhotoCollectionViewCell.aspectRatio(imageWidth: 100, imageHeight: 1000)
-        XCTAssertLessThanOrEqual(tall, 1.6, "縦長画像でセルが極端に高くなる")
+    /// 高さを可変にすると同じ行の2つのセルで高さが揃わず隙間ができるため、
+    /// 画面幅から一定の大きさを算出して全セルで共有する
+    func testGridMetricsFitsTwoColumnsWithinContainer() {
+        let containerWidth: CGFloat = 393
+        let metrics = ChildContentViewController.gridMetrics(containerWidth: containerWidth)
 
-        let wide = PhotoCollectionViewCell.aspectRatio(imageWidth: 1000, imageHeight: 100)
-        XCTAssertGreaterThanOrEqual(wide, 0.6, "横長画像でセルが極端に低くなる")
+        // 左右の余白8 + 列間8 + 2列ぶんの幅が画面幅に収まること
+        let used = metrics.itemWidth * 2 + 8 * 3
+        XCTAssertLessThanOrEqual(used, containerWidth)
+        XCTAssertGreaterThan(metrics.itemWidth, 0)
     }
 
-    /// 制限の範囲内なら元の縦横比をそのまま使うこと
-    func testAspectRatioKeepsNaturalShapeWithinLimits() {
-        XCTAssertEqual(PhotoCollectionViewCell.aspectRatio(imageWidth: 1000, imageHeight: 1000), 1.0)
-        XCTAssertEqual(PhotoCollectionViewCell.aspectRatio(imageWidth: 1000, imageHeight: 1200), 1.2, accuracy: 0.001)
-        XCTAssertEqual(PhotoCollectionViewCell.aspectRatio(imageWidth: 1200, imageHeight: 1000), 1000.0 / 1200.0, accuracy: 0.001)
+    /// 行の高さは正方形の画像 + 情報エリアで決まること
+    func testGridRowHeightIsImagePlusInfoArea() {
+        let metrics = ChildContentViewController.gridMetrics(containerWidth: 393)
+        XCTAssertEqual(metrics.rowHeight, metrics.itemWidth + 68, accuracy: 0.001)
     }
 
-    /// 寸法が入っていない古いデータでも破綻しないこと
-    func testAspectRatioFallsBackToSquareForMissingSize() {
-        XCTAssertEqual(PhotoCollectionViewCell.aspectRatio(imageWidth: 0, imageHeight: 0), 1.0)
-        XCTAssertEqual(PhotoCollectionViewCell.aspectRatio(imageWidth: -1, imageHeight: 100), 1.0)
+    /// 幅が極端に狭くても破綻しないこと
+    func testGridMetricsHandlesTinyContainer() {
+        let metrics = ChildContentViewController.gridMetrics(containerWidth: 10)
+        XCTAssertGreaterThan(metrics.itemWidth, 0)
+        XCTAssertGreaterThan(metrics.rowHeight, 0)
     }
 
     // MARK: - バージョン比較
