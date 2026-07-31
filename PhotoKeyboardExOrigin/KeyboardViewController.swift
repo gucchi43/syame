@@ -470,20 +470,18 @@ extension KeyboardViewController: UICollectionViewDelegate {
                     return
                 }
                 // 選択済み->選択解除
+                // 管理済みオブジェクトを書き戻しても内容は変わらないので保存はしない
                 self.collectionView.deselectItem(at: indexPath, animated: true)
                 self.lastSelectedIndex = nil
                 cell.isCheck = false
-                guard let photo = self.getPhoto(at: indexPath) else { return }
-                RealmManager.shared.update(data: photo, success: { () in
-                }) { (error) in
-                    print(error)
-                }
+                cell.choiceCoverView.stop()
             }
         }
     }
     
     private func tapAnimation(cell: PhotoCollectionViewCell) {
-        cell.choiceCoverView.play()
+        // 二重に play するとアニメーションが再スタートし、完了ハンドラも二重に走る
+        cell.choiceCoverView.stop()
         cell.choiceCoverView.play { [weak self] (finish) in
             self?.generator.notificationOccurred(.success)
 //            let choiceColor = ColorManager.shared.acRandom()

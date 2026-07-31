@@ -128,19 +128,18 @@ class AddViewController: UIViewController {
     
     
     // 長い方の辺をmaxLengthに合わせる
+    /// 投稿画像の長辺の上限。
+    /// 300pxではキーボードのセル(画面半分 = 3x端末で約600px)にも足りず明確に粗く見えるため、
+    /// 一般的なSNSと同程度の1080pxまで引き上げる。
+    private static let maxImageLength: CGFloat = 1080
+
+    // 長い方の辺をmaxLengthに合わせる
     func convertedImageSize(size: CGSize) -> CGSize{
-        let w = size.width
-        let h = size.height
-        let maxLength = CGFloat(300)
-        var ratio: CGFloat!
-        if h > w {
-            ratio = maxLength / h
-        } else {
-            ratio = maxLength / w
-        }
-        let nW = w * ratio
-        let nH = h * ratio
-        return CGSize(width: nW, height: nH)
+        let longerSide = max(size.width, size.height)
+        guard longerSide > 0 else { return size }
+        // 元画像より大きくしても画質は上がらないので拡大はしない
+        let ratio = min(AddViewController.maxImageLength / longerSide, 1.0)
+        return CGSize(width: size.width * ratio, height: size.height * ratio)
     }
     
     @IBAction func tapCloseButton(_ sender: Any) {
@@ -212,7 +211,7 @@ class AddViewController: UIViewController {
     private func uploadToServer(title: String, genre: GenreTagType, postImage: UIImage) async throws -> String {
         // 認証完了前に投稿すると owner_id が空になり RLS を通らないため先に待つ
         let ownerId = try await SupabaseManager.shared.ensureSignedIn()
-        guard let imageData = postImage.jpegData(compressionQuality: 0.3) else {
+        guard let imageData = postImage.jpegData(compressionQuality: RealmPhoto.jpegCompressionQuality) else {
             throw UploadError.invalidImage
         }
         let originID = UUID()

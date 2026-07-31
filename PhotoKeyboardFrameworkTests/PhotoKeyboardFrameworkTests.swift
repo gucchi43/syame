@@ -17,8 +17,12 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         super.tearDown()
     }
 
+    /// 既定のレンダラーはデバイススケール(3x)で描画するため、ポイント寸法とピクセル寸法が
+    /// 食い違って検証しづらい。テストでは等倍に固定する。
     private func makeImage(size: CGSize = CGSize(width: 40, height: 40)) -> UIImage {
-        return UIGraphicsImageRenderer(size: size).image { context in
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = 1
+        return UIGraphicsImageRenderer(size: size, format: format).image { context in
             UIColor.red.setFill()
             context.fill(CGRect(origin: .zero, size: size))
         }
@@ -94,6 +98,22 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
             return XCTFail("サムネイルを生成できなかった")
         }
         XCTAssertLessThanOrEqual(max(thumbnail.size.width, thumbnail.size.height), 100)
+    }
+
+    /// 保存時の圧縮率を下げすぎると投稿画像にブロックノイズが出る
+    func testJpegCompressionQualityIsHighEnough() {
+        XCTAssertGreaterThanOrEqual(RealmPhoto.jpegCompressionQuality, 0.8,
+                                    "圧縮率を下げると投稿画像の画質が目に見えて劣化する")
+    }
+
+    /// 保存に使うJPEG変換で解像度が落ちないこと(圧縮はされるが寸法は維持される)
+    func testJpegRoundTripKeepsPixelSize() {
+        let original = makeImage(size: CGSize(width: 1080, height: 720))
+        guard let data = original.jpegData(compressionQuality: RealmPhoto.jpegCompressionQuality),
+              let decoded = UIImage(data: data) else {
+            return XCTFail("JPEGへの変換または復元に失敗した")
+        }
+        XCTAssertEqual(decoded.size, original.size)
     }
 
     /// composite はデバイススケールではなく等倍で描画すること。

@@ -14,6 +14,11 @@ import Realm
 import SwiftDate
 
 public class RealmPhoto: Object {
+    /// 保存・投稿時のJPEG品質。
+    /// 0.3 では圧縮によるブロックノイズがはっきり見えるため、実用的な範囲まで上げる。
+    /// この値は投稿時のアップロードと端末内の保存の両方で使う。
+    public static let jpegCompressionQuality: CGFloat = 0.85
+
     // TESTデータ削除用
 //    @objc public dynamic var reset = ""
     
@@ -31,7 +36,7 @@ public class RealmPhoto: Object {
             self._image = newValue
             if let value = newValue {
 //                self.imageData = value.pngData()
-                self.imageData = value.jpegData(compressionQuality: 0.3)
+                self.imageData = value.jpegData(compressionQuality: RealmPhoto.jpegCompressionQuality)
             }
         }
         get{

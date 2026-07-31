@@ -172,8 +172,17 @@ public class RealmManager {
             guard let self = self else { return }
             let realm = self.realm()
             self.observedRealm = realm
-            self.token = realm.observe { [weak self] _, _ in
-                self?.delegate?.realmObjectDidChange()
+            // Realm 全体ではなく写真の一覧を監視し、件数が変わったときだけ通知する。
+            // 画像のコピーで useNum を更新するたびに reloadData が走ると、選択直後に
+            // セルが作り直されて再生中のアニメーションが別の写真のセルへ引き継がれてしまう。
+            self.token = realm.objects(RealmPhoto.self).observe { [weak self] changes in
+                switch changes {
+                case .update(_, let deletions, let insertions, _):
+                    guard !deletions.isEmpty || !insertions.isEmpty else { return }
+                    self?.delegate?.realmObjectDidChange()
+                case .initial, .error:
+                    break
+                }
             }
         }
     }

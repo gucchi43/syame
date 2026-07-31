@@ -49,6 +49,10 @@ class PhotoCollectionViewCell: UICollectionViewCell {
         // 解放しないと古い画像がメモリに残り続け、キーボード拡張のメモリ上限を圧迫する
         photoImageView.image = nil
         titleLabel.text = nil
+        // 止めないと再生中のアニメーションが、そのセルを使い回す別の写真へ引き継がれ、
+        // 隣のセルをタップしたように見えてしまう
+        choiceCoverView.stop()
+        isCheck = false
     }
 
     func configure(photo: RealmPhoto) {
