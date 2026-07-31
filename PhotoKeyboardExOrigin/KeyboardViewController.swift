@@ -275,15 +275,34 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         RealmManager.shared.incrementUseNum(id: currentPhotos()[index].id)
     }
     
-    func goMainApp() {
-        let url = URL(string: "photokeyboardex-app://")!
-        
-        let selector = sel_registerName("openURL:")
-        var responder = self as UIResponder?
-        while let r = responder, !r.responds(to: selector) {
-            responder = r.next
+    /// キーボード拡張からURLを開く。
+    ///
+    /// 以前はレスポンダチェーンを遡って `openURL:` を perform していたが、現行のiOSでは
+    /// 拡張のレスポンダチェーンに UIApplication が存在しないため何も起きない。
+    /// 拡張から画面遷移する正規の方法は extensionContext.open。
+    /// 外部URLは直接開けないことがあるので、その場合はコンテナアプリ経由で開かせる。
+    private func open(_ url: URL) {
+        extensionContext?.open(url) { [weak self] success in
+            guard !success else { return }
+            self?.openViaContainerApp(url)
         }
-        _ = responder?.perform(selector, with: url)
+    }
+
+    /// コンテナアプリを起動し、開きたいURLを渡して代わりに開いてもらう
+    private func openViaContainerApp(_ url: URL) {
+        var components = URLComponents()
+        components.scheme = KeyboardViewController.containerAppScheme
+        components.host = "open"
+        components.queryItems = [URLQueryItem(name: "url", value: url.absoluteString)]
+        guard let forwardURL = components.url else { return }
+        extensionContext?.open(forwardURL, completionHandler: nil)
+    }
+
+    private static let containerAppScheme = "photokeyboardex-app"
+
+    func goMainApp() {
+        guard let url = URL(string: "\(KeyboardViewController.containerAppScheme)://") else { return }
+        extensionContext?.open(url, completionHandler: nil)
     }
     
     @IBAction func tapHomeButton(_ sender: Any) {
@@ -328,27 +347,14 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     }
     
     
-    func getResponder() -> UIResponder? {
-        var responder: UIResponder? = self
-        var sharedApplication: UIResponder?
-        while responder != nil {
-            if let application = responder as? UIApplication {
-                sharedApplication = application
-                break
-            }
-            responder = responder?.next
-        }
-        return sharedApplication
-    }
-    
     func openAppSettings() {
-        guard let application = getResponder() else { return }
-        application.perform("openURL:", with: URL(string: UIApplication.openSettingsURLString))
+        guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+        open(url)
     }
-    
+
     func openOfficialLINE() {
-        guard let application = getResponder() else { return }
-        application.perform("openURL:", with: URL(string: "https://line.me/ti/p/%40gox9644r"))
+        guard let url = URL(string: "https://line.me/ti/p/%40gox9644r") else { return }
+        open(url)
     }
 
 
