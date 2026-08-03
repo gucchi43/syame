@@ -27,8 +27,10 @@ class AddViewController: UIViewController {
     var choiceImage: UIImage! //選択された元画像
     var selectedJenreTag: GenreTagType?
     
-    var publicFlag = true
-    
+    /// 一般ユーザーによる公開投稿は停止したため常に false。
+    /// 画像はサーバへ送らず端末内のRealmにのみ保存する。
+    var publicFlag = false
+
     private let supabase = SupabaseManager.shared
     
     override func viewDidLoad() {
@@ -52,8 +54,10 @@ class AddViewController: UIViewController {
         if let image = choiceImage {
             imageView.image = image
         }
-        publicSwitch.tintColor = UIColor.acGreen()
-        publicSwitch.onTintColor = UIColor.acGreen()
+        // 公開投稿を停止したため、公開/非公開の切り替えUIは出さない
+        publicSwitch.isOn = false
+        publicSwitch.isHidden = true
+        publicLabel.isHidden = true
         closeButton.title = String.fontAwesomeIcon(name: .times)
         closeButton.setTitleTextAttributes([.font: UIFont.fontAwesome(ofSize: 24, style: .solid)], for: .normal)
         
@@ -107,13 +111,11 @@ class AddViewController: UIViewController {
         }
     }
     
+    /// Storyboardからの接続が残っているため定義だけ残す。
+    /// 公開投稿は停止したので、操作されても非公開のまま固定する。
     @IBAction func switchChanged(_ sender: UISwitch) {
-        if sender.isOn {
-            publicLabel.text = LocalizeKey.addPublicSwitchOn.localizedString()
-        } else {
-            publicLabel.text = LocalizeKey.addPublicSwitchOff.localizedString()
-        }
-        publicFlag = sender.isOn
+        sender.isOn = false
+        publicFlag = false
     }
     
     
