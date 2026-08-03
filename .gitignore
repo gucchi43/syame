@@ -21,3 +21,8 @@ Podfile.lock
 
 # Claude
 .claude/
+
+# 事業方針・調査結果(収益目標や戦略を含むため公開リポジトリには置かない)
+PLAN.md
+KNOWLEDGE.md
+TODO.md
