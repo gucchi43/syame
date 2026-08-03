@@ -96,22 +96,15 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertFalse(AppDelegate.isVersion("1.0.0", olderThan: ""))
     }
 
-    // MARK: - タブ構成
+    // MARK: - 公開投稿の停止
 
-    /// タブの見出しとジャンルの件数がずれると titles[index] が範囲外アクセスでクラッシュする
+    /// 一般ユーザーの公開投稿は著作権リスクの源泉のため停止した。
+    /// 既定値がtrueに戻ると、投稿がそのままサーバへ上がってしまう。
     @MainActor
-    func testTabTitlesMatchGenreTagCount() {
-        let controller = MainTabViewController()
-        XCTAssertEqual(controller.titles.count, controller.tabHeads.count,
-                       "見出しとジャンルの件数が違う。タブを切り替えるとクラッシュする")
-        XCTAssertEqual(controller.tabHeads, GenreTagType.getAllGenreTags())
-    }
-
-    /// 初期表示ページが見出しの範囲外だと起動直後にクラッシュする
-    @MainActor
-    func testDefaultPageIndexIsWithinTabRange() {
-        let controller = MainTabViewController()
-        XCTAssertTrue((0..<controller.titles.count).contains(MainTabViewController.defaultPageIndex))
+    func testPublicPostingIsDisabledByDefault() {
+        let controller = AddViewController()
+        XCTAssertFalse(controller.publicFlag,
+                       "公開投稿が有効に戻っている。画像がサーバへアップロードされる")
     }
 
     // MARK: - 投稿画像の縮小
