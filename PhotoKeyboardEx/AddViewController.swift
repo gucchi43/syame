@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import StoreKit
 import PhotoKeyboardFramework
 import SwiftDate
 import TagListView
@@ -31,7 +32,6 @@ class AddViewController: UIViewController {
     /// 画像はサーバへ送らず端末内のRealmにのみ保存する。
     var publicFlag = false
 
-    private let supabase = SupabaseManager.shared
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -140,98 +140,40 @@ class AddViewController: UIViewController {
     
 
     private enum UploadError: LocalizedError {
-        case invalidImage
         case realmSaveFailed
 
         var errorDescription: String? {
             switch self {
-            case .invalidImage: return "画像を処理できませんでした"
             case .realmSaveFailed: return "端末への保存に失敗しました"
             }
         }
     }
 
-    /// insert のペイロード。辞書で送ると数値・真偽値まで文字列になり暗黙キャストに依存してしまう。
-    private struct PhotoInsert: Encodable {
-        let id: String
-        let title: String
-        let image_height: Int
-        let image_width: Int
-        let image_url: String
-        let genre: String
-        let total_save_count: Int
-        let weekly_save_count: Int
-        // week_start_day はクライアントとサーバで書式が食い違うため送らない(DBの既定値に任せる)
-        let owner_id: String
-        let locale: String
-        let is_debug: Bool
-    }
-
     @IBAction func tapDoneButton(_ sender: Any) {
         // UIKitの値はメインスレッドで読み取ってからTaskに渡す
         guard let sourceImage = choiceImage,
-              let postImage = sourceImage.resize(size: convertedImageSize(size: sourceImage.size)),
-              let genre = selectedJenreTag else {
+              let postImage = sourceImage.resize(size: convertedImageSize(size: sourceImage.size)) else {
             return
         }
         let titleText = titleTextField.text ?? ""
         doneButton.isEnabled = false
 
-        Task { [weak self] in
-            guard let self = self else { return }
-            do {
-                let id: String
-                if self.publicFlag {
-                    id = try await self.uploadToServer(title: titleText, genre: genre, postImage: postImage)
-                } else {
-                    // 非公開投稿はサーバに存在しないため端末内でIDを採番する
-                    id = UUID().uuidString
-                }
-                guard self.saveRealm(id: id, title: titleText, postedImage: postImage, isPublic: self.publicFlag) else {
-                    throw UploadError.realmSaveFailed
-                }
-                NotificationCenter.default.post(name: .finishUpload, object: nil, userInfo: nil)
-                self.dismiss(animated: true, completion: nil)
-            } catch {
-                // 完了を待たずに閉じると失敗がユーザーに伝わらない
-                self.doneButton.isEnabled = true
-                self.showUploadError(error)
-            }
+        // 公開投稿を廃止したためサーバ通信は無く、端末内でIDを採番して保存するだけ
+        guard saveRealm(id: UUID().uuidString, title: titleText, postedImage: postImage, isPublic: false) else {
+            doneButton.isEnabled = true
+            showUploadError(UploadError.realmSaveFailed)
+            return
         }
+        NotificationCenter.default.post(name: .finishUpload, object: nil, userInfo: nil)
+        if GroupeDefaults.shared.isRateAlert() {
+            requestReview()
+        }
+        dismiss(animated: true, completion: nil)
     }
 
-    private func uploadToServer(title: String, genre: GenreTagType, postImage: UIImage) async throws -> String {
-        // 認証完了前に投稿すると owner_id が空になり RLS を通らないため先に待つ
-        let ownerId = try await SupabaseManager.shared.ensureSignedIn()
-        guard let imageData = postImage.jpegData(compressionQuality: RealmPhoto.jpegCompressionQuality) else {
-            throw UploadError.invalidImage
-        }
-        let originID = UUID()
-        let filePath = "\(supabase.locale)/\(originID.uuidString).jpg"
-
-        try await supabase.client.storage.from("photos")
-            .upload(filePath, data: imageData, options: .init(contentType: "image/jpeg"))
-
-        do {
-            let publicURL = try supabase.client.storage.from("photos").getPublicURL(path: filePath)
-            let payload = PhotoInsert(id: originID.uuidString,
-                                      title: title,
-                                      image_height: Int(postImage.size.height),
-                                      image_width: Int(postImage.size.width),
-                                      image_url: publicURL.absoluteString,
-                                      genre: genre.getKey(),
-                                      total_save_count: 1,
-                                      weekly_save_count: 1,
-                                      owner_id: ownerId.uuidString,
-                                      locale: supabase.locale,
-                                      is_debug: supabase.isDebug)
-            try await supabase.client.from("photos").insert(payload).execute()
-            return originID.uuidString
-        } catch {
-            // DB登録に失敗するとStorage上のファイルが孤児になるため取り消す
-            _ = try? await supabase.client.storage.from("photos").remove(paths: [filePath])
-            throw error
-        }
+    private func requestReview() {
+        guard let scene = view.window?.windowScene else { return }
+        SKStoreReviewController.requestReview(in: scene)
     }
 
     @discardableResult

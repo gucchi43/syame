@@ -16,7 +16,6 @@
 		1CA5C392CE37392557119E2C /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		1E44638CECA145E2872694EB /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 95D0F842613E4ABBB11239EF /* Alamofire */; };
 		2A5293AE4B1CE75911AAD26B /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		30732BC4BAD04174BC189C63 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 2A1CB2B16DDC44A380AAEC97 /* GoogleMobileAds */; };
 		393231D5EC54450C9836C6F9 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = 7E2F3E9D8C6F468E9A1BD4CD /* SwiftDate */; };
 		3ACE86CEBB02C3D24A38DC01 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		3ADA80A7C5E8499BBE4A96AA /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 6C2B5E648EF740DE8D381735 /* Toast */; };
@@ -36,7 +35,6 @@
 		821ABDE0230F80E300B3DCFE /* Welcome.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 821ABDDF230F80E300B3DCFE /* Welcome.storyboard */; };
 		822137092302F1560046E095 /* GenreTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822137082302F1550046E095 /* GenreTag.swift */; };
 		8221370B2304D1A60046E095 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8221370A2304D1A60046E095 /* Extension.swift */; };
-		822B4DD323647E5800108FC1 /* FireReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822B4DD223647E5800108FC1 /* FireReport.swift */; };
 		822B4DDF23678B1900108FC1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 822B4DE123678B1900108FC1 /* InfoPlist.strings */; };
 		822F932F22F72A0C006998E2 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		82340958235E2EA60031E2BC /* PhotoDetail.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 82340957235E2EA60031E2BC /* PhotoDetail.storyboard */; };
@@ -44,7 +42,6 @@
 		8235BE5C2358704A0040D2F5 /* Top.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8235BE5B2358704A0040D2F5 /* Top.storyboard */; };
 		8235BE5E235870620040D2F5 /* TopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8235BE5D235870620040D2F5 /* TopViewController.swift */; };
 		823FA91622FC39D10041F145 /* ColorMG.swift in Sources */ = {isa = PBXBuildFile; fileRef = 823FA91522FC39D10041F145 /* ColorMG.swift */; };
-		824E1FC622FF79D2007D0883 /* FirePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = 824E1FC522FF79D2007D0883 /* FirePhoto.swift */; };
 		8258686122F2302D002941F4 /* PhotoCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8258685822F2302C002941F4 /* PhotoCollectionViewCell.xib */; };
 		8258686222F2302D002941F4 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8258685922F2302C002941F4 /* Media.xcassets */; };
 		8258686322F2302D002941F4 /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8258685A22F2302C002941F4 /* KeyboardViewController.swift */; };
@@ -201,7 +198,6 @@
 		821ABDDF230F80E300B3DCFE /* Welcome.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Welcome.storyboard; sourceTree = "<group>"; };
 		822137082302F1550046E095 /* GenreTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenreTag.swift; sourceTree = "<group>"; };
 		8221370A2304D1A60046E095 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
-		822B4DD223647E5800108FC1 /* FireReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireReport.swift; sourceTree = "<group>"; };
 		822B4DE023678B1900108FC1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		822B4DE223678B2300108FC1 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		82340957235E2EA60031E2BC /* PhotoDetail.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = PhotoDetail.storyboard; sourceTree = "<group>"; };
@@ -209,7 +205,6 @@
 		8235BE5B2358704A0040D2F5 /* Top.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Top.storyboard; sourceTree = "<group>"; };
 		8235BE5D235870620040D2F5 /* TopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopViewController.swift; sourceTree = "<group>"; };
 		823FA91522FC39D10041F145 /* ColorMG.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorMG.swift; sourceTree = "<group>"; };
-		824E1FC522FF79D2007D0883 /* FirePhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirePhoto.swift; sourceTree = "<group>"; };
 		8258685822F2302C002941F4 /* PhotoCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PhotoCollectionViewCell.xib; sourceTree = "<group>"; };
 		8258685922F2302C002941F4 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		8258685A22F2302C002941F4 /* KeyboardViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
@@ -284,7 +279,6 @@
 				BD8CFF48B76F4E308CE34AE4 /* DynamicColor in Frameworks */,
 				393231D5EC54450C9836C6F9 /* SwiftDate in Frameworks */,
 				D0009842636E416DBF2E0BC8 /* TagListView in Frameworks */,
-				30732BC4BAD04174BC189C63 /* GoogleMobileAds in Frameworks */,
 				A1841986CFEB41DD8CD17BA4 /* SwiftyJSON in Frameworks */,
 				3ADA80A7C5E8499BBE4A96AA /* Toast in Frameworks */,
 				C73AF9F078134AE583792C0A /* Lottie in Frameworks */,
@@ -419,8 +413,6 @@
 				82340959235E2EC60031E2BC /* PhotoDetailViewController.swift */,
 				8280C04122F455170069BF8B /* PhotoCollectionViewCell.xib */,
 				8280C04022F455170069BF8B /* PhotoCollectionViewCell.swift */,
-				824E1FC522FF79D2007D0883 /* FirePhoto.swift */,
-				822B4DD223647E5800108FC1 /* FireReport.swift */,
 				8280C03C22F454B80069BF8B /* Add.storyboard */,
 				8280C03E22F454D20069BF8B /* AddViewController.swift */,
 				821ABDD7230C641600B3DCFE /* Usage.storyboard */,
@@ -557,7 +549,6 @@
 				8818510BB2EC4B949201AE48 /* DynamicColor */,
 				7E2F3E9D8C6F468E9A1BD4CD /* SwiftDate */,
 				771C4A684E8140718114C19C /* TagListView */,
-				2A1CB2B16DDC44A380AAEC97 /* GoogleMobileAds */,
 				84D1A66F29D645DF92231776 /* SwiftyJSON */,
 				6C2B5E648EF740DE8D381735 /* Toast */,
 				42A00FB9C3F24E1D87CE50B6 /* Lottie */,
@@ -756,7 +747,6 @@
 				14A081644F4C4B0C9964CC94 /* XCRemoteSwiftPackageReference "DynamicColor" */,
 				A726229955BD487B9C58A99D /* XCRemoteSwiftPackageReference "SwiftDate" */,
 				45655D69CE5A4008A7E5CC5B /* XCRemoteSwiftPackageReference "TagListView" */,
-				404B1412A0DF48CEB8A8B6EF /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 				CFF33F3F993F468BA5267D81 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 				0D06669193874E7F801F5D0A /* XCRemoteSwiftPackageReference "Toast-Swift" */,
 				8334B0B5FC7C4334A3323B47 /* XCRemoteSwiftPackageReference "supabase-swift" */,
@@ -854,7 +844,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				822B4DD323647E5800108FC1 /* FireReport.swift in Sources */,
 				82F9F3F222F636FE0062F451 /* Extension.swift in Sources */,
 				82EA8924232A8E380022832E /* UpdateExtention.swift in Sources */,
 				82F9F3F022F589400062F451 /* MainMenuTableViewController.swift in Sources */,
@@ -863,7 +852,6 @@
 				8280C04222F455170069BF8B /* PhotoCollectionViewCell.swift in Sources */,
 				821ABDDA230C642A00B3DCFE /* UsageViewController.swift in Sources */,
 				8278D13A22EE5A700034C2CC /* AppDelegate.swift in Sources */,
-				824E1FC622FF79D2007D0883 /* FirePhoto.swift in Sources */,
 				82F9F3EE22F588290062F451 /* MainNavigationViewController.swift in Sources */,
 				8234095A235E2EC70031E2BC /* PhotoDetailViewController.swift in Sources */,
 				8280C04722F481420069BF8B /* ChildContentViewController.swift in Sources */,
@@ -1567,14 +1555,6 @@
 				minimumVersion = 5.0.1;
 			};
 		};
-		404B1412A0DF48CEB8A8B6EF /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 11.13.0;
-			};
-		};
 		43277EB9462847AFB66D5549 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
@@ -1638,11 +1618,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 14A081644F4C4B0C9964CC94 /* XCRemoteSwiftPackageReference "DynamicColor" */;
 			productName = DynamicColor;
-		};
-		2A1CB2B16DDC44A380AAEC97 /* GoogleMobileAds */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 404B1412A0DF48CEB8A8B6EF /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
-			productName = GoogleMobileAds;
 		};
 		42A00FB9C3F24E1D87CE50B6 /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;

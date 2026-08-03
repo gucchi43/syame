@@ -10,22 +10,10 @@ import UIKit
 import PhotoKeyboardFramework
 import DynamicColor
 
-enum Reason: String {
-    case spam = "spam"
-    case notContent = "notContent"
-
-    func getTitle() -> String {
-        switch self {
-        case .spam:
-            return LocalizeKey.spam.localizedString()
-        case .notContent:
-            return LocalizeKey.notContent.localizedString()
-        }
-    }
-}
-
+/// 保存済み画像の拡大表示。
+/// 公開投稿を廃止し、表示するのは自分が保存した画像だけになったため、通報とブロックは撤去した。
 class PhotoDetailViewController: UIViewController {
-    
+
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var closeButton: UIButton!
     @IBOutlet weak var otherButton: UIButton!
@@ -33,15 +21,6 @@ class PhotoDetailViewController: UIViewController {
     @IBOutlet weak var captionLabel: UILabel!
     private var zoomImageView: UIImageView!
     var rPhoto: RealmPhoto?
-    var serverPhoto: Photo?
-    var savedFlag: Bool = false
-
-    private let supabase = SupabaseManager.shared
-    private var imageTask: URLSessionDataTask?
-
-    deinit {
-        imageTask?.cancel()
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,171 +44,33 @@ class PhotoDetailViewController: UIViewController {
             zoomImageView.heightAnchor.constraint(equalTo: scrollView.frameLayoutGuide.heightAnchor)
         ])
 
-        if let rPhoto = rPhoto {
-            zoomImageView.image = rPhoto.image
-        } else if let serverPhoto = serverPhoto {
-            if let url = URL(string: serverPhoto.imageUrl) {
-                imageTask = RemoteImageLoader.shared.load(url: url) { [weak self] image in
-                    self?.zoomImageView.image = image
-                }
-            }
-        }
-        
+        zoomImageView.image = rPhoto?.image
+
         closeButton.tintColor = UIColor.acGreen()
         closeButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 24, style: .solid)
         closeButton.setTitle(String.fontAwesomeIcon(name: .times), for: .normal)
-        otherButton.tintColor = UIColor.acGreen()
-        otherButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 24, style: .solid)
-        otherButton.setTitle(String.fontAwesomeIcon(name: .ellipsisH), for: .normal)
-        otherButton.titleLabel?.shadowColor = .black
-        otherButton.titleLabel?.shadowOffset = CGSize(width: 1, height: 1)
         closeButton.titleLabel?.shadowColor = .black
         closeButton.titleLabel?.shadowOffset = CGSize(width: 1, height: 1)
-        
+
+        // 通報・ブロックが無くなり中身が空になったため隠す。
+        // アプリ内コピー導線を実装する際にこのボタンを再利用する。
+        otherButton.isHidden = true
+
         self.view.backgroundColor = UIColor.bgDark().lighter(amount: 0.1)
         bgView.backgroundColor = UIColor.clear
         captionLabel.textColor = .white
         captionLabel.sizeToFit()
         captionLabel.shadowColor = .black
         captionLabel.shadowOffset = CGSize(width: 1, height: 1)
-        if let rPhoto = rPhoto {
-            captionLabel.text = rPhoto.text
-        } else if let serverPhoto = serverPhoto {
-            captionLabel.text = serverPhoto.title
-        }
+        captionLabel.text = rPhoto?.text
     }
-    
+
     @IBAction func tapCloseButton(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
     }
-    
+
+    /// Storyboardからの接続が残っているため定義だけ残す。ボタン自体は隠してある。
     @IBAction func tapOtherButton(_ sender: Any) {
-        showOtherSheat()
-    }
-    
-    func showOtherSheat() {
-        let sheat = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        let reportAction = UIAlertAction(title: LocalizeKey.reportContent.localizedString(), style: .default) { (action) in
-            if self.savedFlag {
-                self.showUnSaveAlert()
-            } else {
-                self.showReportSheat()
-            }
-        }
-        let blockContentAction = UIAlertAction(title: LocalizeKey.blockContent.localizedString(), style: .default) { (action) in
-            if self.savedFlag {
-                self.showUnSaveAlert()
-            } else {
-                self.showBlockAlert()
-            }
-        }
-        let cancelAction = UIAlertAction(title: LocalizeKey.cancel.localizedString(), style: .cancel) { (action) in
-        }
-        sheat.addAction(reportAction)
-        sheat.addAction(blockContentAction)
-        sheat.addAction(cancelAction)
-        self.present(sheat, animated: true, completion: nil)
-    }
-    
-    func showReportSheat() {
-        let sheat = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        
-        let spamAction = UIAlertAction(title: Reason.spam.getTitle(), style: .destructive) { (action) in
-            self.sendReport(reason: Reason.spam.rawValue)
-        }
-        let notContentAction = UIAlertAction(title: Reason.notContent.getTitle(), style: .destructive) { (action) in
-            self.sendReport(reason: Reason.notContent.rawValue)
-        }
-        let cancelAction = UIAlertAction(title: LocalizeKey.cancel.localizedString(), style: .cancel) { (action) in
-        }
-        sheat.addAction(spamAction)
-        sheat.addAction(notContentAction)
-        sheat.addAction(cancelAction)
-        self.present(sheat, animated: true, completion: nil)
-    }
-    
-    func showBlockAlert() {
-        let sheat = UIAlertController(title: LocalizeKey.blockContent.localizedString(), message: LocalizeKey.blockMessage.localizedString(), preferredStyle: .alert)
-
-        let okAction = UIAlertAction(title: LocalizeKey.blockOK.localizedString(), style: .destructive) { (action) in
-            self.blockPhoto()
-        }
-        let cancelAction = UIAlertAction(title: LocalizeKey.blockCancel.localizedString(), style: .cancel) { (action) in
-        }
-        sheat.addAction(okAction)
-        sheat.addAction(cancelAction)
-        self.present(sheat, animated: true, completion: nil)
-    }
-    
-    func showUnSaveAlert() {
-        let sheat = UIAlertController(title: LocalizeKey.butSavedContent.localizedString(), message: nil, preferredStyle: .alert)
-
-        let okAction = UIAlertAction(title: LocalizeKey.butSavedOK.localizedString(), style: .default) { (action) in
-            return
-        }
-        sheat.addAction(okAction)
-        self.present(sheat, animated: true, completion: nil)
-    }
-    
-    func blockPhoto() {
-        var id: String?
-        if let serverPhoto = serverPhoto {
-            id = serverPhoto.id.uuidString
-        } else if let rPhoto = rPhoto {
-            id = rPhoto.id
-        } else {
-            id = nil
-        }
-        guard let blockId = id else { return }
-        GroupeDefaults.shared.addBlockContents(id: blockId)
-        self.dismiss(animated: true, completion: nil)
-    }
-
-    func sendReport(reason: String) {
-        let contentId: UUID?
-        let ownerId: String
-        let imageUrl: String?
-        if let serverPhoto = serverPhoto {
-            contentId = serverPhoto.id
-            ownerId = serverPhoto.ownerId?.uuidString ?? "unknown"
-            imageUrl = serverPhoto.imageUrl
-        } else if let rPhoto = rPhoto {
-            contentId = UUID(uuidString: rPhoto.id)
-            ownerId = rPhoto.ownerId
-            imageUrl = nil
-        } else {
-            contentId = nil
-            ownerId = "unknown"
-            imageUrl = nil
-        }
-
-        Task { [weak self] in
-            guard let self = self else { return }
-            do {
-                // 未認証のままだと user_id が nil になり RLS を通らず通報が黙って捨てられる
-                let userId = try await SupabaseManager.shared.ensureSignedIn()
-                let report = Report(
-                    userId: userId,
-                    ownerId: ownerId,
-                    contentId: contentId,
-                    reason: reason,
-                    imageUrl: imageUrl
-                )
-                try await self.supabase.client.from("reports").insert(report).execute()
-                // 送信できたときだけブロックして閉じる
-                self.blockPhoto()
-            } catch {
-                self.showReportError(error)
-            }
-        }
-    }
-
-    private func showReportError(_ error: Error) {
-        let alert = UIAlertController(title: nil,
-                                      message: error.localizedDescription,
-                                      preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: LocalizeKey.baseOK.localizedString(), style: .default))
-        present(alert, animated: true)
     }
 }
 

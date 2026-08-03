@@ -15,11 +15,8 @@ public final class GroupeDefaults {
     /// App Group が利用できない環境でもクラッシュせず standard にフォールバックする(拡張とは共有されない)
     public let sharedDefaults = UserDefaults(suiteName: GroupeDefaults.appGroupIdentifier) ?? .standard
 
-    /// saveLife の初期値
-    private static let initialSaveLife = 5
-
     private enum Keys: String {
-        case authUid, launchCount, saveLife, sendCount
+        case authUid, launchCount, sendCount
         case usageNeedFlag, welcomeNeedFlag, registerNeedFlag
         case blockContents
         case lastKeyboardOpenResult
@@ -83,26 +80,6 @@ public final class GroupeDefaults {
     public func incrementSendCount() {
         let count = sharedDefaults.integer(forKey: Keys.sendCount.rawValue)
         sharedDefaults.set(count + 1, forKey: Keys.sendCount.rawValue)
-    }
-
-    private func currentSaveLife() -> Int {
-        guard sharedDefaults.object(forKey: Keys.saveLife.rawValue) != nil else {
-            return GroupeDefaults.initialSaveLife
-        }
-        return sharedDefaults.integer(forKey: Keys.saveLife.rawValue)
-    }
-
-    public func isAddCount() -> Bool {
-        return currentSaveLife() <= 0
-    }
-
-    public func useSaveLife() {
-        sharedDefaults.set(currentSaveLife() - 1, forKey: Keys.saveLife.rawValue)
-    }
-
-    /// 広告視聴などで得た報酬を加算する。上書きすると報酬量が既存のライフより少ないときに減ってしまう。
-    public func chargeSaveLife(amount: Int) {
-        sharedDefaults.set(currentSaveLife() + amount, forKey: Keys.saveLife.rawValue)
     }
 
     public func isRateAlert() -> Bool {
