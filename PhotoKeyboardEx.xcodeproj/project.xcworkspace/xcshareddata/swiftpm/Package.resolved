@@ -1,5 +1,5 @@
 {
-  "originHash" : "cdfd3f731b06e99d489691dceeea6995546d3f5cd1bd8ce35fc3ed34bddaf787",
+  "originHash" : "8ec6f4eae099717beb0bd534655052a4f99a3ed1f5a69000a0ff7e97c3a51bff",
   "pins" : [
     {
       "identity" : "alamofire",
@@ -26,15 +26,6 @@
       "state" : {
         "revision" : "0cb03fd7564d27345bcd96144b811e56212949c6",
         "version" : "4.6.0"
-      }
-    },
-    {
-      "identity" : "pageboy",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/uias/Pageboy",
-      "state" : {
-        "revision" : "be0c1f6f1964cfb07f9d819b0863f2c3f255f612",
-        "version" : "4.2.0"
       }
     },
     {
@@ -143,15 +134,6 @@
       "state" : {
         "revision" : "af76cf3ef710b6ca5f8c05f3a31307d44a3c5828",
         "version" : "5.0.2"
-      }
-    },
-    {
-      "identity" : "tabman",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/uias/Tabman.git",
-      "state" : {
-        "revision" : "3b2213290eb93e55bb50b49d1a179033005c11ab",
-        "version" : "3.2.0"
       }
     },
     {

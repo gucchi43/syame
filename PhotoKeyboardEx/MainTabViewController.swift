@@ -7,46 +7,22 @@
 //
 
 import UIKit
-import Tabman
-import Pageboy
 import PhotoKeyboardFramework
 import Toast
 
-struct TabHead {
-    let title: String
-    let imageText: String
-    let badge: String?
-}
+/// アプリのメイン画面。
+/// 公開フィードを廃止したため、表示するのは「マイボード」の1画面のみ。
+/// 以前は Tabman + Pageboy で8タブを切り替えていたが、タブが1つになったため両ライブラリを外した。
+class MainTabViewController: UIViewController {
 
-class MainTabViewController: TabmanViewController {
-    var tabHeads = GenreTagType.getAllGenreTags()
-    var titles = [LocalizeKey.navMyBoard.localizedString(),
-                  LocalizeKey.navNew.localizedString(),
-                  LocalizeKey.navPopular.localizedString(),
-                  LocalizeKey.navHumor.localizedString(),
-                  LocalizeKey.navCool.localizedString(),
-                  LocalizeKey.navCute.localizedString(),
-                  LocalizeKey.navSerious.localizedString(),
-                  LocalizeKey.navOther.localizedString()]
-    lazy var viewControllers: [UIViewController] = {
-        var viewControllers = [UIViewController]()
-        for _ in 0 ..< 8 {
-            viewControllers.append(makeChildViewController())
-        }
-        return viewControllers
-    }()
-    
     @IBOutlet weak var barMenuButton: UIBarButtonItem!
-    
-    var firstFlag = true
-    
+
     var fabButton = UIButton(type: .custom)
 
-    /// 起動時に最初に表示するページ。defaultPage(for:) と見出しの初期値で共有する。
-    static let defaultPageIndex = 1
-    
-    let bar = TMBar.TabBar()
-
+    private lazy var boardViewController: ChildContentViewController = {
+        let storyboard = UIStoryboard(name: "ChildContent", bundle: .main)
+        return storyboard.instantiateInitialViewController() as! ChildContentViewController
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,31 +30,30 @@ class MainTabViewController: TabmanViewController {
     }
 
     func commonInit() {
-        self.dataSource = self
-        self.view.backgroundColor = .bgDark()
-        bar.tintColor = .acGreen()
-        bar.backgroundColor = .bgDark()
-        bar.backgroundView.style = .clear
-        bar.layout.transitionStyle = .snap
-        addBar(bar, dataSource: self, at: .top)
-        
+        view.backgroundColor = .bgDark()
+        navigationItem.title = LocalizeKey.navMyBoard.localizedString()
+
         barMenuButton.title = String.fontAwesomeIcon(name: .bars)
         barMenuButton.setTitleTextAttributes([.font: UIFont.fontAwesome(ofSize: 24, style: .solid)], for: .normal)
-        
-        // 起動直後は pageboyPageIndex がまだ確定していないため defaultPage と同じ位置の見出しを出す
-        let initialIndex = pageboyPageIndex ?? MainTabViewController.defaultPageIndex
-        self.navigationItem.title = initialIndex < titles.count ? titles[initialIndex] : titles.first
+
+        embedBoardViewController()
         layoutFAB()
         NotificationCenter.default.addObserver(self, selector: #selector(finishToast(notification:)), name: .finishUpload, object: nil)
     }
-        
-    override func viewWillAppear(_ animated: Bool) {
-        // PageboyViewController はここでページ位置の復元を行うため super の呼び出しが必須
-        super.viewWillAppear(animated)
-        bar.buttons.customize { (button) in
-            button.selectedTintColor = .acGreen()
-            button.tintColor = .white
-        }
+
+    /// 一覧を子ViewControllerとして敷く。FABは後から載せるため一覧より前面に来る。
+    private func embedBoardViewController() {
+        let child = boardViewController
+        addChild(child)
+        child.view.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(child.view)
+        NSLayoutConstraint.activate([
+            child.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            child.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            child.view.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            child.view.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        child.didMove(toParent: self)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -100,10 +75,8 @@ class MainTabViewController: TabmanViewController {
             present(nvc, animated: true, completion: nil)
         }
     }
-    
+
     @objc func finishToast(notification: Notification) {
-        // toast with a specific duration and position
-        // create a new style
         var style = ToastStyle()
         style.messageColor = .white
         style.backgroundColor = UIColor.acGreen()
@@ -112,12 +85,7 @@ class MainTabViewController: TabmanViewController {
         self.view.makeToast(LocalizeKey.doneUploadToast.localizedString(), duration: 3.0, position: .top, style: style)
         NotificationCenter.default.post(name: .allReload, object: nil, userInfo: nil)
     }
-        
-    func makeChildViewController() -> ChildContentViewController {
-        let storyboard = UIStoryboard(name: "ChildContent", bundle: .main)
-        return storyboard.instantiateInitialViewController() as! ChildContentViewController
-    }
-    
+
     func layoutFAB() {
         let size: CGFloat = 56
         fabButton.frame = CGRect(x: 0, y: 0, width: size, height: size)
@@ -149,85 +117,14 @@ class MainTabViewController: TabmanViewController {
         picker.delegate = self
         present(picker, animated: true)
     }
-    
-    
+
     @IBAction func tapBarMenuButton(_ sender: Any) {
         (navigationController as? MainNavigationViewController)?.toggleSideMenu()
     }
-    
-    
-    override func pageboyViewController(_ pageboyViewController: PageboyViewController,
-                                        willScrollToPageAt index: PageboyViewController.PageIndex,
-                                        direction: PageboyViewController.NavigationDirection,
-                                        animated: Bool) {
-        super.pageboyViewController(pageboyViewController,
-                                    willScrollToPageAt: index,
-                                    direction: direction,
-                                    animated: animated)
-    }
-    
-    override func pageboyViewController(_ pageboyViewController: PageboyViewController,
-                                        didScrollTo position: CGPoint,
-                                        direction: PageboyViewController.NavigationDirection,
-                                        animated: Bool) {
-        super.pageboyViewController(pageboyViewController,
-                                    didScrollTo: position,
-                                    direction: direction,
-                                    animated: animated)
-    }
-    
-    override func pageboyViewController(_ pageboyViewController: PageboyViewController,
-                                        didScrollToPageAt index: PageboyViewController.PageIndex,
-                                        direction: PageboyViewController.NavigationDirection,
-                                        animated: Bool) {
-        super.pageboyViewController(pageboyViewController,
-                                    didScrollToPageAt: index,
-                                    direction: direction,
-                                    animated: animated)
-        
-        print("didScrollToPageAtIndex: \(index)")
-        self.navigationItem.title = titles[index]
-    }
-    
-    override func pageboyViewController(_ pageboyViewController: PageboyViewController,
-                                        didReloadWith currentViewController: UIViewController,
-                                        currentPageIndex: PageIndex) {
-        super.pageboyViewController(pageboyViewController,
-                                    didReloadWith: currentViewController,
-                                    currentPageIndex: currentPageIndex)
-    }
 }
-
-extension MainTabViewController: PageboyViewControllerDataSource, TMBarDataSource {
-    func numberOfViewControllers(in pageboyViewController: PageboyViewController) -> Int {
-        return viewControllers.count
-    }
-    
-    func viewController(for pageboyViewController: PageboyViewController,
-                        at index: PageboyViewController.PageIndex) -> UIViewController? {
-        guard let vc = viewControllers[index] as? ChildContentViewController else { return nil }
-        vc.tabPageIndex = index
-        return vc
-    }
-
-    func defaultPage(for pageboyViewController: PageboyViewController) -> PageboyViewController.Page? {
-        return .at(index: MainTabViewController.defaultPageIndex)
-    }
-    
-    func barItem(for bar: TMBar, at index: Int) -> TMBarItemable {
-        let curretTabHead = tabHeads[index]
-        let title = curretTabHead.getLocalizeString()
-        let emojiLabel = UILabel(frame: CGRect(x: 0, y: 0, width: 24, height: 24))
-        emojiLabel.text = curretTabHead.getEmoji()
-        let image = UIImage.imageWithLabel(emojiLabel)
-        let item = TMBarItem(title: title, image: image, badgeValue: nil)
-        return item
-    }
-}
-
 
 extension MainTabViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    
+
     // 画像選択
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let image = info[.originalImage] as? UIImage else {
@@ -247,6 +144,7 @@ extension MainTabViewController: UIImagePickerControllerDelegate, UINavigationCo
         vc.choiceImage = image
         present(nvc, animated: true)
     }
+
     //キャンセル
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         self.dismiss(animated: true, completion: nil)

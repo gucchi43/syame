@@ -23,7 +23,6 @@
 		4105F920130C4F5180B8CA1E /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = C27D3E2C284F4289B6FC641E /* Lottie */; };
 		44B8F42723FE4E51AA7A07AA /* FontAwesomeBarButtonItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FADDCA0FE44E4CA8EF53CA /* FontAwesomeBarButtonItem.swift */; };
 		4A07DCBC2AA54010BFE26316 /* SupabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EC333A154A34905AC3E20A7 /* SupabaseManager.swift */; };
-		52F63344E6774AF2BE334BAD /* Tabman in Frameworks */ = {isa = PBXBuildFile; productRef = BDE751D27A7B46348E1DCF2D /* Tabman */; };
 		551D4C3130734866870EB9E3 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8E472C01B83C4C73818F93AA /* RealmSwift */; };
 		579FD0D67DC145EC92FC711D /* Font Awesome 5 Brands-Regular-400.otf in Resources */ = {isa = PBXBuildFile; fileRef = 13AB836859E84F5382B13A6A /* Font Awesome 5 Brands-Regular-400.otf */; };
 		5B7B03DBBE3A4B6FBF262D57 /* Font Awesome 5 Free-Solid-900.otf in Resources */ = {isa = PBXBuildFile; fileRef = E67FB4220D1949A5AEDC2002 /* Font Awesome 5 Free-Solid-900.otf */; };
@@ -288,7 +287,6 @@
 				30732BC4BAD04174BC189C63 /* GoogleMobileAds in Frameworks */,
 				A1841986CFEB41DD8CD17BA4 /* SwiftyJSON in Frameworks */,
 				3ADA80A7C5E8499BBE4A96AA /* Toast in Frameworks */,
-				52F63344E6774AF2BE334BAD /* Tabman in Frameworks */,
 				C73AF9F078134AE583792C0A /* Lottie in Frameworks */,
 				B0BDA78D9C324191848AC408 /* Supabase in Frameworks */,
 			);
@@ -562,7 +560,6 @@
 				2A1CB2B16DDC44A380AAEC97 /* GoogleMobileAds */,
 				84D1A66F29D645DF92231776 /* SwiftyJSON */,
 				6C2B5E648EF740DE8D381735 /* Toast */,
-				BDE751D27A7B46348E1DCF2D /* Tabman */,
 				42A00FB9C3F24E1D87CE50B6 /* Lottie */,
 				D6194FC5B44E4C339EE42D1D /* Supabase */,
 			);
@@ -762,7 +759,6 @@
 				404B1412A0DF48CEB8A8B6EF /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 				CFF33F3F993F468BA5267D81 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 				0D06669193874E7F801F5D0A /* XCRemoteSwiftPackageReference "Toast-Swift" */,
-				0E560165E9DD4FDDAB800B2B /* XCRemoteSwiftPackageReference "Tabman" */,
 				8334B0B5FC7C4334A3323B47 /* XCRemoteSwiftPackageReference "supabase-swift" */,
 			);
 			productRefGroup = 8278D13722EE5A700034C2CC /* Products */;
@@ -1563,14 +1559,6 @@
 				minimumVersion = 5.1.1;
 			};
 		};
-		0E560165E9DD4FDDAB800B2B /* XCRemoteSwiftPackageReference "Tabman" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/uias/Tabman.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.2.0;
-			};
-		};
 		14A081644F4C4B0C9964CC94 /* XCRemoteSwiftPackageReference "DynamicColor" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/yannickl/DynamicColor.git";
@@ -1705,11 +1693,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = B3DE6C121B644FA4B1465C36 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
-		};
-		BDE751D27A7B46348E1DCF2D /* Tabman */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0E560165E9DD4FDDAB800B2B /* XCRemoteSwiftPackageReference "Tabman" */;
-			productName = Tabman;
 		};
 		C27D3E2C284F4289B6FC641E /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
