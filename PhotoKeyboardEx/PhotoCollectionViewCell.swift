@@ -8,7 +8,6 @@
 
 import UIKit
 import PhotoKeyboardFramework
-import DynamicColor
 
 class PhotoCollectionViewCell: UICollectionViewCell {
 
@@ -33,30 +32,27 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     }
 
     func baseLayout() {
-        self.contentView.layer.cornerRadius = 8
-        self.contentView.clipsToBounds = true
-        let bgkDarkLight = UIColor.bgDark().lighter(amount: 0.1)
-        self.contentView.backgroundColor = bgkDarkLight
+        self.contentView.applyCornerRadius(Radius.card)
+        self.contentView.backgroundColor = .bgSurface
         photoImageView.contentMode = .scaleAspectFill
         photoImageView.clipsToBounds = true
-        photoImageView.backgroundColor = UIColor.bgDark().lighter(amount: 0.2)
+        photoImageView.backgroundColor = .bgBase
         // 画像そのものの寸法でセルの高さが決まらないようにする。
         // これを下げないと 1080px の画像で 1080pt のセルになってしまう。
         photoImageView.setContentHuggingPriority(.defaultLow, for: .vertical)
         photoImageView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         photoImageView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
         photoImageView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        countIconLabel.font = UIFont.fontAwesome(ofSize: 16, style: .solid)
-        countIconLabel.text = String.fontAwesomeIcon(name: .download)
+        countIconLabel.attributedText = NSAttributedString(
+            attachment: NSTextAttachment(image: .symbol(Symbol.saveCount, textStyle: .caption1) ?? UIImage())
+        )
+        countIconLabel.tintColor = .textSecondary
         saveButton.layer.borderWidth = 1
-        saveButton.layer.cornerRadius = 4
-        saveButton.clipsToBounds = true
+        saveButton.applyCornerRadius(Radius.small)
         // 公開フィードが無くなり、このボタンは「マイボードから取り除く」意味になった
-        saveButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 14, style: .solid)
-        saveButton.setTitle(String.fontAwesomeIcon(name: .times), for: .normal)
-        saveButton.setTitleColor(.acGreen(), for: .normal)
+        saveButton.applySymbol(Symbol.close, textStyle: .caption1)
         saveButton.backgroundColor = .clear
-        saveButton.layer.borderColor = UIColor.acGreen().cgColor
+        saveButton.layer.borderColor = UIColor.brandAccent.cgColor
     }
 
     func configure(photo: RealmPhoto, saved: Bool) {

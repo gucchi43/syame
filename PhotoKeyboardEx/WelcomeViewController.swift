@@ -41,36 +41,42 @@ class WelcomeViewController: UIViewController {
     }
     
     func commonInit() {
-        self.view.backgroundColor = .bgDark()
-        titleLabel.textColor = .white
+        self.view.backgroundColor = .bgBase
+        titleLabel.textColor = .textPrimary
+        titleLabel.adjustsFontForContentSizeCategory = true
         titleLabel.adjustsFontSizeToFitWidth = true
-        firstLabel.textColor = .white
-        secondLabel.textColor = .white
-        thirdLabel.textColor = .white
-        fourthLabel.textColor = .white
-        explainLabel.textColor = .white
-        nextButton.setTitleColor(.white, for: .normal)
-        nextButton.layer.cornerRadius = 8.0
-        nextButton.backgroundColor = .acGreen()
+        firstLabel.textColor = .textPrimary
+        firstLabel.adjustsFontForContentSizeCategory = true
+        secondLabel.textColor = .textPrimary
+        secondLabel.adjustsFontForContentSizeCategory = true
+        thirdLabel.textColor = .textPrimary
+        thirdLabel.adjustsFontForContentSizeCategory = true
+        fourthLabel.textColor = .textPrimary
+        fourthLabel.adjustsFontForContentSizeCategory = true
+        explainLabel.textColor = .textPrimary
+        explainLabel.adjustsFontForContentSizeCategory = true
+        nextButton.setTitleColor(.onAccent, for: .normal)
+        nextButton.applyCornerRadius(Radius.small)
+        nextButton.backgroundColor = .brandAccent
         nextButton.titleLabel?.adjustsFontSizeToFitWidth = true
         nextButton.setTitle(LocalizeKey.welcomeDone.localizedString(), for: .normal)
     }
     
     func settext() {
         skipButton.title = LocalizeKey.welcomeSkip.localizedString()
-        titleLabel.attributedText = LocalizeKey.welcomeTitle.localizedString().withTextColor(.acGreen()).withFont(UIFont.systemFont(ofSize: 40.0, weight: .bold))
-        firstLabel.attributedText = LocalizeKey.welcomeFirst1.localizedString().withTextColor(.acGreen()).withFont(UIFont.systemFont(ofSize: 32.0, weight: .bold))
-            + LocalizeKey.welcomeFirst2.localizedString().withTextColor(.white).withFont(UIFont.systemFont(ofSize: 32.0, weight: .bold))
-            + LocalizeKey.welcomeFirst3.localizedString().withTextColor(.white).withFont(UIFont.systemFont(ofSize: 32.0, weight: .bold))
-        secondLabel.attributedText = LocalizeKey.welcomeSecond1.localizedString().withTextColor(.acGreen()).withFont(UIFont.systemFont(ofSize: 32.0, weight: .bold))
-            + LocalizeKey.welcomeSecond2.localizedString().withTextColor(.white).withFont(UIFont.systemFont(ofSize: 32.0, weight: .bold))
-            + LocalizeKey.welcomeSecond3.localizedString().withTextColor(.white).withFont(UIFont.systemFont(ofSize: 32.0, weight: .bold))
-        thirdLabel.attributedText = LocalizeKey.welcomeThird1.localizedString().withTextColor(.acGreen()).withFont(UIFont.systemFont(ofSize: 32.0, weight: .bold))
-            + LocalizeKey.welcomeThird2.localizedString().withTextColor(.white).withFont(UIFont.systemFont(ofSize: 32.0, weight: .bold))
-            + LocalizeKey.welcomeThird3.localizedString().withTextColor(.white).withFont(UIFont.systemFont(ofSize: 32.0, weight: .bold))
-        fourthLabel.attributedText =  LocalizeKey.welcomeFourth.localizedString().withTextColor(.white).withFont(UIFont.systemFont(ofSize: 32.0, weight: .bold))
+        titleLabel.attributedText = LocalizeKey.welcomeTitle.localizedString().withTextColor(.textPrimary).withFont(UIFont.scaled(.title1, weight: .bold))
+        firstLabel.attributedText = LocalizeKey.welcomeFirst1.localizedString().withTextColor(.textPrimary).withFont(UIFont.scaled(.title2, weight: .bold))
+            + LocalizeKey.welcomeFirst2.localizedString().withTextColor(.textPrimary).withFont(UIFont.scaled(.title2, weight: .bold))
+            + LocalizeKey.welcomeFirst3.localizedString().withTextColor(.textPrimary).withFont(UIFont.scaled(.title2, weight: .bold))
+        secondLabel.attributedText = LocalizeKey.welcomeSecond1.localizedString().withTextColor(.textPrimary).withFont(UIFont.scaled(.title2, weight: .bold))
+            + LocalizeKey.welcomeSecond2.localizedString().withTextColor(.textPrimary).withFont(UIFont.scaled(.title2, weight: .bold))
+            + LocalizeKey.welcomeSecond3.localizedString().withTextColor(.textPrimary).withFont(UIFont.scaled(.title2, weight: .bold))
+        thirdLabel.attributedText = LocalizeKey.welcomeThird1.localizedString().withTextColor(.textPrimary).withFont(UIFont.scaled(.title2, weight: .bold))
+            + LocalizeKey.welcomeThird2.localizedString().withTextColor(.textPrimary).withFont(UIFont.scaled(.title2, weight: .bold))
+            + LocalizeKey.welcomeThird3.localizedString().withTextColor(.textPrimary).withFont(UIFont.scaled(.title2, weight: .bold))
+        fourthLabel.attributedText =  LocalizeKey.welcomeFourth.localizedString().withTextColor(.textPrimary).withFont(UIFont.scaled(.title2, weight: .bold))
 
-        explainLabel.attributedText = LocalizeKey.welcomeDiscriptionFirst.localizedString().withTextColor(.white).withFont(UIFont.systemFont(ofSize: 16.0, weight: .regular)) + LocalizeKey.welcomeDiscriptionSecond.localizedString().withTextColor(.white).withFont(UIFont.systemFont(ofSize: 24.0, weight: .bold)) + LocalizeKey.welcomeDiscriptionThird.localizedString().withTextColor(.white).withFont(UIFont.systemFont(ofSize: 16.0, weight: .regular))
+        explainLabel.attributedText = LocalizeKey.welcomeDiscriptionFirst.localizedString().withTextColor(.textPrimary).withFont(UIFont.scaled(.body, weight: .regular)) + LocalizeKey.welcomeDiscriptionSecond.localizedString().withTextColor(.textPrimary).withFont(UIFont.scaled(.title3, weight: .bold)) + LocalizeKey.welcomeDiscriptionThird.localizedString().withTextColor(.textPrimary).withFont(UIFont.scaled(.body, weight: .regular))
         
         explainLabel.numberOfLines = 0
     }

@@ -8,7 +8,6 @@
 
 import UIKit
 import PhotoKeyboardFramework
-import DynamicColor
 
 /// 保存済み画像の拡大表示。
 /// 公開投稿を廃止し、表示するのは自分が保存した画像だけになったため、通報とブロックは撤去した。
@@ -46,9 +45,8 @@ class PhotoDetailViewController: UIViewController {
 
         zoomImageView.image = rPhoto?.image
 
-        closeButton.tintColor = UIColor.acGreen()
-        closeButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 24, style: .solid)
-        closeButton.setTitle(String.fontAwesomeIcon(name: .times), for: .normal)
+        closeButton.tintColor = .brandAccent
+        closeButton.applySymbol(Symbol.close)
         closeButton.titleLabel?.shadowColor = .black
         closeButton.titleLabel?.shadowOffset = CGSize(width: 1, height: 1)
 
@@ -56,9 +54,10 @@ class PhotoDetailViewController: UIViewController {
         // アプリ内コピー導線を実装する際にこのボタンを再利用する。
         otherButton.isHidden = true
 
-        self.view.backgroundColor = UIColor.bgDark().lighter(amount: 0.1)
+        self.view.backgroundColor = .bgBase
         bgView.backgroundColor = UIColor.clear
-        captionLabel.textColor = .white
+        captionLabel.textColor = .textPrimary
+        captionLabel.adjustsFontForContentSizeCategory = true
         captionLabel.sizeToFit()
         captionLabel.shadowColor = .black
         captionLabel.shadowOffset = CGSize(width: 1, height: 1)

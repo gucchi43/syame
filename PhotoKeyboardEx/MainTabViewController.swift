@@ -30,11 +30,10 @@ class MainTabViewController: UIViewController {
     }
 
     func commonInit() {
-        view.backgroundColor = .bgDark()
+        view.backgroundColor = .bgBase
         navigationItem.title = LocalizeKey.navMyBoard.localizedString()
 
-        barMenuButton.title = String.fontAwesomeIcon(name: .bars)
-        barMenuButton.setTitleTextAttributes([.font: UIFont.fontAwesome(ofSize: 24, style: .solid)], for: .normal)
+        barMenuButton.applySymbol(Symbol.menu)
 
         embedBoardViewController()
         layoutFAB()
@@ -78,8 +77,8 @@ class MainTabViewController: UIViewController {
 
     @objc func finishToast(notification: Notification) {
         var style = ToastStyle()
-        style.messageColor = .white
-        style.backgroundColor = UIColor.acGreen()
+        style.messageColor = .onAccent
+        style.backgroundColor = .brandAccent
         style.cornerRadius = 20.0
         style.horizontalPadding = 20.0
         self.view.makeToast(LocalizeKey.doneUploadToast.localizedString(), duration: 3.0, position: .top, style: style)
@@ -89,15 +88,15 @@ class MainTabViewController: UIViewController {
     func layoutFAB() {
         let size: CGFloat = 56
         fabButton.frame = CGRect(x: 0, y: 0, width: size, height: size)
-        fabButton.backgroundColor = .acGreen()
-        fabButton.layer.cornerRadius = size / 2
+        fabButton.backgroundColor = .brandAccent
+        fabButton.applyCornerRadius(size / 2)
         fabButton.layer.shadowColor = UIColor.black.cgColor
         fabButton.layer.shadowOffset = CGSize(width: 0, height: 2)
         fabButton.layer.shadowOpacity = 0.3
         fabButton.layer.shadowRadius = 4
         fabButton.setTitle("+", for: .normal)
-        fabButton.setTitleColor(.white, for: .normal)
-        fabButton.titleLabel?.font = UIFont.systemFont(ofSize: 28, weight: .light)
+        fabButton.setTitleColor(.onAccent, for: .normal)
+        fabButton.titleLabel?.font = UIFont.scaled(.title3, weight: .regular)
         fabButton.addTarget(self, action: #selector(tapFAB), for: .touchUpInside)
         fabButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(fabButton)

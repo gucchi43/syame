@@ -166,46 +166,40 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     }
 
     func commonInit() {
-        self.view.backgroundColor = .bgDark()
-        homeButton.setTitleColor(.acGreen(), for: .normal)
-        homeButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 20, style: .solid)
-        homeButton.setTitle(String.fontAwesomeIcon(name: .home), for: .normal)
+        self.view.backgroundColor = .bgBase
+        homeButton.setTitleColor(.brandAccent, for: .normal)
+        homeButton.applySymbol(Symbol.home)
         
-        helpButton.setTitleColor(.acGreen(), for: .normal)
-        helpButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 20, style: .solid)
-        helpButton.setTitle(String.fontAwesomeIcon(name: .question), for: .normal)
+        helpButton.setTitleColor(.brandAccent, for: .normal)
+        helpButton.applySymbol(Symbol.help)
         
-        sortRankButton.setTitleColor(.acGreen(), for: .normal)
-        sortRankButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 20, style: .solid)
-        sortRankButton.setTitle(String.fontAwesomeIcon(name: .sortAmountDown), for: .normal)
+        sortRankButton.setTitleColor(.brandAccent, for: .normal)
+        sortRankButton.applySymbol(Symbol.sortByPopularity)
         
-        sortABCButton.setTitleColor(.acGreen(), for: .normal)
-        sortABCButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 20, style: .solid)
-        sortABCButton.setTitle(String.fontAwesomeIcon(name: .sortAlphaDown), for: .normal)
+        sortABCButton.setTitleColor(.brandAccent, for: .normal)
+        sortABCButton.applySymbol(Symbol.sortByName)
         
-        boardChangeButton.setTitleColor(.acGreen(), for: .normal)
-        boardChangeButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 20, style: .solid)
-        boardChangeButton.setTitle(String.fontAwesomeIcon(name: .font), for: .normal)
+        boardChangeButton.setTitleColor(.brandAccent, for: .normal)
+        boardChangeButton.applySymbol(Symbol.textMode)
         
-        self.nextKeyboardButton.setTitleColor(.acGreen(), for: .normal)
-        self.nextKeyboardButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 20, style: .solid)
-        self.nextKeyboardButton.setTitle(String.fontAwesomeIcon(name: .globe), for: .normal)
+        self.nextKeyboardButton.setTitleColor(.brandAccent, for: .normal)
+        self.nextKeyboardButton.applySymbol(Symbol.globe)
         self.nextKeyboardButton.addTarget(self, action: #selector(handleInputModeList(from:with:)), for: .allTouchEvents)
-        self.notFullBGView.backgroundColor = .bgDark()
-        self.notFullButton.backgroundColor = .acGreen()
+        self.notFullBGView.backgroundColor = .bgBase
+        self.notFullButton.backgroundColor = .brandAccent
         self.notFullButton.titleLabel?.adjustsFontSizeToFitWidth = true
-        self.notFullButton.setTitleColor(.white, for: .normal)
-        self.notFullButton.layer.cornerRadius = 8.0
+        self.notFullButton.setTitleColor(.onAccent, for: .normal)
+        self.notFullButton.applyCornerRadius(Radius.small)
         
         if Lang.langRootKey() == "JP" {
             self.notFullButton.setTitle("設定画面へ", for: .normal)
-            let notFullLabelStrig = "[PKB]".withFont(UIFont.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) + "→".withFont(UIFont.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "[キーボード]".withFont(UIFont.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) +
-                "→".withFont(UIFont.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "[フルアクセスを許可する]".withFont(UIFont.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) + "をオンにしてください。".withFont(UIFont.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white)
+            let notFullLabelStrig = "[PKB]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary) + "→".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary) + "[キーボード]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary) +
+                "→".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary) + "[フルアクセスを許可する]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary) + "をオンにしてください。".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary)
             self.notFullLabel.attributedText = notFullLabelStrig
         } else {
             self.notFullButton.setTitle("Go to setting", for: .normal)
-            let notFullLabelStrig = "[PKB]".withFont(UIFont.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) + "→".withFont(UIFont.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "[Keyboards]".withFont(UIFont.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white) +
-                "→".withFont(UIFont.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "Turn on ".withFont(UIFont.systemFont(ofSize: 14, weight: .regular)).withTextColor(.white) + "[Allow Full Access]".withFont(UIFont.systemFont(ofSize: 14, weight: .bold)).withTextColor(.white)
+            let notFullLabelStrig = "[PKB]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary) + "→".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary) + "[Keyboards]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary) +
+                "→".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary) + "Turn on ".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary) + "[Allow Full Access]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary)
             self.notFullLabel.attributedText = notFullLabelStrig
         }
         generator.prepare()
@@ -214,7 +208,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     func collectionInit() {
         collectionView.register(UINib(nibName: "PhotoCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "PhotoCollectionViewCell")
         collectionView.register(UINib(nibName: "TextCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "TextCollectionViewCell")
-        collectionView.backgroundColor = .bgDark()
+        collectionView.backgroundColor = .bgBase
         collectionView.allowsMultipleSelection = false
         updateViewConstraints()
         collectionView.dataSource = self
@@ -282,11 +276,11 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     
     func sortState() {
         if favSortFlag {
-            sortRankButton.setTitleColor(.acGreen(), for: .normal)
+            sortRankButton.setTitleColor(.brandAccent, for: .normal)
             sortABCButton.setTitleColor(.gray, for: .normal)
         } else {
             sortRankButton.setTitleColor(.gray, for: .normal)
-            sortABCButton.setTitleColor(.acGreen(), for: .normal)
+            sortABCButton.setTitleColor(.brandAccent, for: .normal)
         }
         collectionView.reloadData()
     }
@@ -355,11 +349,11 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         textBoardFlag = !textBoardFlag
         if textBoardFlag {
             heightConstraint.constant = 200
-            boardChangeButton.setTitle(String.fontAwesomeIcon(name: .images), for: .normal)
+            boardChangeButton.applySymbol(Symbol.imageMode)
             notFullBGView.isHidden = true
         } else {
             heightConstraint.constant = UIScreen.main.bounds.height / 2
-            boardChangeButton.setTitle(String.fontAwesomeIcon(name: .font), for: .normal)
+            boardChangeButton.applySymbol(Symbol.textMode)
             if self.hasFullAccess {
                 notFullBGView.isHidden = true
             } else {

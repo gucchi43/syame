@@ -39,7 +39,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         setupCollectionView()
         collectionView.register(UINib(nibName: "PhotoCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "PhotoCollectionViewCell")
         collectionView.contentMode = .left
-        collectionView.backgroundColor = .bgDark()
+        collectionView.backgroundColor = .bgBase
         refreshControl.addTarget(self, action: #selector(self
             .refresh(sender:)), for: .valueChanged)
         collectionView.refreshControl = refreshControl
@@ -107,7 +107,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         }
 
         let emptyView = UIView(frame: collectionView.bounds)
-        emptyView.backgroundColor = .bgDark()
+        emptyView.backgroundColor = .bgBase
 
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -116,7 +116,9 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         stackView.translatesAutoresizingMaskIntoConstraints = false
 
         let imageView = UIImageView()
-        imageView.image = UIImage.fontAwesomeIcon(name: .grinTears, style: .solid, textColor: .acGreen(), size: CGSize(width: 80, height: 80))
+        imageView.image = .symbol(Symbol.emptyState, pointSize: 56)
+        imageView.tintColor = .textSecondary
+        imageView.contentMode = .scaleAspectFit
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.widthAnchor.constraint(equalToConstant: 80).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
@@ -125,8 +127,8 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         titleLabel.attributedText = NSAttributedString(
             string: LocalizeKey.myBoardEmptyTitle.localizedString(),
             attributes: [
-                .font: UIFont.boldSystemFont(ofSize: 19),
-                .foregroundColor: UIColor.acGreen()
+                .font: UIFont.scaled(.headline, weight: .semibold),
+                .foregroundColor: UIColor.textPrimary
             ]
         )
         titleLabel.textAlignment = .center
