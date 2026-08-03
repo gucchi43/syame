@@ -18,12 +18,9 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var saveButton: UIButton!
     @IBOutlet weak var countIconLabel: UILabel!
     @IBOutlet weak var countNumLabel: UILabel!
-    
+
     @IBOutlet weak var baseView: UIView!
-    
-    private var imageTask: URLSessionDataTask?
-    /// 非同期取得の完了時に、セルが別の写真へ再利用されていないか判定するための現在のURL
-    private var currentImageURL: URL?
+
     override func awakeFromNib() {
         super.awakeFromNib()
         baseLayout()
@@ -31,9 +28,6 @@ class PhotoCollectionViewCell: UICollectionViewCell {
 
     override func prepareForReuse() {
         super.prepareForReuse()
-        imageTask?.cancel()
-        imageTask = nil
-        currentImageURL = nil
         photoImageView.image = nil
         titleLabel.text = nil
     }
@@ -57,50 +51,18 @@ class PhotoCollectionViewCell: UICollectionViewCell {
         saveButton.layer.borderWidth = 1
         saveButton.layer.cornerRadius = 4
         saveButton.clipsToBounds = true
+        // 公開フィードが無くなり、このボタンは「マイボードから取り除く」意味になった
+        saveButton.titleLabel?.font = UIFont.fontAwesome(ofSize: 14, style: .solid)
+        saveButton.setTitle(String.fontAwesomeIcon(name: .times), for: .normal)
+        saveButton.setTitleColor(.acGreen(), for: .normal)
+        saveButton.backgroundColor = .clear
+        saveButton.layer.borderColor = UIColor.acGreen().cgColor
     }
 
-    /// 画像の縦横比からセルの高さを決める。
-    /// 画像ビューに高さの制約が無いと、読み込み済みかどうかで高さが変わってしまい、
-    /// 同じ写真でもタブによって表示が変わる(キャッシュ済みのタブだけ極端に高くなる)。
     func configure(photo: RealmPhoto, saved: Bool) {
         photoImageView.image = photo.image
         countNumLabel.text = String(photo.useNum)
         titleLabel.text = photo.text
         titleLabel.sizeToFit()
-        saveButtonState(saved: saved)
-    }
-
-    func configure(serverPhoto: Photo?, saved: Bool) {
-        imageTask?.cancel()
-        imageTask = nil
-        self.photoImageView.image = nil
-        currentImageURL = nil
-        guard let doc = serverPhoto else { return }
-        if let url = URL(string: doc.imageUrl) {
-            currentImageURL = url
-            imageTask = RemoteImageLoader.shared.load(url: url) { [weak self] image in
-                // 取得中にセルが別の写真へ再利用されていたら反映しない
-                guard let self = self, self.currentImageURL == url else { return }
-                self.photoImageView.image = image
-            }
-        }
-        titleLabel.text = doc.title
-        titleLabel.sizeToFit()
-        countNumLabel.text = String(doc.totalSaveCount)
-        saveButtonState(saved: saved)
-    }
-    
-    func saveButtonState(saved: Bool) {
-        if saved {
-            saveButton.setTitle("saved", for: .normal)
-            saveButton.setTitleColor(.white, for: .normal)
-            saveButton.backgroundColor = .acGreen()
-            saveButton.layer.borderColor = UIColor.acGreen().cgColor
-        } else {
-            saveButton.setTitle("save", for: .normal)
-            saveButton.setTitleColor(.acGreen(), for: .normal)
-            saveButton.backgroundColor = .clear
-            saveButton.layer.borderColor = UIColor.acGreen().cgColor
-        }
     }
 }

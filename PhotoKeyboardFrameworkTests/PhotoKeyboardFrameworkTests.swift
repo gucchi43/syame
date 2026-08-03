@@ -18,7 +18,7 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
     /// ここの文字列は GroupeDefaults.Keys の rawValue と一致していなければならない
     /// (キー名を変えると既存ユーザーの保存値が失われるため、変更時はこのテストも落ちてよい)。
     private static let managedDefaultsKeys = [
-        "saveLife", "sendCount",
+        "sendCount",
         "registerNeedFlag", "usageNeedFlag", "welcomeNeedFlag",
         "blockContents"
     ]
@@ -113,24 +113,6 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
     func testRootKeyAndLangRootKeyAreConsistent() {
         XCTAssertEqual(Lang.rootKey(), Lang.langRootKey())
         XCTAssertTrue([Lang.japaneseRootKey, Lang.worldRootKey].contains(Lang.rootKey()))
-    }
-
-    // MARK: - 保存ライフ
-
-    /// 広告視聴の報酬は加算されること。上書きすると報酬量が既存より少ないときに減ってしまう
-    func testChargeSaveLifeAdds() {
-        let defaults = GroupeDefaults.shared
-        while !defaults.isAddCount() {
-            defaults.useSaveLife()
-        }
-        defaults.chargeSaveLife(amount: 3)
-        XCTAssertFalse(defaults.isAddCount(), "報酬を加算してもライフが回復していない")
-
-        defaults.chargeSaveLife(amount: 1)
-        defaults.useSaveLife()
-        defaults.useSaveLife()
-        defaults.useSaveLife()
-        XCTAssertFalse(defaults.isAddCount(), "加算ではなく上書きになっている")
     }
 
     // MARK: - 画像
@@ -312,22 +294,6 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         XCTAssertFalse(titles.contains(GenreTagType.myBoard.getLocalizeString()))
         XCTAssertFalse(titles.contains(GenreTagType.new.getLocalizeString()))
         XCTAssertFalse(titles.contains(GenreTagType.popular.getLocalizeString()))
-    }
-
-    // MARK: - 保存ライフ・フラグ
-
-    /// 初期ライフを使い切るまでは広告を出さない。
-    /// 初期値が変わるとインストール直後にいきなり広告が出る
-    func testSaveLifeAllowsFiveSavesBeforeAdPrompt() {
-        let defaults = GroupeDefaults.shared
-        XCTAssertFalse(defaults.isAddCount(), "初回起動時から広告要求になっている")
-
-        for count in 1...4 {
-            defaults.useSaveLife()
-            XCTAssertFalse(defaults.isAddCount(), "\(count)回目の保存で広告要求になった")
-        }
-        defaults.useSaveLife()
-        XCTAssertTrue(defaults.isAddCount(), "5回使ってもライフが尽きていない")
     }
 
     /// 同じコンテンツを何度ブロックしてもリストは1件。

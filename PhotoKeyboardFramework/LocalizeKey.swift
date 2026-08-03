@@ -25,8 +25,6 @@ public enum LocalizeKey: String {
     case doneUploadToast
     case othersEmptyTitle
     case myBoardEmptyTitle
-    case adAlertTitle
-    case adAlertMessage
     
     case menuHome
     case menuSetting

@@ -32,8 +32,6 @@
 "doneUploadToast" = "Success upload!";
 "othersEmptyTitle" = "Not found...";
 "myBoardEmptyTitle" = "Ret's save photo \nin MYBOARD→";
-"adAlertTitle" = "Please show ad";
-"adAlertMessage" = "You can more save photo";
 
 "menuHome" = "Home";
 "menuSetting" = "Set up keyboard";

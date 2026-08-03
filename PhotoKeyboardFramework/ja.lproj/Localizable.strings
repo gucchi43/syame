@@ -32,8 +32,6 @@
 "doneUploadToast" = "アップロード完了！";
 "othersEmptyTitle" = "カラッポ";
 "myBoardEmptyTitle" = "使いたい画像をsaveしよう →";
-"adAlertTitle" = "これ以上SAVEするには広告を見てね";
-"adAlertMessage" = "５枚画像を保存するごとにお願いしてるよ";
 
 "menuHome" = "ホーム";
 "menuSetting" = "キーボード設定方法";
