@@ -451,4 +451,40 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
             XCTAssertNotNil(UIImage(systemName: name), "SF Symbol が存在しない: \(name)")
         }
     }
+
+    // MARK: - ロゴの焼き込み
+
+    /// ロゴ素材が Framework のバンドルから読めること。
+    /// 素材の置き場所を間違えると、焼き込みを有効にしても黙って無視され続ける。
+    func testWatermarkLogoIsBundledInFramework() {
+        let logo = UIImage(named: "photo_logo_2",
+                           in: Bundle(for: RealmPhoto.self),
+                           compatibleWith: nil)
+        XCTAssertNotNil(logo, "ロゴ素材が Framework のバンドルに入っていない")
+    }
+
+    /// 無効時は元画像をそのまま返すこと。
+    /// 呼び出し側に分岐を持たせない前提が崩れると、経路によって結果が変わる。
+    func testWatermarkReturnsOriginalWhenDisabled() {
+        let original = Watermark.isEnabled
+        defer { Watermark.isEnabled = original }
+
+        Watermark.isEnabled = false
+        let base = makeImage(size: CGSize(width: 100, height: 100), color: .red)
+        let result = Watermark.applied(to: base)
+        XCTAssertEqual(result.size, base.size)
+        XCTAssertEqual(result.pngData(), base.pngData(), "無効なのに画像が加工されている")
+    }
+
+    /// 有効時は元画像と異なる結果になり、寸法は変わらないこと
+    func testWatermarkAltersImageWhenEnabled() {
+        let original = Watermark.isEnabled
+        defer { Watermark.isEnabled = original }
+
+        Watermark.isEnabled = true
+        let base = makeImage(size: CGSize(width: 300, height: 300), color: .white)
+        let result = Watermark.applied(to: base)
+        XCTAssertEqual(result.size, base.size, "焼き込みで寸法が変わっている")
+        XCTAssertNotEqual(result.pngData(), base.pngData(), "有効なのに焼き込まれていない")
+    }
 }
