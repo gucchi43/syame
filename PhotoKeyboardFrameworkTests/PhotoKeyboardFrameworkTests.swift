@@ -492,4 +492,17 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         XCTAssertEqual(result.size, base.size, "焼き込みで寸法が変わっている")
         XCTAssertNotEqual(result.pngData(), base.pngData(), "有効なのに焼き込まれていない")
     }
+
+    // MARK: - 見本画像
+
+    /// 見本画像のIDが毎回同じであること。
+    /// 起動のたびにIDが変わると、投入済み判定が効かず見本が増え続ける。
+    func testOfficialPhotoHasStableIdentifier() {
+        guard let first = makeOfficialPhoto(), let second = makeOfficialPhoto() else {
+            XCTFail("見本画像を生成できない")
+            return
+        }
+        XCTAssertEqual(first.id, second.id, "見本画像のIDが呼び出しごとに変わっている")
+        XCTAssertEqual(first.ownerId, "official", "見本画像の目印が失われている")
+    }
 }

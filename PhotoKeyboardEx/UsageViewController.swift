@@ -36,8 +36,8 @@ class UsageViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        // 見本画像の投入は起動時に移した。ここでは案内済みの記録だけ行う
         if GroupeDefaults.shared.isUsagePush() {
-            self.setOfficialPhoto()
             GroupeDefaults.shared.usageDone()
         }
     }
@@ -79,15 +79,6 @@ class UsageViewController: UIViewController {
         }
     }
     
-    func setOfficialPhoto() {
-        // Realmにsaveする
-        guard let photo = makeOfficialPhoto() else { return }
-        RealmManager.shared.save(data: photo, success: {() in
-        }) { (error) in
-            print(error)
-        }
-    }
-
     @IBAction func tapNavBarButton(_ sender: Any) {
         (navigationController as? MainNavigationViewController)?.toggleSideMenu()
     }
