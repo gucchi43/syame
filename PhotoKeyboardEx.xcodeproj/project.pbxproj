@@ -60,6 +60,8 @@
 		82C7AEEF22FD90520073570E /* PhotoKeyboardFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82F9F3FA22F6B2610062F451 /* PhotoKeyboardFramework.framework */; };
 		82D9A1F42FD0A00100B9E321 /* PhotoKeyboardFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 82F9F3FA22F6B2610062F451 /* PhotoKeyboardFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		82EA891A2328D7280022832E /* CommonUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EA89192328D7280022832E /* CommonUtil.swift */; };
+		82DS0004000000000000AA04 /* Watermark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DS0003000000000000AA03 /* Watermark.swift */; };
+		82DS0006000000000000AA06 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82DS0005000000000000AA05 /* Media.xcassets */; };
 		82DS0002000000000000AA02 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DS0001000000000000AA01 /* DesignSystem.swift */; };
 		82EA891F2328D7E10022832E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 82EA89212328D7E10022832E /* Localizable.strings */; };
 		82EA8924232A8E380022832E /* UpdateExtention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EA8923232A8E380022832E /* UpdateExtention.swift */; };
@@ -209,6 +211,8 @@
 		8280C04822F481490069BF8B /* ChildContent.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ChildContent.storyboard; sourceTree = "<group>"; };
 		82BB3A572328D499003D830B /* LocalizeKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalizeKey.swift; sourceTree = "<group>"; };
 		82EA89192328D7280022832E /* CommonUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonUtil.swift; sourceTree = "<group>"; };
+		82DS0003000000000000AA03 /* Watermark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Watermark.swift; sourceTree = "<group>"; };
+		82DS0005000000000000AA05 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		82DS0001000000000000AA01 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
 		82EA891D2328D7A20022832E /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Main.strings; sourceTree = "<group>"; };
 		82EA891E2328D7A40022832E /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -424,6 +428,8 @@
 				82BB3A572328D499003D830B /* LocalizeKey.swift */,
 				826D657E22F831B500F66583 /* RealmManager.swift */,
 				82EA89192328D7280022832E /* CommonUtil.swift */,
+				82DS0003000000000000AA03 /* Watermark.swift */,
+				82DS0005000000000000AA05 /* Media.xcassets */,
 				82DS0001000000000000AA01 /* DesignSystem.swift */,
 				8221370A2304D1A60046E095 /* Extension.swift */,
 				821ABDDB230EC43E00B3DCFE /* DefaultsKeys.swift */,
@@ -756,6 +762,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82DS0006000000000000AA06 /* Media.xcassets in Resources */,
 				82EA891F2328D7E10022832E /* Localizable.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -831,6 +838,7 @@
 				8221370B2304D1A60046E095 /* Extension.swift in Sources */,
 				821ABDDC230EC43E00B3DCFE /* DefaultsKeys.swift in Sources */,
 				82EA891A2328D7280022832E /* CommonUtil.swift in Sources */,
+				82DS0004000000000000AA04 /* Watermark.swift in Sources */,
 				82DS0002000000000000AA02 /* DesignSystem.swift in Sources */,
 				82F9F41922F6B2920062F451 /* Photo.swift in Sources */,
 				826D657F22F831B500F66583 /* RealmManager.swift in Sources */,

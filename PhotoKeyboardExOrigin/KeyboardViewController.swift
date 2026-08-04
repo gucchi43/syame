@@ -85,7 +85,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     
     var textBoardFlag = false
     /// アセットが解決できなくてもキーボードの初期化自体は失敗させない
-    let logoImage = UIImage(named: "photo_logo_2")
 
     // photosの中にfavPhotos or abcPhotos が入る
     var favSortFlag = false
@@ -307,9 +306,9 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
               let selectImage = photo.image else {
             return
         }
-        // ロゴが取得できない場合は合成せず元画像をそのまま貼り付ける
-        let pasetImage = logoImage.flatMap { selectImage.composite(image: $0, rate: 1.0) } ?? selectImage
-        pasetImage.copyToGeneralPasteboard()
+        // 焼き込みの有無は Watermark 側で決まる。本体アプリからのコピーと結果を揃えるため、
+        // ここで個別に合成しない
+        selectImage.copyToPasteboardWithWatermark()
         updateUseNum(index: lastSelectedIndex.row)
     }
     

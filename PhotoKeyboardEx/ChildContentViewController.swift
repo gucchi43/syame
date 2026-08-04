@@ -190,7 +190,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
     /// フルアクセスの許可を得る前に価値を体験してもらうための導線。
     private func copyToPasteboard(photo: RealmPhoto) {
         guard let image = photo.image else { return }
-        image.copyToGeneralPasteboard()
+        image.copyToPasteboardWithWatermark()
         RealmManager.shared.incrementUseNum(id: photo.id)
         var style = ToastStyle()
         style.messageColor = .onAccent
