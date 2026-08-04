@@ -92,6 +92,13 @@ extension UIColor {
     /// accent で塗った面の上に載せる文字・アイコンの色
     public static let onAccent = adaptive(light: 0xFFFFFF, dark: 0x1C1C1E)
 
+    /// キーボードの地。純正キーボードの色に寄せる。
+    /// アプリの地(bgBase)をそのまま使うと、白いパネルが乗っているように見えて浮く。
+    public static let keyboardBase = adaptive(light: 0xD1D3D9, dark: 0x2C2C2E)
+
+    /// キーボード上のセル・キーの面。地より1段明るくする
+    public static let keyboardSurface = adaptive(light: 0xFFFFFF, dark: 0x4A4A4F)
+
     /// 区切り線
     public static let separatorLine = adaptive(light: 0xE2E2E4, dark: 0x2E2E31)
 }

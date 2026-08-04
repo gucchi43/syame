@@ -429,6 +429,11 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
                                         "\(mode): 補足テキストが地に対して読めない")
             XCTAssertGreaterThanOrEqual(contrastRatio(.onAccent, .accent, dark: dark), 4.5,
                                         "\(mode): アクセントで塗ったボタンの文字が読めない")
+            // キーボードは純正に寄せた別系統の地を使うため、個別に確認する
+            XCTAssertGreaterThanOrEqual(contrastRatio(.textPrimary, .keyboardBase, dark: dark), 4.5,
+                                        "\(mode): キーボードの文字が地に対して読めない")
+            XCTAssertGreaterThanOrEqual(contrastRatio(.textPrimary, .keyboardSurface, dark: dark), 4.5,
+                                        "\(mode): キーボードのセル上の文字が読めない")
         }
     }
 
