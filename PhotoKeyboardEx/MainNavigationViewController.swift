@@ -41,7 +41,7 @@ class MainNavigationViewController: UINavigationController {
 
         let container = UIView(frame: CGRect(x: -menuWidth, y: 0, width: menuWidth, height: view.bounds.height))
         container.autoresizingMask = [.flexibleHeight]
-        container.backgroundColor = UIColor.bgDark()
+        container.backgroundColor = .bgBase
         view.addSubview(container)
         menuContainerView = container
 

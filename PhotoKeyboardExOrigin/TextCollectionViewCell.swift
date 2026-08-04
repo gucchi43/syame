@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import DynamicColor
+import PhotoKeyboardFramework
 
 class TextCollectionViewCell: UICollectionViewCell {
 
@@ -15,10 +15,10 @@ class TextCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var coverView: UIView!
     override func awakeFromNib() {
         super.awakeFromNib()
-        textLabel.textColor = .white
-        coverView.layer.cornerRadius = 2.0
+        textLabel.textColor = .textPrimary
+        coverView.applyCornerRadius(Radius.small)
         coverView.clipsToBounds = true
-        coverView.backgroundColor = UIColor.bgDark().lighter(amount: 0.2)
+        coverView.backgroundColor = .bgSurface
     }
     
     func configure(content: String) {

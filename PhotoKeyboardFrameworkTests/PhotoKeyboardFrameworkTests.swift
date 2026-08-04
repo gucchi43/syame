@@ -398,4 +398,56 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         }
         XCTAssertLessThanOrEqual(max(thumbnail.size.width, thumbnail.size.height), 80)
     }
+
+    // MARK: - デザイントークン
+
+    /// 相対輝度からコントラスト比を求める(WCAG 2.1)
+    private func contrastRatio(_ a: UIColor, _ b: UIColor, dark: Bool) -> CGFloat {
+        let traits = UITraitCollection(userInterfaceStyle: dark ? .dark : .light)
+        func luminance(_ color: UIColor) -> CGFloat {
+            var r: CGFloat = 0, g: CGFloat = 0, bl: CGFloat = 0, al: CGFloat = 0
+            color.resolvedColor(with: traits).getRed(&r, green: &g, blue: &bl, alpha: &al)
+            func channel(_ v: CGFloat) -> CGFloat {
+                return v <= 0.03928 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4)
+            }
+            return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(bl)
+        }
+        let l1 = luminance(a), l2 = luminance(b)
+        return (max(l1, l2) + 0.05) / (min(l1, l2) + 0.05)
+    }
+
+    /// 本文の文字色は地に対して4.5:1以上必要。
+    /// 淡い配色を追求して色を変えると、ここが真っ先に壊れる。
+    func testTextColorsMeetContrastRequirement() {
+        for dark in [false, true] {
+            let mode = dark ? "ダーク" : "ライト"
+            XCTAssertGreaterThanOrEqual(contrastRatio(.textPrimary, .bgBase, dark: dark), 4.5,
+                                        "\(mode): 本文が地に対して読めない")
+            XCTAssertGreaterThanOrEqual(contrastRatio(.textPrimary, .bgSurface, dark: dark), 4.5,
+                                        "\(mode): 本文がカード面に対して読めない")
+            XCTAssertGreaterThanOrEqual(contrastRatio(.textSecondary, .bgBase, dark: dark), 4.5,
+                                        "\(mode): 補足テキストが地に対して読めない")
+            XCTAssertGreaterThanOrEqual(contrastRatio(.onAccent, .brandAccent, dark: dark), 4.5,
+                                        "\(mode): アクセントで塗ったボタンの文字が読めない")
+        }
+    }
+
+    /// 地とカード面の差は意図的にごく小さくしている。
+    /// ここが開くと「軽さ」が失われ、ただのグレーUIになる。
+    func testSurfaceSeparationStaysSubtle() {
+        for dark in [false, true] {
+            let ratio = contrastRatio(.bgSurface, .bgBase, dark: dark)
+            XCTAssertLessThan(ratio, 1.5, "\(dark ? "ダーク" : "ライト"): 面の差が大きすぎる")
+        }
+    }
+
+    /// 使用するSF Symbolsが実在すること。名前を間違えるとアイコンが消える
+    func testAllSymbolsExist() {
+        let names = [Symbol.menu, Symbol.saveCount, Symbol.more, Symbol.textMode, Symbol.globe,
+                     Symbol.emptyState, Symbol.home, Symbol.imageMode, Symbol.add, Symbol.help,
+                     Symbol.sortByName, Symbol.sortByPopularity, Symbol.close]
+        for name in names {
+            XCTAssertNotNil(UIImage(systemName: name), "SF Symbol が存在しない: \(name)")
+        }
+    }
 }

@@ -44,7 +44,7 @@ class MyMenuTableViewController: UITableViewController {
 
         // 再利用されたセルにも適用されるよう if cell == nil の外で設定する
         cell.backgroundColor = .clear
-        cell.textLabel?.textColor = .white
+        cell.textLabel?.textColor = .textPrimary
         let selectedBackgroundView = UIView()
         selectedBackgroundView.backgroundColor = UIColor.gray.withAlphaComponent(0.2)
         cell.selectedBackgroundView = selectedBackgroundView

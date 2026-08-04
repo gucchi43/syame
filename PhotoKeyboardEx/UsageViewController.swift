@@ -43,34 +43,38 @@ class UsageViewController: UIViewController {
     }
     
     func commonInit() {
-        scrollView.backgroundColor = .bgDark()
-        baseView.backgroundColor = .bgDark()
-        firstLabel.textColor = .white
-        secondLabel.textColor = .white
-        thirdLabel.textColor = .white
-        fourthLabel.textColor = .white   
-        navBarButton.title = String.fontAwesomeIcon(name: .bars)
-        navBarButton.setTitleTextAttributes([.font: UIFont.fontAwesome(ofSize: 24, style: .solid)], for: .normal)
+        scrollView.backgroundColor = .bgBase
+        baseView.backgroundColor = .bgBase
+        firstLabel.textColor = .textPrimary
+        firstLabel.adjustsFontForContentSizeCategory = true
+        secondLabel.textColor = .textPrimary
+        secondLabel.adjustsFontForContentSizeCategory = true
+        thirdLabel.textColor = .textPrimary
+        thirdLabel.adjustsFontForContentSizeCategory = true
+        fourthLabel.textColor = .textPrimary   
+        fourthLabel.adjustsFontForContentSizeCategory = true
+        navBarButton.applySymbol(Symbol.menu)
         nextButton.setTitle(LocalizeKey.settingDone.localizedString(), for: .normal)
-        nextButton.setTitleColor(.white, for: .normal)
+        nextButton.setTitleColor(.onAccent, for: .normal)
         nextButton.titleLabel?.adjustsFontSizeToFitWidth = true
-        nextButton.backgroundColor = .acGreen()
-        nextButton.layer.cornerRadius = 8.0
-        subLabel.textColor = .white
+        nextButton.backgroundColor = .brandAccent
+        nextButton.applyCornerRadius(Radius.small)
+        subLabel.textColor = .textPrimary
+        subLabel.adjustsFontForContentSizeCategory = true
     }
     
     func setText() {
         if Lang.langRootKey() == "JP" {
-            firstLabel.attributedText = LocalizeKey.settingTitle.localizedString().withFont(UIFont.systemFont(ofSize: 24, weight: .bold))
-            secondLabel.attributedText = LocalizeKey.settingFirstBoaldText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .bold)) + LocalizeKey.settingFirstNormalText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .regular))
-            thirdLabel.attributedText = LocalizeKey.settingSecondBoaldText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .bold)) + LocalizeKey.settingSecondNormalText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .regular))
-            fourthLabel.attributedText = LocalizeKey.settingThirdBoaldText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .bold)) + LocalizeKey.settingThirdNormalText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .regular))
+            firstLabel.attributedText = LocalizeKey.settingTitle.localizedString().withFont(UIFont.scaled(.title3, weight: .bold))
+            secondLabel.attributedText = LocalizeKey.settingFirstBoaldText.localizedString().withFont(UIFont.scaled(.footnote, weight: .bold)) + LocalizeKey.settingFirstNormalText.localizedString().withFont(UIFont.scaled(.footnote, weight: .regular))
+            thirdLabel.attributedText = LocalizeKey.settingSecondBoaldText.localizedString().withFont(UIFont.scaled(.footnote, weight: .bold)) + LocalizeKey.settingSecondNormalText.localizedString().withFont(UIFont.scaled(.footnote, weight: .regular))
+            fourthLabel.attributedText = LocalizeKey.settingThirdBoaldText.localizedString().withFont(UIFont.scaled(.footnote, weight: .bold)) + LocalizeKey.settingThirdNormalText.localizedString().withFont(UIFont.scaled(.footnote, weight: .regular))
             subLabel.text = LocalizeKey.settingDiscription.localizedString()
         } else {
-            firstLabel.attributedText = LocalizeKey.settingTitle.localizedString().withFont(UIFont.systemFont(ofSize: 24, weight: .bold))
-            secondLabel.attributedText = LocalizeKey.settingFirstNormalText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .regular)) +  LocalizeKey.settingFirstBoaldText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .bold))
-            thirdLabel.attributedText = LocalizeKey.settingSecondNormalText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .regular)) +  LocalizeKey.settingSecondBoaldText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .bold))
-            fourthLabel.attributedText = LocalizeKey.settingThirdNormalText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .regular)) + LocalizeKey.settingThirdBoaldText.localizedString().withFont(UIFont.systemFont(ofSize: 14, weight: .bold))
+            firstLabel.attributedText = LocalizeKey.settingTitle.localizedString().withFont(UIFont.scaled(.title3, weight: .bold))
+            secondLabel.attributedText = LocalizeKey.settingFirstNormalText.localizedString().withFont(UIFont.scaled(.footnote, weight: .regular)) +  LocalizeKey.settingFirstBoaldText.localizedString().withFont(UIFont.scaled(.footnote, weight: .bold))
+            thirdLabel.attributedText = LocalizeKey.settingSecondNormalText.localizedString().withFont(UIFont.scaled(.footnote, weight: .regular)) +  LocalizeKey.settingSecondBoaldText.localizedString().withFont(UIFont.scaled(.footnote, weight: .bold))
+            fourthLabel.attributedText = LocalizeKey.settingThirdNormalText.localizedString().withFont(UIFont.scaled(.footnote, weight: .regular)) + LocalizeKey.settingThirdBoaldText.localizedString().withFont(UIFont.scaled(.footnote, weight: .bold))
             subLabel.text = LocalizeKey.settingDiscription.localizedString()
         }
     }

@@ -38,9 +38,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func setLayout() {
-        UINavigationBar.appearance().tintColor = .acGreen()
-        UINavigationBar.appearance().barTintColor = .bgDark()
-        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.acGreen()]
+        UINavigationBar.appearance().tintColor = .brandAccent
+        UINavigationBar.appearance().barTintColor = .bgBase
+        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.textPrimary]
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {

@@ -11,7 +11,6 @@ import StoreKit
 import PhotoKeyboardFramework
 import SwiftDate
 import TagListView
-import DynamicColor
 
 class AddViewController: UIViewController {
 
@@ -44,10 +43,13 @@ class AddViewController: UIViewController {
         titleLabel.text = LocalizeKey.addInputTitle.localizedString()
         genreLabel.text = LocalizeKey.addInputGenre.localizedString()
         publicLabel.text = LocalizeKey.addPublicSwitchOn.localizedString()
-        titleLabel.textColor = .white
-        genreLabel.textColor = .white
-        publicLabel.textColor = .white
-        view.backgroundColor = .bgDark()
+        titleLabel.textColor = .textPrimary
+        titleLabel.adjustsFontForContentSizeCategory = true
+        genreLabel.textColor = .textPrimary
+        genreLabel.adjustsFontForContentSizeCategory = true
+        publicLabel.textColor = .textPrimary
+        publicLabel.adjustsFontForContentSizeCategory = true
+        view.backgroundColor = .bgBase
         titleTextField.delegate = self
         titleTextField.addTarget(self, action: #selector(self.textFieldDidChange(_:)),
                                  for: UIControl.Event.editingChanged)
@@ -58,13 +60,12 @@ class AddViewController: UIViewController {
         publicSwitch.isOn = false
         publicSwitch.isHidden = true
         publicLabel.isHidden = true
-        closeButton.title = String.fontAwesomeIcon(name: .times)
-        closeButton.setTitleTextAttributes([.font: UIFont.fontAwesome(ofSize: 24, style: .solid)], for: .normal)
+        closeButton.applySymbol(Symbol.close)
         
         genreListView.delegate = self
         genreListView.backgroundColor = .clear
         genreListView.addTags(GenreTagType.getAddAllGenreTitles())
-        genreListView.textFont = UIFont.systemFont(ofSize: 18)
+        genreListView.textFont = UIFont.scaled(.body, weight: .regular)
         genreListView.shadowRadius = 2
         genreListView.shadowOpacity = 0.4
         genreListView.alignment = .left
@@ -75,9 +76,9 @@ class AddViewController: UIViewController {
         genreListView.shadowOffset = CGSize(width: 1, height: 1)
         genreListView.borderWidth = 2
         genreListView.shadowColor = .black
-        genreListView.textColor = .acGreen()
-        genreListView.borderColor = .acGreen()
-        genreListView.tagBackgroundColor = .white
+        genreListView.textColor = .brandAccent
+        genreListView.borderColor = .brandAccent
+        genreListView.tagBackgroundColor = .bgSurface
         addButtonState()
     }
     
@@ -88,26 +89,24 @@ class AddViewController: UIViewController {
     func addButtonState() {
         if !(titleTextField.text ?? "").isEmpty && choiceImage != nil && selectedJenreTag != nil {
             doneButton.isEnabled = true
-            doneButton.backgroundColor = .acGreen()
-            doneButton.setTitleColor(.white, for: .normal)
+            doneButton.backgroundColor = .brandAccent
+            doneButton.setTitleColor(.onAccent, for: .normal)
         } else {
             doneButton.isEnabled = false
-            let acGreen = UIColor.acGreen()
-            let acGreenDark = acGreen.darkened()
-            doneButton.backgroundColor = acGreenDark
-            doneButton.setTitleColor(.white, for: .normal)
+            doneButton.backgroundColor = UIColor.brandAccent.withAlphaComponent(0.35)
+            doneButton.setTitleColor(.onAccent, for: .normal)
         }
     }
     
     func setTagColor(tag: TagView) {
-        genreListView.textColor = .acGreen()
-        genreListView.borderColor = .acGreen()
-        genreListView.tagBackgroundColor = .white
+        genreListView.textColor = .brandAccent
+        genreListView.borderColor = .brandAccent
+        genreListView.tagBackgroundColor = .bgSurface
         
         if tag.isSelected {
-            tag.textColor = .white
-            tag.borderColor = .acGreen()
-            tag.tagBackgroundColor = .acGreen()
+            tag.textColor = .onAccent
+            tag.borderColor = .brandAccent
+            tag.tagBackgroundColor = .brandAccent
         }
     }
     

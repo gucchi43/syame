@@ -43,9 +43,9 @@ class TopViewController: UIViewController, UITextViewDelegate {
         logoImage.alpha = 0.0
         subTitleLabel.alpha = 0.0
         subTitleLabel.text = LocalizeKey.topSubtitle.localizedString()
-        startButton.setTitleColor(.white, for: .normal)
-        startButton.layer.cornerRadius = 8.0
-        startButton.backgroundColor = .acGreen()
+        startButton.setTitleColor(.onAccent, for: .normal)
+        startButton.applyCornerRadius(Radius.small)
+        startButton.backgroundColor = .brandAccent
         startButton.titleLabel?.adjustsFontSizeToFitWidth = true
         startButton.setTitle(LocalizeKey.topStart.localizedString(), for: .normal)
 
@@ -58,8 +58,8 @@ class TopViewController: UIViewController, UITextViewDelegate {
 
         let attributedString = NSMutableAttributedString(string: fullString)
         let fullRange = NSRange(location: 0, length: (fullString as NSString).length)
-        attributedString.addAttribute(.foregroundColor, value: UIColor.white, range: fullRange)
-        attributedString.addAttribute(.font, value: UIFont.systemFont(ofSize: 14), range: fullRange)
+        attributedString.addAttribute(.foregroundColor, value: UIColor.textPrimary, range: fullRange)
+        attributedString.addAttribute(.font, value: UIFont.scaled(.footnote, weight: .regular), range: fullRange)
 
         let nstring = fullString as NSString
         if let termsUrl = URL(string: "https://pkbkeyboard.studio.design/terms") {
@@ -72,7 +72,7 @@ class TopViewController: UIViewController, UITextViewDelegate {
         }
 
         requestDescription.attributedText = attributedString
-        requestDescription.linkTextAttributes = [.foregroundColor: UIColor.acGreen()]
+        requestDescription.linkTextAttributes = [.foregroundColor: UIColor.brandAccent]
         requestDescription.isEditable = false
         requestDescription.isScrollEnabled = false
         requestDescription.backgroundColor = .clear

@@ -50,6 +50,16 @@
                ReferencedContainer = "container:PhotoKeyboardEx.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "82F9F40122F6B2610062F451"
+               BuildableName = "PhotoKeyboardFrameworkTests.xctest"
+               BlueprintName = "PhotoKeyboardFrameworkTests"
+               ReferencedContainer = "container:PhotoKeyboardEx.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

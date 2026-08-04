@@ -408,7 +408,13 @@ extension UIView {
 }
 ```
 
-配色は Asset カタログにカラーセット（`BgBase` / `BgSurface` / `TextPrimary` / `TextSecondary`）を作り、Any / Dark の 2 値を設定する。`ColorMG.swift` は削除する。
+配色は同ファイル内で `UIColor { traits in ... }` による動的カラーとして定義する。
+Asset カタログではなくコードで持つのは、フレームワークにカタログを追加せずに本体アプリとキーボード拡張の
+両方から参照でき、値と根拠（コントラスト比）をコメントで同じ場所に残せるため。`ColorMG.swift` は削除済み。
+
+トークンが壊れていないことは `PhotoKeyboardFrameworkTests` で検証する。
+本文と地のコントラストが 4.5:1 を下回らないこと、地とカード面の差が 1.5:1 未満に収まっていること、
+使用する SF Symbols が実在することの 3 点をライト・ダーク両方で確認している。
 
 ## 移行ステップ
 

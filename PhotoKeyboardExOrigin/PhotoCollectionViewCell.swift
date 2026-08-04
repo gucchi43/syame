@@ -8,7 +8,6 @@
 
 import UIKit
 import Lottie
-import DynamicColor
 import PhotoKeyboardFramework
 
 class PhotoCollectionViewCell: UICollectionViewCell {
@@ -21,9 +20,8 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     var isCheck: Bool = false {
         didSet {
             if isCheck {
-                let choiceColor = ColorManager.shared.acRandom()
-                choiceCoverLabel.textColor = choiceColor
-                choiceCover2View.backgroundColor = choiceColor
+                choiceCoverLabel.textColor = .brandAccent
+                choiceCover2View.backgroundColor = .brandAccent
                 choiceCover2View.isHidden = false
                 choiceCoverLabel.isHidden = false
             } else {
@@ -38,9 +36,9 @@ class PhotoCollectionViewCell: UICollectionViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        self.backgroundColor = UIColor.bgDark().lighter(amount: 0.1)
-        photoImageView.backgroundColor = UIColor.bgDark().lighter(amount: 0.2)
-        titleLabel.textColor = .white
+        self.backgroundColor = .bgSurface
+        photoImageView.backgroundColor = .bgBase
+        titleLabel.textColor = .textPrimary
         choiceCoverView.animation = PhotoCollectionViewCell.fireworksAnimation
     }
 
@@ -81,15 +79,17 @@ class PhotoCollectionViewCell: UICollectionViewCell {
         let maxPixelSize = max(bounds.width, bounds.height) * UIScreen.main.scale
         photoImageView.image = photo.thumbnail(maxPixelSize: maxPixelSize) ?? photo.image
         photoImageView.contentMode = .scaleAspectFill
-        titleLabel.textColor = .white
+        titleLabel.textColor = .textPrimary
         titleLabel.text = photo.text
         choiceCover2View.alpha = 0.3
     }
 
     func addCellconfigure() {
-        photoImageView.image = UIImage.fontAwesomeIcon(name: .plus, style: .solid, textColor: .acGreen(), size: CGSize(width: 88, height: 88))
+        photoImageView.image = .symbol(Symbol.add, pointSize: 44)
+        photoImageView.tintColor = .brandAccent
         photoImageView.contentMode = .center
-        titleLabel.textColor = .acGreen()
+        photoImageView.contentMode = .center
+        titleLabel.textColor = .brandAccent
         titleLabel.text = LocalizeKey.addPhotoFromApp.localizedString()
         choiceCover2View.isHidden = true
         choiceCoverLabel.isHidden = true
