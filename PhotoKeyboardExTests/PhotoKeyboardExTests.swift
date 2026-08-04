@@ -27,10 +27,14 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertGreaterThan(metrics.itemWidth, 0)
     }
 
-    /// 行の高さは正方形の画像 + 情報エリアで決まること
+    /// 行の高さは正方形の画像 + 情報エリアで決まること。
+    /// 情報エリアの高さはセル側の定義を参照する。数値を直書きすると
+    /// セルのレイアウトを変えるたびにここが嘘になる。
     func testGridRowHeightIsImagePlusInfoArea() {
         let metrics = ChildContentViewController.gridMetrics(containerWidth: 393)
-        XCTAssertEqual(metrics.rowHeight, metrics.itemWidth + 68, accuracy: 0.001)
+        XCTAssertEqual(metrics.rowHeight,
+                       metrics.itemWidth + PhotoCollectionViewCell.infoHeight,
+                       accuracy: 0.001)
     }
 
     /// 幅が極端に狭くても破綻しないこと

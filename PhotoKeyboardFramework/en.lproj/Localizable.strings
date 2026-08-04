@@ -114,3 +114,7 @@
 "updateAlertMessage" = "A new version of the app is available.";
 "updateAlertUpdate" = "Update";
 "updateAlertLater" = "Later";
+"menuCopy" = "Copy";
+"menuDelete" = "Delete";
+"menuDeleteConfirm" = "Delete this image?";
+"copiedToast" = "Copied";

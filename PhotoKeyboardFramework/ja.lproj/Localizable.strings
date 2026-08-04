@@ -114,3 +114,7 @@
 "updateAlertMessage" = "新しいバージョンが公開されています。";
 "updateAlertUpdate" = "アップデート";
 "updateAlertLater" = "あとで";
+"menuCopy" = "コピー";
+"menuDelete" = "削除";
+"menuDeleteConfirm" = "この画像を削除しますか？";
+"copiedToast" = "コピーしました";

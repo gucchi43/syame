@@ -53,7 +53,6 @@
 		8280C03D22F454B80069BF8B /* Add.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8280C03C22F454B80069BF8B /* Add.storyboard */; };
 		8280C03F22F454D20069BF8B /* AddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280C03E22F454D20069BF8B /* AddViewController.swift */; };
 		8280C04222F455170069BF8B /* PhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280C04022F455170069BF8B /* PhotoCollectionViewCell.swift */; };
-		8280C04322F455170069BF8B /* PhotoCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8280C04122F455170069BF8B /* PhotoCollectionViewCell.xib */; };
 		8280C04522F47D400069BF8B /* MainTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280C04422F47D400069BF8B /* MainTabViewController.swift */; };
 		8280C04722F481420069BF8B /* ChildContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280C04622F481410069BF8B /* ChildContentViewController.swift */; };
 		8280C04922F481490069BF8B /* ChildContent.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8280C04822F481490069BF8B /* ChildContent.storyboard */; };
@@ -205,7 +204,6 @@
 		8280C03C22F454B80069BF8B /* Add.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Add.storyboard; sourceTree = "<group>"; };
 		8280C03E22F454D20069BF8B /* AddViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddViewController.swift; sourceTree = "<group>"; };
 		8280C04022F455170069BF8B /* PhotoCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewCell.swift; sourceTree = "<group>"; };
-		8280C04122F455170069BF8B /* PhotoCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PhotoCollectionViewCell.xib; sourceTree = "<group>"; };
 		8280C04422F47D400069BF8B /* MainTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabViewController.swift; sourceTree = "<group>"; };
 		8280C04622F481410069BF8B /* ChildContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildContentViewController.swift; sourceTree = "<group>"; };
 		8280C04822F481490069BF8B /* ChildContent.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ChildContent.storyboard; sourceTree = "<group>"; };
@@ -354,7 +352,6 @@
 				8280C04622F481410069BF8B /* ChildContentViewController.swift */,
 				82340957235E2EA60031E2BC /* PhotoDetail.storyboard */,
 				82340959235E2EC60031E2BC /* PhotoDetailViewController.swift */,
-				8280C04122F455170069BF8B /* PhotoCollectionViewCell.xib */,
 				8280C04022F455170069BF8B /* PhotoCollectionViewCell.swift */,
 				8280C03C22F454B80069BF8B /* Add.storyboard */,
 				8280C03E22F454D20069BF8B /* AddViewController.swift */,
@@ -711,7 +708,6 @@
 				8278D14422EE5A730034C2CC /* LaunchScreen.storyboard in Resources */,
 				AA0100000000000000000002 /* PrivacyInfo.xcprivacy in Resources */,
 				822B4DDF23678B1900108FC1 /* InfoPlist.strings in Resources */,
-				8280C04322F455170069BF8B /* PhotoCollectionViewCell.xib in Resources */,
 				8278D14122EE5A730034C2CC /* Assets.xcassets in Resources */,
 				82340958235E2EA60031E2BC /* PhotoDetail.storyboard in Resources */,
 				8235BE5C2358704A0040D2F5 /* Top.storyboard in Resources */,

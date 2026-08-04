@@ -167,26 +167,26 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
 
     func commonInit() {
         self.view.backgroundColor = .bgBase
-        homeButton.setTitleColor(.brandAccent, for: .normal)
+        homeButton.setTitleColor(.accent, for: .normal)
         homeButton.applySymbol(Symbol.home)
         
-        helpButton.setTitleColor(.brandAccent, for: .normal)
+        helpButton.setTitleColor(.accent, for: .normal)
         helpButton.applySymbol(Symbol.help)
         
-        sortRankButton.setTitleColor(.brandAccent, for: .normal)
+        sortRankButton.setTitleColor(.accent, for: .normal)
         sortRankButton.applySymbol(Symbol.sortByPopularity)
         
-        sortABCButton.setTitleColor(.brandAccent, for: .normal)
+        sortABCButton.setTitleColor(.accent, for: .normal)
         sortABCButton.applySymbol(Symbol.sortByName)
         
-        boardChangeButton.setTitleColor(.brandAccent, for: .normal)
+        boardChangeButton.setTitleColor(.accent, for: .normal)
         boardChangeButton.applySymbol(Symbol.textMode)
         
-        self.nextKeyboardButton.setTitleColor(.brandAccent, for: .normal)
+        self.nextKeyboardButton.setTitleColor(.accent, for: .normal)
         self.nextKeyboardButton.applySymbol(Symbol.globe)
         self.nextKeyboardButton.addTarget(self, action: #selector(handleInputModeList(from:with:)), for: .allTouchEvents)
         self.notFullBGView.backgroundColor = .bgBase
-        self.notFullButton.backgroundColor = .brandAccent
+        self.notFullButton.backgroundColor = .accent
         self.notFullButton.titleLabel?.adjustsFontSizeToFitWidth = true
         self.notFullButton.setTitleColor(.onAccent, for: .normal)
         self.notFullButton.applyCornerRadius(Radius.small)
@@ -276,11 +276,11 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     
     func sortState() {
         if favSortFlag {
-            sortRankButton.setTitleColor(.brandAccent, for: .normal)
+            sortRankButton.setTitleColor(.accent, for: .normal)
             sortABCButton.setTitleColor(.gray, for: .normal)
         } else {
             sortRankButton.setTitleColor(.gray, for: .normal)
-            sortABCButton.setTitleColor(.brandAccent, for: .normal)
+            sortABCButton.setTitleColor(.accent, for: .normal)
         }
         collectionView.reloadData()
     }

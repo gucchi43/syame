@@ -57,7 +57,7 @@ class WelcomeViewController: UIViewController {
         explainLabel.adjustsFontForContentSizeCategory = true
         nextButton.setTitleColor(.onAccent, for: .normal)
         nextButton.applyCornerRadius(Radius.small)
-        nextButton.backgroundColor = .brandAccent
+        nextButton.backgroundColor = .accent
         nextButton.titleLabel?.adjustsFontSizeToFitWidth = true
         nextButton.setTitle(LocalizeKey.welcomeDone.localizedString(), for: .normal)
     }

@@ -20,8 +20,8 @@ class PhotoCollectionViewCell: UICollectionViewCell {
     var isCheck: Bool = false {
         didSet {
             if isCheck {
-                choiceCoverLabel.textColor = .brandAccent
-                choiceCover2View.backgroundColor = .brandAccent
+                choiceCoverLabel.textColor = .accent
+                choiceCover2View.backgroundColor = .accent
                 choiceCover2View.isHidden = false
                 choiceCoverLabel.isHidden = false
             } else {
@@ -86,10 +86,10 @@ class PhotoCollectionViewCell: UICollectionViewCell {
 
     func addCellconfigure() {
         photoImageView.image = .symbol(Symbol.add, pointSize: 44)
-        photoImageView.tintColor = .brandAccent
+        photoImageView.tintColor = .accent
         photoImageView.contentMode = .center
         photoImageView.contentMode = .center
-        titleLabel.textColor = .brandAccent
+        titleLabel.textColor = .accent
         titleLabel.text = LocalizeKey.addPhotoFromApp.localizedString()
         choiceCover2View.isHidden = true
         choiceCoverLabel.isHidden = true

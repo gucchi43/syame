@@ -57,7 +57,7 @@ class UsageViewController: UIViewController {
         nextButton.setTitle(LocalizeKey.settingDone.localizedString(), for: .normal)
         nextButton.setTitleColor(.onAccent, for: .normal)
         nextButton.titleLabel?.adjustsFontSizeToFitWidth = true
-        nextButton.backgroundColor = .brandAccent
+        nextButton.backgroundColor = .accent
         nextButton.applyCornerRadius(Radius.small)
         subLabel.textColor = .textPrimary
         subLabel.adjustsFontForContentSizeCategory = true
