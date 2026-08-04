@@ -6,38 +6,18 @@
  Copyright © 2019 Hiroki Taniguchi. All rights reserved.
  */
 
-"test" = "TEST";
 "baseOK" = "OK";
 "baseCancel" = "Cansell";
-"baseBack" = "BACK";
-
-"tabMyBoard" = "MYBOARD";
-"tabNew" = "NEW";
-"tabPopular" = "POPULAR";
-"tabHumor" = "HOMOR";
-"tabCool" = "COOL";
-"tabCute" = "CUTE";
-"tabSerious" = "SERIOUS";
-"tabOther" = "OTHER";
 
 "navMyBoard" = "MYBOARD";
-"navNew" = "NEW";
-"navPopular" = "POPULAR";
-"navHumor" = "HUMOR";
-"navCool" = "COOL";
-"navCute" = "CUTE";
-"navSerious" = "SERIOUS";
-"navOther" = "OTHER";
 
 "doneUploadToast" = "Success upload!";
-"othersEmptyTitle" = "Not found...";
 "myBoardEmptyTitle" = "Ret's save photo \nin MYBOARD→";
 
 "menuHome" = "Home";
 "menuSetting" = "Set up keyboard";
 "menuLine" = "Contact to LINE";
 "menuOfficial" = "Official web";
-"menuOther" = "About";
 
 "addNavTitle" = "Add photo";
 "addInputTitle" = "Title";
@@ -51,63 +31,31 @@
 "genreSerious" = "SERIOUS";
 "genreOther" = "OTHER";
 "addPublicSwitchOn" = "Public";
-"addPublicSwitchOff" = "Private";
 "addDone" = "OK";
 
-"settingTitle" = "Set up keyboard";
+"settingTitle" = "Send directly from the keyboard.";
 "settingFirstBoaldText" = " [Keyboards] ";
 "settingFirstNormalText" = "Tap";
 "settingSecondBoaldText" = " PKB ";
 "settingSecondNormalText" = "Turn on";
 "settingThirdBoaldText" = " Allow Full Access ";
 "settingThirdNormalText" = "Turn on";
-"settingDiscription" = "This lets you use PKB in your keyboard. If you can't set up PKB, plese conatct from [Menu] - [Contact to LINE].";
-"settingDone" = "GET STARTED";
+"settingDiscription" = "Full Access is required to copy and paste images. We never read or transmit what you type.";
+"settingDone" = "Open Settings";
 
-"welcomeTitle" = "🎉Welcome to PKB!!!🎉";
-"welcomeFirst1" = "P";
-"welcomeFirst2" = "hoto wo";
-"welcomeFirst3" = "!";
-"welcomeSecond1" = "K";
-"welcomeSecond2" = "eyboard de";
-"welcomeSecond3" = "!";
-"welcomeThird1" = "B";
-"welcomeThird2" = "akyu----n";
-"welcomeThird3" = "!";
-"welcomeFourth" = "Yeaaaah!!!";
-"welcomeDiscription" = "Welcome to PKB!\nPKB is a keyboard app makes it easy to send photo posted like stamps.\nFirstly, [save] an photo posted by someone and add it to MYBOARD!";
-"welcomeDiscriptionFirst" = "Good job set up keyboard！\nLet's tell you how to keyboard from ";
-"welcomeDiscriptionSecond" = "PKB support stuff's\nKAWASAKI LINE";
-"welcomeDiscriptionThird" = "!!!";
-"welcomeDone" = "KAWASAKI's LINE";
-"welcomeSkip" = "Skip";
-
-"topSubtitle" = "You can send photo very easy & quickly from this keyboard app";
-"topStart" = "START";
-"topRequestFirst" = "By using this application,you agree to ";
+"topSubtitle" = "Photos, screenshots, anything. Paste without leaving the conversation.";
+"topStart" = "Get started";
+"topRequestFirst" = "By starting, you agree to the ";
 "topRequestSecond" = "the Terms of Service";
 "topRequestThird" = " and ";
 "topRequestFourth" = "Privacy Policy";
 "topRequestFifth" = ".";
 
-"reportContent" = "Report Contents";
 "blockContent" = "This content will be hidden";
-"blockMessage" = "Shall you ";
-"blockOK" = "OK";
-"blockCancel" = "Cancel";
-"butSavedContent" = "Can't do it because it's saved";
-"butSavedOK" = "OK";
-"spam" = "It's spam";
-"notContent" = "It's sensitive";
 "cancel" = "Cancel";
 
 //キーボード側
 "notFullButton" = "Go to setting";
-"notFullLabelFirst" = "[PKB]";
-"notFullLabelSecond" = " → ";
-"notFullLabelThird" = "[Keyboards]";
-"notFullLabelFourth" = "[Allow Full Access]";
-"notFullLabelFifth" = "Turn on ";
 
 "addPhotoFromApp" = "Add images from the app";
 "updateAlertTitle" = "Update available";
@@ -118,3 +66,5 @@
 "menuDelete" = "Delete";
 "menuDeleteConfirm" = "Delete this image?";
 "copiedToast" = "Copied";
+"topHeadline" = "Send your favorite images from the keyboard.";
+"settingLater" = "Later";

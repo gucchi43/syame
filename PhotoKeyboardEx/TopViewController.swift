@@ -42,7 +42,16 @@ class TopViewController: UIViewController, UITextViewDelegate {
     func initLayout() {
         logoImage.alpha = 0.0
         subTitleLabel.alpha = 0.0
-        subTitleLabel.text = LocalizeKey.topSubtitle.localizedString()
+        // 何ができるアプリなのかを最初に伝える。
+        // 以前はロゴと開始ボタンだけで、説明が一言も無かった。
+        subTitleLabel.numberOfLines = 0
+        subTitleLabel.textAlignment = .center
+        subTitleLabel.adjustsFontForContentSizeCategory = true
+        subTitleLabel.attributedText =
+            (LocalizeKey.topHeadline.localizedString() + "\n\n")
+                .withFont(UIFont.scaled(.title3, weight: .bold)).withTextColor(.textPrimary)
+            + LocalizeKey.topSubtitle.localizedString()
+                .withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textSecondary)
         startButton.setTitleColor(.onAccent, for: .normal)
         startButton.applyCornerRadius(Radius.small)
         startButton.backgroundColor = .accent
