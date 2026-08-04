@@ -36,8 +36,8 @@ class PhotoCollectionViewCell: UICollectionViewCell {
 
     override func awakeFromNib() {
         super.awakeFromNib()
-        self.backgroundColor = .bgSurface
-        photoImageView.backgroundColor = .bgBase
+        self.backgroundColor = .keyboardSurface
+        photoImageView.backgroundColor = .keyboardBase
         titleLabel.textColor = .textPrimary
         choiceCoverView.animation = PhotoCollectionViewCell.fireworksAnimation
     }

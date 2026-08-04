@@ -18,7 +18,7 @@ class TextCollectionViewCell: UICollectionViewCell {
         textLabel.textColor = .textPrimary
         coverView.applyCornerRadius(Radius.small)
         coverView.clipsToBounds = true
-        coverView.backgroundColor = .bgSurface
+        coverView.backgroundColor = .keyboardSurface
     }
     
     func configure(content: String) {

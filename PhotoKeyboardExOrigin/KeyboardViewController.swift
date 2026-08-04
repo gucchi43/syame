@@ -109,6 +109,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        applyHostKeyboardAppearance()
         baseSetUp()
         commonInit()
         collectionInit()
@@ -165,7 +166,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     }
 
     func commonInit() {
-        self.view.backgroundColor = .bgBase
+        self.view.backgroundColor = .keyboardBase
         homeButton.setTitleColor(.accent, for: .normal)
         homeButton.applySymbol(Symbol.home)
         
@@ -184,7 +185,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         self.nextKeyboardButton.setTitleColor(.accent, for: .normal)
         self.nextKeyboardButton.applySymbol(Symbol.globe)
         self.nextKeyboardButton.addTarget(self, action: #selector(handleInputModeList(from:with:)), for: .allTouchEvents)
-        self.notFullBGView.backgroundColor = .bgBase
+        self.notFullBGView.backgroundColor = .keyboardBase
         self.notFullButton.backgroundColor = .accent
         self.notFullButton.titleLabel?.adjustsFontSizeToFitWidth = true
         self.notFullButton.setTitleColor(.onAccent, for: .normal)
@@ -207,7 +208,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     func collectionInit() {
         collectionView.register(UINib(nibName: "PhotoCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "PhotoCollectionViewCell")
         collectionView.register(UINib(nibName: "TextCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "TextCollectionViewCell")
-        collectionView.backgroundColor = .bgBase
+        collectionView.backgroundColor = .keyboardBase
         collectionView.allowsMultipleSelection = false
         updateViewConstraints()
         collectionView.dataSource = self
@@ -296,7 +297,29 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     }
     
     override func textDidChange(_ textInput: UITextInput?) {
-        // The app has just changed the document's contents, the document context has been updated.
+        // 入力欄が切り替わるとホスト側の指定も変わりうるため、ここでも追従させる
+        applyHostKeyboardAppearance()
+    }
+
+    /// ホストアプリが指定したキーボードの明暗に合わせる。
+    ///
+    /// キーボードの明暗は端末のダークモード設定ではなく、
+    /// ホストアプリの keyboardAppearance で決まる。
+    /// セマンティックカラーに任せるだけでは、明るいアプリの上で
+    /// PKB だけが暗いという状態になる。
+    private func applyHostKeyboardAppearance() {
+        let style: UIUserInterfaceStyle
+        switch textDocumentProxy.keyboardAppearance {
+        case .dark:
+            style = .dark
+        case .light:
+            style = .light
+        default:
+            // 指定なし。純正キーボードと同じく端末の設定に従う
+            style = .unspecified
+        }
+        guard view.overrideUserInterfaceStyle != style else { return }
+        view.overrideUserInterfaceStyle = style
     }
     
     func copyBoard() {
