@@ -17,7 +17,7 @@ public final class GroupeDefaults {
 
     private enum Keys: String {
         case authUid, launchCount, sendCount
-        case usageNeedFlag, welcomeNeedFlag, registerNeedFlag
+        case usageNeedFlag, registerNeedFlag
         case blockContents
         case lastKeyboardOpenResult
     }
@@ -59,17 +59,6 @@ public final class GroupeDefaults {
 
     public func usageDone() {
         sharedDefaults.set(false, forKey: Keys.usageNeedFlag.rawValue)
-    }
-
-    public func isWelcomePush() -> Bool {
-        if sharedDefaults.object(forKey: Keys.welcomeNeedFlag.rawValue) == nil {
-            return true
-        }
-        return sharedDefaults.bool(forKey: Keys.welcomeNeedFlag.rawValue)
-    }
-
-    public func welcomeDone() {
-        sharedDefaults.set(false, forKey: Keys.welcomeNeedFlag.rawValue)
     }
 
     public func incrementLaunchCount() {

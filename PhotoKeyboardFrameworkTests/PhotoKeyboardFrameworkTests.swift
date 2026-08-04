@@ -19,8 +19,7 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
     /// (キー名を変えると既存ユーザーの保存値が失われるため、変更時はこのテストも落ちてよい)。
     private static let managedDefaultsKeys = [
         "sendCount",
-        "registerNeedFlag", "usageNeedFlag", "welcomeNeedFlag",
-        "blockContents"
+        "registerNeedFlag", "usageNeedFlag", "blockContents"
     ]
     private var savedDefaults: [String: Any] = [:]
 
@@ -318,15 +317,12 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         let defaults = GroupeDefaults.shared
         XCTAssertTrue(defaults.isRegisterPush())
         XCTAssertTrue(defaults.isUsagePush())
-        XCTAssertTrue(defaults.isWelcomePush())
 
         defaults.registerDone()
         defaults.usageDone()
-        defaults.welcomeDone()
 
         XCTAssertFalse(defaults.isRegisterPush(), "完了後も登録画面が出続ける")
         XCTAssertFalse(defaults.isUsagePush(), "完了後も使い方画面が出続ける")
-        XCTAssertFalse(defaults.isWelcomePush(), "完了後もウェルカム画面が出続ける")
     }
 
     /// レビュー依頼は送信8回目で1度だけ。
@@ -504,5 +500,24 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         }
         XCTAssertEqual(first.id, second.id, "見本画像のIDが呼び出しごとに変わっている")
         XCTAssertEqual(first.ownerId, "official", "見本画像の目印が失われている")
+    }
+
+    // MARK: - ローカライズ
+
+    /// 定義したキーすべてに訳が用意されていること。
+    /// NSLocalizedString は訳が無いとキー名をそのまま返すため、
+    /// 画面に "settingLater" のような文字列が出てしまう。
+    func testAllLocalizeKeysHaveTranslations() {
+        var missing: [String] = []
+        for key in LocalizeKey.allCases where key.localizedString() == key.rawValue {
+            missing.append(key.rawValue)
+        }
+        XCTAssertTrue(missing.isEmpty, "訳が無いキー: \(missing)")
+    }
+
+    /// 訳が空文字でないこと。空にすると画面上で何も出ずに気づけない
+    func testNoLocalizeKeyIsEmpty() {
+        let empties = LocalizeKey.allCases.filter { $0.localizedString().isEmpty }.map { $0.rawValue }
+        XCTAssertTrue(empties.isEmpty, "訳が空のキー: \(empties)")
     }
 }
