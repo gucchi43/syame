@@ -427,7 +427,7 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
                                         "\(mode): 本文がカード面に対して読めない")
             XCTAssertGreaterThanOrEqual(contrastRatio(.textSecondary, .bgBase, dark: dark), 4.5,
                                         "\(mode): 補足テキストが地に対して読めない")
-            XCTAssertGreaterThanOrEqual(contrastRatio(.onAccent, .brandAccent, dark: dark), 4.5,
+            XCTAssertGreaterThanOrEqual(contrastRatio(.onAccent, .accent, dark: dark), 4.5,
                                         "\(mode): アクセントで塗ったボタンの文字が読めない")
         }
     }
@@ -445,7 +445,8 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
     func testAllSymbolsExist() {
         let names = [Symbol.menu, Symbol.saveCount, Symbol.more, Symbol.textMode, Symbol.globe,
                      Symbol.emptyState, Symbol.home, Symbol.imageMode, Symbol.add, Symbol.help,
-                     Symbol.sortByName, Symbol.sortByPopularity, Symbol.close]
+                     Symbol.sortByName, Symbol.sortByPopularity, Symbol.close,
+                     Symbol.copy, Symbol.delete]
         for name in names {
             XCTAssertNotNil(UIImage(systemName: name), "SF Symbol が存在しない: \(name)")
         }

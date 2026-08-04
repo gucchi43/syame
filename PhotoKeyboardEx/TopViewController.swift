@@ -45,7 +45,7 @@ class TopViewController: UIViewController, UITextViewDelegate {
         subTitleLabel.text = LocalizeKey.topSubtitle.localizedString()
         startButton.setTitleColor(.onAccent, for: .normal)
         startButton.applyCornerRadius(Radius.small)
-        startButton.backgroundColor = .brandAccent
+        startButton.backgroundColor = .accent
         startButton.titleLabel?.adjustsFontSizeToFitWidth = true
         startButton.setTitle(LocalizeKey.topStart.localizedString(), for: .normal)
 
@@ -72,7 +72,7 @@ class TopViewController: UIViewController, UITextViewDelegate {
         }
 
         requestDescription.attributedText = attributedString
-        requestDescription.linkTextAttributes = [.foregroundColor: UIColor.brandAccent]
+        requestDescription.linkTextAttributes = [.foregroundColor: UIColor.accent]
         requestDescription.isEditable = false
         requestDescription.isScrollEnabled = false
         requestDescription.backgroundColor = .clear

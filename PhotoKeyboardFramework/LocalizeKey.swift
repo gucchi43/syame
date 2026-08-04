@@ -91,6 +91,10 @@ public enum LocalizeKey: String {
     case spam
     case notContent
     case cancel
+    case menuCopy
+    case menuDelete
+    case menuDeleteConfirm
+    case copiedToast
     
     
     //キーボード側

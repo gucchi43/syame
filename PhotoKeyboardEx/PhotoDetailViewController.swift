@@ -45,7 +45,7 @@ class PhotoDetailViewController: UIViewController {
 
         zoomImageView.image = rPhoto?.image
 
-        closeButton.tintColor = .brandAccent
+        closeButton.tintColor = .accent
         closeButton.applySymbol(Symbol.close)
         closeButton.titleLabel?.shadowColor = .black
         closeButton.titleLabel?.shadowOffset = CGSize(width: 1, height: 1)

@@ -76,8 +76,8 @@ class AddViewController: UIViewController {
         genreListView.shadowOffset = CGSize(width: 1, height: 1)
         genreListView.borderWidth = 2
         genreListView.shadowColor = .black
-        genreListView.textColor = .brandAccent
-        genreListView.borderColor = .brandAccent
+        genreListView.textColor = .accent
+        genreListView.borderColor = .accent
         genreListView.tagBackgroundColor = .bgSurface
         addButtonState()
     }
@@ -89,24 +89,24 @@ class AddViewController: UIViewController {
     func addButtonState() {
         if !(titleTextField.text ?? "").isEmpty && choiceImage != nil && selectedJenreTag != nil {
             doneButton.isEnabled = true
-            doneButton.backgroundColor = .brandAccent
+            doneButton.backgroundColor = .accent
             doneButton.setTitleColor(.onAccent, for: .normal)
         } else {
             doneButton.isEnabled = false
-            doneButton.backgroundColor = UIColor.brandAccent.withAlphaComponent(0.35)
+            doneButton.backgroundColor = UIColor.accent.withAlphaComponent(0.35)
             doneButton.setTitleColor(.onAccent, for: .normal)
         }
     }
     
     func setTagColor(tag: TagView) {
-        genreListView.textColor = .brandAccent
-        genreListView.borderColor = .brandAccent
+        genreListView.textColor = .accent
+        genreListView.borderColor = .accent
         genreListView.tagBackgroundColor = .bgSurface
         
         if tag.isSelected {
             tag.textColor = .onAccent
-            tag.borderColor = .brandAccent
-            tag.tagBackgroundColor = .brandAccent
+            tag.borderColor = .accent
+            tag.tagBackgroundColor = .accent
         }
     }
     

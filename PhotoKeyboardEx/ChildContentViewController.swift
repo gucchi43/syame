@@ -9,6 +9,7 @@
 import UIKit
 import PhotoKeyboardFramework
 import RealmSwift
+import Toast
 
 /// マイボード(端末に保存済みの画像)の一覧。
 /// 公開フィードを廃止したため、データソースは Realm のみ。
@@ -37,7 +38,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         collectionView.dataSource = self
         collectionView.delegate = self
         setupCollectionView()
-        collectionView.register(UINib(nibName: "PhotoCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "PhotoCollectionViewCell")
+        collectionView.register(PhotoCollectionViewCell.self, forCellWithReuseIdentifier: PhotoCollectionViewCell.reuseIdentifier)
         collectionView.contentMode = .left
         collectionView.backgroundColor = .bgBase
         refreshControl.addTarget(self, action: #selector(self
@@ -55,8 +56,8 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
 
     private static let gridSpacing: CGFloat = 8
     private static let gridColumns = 2
-    /// セル下部の情報エリア(タイトル・保存数・saveボタン)の高さ。xibで固定されている値
-    private static let cellInfoHeight: CGFloat = 68
+    /// セル下部の情報エリアの高さ。セル側の定義をそのまま使う
+    private static let cellInfoHeight = PhotoCollectionViewCell.infoHeight
 
     /// 1行の高さを求める。画像は正方形にし、その下に情報エリアを積む。
     /// 高さを可変(estimated)にすると、同じ行の2つのセルで高さが揃わず隙間ができる。
@@ -169,21 +170,49 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         }
     }
 
-    /// マイボードから画像を取り除く。
-    /// 公開フィードが無くなったため、このボタンは「保存」ではなく「削除」の意味になった。
-    @objc func tapCellRemoveButton(sender: UIButton) {
-        // superviewを辿ると xib の階層を変えただけで壊れるため、座標からセルを引く
-        let point = sender.convert(CGPoint.zero, to: collectionView)
-        guard let indexPath = collectionView.indexPathForItem(at: point),
-              let photo = savedPhoto(at: indexPath.row) else {
-            return
-        }
+    /// セルの3点リーダーから開くメニューを組み立てる。
+    /// ローカルのデータなので削除の頻度は低い。1階層下げて誤操作を減らす。
+    private func makeMenu(for photo: RealmPhoto) -> UIMenu {
         let id = photo.id
-        RealmManager.shared.delete(docId: id, success: { () in
-            NotificationCenter.default.post(name: .updateSaveState, object: nil, userInfo: ["id": id, "saveFlag": false])
-        }) { (error) in
-            print(error)
+        let copy = UIAction(title: LocalizeKey.menuCopy.localizedString(),
+                            image: .symbol(Symbol.copy)) { [weak self] _ in
+            self?.copyToPasteboard(photo: photo)
         }
+        let delete = UIAction(title: LocalizeKey.menuDelete.localizedString(),
+                              image: .symbol(Symbol.delete),
+                              attributes: .destructive) { [weak self] _ in
+            self?.confirmDelete(id: id)
+        }
+        return UIMenu(children: [copy, delete])
+    }
+
+    /// キーボードを開かなくても貼り付けられるようにする。
+    /// フルアクセスの許可を得る前に価値を体験してもらうための導線。
+    private func copyToPasteboard(photo: RealmPhoto) {
+        guard let image = photo.image else { return }
+        image.copyToGeneralPasteboard()
+        RealmManager.shared.incrementUseNum(id: photo.id)
+        var style = ToastStyle()
+        style.messageColor = .onAccent
+        style.backgroundColor = .accent
+        style.cornerRadius = 20.0
+        style.horizontalPadding = 20.0
+        view.makeToast(LocalizeKey.copiedToast.localizedString(), duration: 1.5, position: .center, style: style)
+    }
+
+    private func confirmDelete(id: String) {
+        let alert = UIAlertController(title: nil,
+                                      message: LocalizeKey.menuDeleteConfirm.localizedString(),
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: LocalizeKey.menuDelete.localizedString(), style: .destructive) { _ in
+            RealmManager.shared.delete(docId: id, success: {
+                NotificationCenter.default.post(name: .updateSaveState, object: nil, userInfo: ["id": id, "saveFlag": false])
+            }, failure: { error in
+                print(error)
+            })
+        })
+        alert.addAction(UIAlertAction(title: LocalizeKey.baseCancel.localizedString(), style: .cancel))
+        present(alert, animated: true)
     }
 
     private func savedPhoto(at index: Int) -> RealmPhoto? {
@@ -205,12 +234,9 @@ extension ChildContentViewController: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoCollectionViewCell", for: indexPath)
-        if let cell = cell as? PhotoCollectionViewCell {
-            guard let photo = savedPhoto(at: indexPath.row) else { return cell }
-            cell.configure(photo: photo, saved: true)
-            cell.saveButton.tag = indexPath.row
-            cell.saveButton.addTarget(self, action: #selector(self.tapCellRemoveButton(sender: )), for: .touchUpInside)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCollectionViewCell.reuseIdentifier, for: indexPath)
+        if let cell = cell as? PhotoCollectionViewCell, let photo = savedPhoto(at: indexPath.row) {
+            cell.configure(photo: photo, menu: makeMenu(for: photo))
         }
         return cell
     }

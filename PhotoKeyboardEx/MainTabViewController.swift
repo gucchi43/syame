@@ -78,7 +78,7 @@ class MainTabViewController: UIViewController {
     @objc func finishToast(notification: Notification) {
         var style = ToastStyle()
         style.messageColor = .onAccent
-        style.backgroundColor = .brandAccent
+        style.backgroundColor = .accent
         style.cornerRadius = 20.0
         style.horizontalPadding = 20.0
         self.view.makeToast(LocalizeKey.doneUploadToast.localizedString(), duration: 3.0, position: .top, style: style)
@@ -88,15 +88,14 @@ class MainTabViewController: UIViewController {
     func layoutFAB() {
         let size: CGFloat = 56
         fabButton.frame = CGRect(x: 0, y: 0, width: size, height: size)
-        fabButton.backgroundColor = .brandAccent
+        fabButton.backgroundColor = .accent
         fabButton.applyCornerRadius(size / 2)
         fabButton.layer.shadowColor = UIColor.black.cgColor
         fabButton.layer.shadowOffset = CGSize(width: 0, height: 2)
         fabButton.layer.shadowOpacity = 0.3
         fabButton.layer.shadowRadius = 4
-        fabButton.setTitle("+", for: .normal)
-        fabButton.setTitleColor(.onAccent, for: .normal)
-        fabButton.titleLabel?.font = UIFont.scaled(.title3, weight: .regular)
+        fabButton.setImage(.symbol(Symbol.add, pointSize: 22, weight: .medium), for: .normal)
+        fabButton.tintColor = .onAccent
         fabButton.addTarget(self, action: #selector(tapFAB), for: .touchUpInside)
         fabButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(fabButton)

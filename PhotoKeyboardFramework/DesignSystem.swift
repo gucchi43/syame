@@ -83,12 +83,13 @@ extension UIColor {
     /// 補足・メタ情報。地に対して4.89:1で、本文基準の4.5:1を満たす。
     public static let textSecondary = adaptive(light: 0x6B6B6B, dark: 0x9B9B9B)
 
-    /// アクセント。塗りと選択状態にのみ使い、地や本文には使わない。
-    /// 白地で4.55:1、黒地で8.42:1。将来ユーザーが選べるテーマカラーに置き換える。
-    public static let brandAccent = adaptive(light: 0x00875A, dark: 0x30D158)
+    /// 操作要素の色。塗りボタンや選択状態に使い、地や本文には使わない。
+    ///
+    /// 有彩色のテーマカラーは持たない。並ぶのがユーザーの画像という彩度の高いもので、
+    /// 器が色を主張すると両方が弱くなるため、無彩色に倒している。
+    public static let accent = adaptive(light: 0x1F1F1F, dark: 0xE8E8E8)
 
-    /// アクセントで塗った面の上に載せる文字色。
-    /// ダークでは明るい緑になるため、白ではなく暗い色を載せる。
+    /// accent で塗った面の上に載せる文字・アイコンの色
     public static let onAccent = adaptive(light: 0xFFFFFF, dark: 0x1C1C1E)
 
     /// 区切り線
@@ -138,6 +139,8 @@ public enum Symbol {
     public static let sortByName = "textformat.abc"
     public static let sortByPopularity = "arrow.up.arrow.down"
     public static let close = "xmark"
+    public static let copy = "doc.on.doc"
+    public static let delete = "trash"
 }
 
 extension UIImage {
@@ -160,7 +163,7 @@ extension UIImage {
 
 extension UIButton {
     /// アイコンボタンとして設定する。文字ベースのアイコンを置き換えるための共通処理。
-    public func applySymbol(_ name: String, textStyle: UIFont.TextStyle = .body, tint: UIColor = .brandAccent) {
+    public func applySymbol(_ name: String, textStyle: UIFont.TextStyle = .body, tint: UIColor = .accent) {
         setTitle(nil, for: .normal)
         setImage(.symbol(name, textStyle: textStyle), for: .normal)
         tintColor = tint
@@ -169,7 +172,7 @@ extension UIButton {
 
 extension UIBarButtonItem {
     /// バーボタンをアイコン表示にする
-    public func applySymbol(_ name: String, tint: UIColor = .brandAccent) {
+    public func applySymbol(_ name: String, tint: UIColor = .accent) {
         title = nil
         image = .symbol(name)
         tintColor = tint
