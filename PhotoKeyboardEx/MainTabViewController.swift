@@ -61,18 +61,36 @@ class MainTabViewController: UIViewController {
         presentOnboardingIfNeeded()
     }
 
+    /// 起動時に出すのは Top だけにする。
+    ///
+    /// 以前はこの直後にキーボード設定の案内を挟んでいたが、
+    /// フルアクセスという重い許可を、価値を体験する前に要求する構造になっていた。
+    /// 設定の案内は最初の1枚を保存したあとに出す(showKeyboardSetupIfNeeded)。
     private func presentOnboardingIfNeeded() {
         guard presentedViewController == nil else { return }
-        if GroupeDefaults.shared.isRegisterPush() {
-            guard let vc = UIStoryboard(name: "Top", bundle: nil).instantiateInitialViewController() else { return }
-            present(vc, animated: false, completion: nil)
-        } else if GroupeDefaults.shared.isUsagePush() {
-            guard let nvc = UIStoryboard(name: "Usage", bundle: nil).instantiateInitialViewController() else { return }
-            present(nvc, animated: true, completion: nil)
-        } else if GroupeDefaults.shared.isWelcomePush() {
-            guard let nvc = UIStoryboard(name: "Welcome", bundle: nil).instantiateInitialViewController() else { return }
-            present(nvc, animated: true, completion: nil)
-        }
+        guard GroupeDefaults.shared.isRegisterPush() else { return }
+        seedTutorialPhotoIfNeeded()
+        guard let vc = UIStoryboard(name: "Top", bundle: nil).instantiateInitialViewController() else { return }
+        present(vc, animated: false, completion: nil)
+    }
+
+    /// 見本の画像を1枚入れておく。
+    /// 以前はキーボード設定画面の表示時に投入していたため、
+    /// その画面を出さなくなるとボードが空のままになる。
+    private func seedTutorialPhotoIfNeeded() {
+        guard let photo = makeOfficialPhoto() else { return }
+        let alreadySeeded = RealmManager.shared.realmData.contains { $0.id == photo.id }
+        guard !alreadySeeded else { return }
+        RealmManager.shared.save(data: photo, success: {}, failure: { error in print(error) })
+    }
+
+    /// 最初の1枚が保存できたところでキーボード設定を案内する。
+    /// 保存するものができて初めてキーボードが役に立つため、この順序にしている。
+    private func showKeyboardSetupIfNeeded() {
+        guard presentedViewController == nil else { return }
+        guard GroupeDefaults.shared.isUsagePush() else { return }
+        guard let nvc = UIStoryboard(name: "Usage", bundle: nil).instantiateInitialViewController() else { return }
+        present(nvc, animated: true, completion: nil)
     }
 
     @objc func finishToast(notification: Notification) {
@@ -83,6 +101,10 @@ class MainTabViewController: UIViewController {
         style.horizontalPadding = 20.0
         self.view.makeToast(LocalizeKey.doneUploadToast.localizedString(), duration: 3.0, position: .top, style: style)
         NotificationCenter.default.post(name: .allReload, object: nil, userInfo: nil)
+        // トーストと重ならないよう、表示が落ち着いてから案内する
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { [weak self] in
+            self?.showKeyboardSetupIfNeeded()
+        }
     }
 
     func layoutFAB() {
