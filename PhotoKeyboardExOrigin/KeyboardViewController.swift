@@ -151,11 +151,10 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
                 KeyboardViewController.log("tapped home link")
             }
         }
-        // 拡張では canOpenURL が使えずLINEの有無を判定できない。
-        // Safariを経由させないことを優先し、直接アプリを開くスキームを使う
-        if let url = OfficialLINE.appURL {
+        // 問い合わせ導線はLINEを廃止し、公式サイトに集約した
+        if let url = URL(string: "https://pkbkeyboard.studio.design") {
             KeyboardLinkOverlayView.attach(url: url, to: helpButton, in: view) {
-                KeyboardViewController.log("tapped LINE link")
+                KeyboardViewController.log("tapped help link")
             }
         }
         if let url = URL(string: UIApplication.openSettingsURLString) {
