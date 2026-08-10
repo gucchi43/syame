@@ -21,20 +21,32 @@ class MyMenuTableViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.contentInset = UIEdgeInsets(top: 64.0, left: 0, bottom: 0, right: 0)
+        // 上端の余白は viewDidLayoutSubviews でナビゲーションバーの実寸から決める
+        tableView.contentInsetAdjustmentBehavior = .never
         tableView.separatorStyle = .none
         tableView.backgroundColor = UIColor.clear
         tableView.scrollsToTop = false
         clearsSelectionOnViewWillAppear = false
         tableView.selectRow(at: IndexPath(row: selectedMenuItem, section: 0), animated: false, scrollPosition: .middle)
     }
-    
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // 行数が少ないと自動インセットが効かず、最初の行がナビゲーションバーと重なる。
+        // バーの下端を実測して確実に下げる。
+        let navBottom = sideMenuHost?.navigationBar.frame.maxY ?? view.safeAreaInsets.top
+        let top = navBottom + Spacing.l
+        if tableView.contentInset.top != top {
+            tableView.contentInset = UIEdgeInsets(top: top, left: 0, bottom: 0, right: 0)
+        }
+    }
+
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 4
+        return 3
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -54,8 +66,6 @@ class MyMenuTableViewController: UITableViewController {
             cell.textLabel?.text = LocalizeKey.menuHome.localizedString()
         case 1:
             cell.textLabel?.text = LocalizeKey.menuSetting.localizedString()
-        case 2:
-            cell.textLabel?.text = LocalizeKey.menuLine.localizedString()
         default:
             cell.textLabel?.text = LocalizeKey.menuOfficial.localizedString()
         }
@@ -90,9 +100,7 @@ class MyMenuTableViewController: UITableViewController {
             // 外部リンクは画面を差し替えないので選択状態は変えず、メニューは閉じる
             tableView.selectRow(at: IndexPath(row: selectedMenuItem, section: 0), animated: false, scrollPosition: .none)
             mainNav?.closeSideMenu()
-            if indexPath.row == 2 {
-                UIApplication.shared.openOfficialLINE()
-            } else if let url = URL(string: "https://pkbkeyboard.studio.design") {
+            if let url = URL(string: "https://pkbkeyboard.studio.design") {
                 UIApplication.shared.open(url)
             }
         }

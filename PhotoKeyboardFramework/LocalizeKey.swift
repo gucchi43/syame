@@ -8,42 +8,23 @@
 
 import Foundation
 
-public enum LocalizeKey: String {
+public enum LocalizeKey: String, CaseIterable {
     
     case baseOK
     case baseCancel
     
     case navMyBoard
-    case navNew
-    case navPopular
-    case navHumor
-    case navCool
-    case navCute
-    case navSerious
-    case navOther
     
     case doneUploadToast
-    case othersEmptyTitle
     case myBoardEmptyTitle
     
     case menuHome
     case menuSetting
-    case menuLine
     case menuOfficial
 
     case addNavTitle
     case addInputTitle
-    case addInputGenre
-    case subGenreMyBoard
-    case subGenreNew
-    case subGenrePopular
-    case genreHumor
-    case genreCool
-    case genreCute
-    case genreSerious
-    case genreOther
     case addPublicSwitchOn
-    case addPublicSwitchOff
     case addDone
     
     case settingTitle
@@ -55,24 +36,9 @@ public enum LocalizeKey: String {
     case settingThirdNormalText
     case settingDiscription
     case settingDone
+    case settingLater
     
-    case welcomeTitle
-    case welcomeFirst1
-    case welcomeFirst2
-    case welcomeFirst3
-    case welcomeSecond1
-    case welcomeSecond2
-    case welcomeSecond3
-    case welcomeThird1
-    case welcomeThird2
-    case welcomeThird3
-    case welcomeFourth
-    case welcomeDiscriptionFirst
-    case welcomeDiscriptionSecond
-    case welcomeDiscriptionThird
-    case welcomeDone
-    case welcomeSkip
-    
+    case topHeadline
     case topSubtitle
     case topStart
     case topRequestFirst
@@ -80,16 +46,7 @@ public enum LocalizeKey: String {
     case topRequestThird
     case topRequestFourth
     case topRequestFifth
-    
-    case reportContent
     case blockContent
-    case blockMessage
-    case blockOK
-    case blockCancel
-    case butSavedContent
-    case butSavedOK
-    case spam
-    case notContent
     case cancel
     case menuCopy
     case menuDelete
@@ -99,11 +56,6 @@ public enum LocalizeKey: String {
     
     //キーボード側
     case notFullButton
-    case notFullLabelFirst
-    case notFullLabelSecond
-    case notFullLabelThird
-    case notFullLabelFourth
-    case notFullLabelFifth
     case addPhotoFromApp
 
     case updateAlertTitle

@@ -19,8 +19,7 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
     /// (キー名を変えると既存ユーザーの保存値が失われるため、変更時はこのテストも落ちてよい)。
     private static let managedDefaultsKeys = [
         "sendCount",
-        "registerNeedFlag", "usageNeedFlag", "welcomeNeedFlag",
-        "blockContents"
+        "registerNeedFlag", "usageNeedFlag", "blockContents"
     ]
     private var savedDefaults: [String: Any] = [:]
 
@@ -222,80 +221,6 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         XCTAssertEqual(resized.scale, 1.0)
     }
 
-    // MARK: - ジャンルタグ
-
-    /// getKey() の戻り値はSupabaseの genre カラムにそのまま入る。
-    /// 変えると過去の投稿がそのタブに出てこなくなる
-    func testGenreTagKeysAreStable() {
-        let expected: [GenreTagType: String] = [
-            .myBoard: "myBoard",
-            .new: "new",
-            .popular: "popular",
-            .humor: "humor",
-            .cool: "cool",
-            .cute: "cute",
-            .serious: "serious",
-            .other: "other"
-        ]
-        for type in GenreTagType.allCases {
-            XCTAssertEqual(type.getKey(), expected[type],
-                           "\(type) のキーが変わった。既存の投稿が取得できなくなる")
-        }
-    }
-
-    /// キーが重複するとタブをまたいで同じ投稿が出たり、取得条件が衝突したりする
-    func testGenreTagKeysAreUnique() {
-        let keys = GenreTagType.allCases.map { $0.getKey() }
-        XCTAssertEqual(Set(keys).count, keys.count)
-    }
-
-    /// タブの並びは MainTabViewController の titles 配列(8件・固定順)と対応している。
-    /// 件数や順序が変わると見出しと中身がずれ、配列の範囲外アクセスにもなる
-    func testGenreTagOrderAndCountMatchesTabLayout() {
-        XCTAssertEqual(GenreTagType.getAllGenreTags(),
-                       [.myBoard, .new, .popular, .humor, .cool, .cute, .serious, .other],
-                       "タブの並びを変えるなら MainTabViewController の titles も直すこと")
-        XCTAssertEqual(GenreTagType.getAllGenreTags().count, 8)
-    }
-
-    /// 投稿画面のタグは表示文字列から型に戻して保存する。
-    /// 往復できないとジャンルを選んでも投稿ボタンが有効にならない
-    func testGetTypeFromTitleRoundTripsForAllCases() {
-        for type in GenreTagType.allCases {
-            XCTAssertEqual(GenreTagType.getTypeFromTitle(title: type.getLocalizeString()), type,
-                           "\(type) の表示文字列から型に戻せない")
-        }
-    }
-
-    /// 未知の文字列で nil を返さないと、無関係なタップでジャンルが確定してしまう
-    func testGetTypeFromTitleReturnsNilForUnknownTitle() {
-        XCTAssertNil(GenreTagType.getTypeFromTitle(title: "存在しないジャンル"))
-        XCTAssertNil(GenreTagType.getTypeFromTitle(title: ""))
-    }
-
-    /// ローカライズが欠けると getLocalizeString() がキー名や空文字を返し、
-    /// getTypeFromTitle() の一致判定が崩れてタグを選べなくなる
-    func testGenreLocalizedTitlesArePresentAndUnique() {
-        let titles = GenreTagType.allCases.map { $0.getLocalizeString() }
-        for (type, title) in zip(GenreTagType.allCases, titles) {
-            XCTAssertFalse(title.isEmpty, "\(type) の訳が空")
-            XCTAssertFalse(title.hasPrefix("subGenre") || title.hasPrefix("genre"),
-                           "\(type) の訳が見つからずキー名がそのまま返っている")
-        }
-        XCTAssertEqual(Set(titles).count, titles.count, "表示文字列が重複すると型に戻せない")
-    }
-
-    /// 投稿画面に出すジャンルは、ユーザーが投稿先に選べないマイボード・新着・人気を除いたもの。
-    /// removeSubrange(0...2) は並び順に依存しているため、並びを変えると誤ったタグが消える
-    func testGetAddAllGenreTitlesExcludesMyBoardNewAndPopular() {
-        let titles = GenreTagType.getAddAllGenreTitles()
-        XCTAssertEqual(titles,
-                       [GenreTagType.humor, .cool, .cute, .serious, .other].map { $0.getLocalizeString() })
-        XCTAssertFalse(titles.contains(GenreTagType.myBoard.getLocalizeString()))
-        XCTAssertFalse(titles.contains(GenreTagType.new.getLocalizeString()))
-        XCTAssertFalse(titles.contains(GenreTagType.popular.getLocalizeString()))
-    }
-
     /// 同じコンテンツを何度ブロックしてもリストは1件。
     /// 重複するとブロック一覧が際限なく膨らみ、一覧のフィルタが重くなる
     func testAddBlockContentsIgnoresDuplicates() {
@@ -318,15 +243,12 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         let defaults = GroupeDefaults.shared
         XCTAssertTrue(defaults.isRegisterPush())
         XCTAssertTrue(defaults.isUsagePush())
-        XCTAssertTrue(defaults.isWelcomePush())
 
         defaults.registerDone()
         defaults.usageDone()
-        defaults.welcomeDone()
 
         XCTAssertFalse(defaults.isRegisterPush(), "完了後も登録画面が出続ける")
         XCTAssertFalse(defaults.isUsagePush(), "完了後も使い方画面が出続ける")
-        XCTAssertFalse(defaults.isWelcomePush(), "完了後もウェルカム画面が出続ける")
     }
 
     /// レビュー依頼は送信8回目で1度だけ。
@@ -504,5 +426,24 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         }
         XCTAssertEqual(first.id, second.id, "見本画像のIDが呼び出しごとに変わっている")
         XCTAssertEqual(first.ownerId, "official", "見本画像の目印が失われている")
+    }
+
+    // MARK: - ローカライズ
+
+    /// 定義したキーすべてに訳が用意されていること。
+    /// NSLocalizedString は訳が無いとキー名をそのまま返すため、
+    /// 画面に "settingLater" のような文字列が出てしまう。
+    func testAllLocalizeKeysHaveTranslations() {
+        var missing: [String] = []
+        for key in LocalizeKey.allCases where key.localizedString() == key.rawValue {
+            missing.append(key.rawValue)
+        }
+        XCTAssertTrue(missing.isEmpty, "訳が無いキー: \(missing)")
+    }
+
+    /// 訳が空文字でないこと。空にすると画面上で何も出ずに気づけない
+    func testNoLocalizeKeyIsEmpty() {
+        let empties = LocalizeKey.allCases.filter { $0.localizedString().isEmpty }.map { $0.rawValue }
+        XCTAssertTrue(empties.isEmpty, "訳が空のキー: \(empties)")
     }
 }
