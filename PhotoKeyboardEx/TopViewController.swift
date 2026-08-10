@@ -40,6 +40,8 @@ class TopViewController: UIViewController, UITextViewDelegate {
     }
 
     func initLayout() {
+        // 旧ブランドの紫背景がストーリーボードに残っているため、ここで現行の配色に上書きする
+        view.backgroundColor = .bgBase
         logoImage.alpha = 0.0
         subTitleLabel.alpha = 0.0
         // 何ができるアプリなのかを最初に伝える。

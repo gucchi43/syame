@@ -17,10 +17,6 @@ class UsageViewController: UIViewController {
     @IBOutlet weak var secondLabel: UILabel!
     @IBOutlet weak var thirdLabel: UILabel!
     @IBOutlet weak var fourthLabel: UILabel!
-    @IBOutlet weak var firstImageView: UIImageView!
-    @IBOutlet weak var secondImageView: UIImageView!
-    @IBOutlet weak var thirdImageView: UIImageView!
-    @IBOutlet weak var fourthImageView: UIImageView!
     @IBOutlet weak var navBarButton: UIBarButtonItem!
     
     @IBOutlet weak var subLabel: UILabel!
@@ -43,6 +39,9 @@ class UsageViewController: UIViewController {
     }
     
     func commonInit() {
+        view.backgroundColor = .bgBase
+        // 手順のアイコン(テンプレート画像)を旧テーマの緑からモノトーンに揃える
+        view.tintColor = .accent
         scrollView.backgroundColor = .bgBase
         baseView.backgroundColor = .bgBase
         firstLabel.textColor = .textPrimary
