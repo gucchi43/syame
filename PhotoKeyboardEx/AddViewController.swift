@@ -10,23 +10,19 @@ import UIKit
 import StoreKit
 import PhotoKeyboardFramework
 import SwiftDate
-import TagListView
 
 class AddViewController: UIViewController {
 
     @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var genreLabel: UILabel!
     @IBOutlet weak var publicLabel: UILabel!
     @IBOutlet weak var closeButton: UIBarButtonItem!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var doneButton: UIButton!
-    @IBOutlet weak var genreListView: TagListView!
-    
+
     @IBOutlet weak var publicSwitch: UISwitch!
     var choiceImage: UIImage! //選択された元画像
-    var selectedJenreTag: GenreTagType?
-    
+
     /// 一般ユーザーによる公開投稿は停止したため常に false。
     /// 画像はサーバへ送らず端末内のRealmにのみ保存する。
     var publicFlag = false
@@ -41,12 +37,9 @@ class AddViewController: UIViewController {
         navigationItem.title = LocalizeKey.addNavTitle.localizedString()
         doneButton.setTitle(LocalizeKey.addDone.localizedString() , for: .normal)
         titleLabel.text = LocalizeKey.addInputTitle.localizedString()
-        genreLabel.text = LocalizeKey.addInputGenre.localizedString()
         publicLabel.text = LocalizeKey.addPublicSwitchOn.localizedString()
         titleLabel.textColor = .textPrimary
         titleLabel.adjustsFontForContentSizeCategory = true
-        genreLabel.textColor = .textPrimary
-        genreLabel.adjustsFontForContentSizeCategory = true
         publicLabel.textColor = .textPrimary
         publicLabel.adjustsFontForContentSizeCategory = true
         view.backgroundColor = .bgBase
@@ -61,24 +54,6 @@ class AddViewController: UIViewController {
         publicSwitch.isHidden = true
         publicLabel.isHidden = true
         closeButton.applySymbol(Symbol.close)
-        
-        genreListView.delegate = self
-        genreListView.backgroundColor = .clear
-        genreListView.addTags(GenreTagType.getAddAllGenreTitles())
-        genreListView.textFont = UIFont.scaled(.body, weight: .regular)
-        genreListView.shadowRadius = 2
-        genreListView.shadowOpacity = 0.4
-        genreListView.alignment = .left
-        genreListView.marginX = 12
-        genreListView.marginY = 6
-        genreListView.paddingX = 12
-        genreListView.paddingY = 6
-        genreListView.shadowOffset = CGSize(width: 1, height: 1)
-        genreListView.borderWidth = 2
-        genreListView.shadowColor = .black
-        genreListView.textColor = .accent
-        genreListView.borderColor = .accent
-        genreListView.tagBackgroundColor = .bgSurface
         addButtonState()
     }
     
@@ -87,7 +62,7 @@ class AddViewController: UIViewController {
     }
     
     func addButtonState() {
-        if !(titleTextField.text ?? "").isEmpty && choiceImage != nil && selectedJenreTag != nil {
+        if !(titleTextField.text ?? "").isEmpty && choiceImage != nil {
             doneButton.isEnabled = true
             doneButton.backgroundColor = .accent
             doneButton.setTitleColor(.onAccent, for: .normal)
@@ -95,18 +70,6 @@ class AddViewController: UIViewController {
             doneButton.isEnabled = false
             doneButton.backgroundColor = UIColor.accent.withAlphaComponent(0.35)
             doneButton.setTitleColor(.onAccent, for: .normal)
-        }
-    }
-    
-    func setTagColor(tag: TagView) {
-        genreListView.textColor = .accent
-        genreListView.borderColor = .accent
-        genreListView.tagBackgroundColor = .bgSurface
-        
-        if tag.isSelected {
-            tag.textColor = .onAccent
-            tag.borderColor = .accent
-            tag.tagBackgroundColor = .accent
         }
     }
     
@@ -198,40 +161,6 @@ class AddViewController: UIViewController {
         present(alert, animated: true)
     }
 }
-
-extension AddViewController: TagListViewDelegate {
-    // MARK: TagListViewDelegate
-    func tagPressed(_ title: String, tagView: TagView, sender: TagListView) {
-        print("Tag pressed: \(title), \(sender)")
-
-        guard let newTag = GenreTagType.getTypeFromTitle(title: title) else {
-            return
-        }
-        
-        if selectedJenreTag == newTag {
-            selectedJenreTag = nil
-            tagView.isSelected = false
-        } else if selectedJenreTag != nil {
-            genreListView.selectedTags().first?.isSelected = false
-            selectedJenreTag = newTag
-            tagView.isSelected = true
-        } else {
-            selectedJenreTag = newTag
-            tagView.isSelected = true
-        }
-        
-        print("genreListView.selectedTags().count : ", genreListView.selectedTags().count)
-        
-        setTagColor(tag: tagView)
-        addButtonState()
-    }
-    
-    func tagRemoveButtonPressed(_ title: String, tagView: TagView, sender: TagListView) {
-        print("Tag Remove pressed: \(title), \(sender)")
-        sender.removeTagView(tagView)
-    }
-}
-
 
 extension AddViewController: UITextFieldDelegate {
     //テキストフィールドでリターンが押されたときに通知され起動するメソッド

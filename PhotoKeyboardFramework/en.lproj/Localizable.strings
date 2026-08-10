@@ -20,15 +20,6 @@
 
 "addNavTitle" = "Add photo";
 "addInputTitle" = "Title";
-"addInputGenre" = "Genre";
-"subGenreMyBoard" = "MYBOARD";
-"subGenreNew" = "NEW";
-"subGenrePopular" = "POPULAR";
-"genreHumor" = "HOMOR";
-"genreCool" = "COOL";
-"genreCute" = "CUTE";
-"genreSerious" = "SERIOUS";
-"genreOther" = "OTHER";
 "addPublicSwitchOn" = "Public";
 "addDone" = "OK";
 

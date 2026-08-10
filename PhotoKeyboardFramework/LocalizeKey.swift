@@ -24,15 +24,6 @@ public enum LocalizeKey: String, CaseIterable {
 
     case addNavTitle
     case addInputTitle
-    case addInputGenre
-    case subGenreMyBoard
-    case subGenreNew
-    case subGenrePopular
-    case genreHumor
-    case genreCool
-    case genreCute
-    case genreSerious
-    case genreOther
     case addPublicSwitchOn
     case addDone
     

@@ -21,15 +21,6 @@
 
 "addNavTitle" = "Photoを追加";
 "addInputTitle" = "タイトル";
-"addInputGenre" = "ジャンル";
-"subGenreMyBoard" = "マイボード";
-"subGenreNew" = "新着";
-"subGenrePopular" = "人気";
-"genreHumor" = "ユーモア";
-"genreCool" = "クール";
-"genreCute" = "キュート";
-"genreSerious" = "シリアス";
-"genreOther" = "その他";
 "addPublicSwitchOn" = "公開";
 "addDone" = "OK";
 
