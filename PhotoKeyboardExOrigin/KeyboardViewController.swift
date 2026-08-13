@@ -192,12 +192,12 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         
         if Lang.langRootKey() == "JP" {
             self.notFullButton.setTitle("設定画面へ", for: .normal)
-            let notFullLabelStrig = "[PKB]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary) + "→".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary) + "[キーボード]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary) +
+            let notFullLabelStrig = "[ペリペリ]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary) + "→".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary) + "[キーボード]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary) +
                 "→".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary) + "[フルアクセスを許可する]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary) + "をオンにしてください。".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary)
             self.notFullLabel.attributedText = notFullLabelStrig
         } else {
             self.notFullButton.setTitle("Go to setting", for: .normal)
-            let notFullLabelStrig = "[PKB]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary) + "→".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary) + "[Keyboards]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary) +
+            let notFullLabelStrig = "[PERIPERI]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary) + "→".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary) + "[Keyboards]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary) +
                 "→".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary) + "Turn on ".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary) + "[Allow Full Access]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary)
             self.notFullLabel.attributedText = notFullLabelStrig
         }
@@ -305,7 +305,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     /// キーボードの明暗は端末のダークモード設定ではなく、
     /// ホストアプリの keyboardAppearance で決まる。
     /// セマンティックカラーに任せるだけでは、明るいアプリの上で
-    /// PKB だけが暗いという状態になる。
+    /// ペリペリだけが暗いという状態になる。
     private func applyHostKeyboardAppearance() {
         let style: UIUserInterfaceStyle
         switch textDocumentProxy.keyboardAppearance {

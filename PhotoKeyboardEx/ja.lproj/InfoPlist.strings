@@ -5,7 +5,7 @@
   Created by Hiroki Taniguchi on 2019/10/29.
   Copyright © 2019 Hiroki Taniguchi. All rights reserved.
 */
-"CFBundleDisplayName" = "PKB";
+"CFBundleDisplayName" = "ペリペリ";
 "NSCameraUsageDescription" = "キーボードに登録する画像をその場で撮影するためにカメラを使用します。";
 "NSPhotoLibraryAddUsageDescription" = "キーボードに登録した画像を写真ライブラリへ保存するために使用します。";
 "NSPhotoLibraryUsageDescription" = "キーボードに登録する画像を選択するために写真ライブラリを使用します。";
