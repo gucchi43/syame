@@ -16,7 +16,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        anonymousAuth()
         checkAppVersion()
         setLayout()
         GroupeDefaults.shared.incrementLaunchCount()
@@ -24,17 +23,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("[keyboard openURL] \(keyboardResult)")
         }
         return true
-    }
-
-    func anonymousAuth() {
-        Task {
-            do {
-                try await SupabaseManager.shared.ensureSignedIn()
-            } catch {
-                // 投稿時に再試行するためここでは記録のみ
-                print("anonymous sign in error: \(error)")
-            }
-        }
     }
 
     private func setLayout() {

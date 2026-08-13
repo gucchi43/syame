@@ -147,7 +147,9 @@ class AddViewController: UIViewController {
                                     imageWidth: Int(postedImage.size.width),
                                     getDay: Date().toString(),
                                     isPublic: isPublic,
-                                    ownerId: GroupeDefaults.shared.authUid())
+                                    // ownerId は見本画像の判定("official")にしか使っていない。
+                                    // 利用者の画像は端末内にしか無いため所有者の概念が要らない
+                                    ownerId: "")
         var saved = false
         RealmManager.shared.save(data: new, success: { saved = true }, failure: { _ in saved = false })
         return saved
