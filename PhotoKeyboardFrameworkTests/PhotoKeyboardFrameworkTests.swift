@@ -404,7 +404,7 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
     /// 使用するSF Symbolsが実在すること。名前を間違えるとアイコンが消える
     func testAllSymbolsExist() {
         let names = [Symbol.menu, Symbol.saveCount, Symbol.more, Symbol.textMode, Symbol.globe,
-                     Symbol.emptyState, Symbol.home, Symbol.imageMode, Symbol.add, Symbol.help,
+                     Symbol.emptyState, Symbol.home, Symbol.imageMode, Symbol.add,
                      Symbol.sortByName, Symbol.sortByPopularity, Symbol.close,
                      Symbol.copy, Symbol.delete]
         for name in names {

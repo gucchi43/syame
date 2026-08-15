@@ -74,7 +74,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var nextKeyboardButton: UIButton!
     @IBOutlet weak var homeButton: UIButton!
-    @IBOutlet weak var helpButton: UIButton!
     @IBOutlet weak var sortRankButton: UIButton!
     @IBOutlet weak var sortABCButton: UIButton!
     @IBOutlet weak var boardChangeButton: UIButton!
@@ -151,12 +150,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
                 KeyboardViewController.log("tapped home link")
             }
         }
-        // 問い合わせ導線はLINEを廃止し、公式サイトに集約した
-        if let url = URL(string: "https://pkbkeyboard.studio.design") {
-            KeyboardLinkOverlayView.attach(url: url, to: helpButton, in: view) {
-                KeyboardViewController.log("tapped help link")
-            }
-        }
         if let url = URL(string: UIApplication.openSettingsURLString) {
             KeyboardLinkOverlayView.attach(url: url, to: notFullButton, in: view) {
                 KeyboardViewController.log("tapped settings link")
@@ -164,13 +157,23 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         }
     }
 
+    /// 純正キーボードに合わせて上端の両角だけを丸める。
+    ///
+    /// 角の外側は塗らずに透かす必要があるため、自身をクリップして描画を止める。
+    /// 中身(コレクションビューや未許可の案内)は自前の地の色を持っているので、
+    /// クリップしないと角が塗りつぶされて四角いままになる。
+    private func applyKeyboardShape() {
+        view.layer.cornerRadius = Radius.card
+        view.layer.cornerCurve = .continuous
+        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        view.clipsToBounds = true
+    }
+
     func commonInit() {
+        applyKeyboardShape()
         self.view.backgroundColor = .keyboardBase
         homeButton.setTitleColor(.accent, for: .normal)
         homeButton.applySymbol(Symbol.home)
-        
-        helpButton.setTitleColor(.accent, for: .normal)
-        helpButton.applySymbol(Symbol.help)
         
         sortRankButton.setTitleColor(.accent, for: .normal)
         sortRankButton.applySymbol(Symbol.sortByPopularity)
@@ -235,12 +238,17 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         collectionView.collectionViewLayout.invalidateLayout()
     }
     
+    /// 画像を並べる面の高さ。画面の半分では場所を取りすぎるため 0.35 に抑えている。
+    /// 3列にしたことで1枚が小さくなり、低くしても同じ枚数が見える。
+    private static let imageBoardHeightRatio: CGFloat = 0.35
+
     func setUpHeightConstraint() {
         var customHeight: CGFloat!
         if textBoardFlag {
+            // 文字盤はキーの数と列数が固定なので、縮めると最終行が切れる
             customHeight = 200
         } else {
-            customHeight = UIScreen.main.bounds.height / 2
+            customHeight = UIScreen.main.bounds.height * KeyboardViewController.imageBoardHeightRatio
         }
         if heightConstraint == nil {
             heightConstraint = NSLayoutConstraint(item: view,
@@ -431,38 +439,50 @@ extension KeyboardViewController: UICollectionViewDataSource, UICollectionViewDe
         }
     }
     
+    /// 画像を並べる列数。縦持ちで3列。
+    /// 2列だと1枚が大きすぎて、キーボードの高さに2行しか入らなかった。
+    private static let imageColumnsPortrait = 3
+    private static let imageColumnsLandscape = 6
+    /// 文字盤はキーの数が決まっているため列数を変えない
+    private static let textColumns = 10
+
+    private var isLandscape: Bool {
+        return view.bounds.width > view.bounds.height
+    }
+
+    /// 列数から正方形セルの一辺を求める。
+    /// 端数を切り上げると最後の1列がはみ出して折り返るため、必ず切り捨てる。
+    private func gridCellSide(columns: Int) -> CGFloat {
+        // レイアウト確定前は collectionView の幅がまだ 0 のことがあり、
+        // そのまま計算すると全セルが潰れて何も見えなくなる
+        let width = collectionView.bounds.width > 0 ? collectionView.bounds.width : view.bounds.width
+        let available = width - Spacing.grid * CGFloat(columns - 1)
+        guard available > 0 else { return 0 }
+        return floor(available / CGFloat(columns))
+    }
+
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let columns: Int
         if textBoardFlag {
-            //　横幅を画面の10等分
-            if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
-                let cellSize:CGFloat = self.view.bounds.width/10 - 2.7
-                return CGSize(width: cellSize, height: cellSize)
-            } else {
-                let cellSize:CGFloat = self.view.bounds.width/10 - 2.7
-                return CGSize(width: cellSize, height: cellSize)
-            }
+            columns = KeyboardViewController.textColumns
         } else {
-            //　横幅を画面サイズの約半分にする
-            if UIScreen.main.bounds.width > UIScreen.main.bounds.height {
-                let cellSize:CGFloat = self.view.bounds.width/4 - 1.5
-                return CGSize(width: cellSize, height: cellSize)
-            } else {
-                let cellSize:CGFloat = self.view.bounds.width/2 - 0.5
-                return CGSize(width: cellSize, height: cellSize)
-            }
+            columns = isLandscape ? KeyboardViewController.imageColumnsLandscape
+                                  : KeyboardViewController.imageColumnsPortrait
         }
+        let side = gridCellSide(columns: columns)
+        return CGSize(width: side, height: side)
     }
-    
+
     // 水平方向におけるセル間のマージン
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 0.5
+        return Spacing.grid
     }
-    
+
     // 垂直方向におけるセル間のマージン
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 0.5
+        return Spacing.grid
     }
 }
 

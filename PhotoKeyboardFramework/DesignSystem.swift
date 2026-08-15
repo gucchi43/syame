@@ -168,7 +168,6 @@ public enum Symbol {
     public static let home = "house"
     public static let imageMode = "photo.on.rectangle"
     public static let add = "plus"
-    public static let help = "questionmark.circle"
     public static let sortByName = "textformat.abc"
     public static let sortByPopularity = "arrow.up.arrow.down"
     public static let close = "xmark"
