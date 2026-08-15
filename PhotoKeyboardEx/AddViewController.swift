@@ -13,6 +13,7 @@ import SwiftDate
 
 class AddViewController: UIViewController {
 
+    @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var publicLabel: UILabel!
     @IBOutlet weak var closeButton: UIBarButtonItem!
@@ -31,6 +32,61 @@ class AddViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         commonInit()
+        observeKeyboard()
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    // MARK: - キーボード回避
+
+    /// タイトル入力欄は画面の下半分にあり、キーボードが出ると隠れて何を打っているか見えなくなる。
+    /// スクロール領域を縮めたうえで入力欄まで送る。
+    private func observeKeyboard() {
+        let center = NotificationCenter.default
+        center.addObserver(self, selector: #selector(keyboardWillChangeFrame(_:)),
+                           name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        center.addObserver(self, selector: #selector(keyboardWillHide(_:)),
+                           name: UIResponder.keyboardWillHideNotification, object: nil)
+
+        // 入力欄の外を触ったら閉じられるようにする。閉じる手段が無いと下の完了ボタンも押せない
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        scrollView.addGestureRecognizer(tap)
+    }
+
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+
+    @objc private func keyboardWillChangeFrame(_ notification: Notification) {
+        guard let frame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+        // キーボードの高さは画面座標で来るため、自分の座標系に直してから重なりを測る
+        let overlap = scrollView.convert(frame, from: nil).intersection(scrollView.bounds).height
+        guard overlap > 0 else {
+            resetInsets()
+            return
+        }
+        scrollView.contentInset.bottom = overlap
+        scrollView.verticalScrollIndicatorInsets.bottom = overlap
+        scrollView.scrollRectToVisible(visibleRectForTitleField(), animated: true)
+    }
+
+    @objc private func keyboardWillHide(_ notification: Notification) {
+        resetInsets()
+    }
+
+    private func resetInsets() {
+        scrollView.contentInset.bottom = 0
+        scrollView.verticalScrollIndicatorInsets.bottom = 0
+    }
+
+    /// 入力欄だけを送ると見出しが隠れて何の入力なのか分からなくなるため、ラベルごと収める
+    private func visibleRectForTitleField() -> CGRect {
+        let field = scrollView.convert(titleTextField.bounds, from: titleTextField)
+        let label = scrollView.convert(titleLabel.bounds, from: titleLabel)
+        return field.union(label).insetBy(dx: 0, dy: -Spacing.m)
     }
     
     func commonInit() {
@@ -147,7 +203,9 @@ class AddViewController: UIViewController {
                                     imageWidth: Int(postedImage.size.width),
                                     getDay: Date().toString(),
                                     isPublic: isPublic,
-                                    ownerId: GroupeDefaults.shared.authUid())
+                                    // ownerId は見本画像の判定("official")にしか使っていない。
+                                    // 利用者の画像は端末内にしか無いため所有者の概念が要らない
+                                    ownerId: "")
         var saved = false
         RealmManager.shared.save(data: new, success: { saved = true }, failure: { _ in saved = false })
         return saved

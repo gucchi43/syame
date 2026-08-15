@@ -31,13 +31,30 @@ class MainTabViewController: UIViewController {
 
     func commonInit() {
         view.backgroundColor = .bgBase
-        navigationItem.title = LocalizeKey.navMyBoard.localizedString()
+        applyBrandTitle()
 
         barMenuButton.applySymbol(Symbol.menu)
 
         embedBoardViewController()
         layoutFAB()
         NotificationCenter.default.addObserver(self, selector: #selector(finishToast(notification:)), name: .finishUpload, object: nil)
+    }
+
+    /// ここはアプリ名が出る唯一の場所なので、本文書体ではなくブランドの書体で出す。
+    ///
+    /// titleView に差し替えているのは、ロゴタイプを起こしたあと
+    /// UILabel を UIImageView に置き換えるだけで済むようにするため。
+    /// navigationItem.title のままだと書体の指定がナビゲーションバー全体に及んでしまう。
+    private func applyBrandTitle() {
+        let label = UILabel()
+        label.text = LocalizeKey.navMyBoard.localizedString()
+        label.font = .brand()
+        label.textColor = .textPrimary
+        label.adjustsFontForContentSizeCategory = true
+        label.sizeToFit()
+        navigationItem.titleView = label
+        // VoiceOver とアプリ切り替え画面には文字列の側が要る
+        navigationItem.title = LocalizeKey.navMyBoard.localizedString()
     }
 
     /// 一覧を子ViewControllerとして敷く。FABは後から載せるため一覧より前面に来る。

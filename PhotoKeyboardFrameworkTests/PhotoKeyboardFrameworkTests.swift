@@ -368,6 +368,39 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         }
     }
 
+    /// アクセントはアイコンや枠線の着色にも使う。
+    /// UI部品はWCAGで3:1が要求され、藤色は明るいのでライトモードで割りやすい。
+    func testAccentIsUsableAsUIComponentColor() {
+        for dark in [false, true] {
+            XCTAssertGreaterThanOrEqual(contrastRatio(.accent, .bgBase, dark: dark), 3.0,
+                                        "\(dark ? "ダーク" : "ライト"): アクセントのアイコンが地に埋もれる")
+        }
+    }
+
+    /// accentSoft は選択状態の下地。面なので、地との差は小さいままでなければならない。
+    /// ここが開くと、選択されただけの行が画像より目立つ。
+    func testAccentSoftStaysAsSurface() {
+        for dark in [false, true] {
+            let mode = dark ? "ダーク" : "ライト"
+            XCTAssertLessThan(contrastRatio(.accentSoft, .bgBase, dark: dark), 1.5,
+                              "\(mode): 選択状態の下地が主張しすぎている")
+            XCTAssertGreaterThanOrEqual(contrastRatio(.textPrimary, .accentSoft, dark: dark), 4.5,
+                                        "\(mode): 選択状態の上の文字が読めない")
+        }
+    }
+
+    /// ブランド名は本文書体との差で名前として立つ。
+    /// withDesign(.rounded) が失敗すると黙って本文書体に戻り、差が消える。
+    func testBrandFontIsRoundedAndHeavy() {
+        let font = UIFont.brand()
+        XCTAssertTrue(font.fontName.lowercased().contains("rounded"),
+                      "丸ゴシックが取れていない: \(font.fontName)")
+        let traits = font.fontDescriptor.object(forKey: .traits) as? [UIFontDescriptor.TraitKey: Any]
+        let weight = traits?[.weight] as? CGFloat ?? 0
+        XCTAssertGreaterThanOrEqual(weight, UIFont.Weight.bold.rawValue,
+                                    "ブランド名が十分に太くない")
+    }
+
     /// 使用するSF Symbolsが実在すること。名前を間違えるとアイコンが消える
     func testAllSymbolsExist() {
         let names = [Symbol.menu, Symbol.saveCount, Symbol.more, Symbol.textMode, Symbol.globe,

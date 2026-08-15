@@ -9,7 +9,7 @@
 "baseOK" = "OK";
 "baseCancel" = "Cansell";
 
-"navMyBoard" = "MYBOARD";
+"navMyBoard" = "PERIPERI";
 
 "doneUploadToast" = "Success upload!";
 "myBoardEmptyTitle" = "Ret's save photo \nin MYBOARD→";
@@ -18,7 +18,7 @@
 "menuSetting" = "Set up keyboard";
 "menuOfficial" = "Official web";
 
-"addNavTitle" = "Add photo";
+"addNavTitle" = "Add a peri";
 "addInputTitle" = "Title";
 "addPublicSwitchOn" = "Public";
 "addDone" = "OK";

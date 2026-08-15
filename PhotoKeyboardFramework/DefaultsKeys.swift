@@ -16,7 +16,7 @@ public final class GroupeDefaults {
     public let sharedDefaults = UserDefaults(suiteName: GroupeDefaults.appGroupIdentifier) ?? .standard
 
     private enum Keys: String {
-        case authUid, launchCount, sendCount
+        case launchCount, sendCount
         case usageNeedFlag, registerNeedFlag
         case blockContents
         case lastKeyboardOpenResult
@@ -30,13 +30,6 @@ public final class GroupeDefaults {
 
     public func lastKeyboardOpenResult() -> String? {
         return sharedDefaults.string(forKey: Keys.lastKeyboardOpenResult.rawValue)
-    }
-
-    public func authUid() -> String {
-        return sharedDefaults.string(forKey: Keys.authUid.rawValue) ?? ""
-    }
-    public func setAuthUid(id: String) {
-        sharedDefaults.set(id, forKey: Keys.authUid.rawValue)
     }
 
     public func isRegisterPush() -> Bool {
