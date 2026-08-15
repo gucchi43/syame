@@ -10,7 +10,7 @@
 "baseCancel" = "キャンセル";
 
 //"navMyBoard" = "日本語";
-"navMyBoard" = "私の宝物！";
+"navMyBoard" = "ペリペリ";
 
 "doneUploadToast" = "アップロード完了！";
 "myBoardEmptyTitle" = "使いたい画像をsaveしよう →";
@@ -19,7 +19,7 @@
 "menuSetting" = "キーボード設定方法";
 "menuOfficial" = "公式サイト";
 
-"addNavTitle" = "Photoを追加";
+"addNavTitle" = "ペリを追加";
 "addInputTitle" = "タイトル";
 "addPublicSwitchOn" = "公開";
 "addDone" = "OK";

@@ -71,26 +71,32 @@ extension UIColor {
     /// 画面の地。
     /// 参照した5アプリ(setlog #F4F5F5 / relight #F5F5F5 / 推しスケ #F6F6F6 ほか)は
     /// いずれも純白を地に使っていない。
-    public static let bgBase = adaptive(light: 0xF5F5F5, dark: 0x131314)
+    /// 完全な無彩色ではなくアクセントの藤色へわずかに寄せてあり、灰色が「選ばれた灰色」に見える。
+    public static let bgBase = adaptive(light: 0xF5F4F8, dark: 0x141318)
 
     /// カード・セル・モーダルの面。地との差はごくわずかにする。
     /// 文字は高コントラスト、面は極低コントラストという二極構造が「軽さ」を作る。
-    public static let bgSurface = adaptive(light: 0xFFFFFF, dark: 0x1E1E20)
+    public static let bgSurface = adaptive(light: 0xFFFFFF, dark: 0x1F1E24)
 
-    /// 本文・見出し。地に対して16:1以上あり、淡い見た目でも可読性は落とさない。
-    public static let textPrimary = adaptive(light: 0x191919, dark: 0xF2F2F2)
+    /// 本文・見出し。地に対して15:1以上あり、淡い見た目でも可読性は落とさない。
+    public static let textPrimary = adaptive(light: 0x1A1922, dark: 0xF2F1F5)
 
-    /// 補足・メタ情報。地に対して4.89:1で、本文基準の4.5:1を満たす。
-    public static let textSecondary = adaptive(light: 0x6B6B6B, dark: 0x9B9B9B)
+    /// 補足・メタ情報。地に対して5.11:1で、本文基準の4.5:1を満たす。
+    public static let textSecondary = adaptive(light: 0x6A6775, dark: 0x9B98A6)
 
     /// 操作要素の色。塗りボタンや選択状態に使い、地や本文には使わない。
     ///
-    /// 有彩色のテーマカラーは持たない。並ぶのがユーザーの画像という彩度の高いもので、
-    /// 器が色を主張すると両方が弱くなるため、無彩色に倒している。
-    public static let accent = adaptive(light: 0x1F1F1F, dark: 0xE8E8E8)
+    /// アイコンのホログラムシールを敷く藤色から起こしたテーマカラー。
+    /// 藤色そのものは淡すぎて白文字が乗らないため、色相を保ったまま明度を落とし、
+    /// onAccent との比が 5.2:1 になる位置で止めている。
+    public static let accent = adaptive(light: 0x7362AE, dark: 0xB9AEE8)
 
     /// accent で塗った面の上に載せる文字・アイコンの色
-    public static let onAccent = adaptive(light: 0xFFFFFF, dark: 0x1C1C1E)
+    public static let onAccent = adaptive(light: 0xFFFFFF, dark: 0x1C1B22)
+
+    /// 選択状態やタグの下地に使う、accent を薄めた面。
+    /// accent をそのまま広い面に塗ると、並んだ画像より器が目立ってしまう。
+    public static let accentSoft = adaptive(light: 0xECE9F7, dark: 0x2A2540)
 
     /// キーボードの地。純正キーボードの色に寄せる。
     /// アプリの地(bgBase)をそのまま使うと、白いパネルが乗っているように見えて浮く。
@@ -100,7 +106,7 @@ extension UIColor {
     public static let keyboardSurface = adaptive(light: 0xFFFFFF, dark: 0x4A4A4F)
 
     /// 区切り線
-    public static let separatorLine = adaptive(light: 0xE2E2E4, dark: 0x2E2E31)
+    public static let separatorLine = adaptive(light: 0xE4E2EC, dark: 0x2F2D38)
 }
 
 // MARK: - タイポグラフィ
@@ -114,6 +120,26 @@ extension UIFont {
             .traits: [UIFontDescriptor.TraitKey.weight: weight]
         ])
         return UIFont(descriptor: descriptor, size: base.pointSize)
+    }
+}
+
+extension UIFont {
+    /// ブランド名を出すための書体。
+    ///
+    /// 丸ゴシック系の太字で、角の立った本文書体との差で名前が名前として立つ。
+    /// SF Pro Rounded は OS に入っているため同梱もライセンス確認も要らない。
+    /// 将来ロゴタイプを起こしたら、この関数ではなくベクタ画像に差し替える
+    /// (MainTabViewController の titleView を置き換えるだけで済むようにしてある)。
+    public static func brand(_ style: UIFont.TextStyle = .title3) -> UIFont {
+        let base = UIFont.preferredFont(forTextStyle: style)
+        let heavy = base.fontDescriptor.addingAttributes([
+            .traits: [UIFontDescriptor.TraitKey.weight: UIFont.Weight.heavy]
+        ])
+        // 丸ゴシックが使えない環境では太さだけ効かせる
+        guard let rounded = heavy.withDesign(.rounded) else {
+            return UIFont(descriptor: heavy, size: base.pointSize)
+        }
+        return UIFont(descriptor: rounded, size: base.pointSize)
     }
 }
 

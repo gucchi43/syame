@@ -131,6 +131,7 @@
                         <outlet property="doneButton" destination="LmT-RX-YZQ" id="ffr-O9-dgR"/>
                         <outlet property="imageView" destination="UFe-T6-h0D" id="yIs-YV-ETg"/>
                         <outlet property="publicLabel" destination="dGc-Nl-B3q" id="oH9-MG-3F9"/>
+                        <outlet property="scrollView" destination="NTC-22-ldv" id="Ap1-Sc-r0l"/>
                         <outlet property="publicSwitch" destination="j8r-JF-YKF" id="2E0-24-2Er"/>
                         <outlet property="titleLabel" destination="PtK-lM-8uT" id="vcp-FS-5AB"/>
                         <outlet property="titleTextField" destination="mN9-6W-0E2" id="siF-ZF-cjI"/>
