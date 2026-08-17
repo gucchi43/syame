@@ -83,7 +83,7 @@
                                                     </label>
                                                 </subviews>
                                             </stackView>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nTL-Y8-1KJ">
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nTL-Y8-1KJ" customClass="AuroraButton" customModule="PhotoKeyboardFramework">
                                                 <rect key="frame" x="137" y="512" width="140" height="40"/>
                                                 <constraints>
                                                     <constraint firstAttribute="width" constant="140" id="ALz-FM-xaG"/>

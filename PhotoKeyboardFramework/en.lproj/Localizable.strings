@@ -57,3 +57,5 @@
 "copiedToast" = "Copied";
 "topHeadline" = "Send your favorite images from the keyboard.";
 "settingLater" = "Later";
+"limitReachedTitle" = "You can keep up to 8.";
+"limitReachedMessage" = "Delete one of your images to add a new one.";

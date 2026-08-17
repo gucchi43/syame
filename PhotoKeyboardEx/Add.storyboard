@@ -94,7 +94,7 @@
                                     <constraint firstItem="QQP-M2-5xl" firstAttribute="width" secondItem="NTC-22-ldv" secondAttribute="width" id="w7d-3Y-qgE"/>
                                 </constraints>
                             </scrollView>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LmT-RX-YZQ">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LmT-RX-YZQ" customClass="AuroraButton" customModule="PhotoKeyboardFramework">
                                 <rect key="frame" x="0.0" y="816" width="414" height="80"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="80" id="keL-mn-4fH"/>

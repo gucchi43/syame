@@ -107,6 +107,131 @@ extension UIColor {
 
     /// 区切り線
     public static let separatorLine = adaptive(light: 0xE4E2EC, dark: 0x2F2D38)
+
+    /// オーロラの面に載せる文字・アイコンの色。
+    ///
+    /// 淡いオーロラの上では白の比が最も明るい帯で 1.3:1 しかなく、色だけでは読めない。
+    /// そのため白は必ず onAuroraShadow と組で使い、影で輪郭を作る(applyAuroraText)。
+    /// 明暗で変えないのは、下地のグラデーションが両モードで同じだから。
+    public static let onAurora = adaptive(light: 0xFFFFFF, dark: 0xFFFFFF)
+
+    /// 白い文字を淡い地から浮かせるための影。
+    /// 濃くすると縁が黒くにじんで見えるため、輪郭がわずかに立つ程度に留める。
+    public static let onAuroraShadow = UIColor(hex: 0x1A1922).withAlphaComponent(0.3)
+}
+
+// MARK: - オーロラ
+
+/// アイコンのホログラムシールと同じ虹。CTAとトーストに使う。
+///
+/// アイコンと同じ淡さをそのまま使っている。地(bgBase)との明度差は小さいので、
+/// ボタンは色そのものではなく、虹が動くことと角丸の形で認識させる。
+/// 文字は白ではなく onAurora(濃い色)を置くこと。
+///
+/// 端を同じ銀に戻してあるため、どの角度で切っても金属の連続に見える。
+/// 色と順序はアイコンの生成器(tools/make_icon.swift)と揃えること。
+public enum Aurora {
+    public static let colors: [UIColor] = [
+        UIColor(hex: 0xD7DEE8), UIColor(hex: 0xB9C8E8), UIColor(hex: 0xCFC0EC), UIColor(hex: 0xF0C6DE),
+        UIColor(hex: 0xF6DCC0), UIColor(hex: 0xDCEBC6), UIColor(hex: 0xC2E4E4), UIColor(hex: 0xD7DEE8),
+    ]
+    public static let locations: [NSNumber] = [0.0, 0.12, 0.26, 0.40, 0.54, 0.67, 0.80, 1.0]
+
+    /// 斜めに流す。水平だと帯が平行線に見えて金属らしさが出ない
+    public static let start = CGPoint(x: 0.0, y: 0.15)
+    public static let end = CGPoint(x: 1.0, y: 0.85)
+
+    public static func apply(to layer: CAGradientLayer) {
+        layer.colors = colors.map { $0.cgColor }
+        layer.locations = locations
+        layer.startPoint = start
+        layer.endPoint = end
+    }
+}
+
+/// 自前で塗るのではなく layer そのものをグラデーションにする。
+///
+/// CAGradientLayer をサブレイヤーとして足す方法だと、ビューの大きさが変わるたびに
+/// frame を追従させる必要があり、更新漏れで帯がずれる。layerClass を置き換えれば
+/// レイアウトに自動で追従する。
+public class AuroraView: UIView {
+    public override class var layerClass: AnyClass { CAGradientLayer.self }
+
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+        Aurora.apply(to: layer as! CAGradientLayer)
+    }
+
+    public required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        Aurora.apply(to: layer as! CAGradientLayer)
+    }
+}
+
+extension AuroraView {
+    /// オーロラで塗ったトーストを作る。
+    ///
+    /// Toast の ToastStyle は単色しか持てないため、塗りたい場合はビューごと渡す。
+    /// showToast(_ view:) は大きさを決めてくれないので、ここで確定させておく。
+    public static func makeToast(message: String, maxWidth: CGFloat) -> UIView {
+        let container = AuroraView()
+        container.applyCornerRadius(Radius.small)
+
+        let label = UILabel()
+        label.text = message
+        label.applyAuroraText()
+        label.font = .scaled(.subheadline, weight: .bold)
+        label.adjustsFontForContentSizeCategory = true
+        label.numberOfLines = 0
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(label)
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: container.topAnchor, constant: Spacing.m),
+            label.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -Spacing.m),
+            label.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: Spacing.xl),
+            label.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -Spacing.xl)
+        ])
+
+        let fitting = container.systemLayoutSizeFitting(
+            CGSize(width: maxWidth, height: UIView.layoutFittingCompressedSize.height),
+            withHorizontalFittingPriority: .fittingSizeLevel,
+            verticalFittingPriority: .fittingSizeLevel)
+        container.frame = CGRect(x: 0, y: 0,
+                                 width: min(fitting.width, maxWidth),
+                                 height: fitting.height)
+        return container
+    }
+}
+
+/// オーロラで塗るボタン。Storyboard 側でクラスをこれに変えて使う
+public class AuroraButton: UIButton {
+    public override class var layerClass: AnyClass { CAGradientLayer.self }
+
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+        commonInit()
+    }
+
+    public required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        commonInit()
+    }
+
+    private func commonInit() {
+        Aurora.apply(to: layer as! CAGradientLayer)
+        setTitleColor(.onAurora, for: .normal)
+        tintColor = .onAurora
+        titleLabel?.applyAuroraText()
+        // CTAは太字。細いままだと淡い地の上で線が痩せて読みにくい
+        titleLabel?.font = .scaled(.body, weight: .bold)
+        titleLabel?.adjustsFontForContentSizeCategory = true
+        // アイコンだけのボタン(FAB)は影が付かないので、レイヤー側にも同じ影を落とす
+        imageView?.layer.shadowColor = UIColor.onAuroraShadow.cgColor
+        imageView?.layer.shadowOffset = CGSize(width: 0, height: 1)
+        imageView?.layer.shadowOpacity = 1
+        imageView?.layer.shadowRadius = 2
+    }
 }
 
 // MARK: - タイポグラフィ
@@ -144,6 +269,16 @@ extension UIFont {
 }
 
 extension UILabel {
+    /// オーロラの上に置く文字の設定。
+    ///
+    /// 白のままだと淡い帯に沈むため、濃い影を薄く敷いて輪郭を作る。
+    /// 影は装飾ではなく可読性のための措置なので、白を使うなら必ず一緒に付けること。
+    public func applyAuroraText() {
+        textColor = .onAurora
+        shadowColor = .onAuroraShadow
+        shadowOffset = CGSize(width: 0, height: 1)
+    }
+
     /// テキストスタイルを適用し、文字サイズ設定への追従を有効にする。
     public func applyTextStyle(_ style: UIFont.TextStyle,
                                weight: UIFont.Weight = .regular,

@@ -118,15 +118,12 @@ class AddViewController: UIViewController {
     }
     
     func addButtonState() {
-        if !(titleTextField.text ?? "").isEmpty && choiceImage != nil {
-            doneButton.isEnabled = true
-            doneButton.backgroundColor = .accent
-            doneButton.setTitleColor(.onAccent, for: .normal)
-        } else {
-            doneButton.isEnabled = false
-            doneButton.backgroundColor = UIColor.accent.withAlphaComponent(0.35)
-            doneButton.setTitleColor(.onAccent, for: .normal)
-        }
+        let canSubmit = !(titleTextField.text ?? "").isEmpty && choiceImage != nil
+        doneButton.isEnabled = canSubmit
+        // 文字色と影は AuroraButton が持つ
+        // AuroraButton は layer 自体がグラデーションなので、
+        // backgroundColor を薄めても地の色は変わらない。無効状態は透明度で出す
+        doneButton.alpha = canSubmit ? 1.0 : 0.4
     }
     
     /// Storyboardからの接続が残っているため定義だけ残す。
@@ -159,10 +156,12 @@ class AddViewController: UIViewController {
 
     private enum UploadError: LocalizedError {
         case realmSaveFailed
+        case limitReached
 
         var errorDescription: String? {
             switch self {
             case .realmSaveFailed: return "端末への保存に失敗しました"
+            case .limitReached: return LocalizeKey.limitReachedMessage.localizedString()
             }
         }
     }
@@ -171,6 +170,11 @@ class AddViewController: UIViewController {
         // UIKitの値はメインスレッドで読み取ってからTaskに渡す
         guard let sourceImage = choiceImage,
               let postImage = sourceImage.resize(size: convertedImageSize(size: sourceImage.size)) else {
+            return
+        }
+        // 入口(FAB)でも見ているが、写真を選んでいる間に別経路で増える可能性があるため保存直前にも確かめる
+        guard RealmManager.shared.canSaveMorePhotos else {
+            showUploadError(UploadError.limitReached)
             return
         }
         let titleText = titleTextField.text ?? ""

@@ -192,12 +192,9 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         guard let image = photo.image else { return }
         image.copyToPasteboardWithWatermark()
         RealmManager.shared.incrementUseNum(id: photo.id)
-        var style = ToastStyle()
-        style.messageColor = .onAccent
-        style.backgroundColor = .accent
-        style.cornerRadius = 20.0
-        style.horizontalPadding = 20.0
-        view.makeToast(LocalizeKey.copiedToast.localizedString(), duration: 1.5, position: .center, style: style)
+        let toast = AuroraView.makeToast(message: LocalizeKey.copiedToast.localizedString(),
+                                         maxWidth: view.bounds.width - Spacing.l * 2)
+        view.showToast(toast, duration: 1.5, position: .center)
     }
 
     private func confirmDelete(id: String) {

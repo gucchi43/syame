@@ -17,7 +17,7 @@ class MainTabViewController: UIViewController {
 
     @IBOutlet weak var barMenuButton: UIBarButtonItem!
 
-    var fabButton = UIButton(type: .custom)
+    var fabButton = AuroraButton()
 
     private lazy var boardViewController: ChildContentViewController = {
         let storyboard = UIStoryboard(name: "ChildContent", bundle: .main)
@@ -40,12 +40,38 @@ class MainTabViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(finishToast(notification:)), name: .finishUpload, object: nil)
     }
 
-    /// ここはアプリ名が出る唯一の場所なので、本文書体ではなくブランドの書体で出す。
+    /// ナビゲーションバーの高さは44ptなので、上下に余白が残る大きさにする
+    private static let wordmarkHeight: CGFloat = 22
+
+    /// ここはブランドが出る唯一の場所。文字ではなくロゴタイプを出す。
     ///
-    /// titleView に差し替えているのは、ロゴタイプを起こしたあと
-    /// UILabel を UIImageView に置き換えるだけで済むようにするため。
-    /// navigationItem.title のままだと書体の指定がナビゲーションバー全体に及んでしまう。
+    /// 幅は画像の縦横比から決める。ロゴを描き直しても、比率さえ持っていれば
+    /// この関数を直さずに差し替えられる。
     private func applyBrandTitle() {
+        guard let wordmark = UIImage(named: "periperi_wordmark"), wordmark.size.height > 0 else {
+            applyFallbackBrandTitle()
+            return
+        }
+        let imageView = UIImageView(image: wordmark)
+        imageView.contentMode = .scaleAspectFit
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            imageView.heightAnchor.constraint(equalToConstant: MainTabViewController.wordmarkHeight),
+            imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor,
+                                             multiplier: wordmark.size.width / wordmark.size.height)
+        ])
+        imageView.isAccessibilityElement = true
+        imageView.accessibilityLabel = LocalizeKey.navMyBoard.localizedString()
+        imageView.accessibilityTraits = .header
+
+        navigationItem.titleView = imageView
+        // titleView があると title は表示されないため、読み上げは画像側に持たせている
+        navigationItem.title = nil
+    }
+
+    /// ロゴが解決できなかったときに、名前が消えたままにならないようにする。
+    /// ロゴタイプに近い質感を出すため丸ゴシックの太字を使う。
+    private func applyFallbackBrandTitle() {
         let label = UILabel()
         label.text = LocalizeKey.navMyBoard.localizedString()
         label.font = .brand()
@@ -53,7 +79,6 @@ class MainTabViewController: UIViewController {
         label.adjustsFontForContentSizeCategory = true
         label.sizeToFit()
         navigationItem.titleView = label
-        // VoiceOver とアプリ切り替え画面には文字列の側が要る
         navigationItem.title = LocalizeKey.navMyBoard.localizedString()
     }
 
@@ -111,12 +136,9 @@ class MainTabViewController: UIViewController {
     }
 
     @objc func finishToast(notification: Notification) {
-        var style = ToastStyle()
-        style.messageColor = .onAccent
-        style.backgroundColor = .accent
-        style.cornerRadius = 20.0
-        style.horizontalPadding = 20.0
-        self.view.makeToast(LocalizeKey.doneUploadToast.localizedString(), duration: 3.0, position: .top, style: style)
+        let toast = AuroraView.makeToast(message: LocalizeKey.doneUploadToast.localizedString(),
+                                         maxWidth: view.bounds.width - Spacing.l * 2)
+        view.showToast(toast, duration: 3.0, position: .top)
         NotificationCenter.default.post(name: .allReload, object: nil, userInfo: nil)
         // トーストと重ならないよう、表示が落ち着いてから案内する
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { [weak self] in
@@ -127,14 +149,14 @@ class MainTabViewController: UIViewController {
     func layoutFAB() {
         let size: CGFloat = 56
         fabButton.frame = CGRect(x: 0, y: 0, width: size, height: size)
-        fabButton.backgroundColor = .accent
+        // 地の塗りは AuroraButton が layer 側で持つ
         fabButton.applyCornerRadius(size / 2)
         fabButton.layer.shadowColor = UIColor.black.cgColor
         fabButton.layer.shadowOffset = CGSize(width: 0, height: 2)
         fabButton.layer.shadowOpacity = 0.3
         fabButton.layer.shadowRadius = 4
         fabButton.setImage(.symbol(Symbol.add, pointSize: 22, weight: .medium), for: .normal)
-        fabButton.tintColor = .onAccent
+        fabButton.tintColor = .onAurora
         fabButton.addTarget(self, action: #selector(tapFAB), for: .touchUpInside)
         fabButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(fabButton)
@@ -147,12 +169,25 @@ class MainTabViewController: UIViewController {
     }
 
     @objc func tapFAB() {
+        // 上限は写真を選ぶ前に伝える。選ばせてから断ると徒労になる
+        guard RealmManager.shared.canSaveMorePhotos else {
+            presentLimitReachedAlert()
+            return
+        }
         // 画像を選んでから投稿画面へ進む。画像未選択のままでは完了ボタンが有効にならない。
         guard UIImagePickerController.isSourceTypeAvailable(.photoLibrary) else { return }
         let picker = UIImagePickerController()
         picker.sourceType = .photoLibrary
         picker.delegate = self
         present(picker, animated: true)
+    }
+
+    private func presentLimitReachedAlert() {
+        let alert = UIAlertController(title: LocalizeKey.limitReachedTitle.localizedString(),
+                                      message: LocalizeKey.limitReachedMessage.localizedString(),
+                                      preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: LocalizeKey.baseOK.localizedString(), style: .default))
+        present(alert, animated: true)
     }
 
     @IBAction func tapBarMenuButton(_ sender: Any) {

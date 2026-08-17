@@ -57,3 +57,5 @@
 "copiedToast" = "コピーしました";
 "topHeadline" = "好きな画像を、キーボードから送る。";
 "settingLater" = "あとで";
+"limitReachedTitle" = "保存できるのは8枚まで。";
+"limitReachedMessage" = "新しく入れるには、いま持っている画像をどれか消してください。";

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="600">
+  <!-- periperi ロゴタイプ
+       font-family: Arial Rounded MT Bold / font-size: 300 / letter-spacing: 12
+       輪郭を stroke 20（丸ジョイン・丸キャップ）で膨らませてから塗りを重ねている。
+       stroke を font-size の 1/15 より太くすると e の穴が塞がるので上げないこと。
+       ※ このフォントが入っていない環境では別の字形で描画される。 -->
+  <text x="900" y="380" font-family="Arial Rounded MT Bold" font-size="300" letter-spacing="12"
+    text-anchor="middle" fill="none" stroke="#111111" stroke-width="20"
+    stroke-linejoin="round" stroke-linecap="round">periperi</text>
+  <text x="900" y="380" font-family="Arial Rounded MT Bold" font-size="300" letter-spacing="12"
+    text-anchor="middle" fill="#111111">periperi</text>
+</svg>
