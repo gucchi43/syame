@@ -16,7 +16,7 @@ public final class GroupeDefaults {
     public let sharedDefaults = UserDefaults(suiteName: GroupeDefaults.appGroupIdentifier) ?? .standard
 
     private enum Keys: String {
-        case launchCount, sendCount
+        case launchCount, sendCount, keyboardColumns
         case usageNeedFlag, registerNeedFlag
         case blockContents
         case lastKeyboardOpenResult
@@ -31,6 +31,19 @@ public final class GroupeDefaults {
     public func lastKeyboardOpenResult() -> String? {
         return sharedDefaults.string(forKey: Keys.lastKeyboardOpenResult.rawValue)
     }
+
+    /// キーボードの列数。未設定なら 0 が返るため、その場合は既定の3を返す。
+    public func keyboardColumns() -> Int {
+        let stored = sharedDefaults.integer(forKey: Keys.keyboardColumns.rawValue)
+        return stored > 0 ? stored : GroupeDefaults.defaultKeyboardColumns
+    }
+
+    public func setKeyboardColumns(_ columns: Int) {
+        sharedDefaults.set(columns, forKey: Keys.keyboardColumns.rawValue)
+    }
+
+    public static let defaultKeyboardColumns = 3
+    public static let denseKeyboardColumns = 5
 
     public func isRegisterPush() -> Bool {
         if sharedDefaults.object(forKey: Keys.registerNeedFlag.rawValue) == nil {

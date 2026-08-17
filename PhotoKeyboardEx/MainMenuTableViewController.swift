@@ -46,7 +46,7 @@ class MyMenuTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return 2
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -64,10 +64,8 @@ class MyMenuTableViewController: UITableViewController {
         switch (indexPath.row) {
         case 0:
             cell.textLabel?.text = LocalizeKey.menuHome.localizedString()
-        case 1:
-            cell.textLabel?.text = LocalizeKey.menuSetting.localizedString()
         default:
-            cell.textLabel?.text = LocalizeKey.menuOfficial.localizedString()
+            cell.textLabel?.text = LocalizeKey.menuSetting.localizedString()
         }
         return cell
     }
@@ -89,20 +87,13 @@ class MyMenuTableViewController: UITableViewController {
             guard let nvc = mainStoryboard.instantiateInitialViewController() as? UINavigationController,
                   let destVC = nvc.viewControllers.first as? MainTabViewController else { return }
             mainNav?.setContentViewController(destVC)
-        case 1:
+        default:
             guard indexPath.row != selectedMenuItem else { return }
             selectedMenuItem = indexPath.row
             let sb = UIStoryboard(name: "Usage", bundle: nil)
             guard let nvc = sb.instantiateInitialViewController() as? UINavigationController,
                   let destVC = nvc.viewControllers.first as? UsageViewController else { return }
             mainNav?.setContentViewController(destVC)
-        default:
-            // 外部リンクは画面を差し替えないので選択状態は変えず、メニューは閉じる
-            tableView.selectRow(at: IndexPath(row: selectedMenuItem, section: 0), animated: false, scrollPosition: .none)
-            mainNav?.closeSideMenu()
-            if let url = URL(string: "https://pkbkeyboard.studio.design") {
-                UIApplication.shared.open(url)
-            }
         }
     }
     

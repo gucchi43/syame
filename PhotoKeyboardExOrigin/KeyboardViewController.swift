@@ -74,8 +74,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var nextKeyboardButton: UIButton!
     @IBOutlet weak var homeButton: UIButton!
-    @IBOutlet weak var sortRankButton: UIButton!
-    @IBOutlet weak var sortABCButton: UIButton!
+    @IBOutlet weak var columnToggleButton: UIButton!
     @IBOutlet weak var boardChangeButton: UIButton!
     
     @IBOutlet weak var notFullBGView: UIView!
@@ -85,11 +84,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     var textBoardFlag = false
     /// アセットが解決できなくてもキーボードの初期化自体は失敗させない
 
-    // photosの中にfavPhotos or abcPhotos が入る
-    var favSortFlag = false
-    // フルアクセス未許可でも currentPhotos() が nil 参照にならないよう遅延生成にする
-    lazy var favPhotos: Results<RealmPhoto> = RealmManager.shared.realmData.sorted(byKeyPath: "useNum")
-    lazy var abcPhotos: Results<RealmPhoto> = RealmManager.shared.realmData.sorted(byKeyPath: "text")
     
     var items : NSArray = []
     private var searchResult = [String]()
@@ -117,7 +111,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         if self.hasFullAccess {
             RealmManager.shared.delegate = self
             notFullInit(notFull: false)
-            sortState()
+            collectionView.reloadData()
         } else {
             notFullInit(notFull: true)
         }
@@ -134,10 +128,8 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     func notFullInit(notFull: Bool) {
         if notFull {
             notFullBGView.isHidden = false
-            sortRankButton.isEnabled = false
-            sortABCButton.isEnabled = false
-            sortRankButton.setTitleColor(.gray, for: .normal)
-            sortABCButton.setTitleColor(.gray, for: .normal)
+            columnToggleButton.isEnabled = false
+            columnToggleButton.tintColor = .gray
         } else {
             notFullBGView.isHidden = true
         }
@@ -157,29 +149,19 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         }
     }
 
-    /// 純正キーボードに合わせて上端の両角だけを丸める。
-    ///
-    /// 角の外側は塗らずに透かす必要があるため、自身をクリップして描画を止める。
-    /// 中身(コレクションビューや未許可の案内)は自前の地の色を持っているので、
-    /// クリップしないと角が塗りつぶされて四角いままになる。
-    private func applyKeyboardShape() {
-        view.layer.cornerRadius = Radius.card
-        view.layer.cornerCurve = .continuous
-        view.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        view.clipsToBounds = true
-    }
-
     func commonInit() {
-        applyKeyboardShape()
-        self.view.backgroundColor = .keyboardBase
+        // 地は敷かない。
+        //
+        // iOS 26 のキーボードはシステム側が角丸のパネルとして描いており、
+        // その上に自前の不透明な地を重ねると、わずかにずれた2枚目のパネルに見える。
+        // 透かしてシステムの面をそのまま使うことで、地球儀とマイクの行まで
+        // 地続きの1枚になる。角丸も自前で付けない(システムが既に丸めている)。
+        self.view.backgroundColor = .clear
         homeButton.setTitleColor(.accent, for: .normal)
         homeButton.applySymbol(Symbol.home)
         
-        sortRankButton.setTitleColor(.accent, for: .normal)
-        sortRankButton.applySymbol(Symbol.sortByPopularity)
-        
-        sortABCButton.setTitleColor(.accent, for: .normal)
-        sortABCButton.applySymbol(Symbol.sortByName)
+        columnToggleButton.setTitleColor(.accent, for: .normal)
+        updateColumnToggleIcon()
         
         boardChangeButton.setTitleColor(.accent, for: .normal)
         boardChangeButton.applySymbol(Symbol.textMode)
@@ -187,7 +169,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         self.nextKeyboardButton.setTitleColor(.accent, for: .normal)
         self.nextKeyboardButton.applySymbol(Symbol.globe)
         self.nextKeyboardButton.addTarget(self, action: #selector(handleInputModeList(from:with:)), for: .allTouchEvents)
-        self.notFullBGView.backgroundColor = .keyboardBase
+        self.notFullBGView.backgroundColor = .clear
         self.notFullButton.backgroundColor = .accent
         self.notFullButton.titleLabel?.adjustsFontSizeToFitWidth = true
         self.notFullButton.setTitleColor(.onAccent, for: .normal)
@@ -210,7 +192,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     func collectionInit() {
         collectionView.register(UINib(nibName: "PhotoCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "PhotoCollectionViewCell")
         collectionView.register(UINib(nibName: "TextCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "TextCollectionViewCell")
-        collectionView.backgroundColor = .keyboardBase
+        collectionView.backgroundColor = .clear
         collectionView.allowsMultipleSelection = false
         updateViewConstraints()
         collectionView.dataSource = self
@@ -273,23 +255,10 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         return true
     }
     
+    /// 並べ替えは持たない。本体アプリの一覧と同じ登録順で出す。
+    /// キーボードとアプリで並びが違うと、目で覚えた位置が使えなくなる。
     func currentPhotos() -> Results<RealmPhoto> {
-        if favSortFlag {
-            return favPhotos
-        } else {
-            return abcPhotos
-        }
-    }
-    
-    func sortState() {
-        if favSortFlag {
-            sortRankButton.setTitleColor(.accent, for: .normal)
-            sortABCButton.setTitleColor(.gray, for: .normal)
-        } else {
-            sortRankButton.setTitleColor(.gray, for: .normal)
-            sortABCButton.setTitleColor(.accent, for: .normal)
-        }
-        collectionView.reloadData()
+        return RealmManager.shared.realmData
     }
     
     func realmObjectDidChange() {
@@ -365,23 +334,31 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     // これらの IBAction はタップを受け取らない。
 
 
-    @IBAction func tapSortRankButton(_ sender: Any) {
-        favSortFlag = true
-        sortState()
+    @IBAction func tapColumnToggleButton(_ sender: Any) {
+        let next = imageColumns == GroupeDefaults.defaultKeyboardColumns
+            ? GroupeDefaults.denseKeyboardColumns
+            : GroupeDefaults.defaultKeyboardColumns
+        GroupeDefaults.shared.setKeyboardColumns(next)
+        updateColumnToggleIcon()
+        collectionView.collectionViewLayout.invalidateLayout()
+        collectionView.reloadData()
     }
-    @IBAction func tapSortABCButton(_ sender: Any) {
-        favSortFlag = false
-        sortState()
+
+    /// 押した先の状態を出す。切り替えボタンの作法を boardChangeButton と揃える
+    private func updateColumnToggleIcon() {
+        let willBeDense = imageColumns == GroupeDefaults.defaultKeyboardColumns
+        columnToggleButton.applySymbol(willBeDense ? Symbol.gridDense : Symbol.gridSparse)
     }
     
     @IBAction func tapBoardChangeButton(_ sender: Any) {
         textBoardFlag = !textBoardFlag
+        // 高さの値を持つのは setUpHeightConstraint だけにする。
+        // ここで直書きすると、比率を変えても文字盤から戻ったときだけ旧い値に戻る
+        setUpHeightConstraint()
         if textBoardFlag {
-            heightConstraint.constant = 200
             boardChangeButton.applySymbol(Symbol.imageMode)
             notFullBGView.isHidden = true
         } else {
-            heightConstraint.constant = UIScreen.main.bounds.height / 2
             boardChangeButton.applySymbol(Symbol.textMode)
             if self.hasFullAccess {
                 notFullBGView.isHidden = true
@@ -439,15 +416,20 @@ extension KeyboardViewController: UICollectionViewDataSource, UICollectionViewDe
         }
     }
     
-    /// 画像を並べる列数。縦持ちで3列。
-    /// 2列だと1枚が大きすぎて、キーボードの高さに2行しか入らなかった。
-    private static let imageColumnsPortrait = 3
-    private static let imageColumnsLandscape = 6
     /// 文字盤はキーの数が決まっているため列数を変えない
     private static let textColumns = 10
 
+    /// 利用者が選んだ列数。既定は3で、切り替えボタンで5にできる
+    private var imageColumns: Int {
+        return GroupeDefaults.shared.keyboardColumns()
+    }
+
+    /// キーボード自身の bounds で判定してはいけない。
+    /// 文字盤に切り替えると高さが200になり、縦持ちのままでも幅が高さを上回って
+    /// 横持ちと誤判定される(画像に戻したとき列数が倍になるのはこれが原因だった)。
     private var isLandscape: Bool {
-        return view.bounds.width > view.bounds.height
+        let screen = view.window?.windowScene?.screen.bounds ?? UIScreen.main.bounds
+        return screen.width > screen.height
     }
 
     /// 列数から正方形セルの一辺を求める。
@@ -468,8 +450,8 @@ extension KeyboardViewController: UICollectionViewDataSource, UICollectionViewDe
         if textBoardFlag {
             columns = KeyboardViewController.textColumns
         } else {
-            columns = isLandscape ? KeyboardViewController.imageColumnsLandscape
-                                  : KeyboardViewController.imageColumnsPortrait
+            // 横持ちは幅がおよそ2倍になるので列も倍にし、1枚の大きさを保つ
+            columns = isLandscape ? imageColumns * 2 : imageColumns
         }
         let side = gridCellSide(columns: columns)
         return CGSize(width: side, height: side)

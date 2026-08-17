@@ -20,7 +20,6 @@ public enum LocalizeKey: String, CaseIterable {
     
     case menuHome
     case menuSetting
-    case menuOfficial
 
     case addNavTitle
     case addInputTitle

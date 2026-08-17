@@ -168,8 +168,9 @@ public enum Symbol {
     public static let home = "house"
     public static let imageMode = "photo.on.rectangle"
     public static let add = "plus"
-    public static let sortByName = "textformat.abc"
-    public static let sortByPopularity = "arrow.up.arrow.down"
+    /// 列数の切り替え。粗い方(3列)と細かい方(5列)
+    public static let gridSparse = "square.grid.2x2"
+    public static let gridDense = "square.grid.3x3"
     public static let close = "xmark"
     public static let copy = "doc.on.doc"
     public static let delete = "trash"
