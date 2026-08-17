@@ -19,7 +19,7 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
     /// (キー名を変えると既存ユーザーの保存値が失われるため、変更時はこのテストも落ちてよい)。
     private static let managedDefaultsKeys = [
         "sendCount",
-        "registerNeedFlag", "usageNeedFlag", "blockContents"
+        "registerNeedFlag", "usageNeedFlag", "blockContents", "keyboardColumns"
     ]
     private var savedDefaults: [String: Any] = [:]
 
@@ -368,6 +368,28 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         }
     }
 
+    /// キーボードの列数は App Group に持たせ、拡張が作り直されても選択が残るようにしている。
+    /// 未設定のとき integer(forKey:) は 0 を返すため、既定値へ倒せていないと
+    /// 列数 0 で除算に入りセルが作れなくなる。
+    func testKeyboardColumnsFallsBackToDefaultWhenUnset() {
+        GroupeDefaults.shared.sharedDefaults.removeObject(forKey: "keyboardColumns")
+        XCTAssertEqual(GroupeDefaults.shared.keyboardColumns(), GroupeDefaults.defaultKeyboardColumns)
+        XCTAssertGreaterThan(GroupeDefaults.shared.keyboardColumns(), 0, "0だと列幅の計算が破綻する")
+    }
+
+    /// 選んだ列数が保存され、次に開いたときも同じ見え方になること
+    func testKeyboardColumnsPersists() {
+        GroupeDefaults.shared.setKeyboardColumns(GroupeDefaults.denseKeyboardColumns)
+        XCTAssertEqual(GroupeDefaults.shared.keyboardColumns(), GroupeDefaults.denseKeyboardColumns)
+        GroupeDefaults.shared.setKeyboardColumns(GroupeDefaults.defaultKeyboardColumns)
+        XCTAssertEqual(GroupeDefaults.shared.keyboardColumns(), GroupeDefaults.defaultKeyboardColumns)
+    }
+
+    /// 粗い方と細かい方が別の値であること。同じだと切り替えても何も起きない
+    func testKeyboardColumnPresetsDiffer() {
+        XCTAssertNotEqual(GroupeDefaults.defaultKeyboardColumns, GroupeDefaults.denseKeyboardColumns)
+    }
+
     /// アクセントはアイコンや枠線の着色にも使う。
     /// UI部品はWCAGで3:1が要求され、藤色は明るいのでライトモードで割りやすい。
     func testAccentIsUsableAsUIComponentColor() {
@@ -404,8 +426,8 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
     /// 使用するSF Symbolsが実在すること。名前を間違えるとアイコンが消える
     func testAllSymbolsExist() {
         let names = [Symbol.menu, Symbol.saveCount, Symbol.more, Symbol.textMode, Symbol.globe,
-                     Symbol.emptyState, Symbol.home, Symbol.imageMode, Symbol.add, Symbol.help,
-                     Symbol.sortByName, Symbol.sortByPopularity, Symbol.close,
+                     Symbol.emptyState, Symbol.home, Symbol.imageMode, Symbol.add,
+                     Symbol.gridSparse, Symbol.gridDense, Symbol.close,
                      Symbol.copy, Symbol.delete]
         for name in names {
             XCTAssertNotNil(UIImage(systemName: name), "SF Symbol が存在しない: \(name)")
