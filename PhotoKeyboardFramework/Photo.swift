@@ -92,6 +92,15 @@ public class RealmPhoto: Object {
         return ["image", "_image"]
     }
 
+    /// 見本画像の所有者。利用者が保存したものと区別するための目印で、
+    /// 枚数の上限を数えるときに除外する
+    public static let officialOwnerId = "official"
+
+    /// 利用者自身が保存したものかどうか
+    public var isUserOwned: Bool {
+        return ownerId != RealmPhoto.officialOwnerId
+    }
+
     // idをプライマリキーに設定
     override public static func primaryKey() -> String? {
         return "id"
@@ -110,5 +119,5 @@ public func makeOfficialPhoto() -> RealmPhoto? {
                              imageWidth: 532,
                              getDay: Date().toString(),
                              isPublic: false,
-                             ownerId: "official")
+                             ownerId: RealmPhoto.officialOwnerId)
 }

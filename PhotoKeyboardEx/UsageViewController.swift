@@ -55,9 +55,8 @@ class UsageViewController: UIViewController {
         navBarButton.applySymbol(Symbol.menu)
         nextButton.setTitle(LocalizeKey.settingDone.localizedString(), for: .normal)
         addLaterButtonIfPresentedModally()
-        nextButton.setTitleColor(.onAccent, for: .normal)
+        // 文字色と影は AuroraButton が持つ
         nextButton.titleLabel?.adjustsFontSizeToFitWidth = true
-        nextButton.backgroundColor = .accent
         nextButton.applyCornerRadius(Radius.small)
         subLabel.textColor = .textPrimary
         subLabel.adjustsFontForContentSizeCategory = true

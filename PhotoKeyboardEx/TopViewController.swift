@@ -54,9 +54,9 @@ class TopViewController: UIViewController, UITextViewDelegate {
                 .withFont(UIFont.scaled(.title3, weight: .bold)).withTextColor(.textPrimary)
             + LocalizeKey.topSubtitle.localizedString()
                 .withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textSecondary)
-        startButton.setTitleColor(.onAccent, for: .normal)
+        // 地の塗りは AuroraButton が layer 側で持つので backgroundColor は触らない
+        // 文字色と影は AuroraButton が持つので、ここでは触らない
         startButton.applyCornerRadius(Radius.small)
-        startButton.backgroundColor = .accent
         startButton.titleLabel?.adjustsFontSizeToFitWidth = true
         startButton.setTitle(LocalizeKey.topStart.localizedString(), for: .normal)
 

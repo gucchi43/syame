@@ -124,5 +124,15 @@ FontAwesome はSPM非対応のため `PhotoKeyboardFramework/FontAwesome/` に�
 
 ## 収益・広告
 
-- AdMob のリワード広告（ライフ回復）
-- ATT（AppTrackingTransparency）と UMP（同意管理）に対応。同意フォームは AdMob コンソール側の設定が別途必要
+**現状、収益化のコードは入っていない。**
+
+- ライフ + リワード広告は撤去済み（`saveLife` / `GoogleMobileAds` / `Reward` はコード上 0 ヒット）
+- アプリ内課金は未実装。`import StoreKit` は `AddViewController.swift:10` の 1 箇所のみで、
+  用途は `SKStoreReviewController.requestReview`（レビュー依頼）
+- 保存枚数の上限は実装済み。`RealmManager.photoLimit` が 8 枚で、見本画像
+  （`ownerId == "official"`）は数に入れない。判定は追加の入口（FAB）と保存直前の
+  2 箇所で行う
+
+**上限を超えたときの導線は用意していない。** 課金階層が無いため、8 枚に達した利用者は
+既存の画像を消す以外に手がない。予定している課金モデル（月300円・年1,800円・
+買い切り2,000円）は PLAN.md 方針2、実装項目は TODO.md 変更セット C を参照。

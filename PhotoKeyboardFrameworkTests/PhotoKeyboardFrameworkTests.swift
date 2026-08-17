@@ -368,6 +368,48 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         }
     }
 
+    /// 白い文字は色だけでは読めない。最も明るい帯で 1.3:1 しかない。
+    /// だから onAurora を白にするなら、影で輪郭を作ることが必須条件になる。
+    func testWhiteOnAuroraNeedsShadowToBeReadable() {
+        let best = Aurora.colors.map { contrastRatio(.onAurora, $0, dark: false) }.max() ?? 0
+        XCTAssertLessThan(best, 4.5,
+                          "色だけで読めるようになったなら、影は外してよい")
+    }
+
+    /// 影は装飾ではなく可読性のための措置。
+    /// applyAuroraText を通さずに白を置くと、淡い帯の上で文字が消える。
+    func testAuroraTextCarriesShadow() {
+        let label = UILabel()
+        label.applyAuroraText()
+        XCTAssertEqual(label.textColor, UIColor.onAurora)
+        guard let shadow = label.shadowColor else {
+            return XCTFail("白い文字に影が付いていない")
+        }
+        var alpha: CGFloat = 0
+        shadow.getWhite(nil, alpha: &alpha)
+        XCTAssertGreaterThan(alpha, 0.15, "影が薄すぎて輪郭にならない")
+        XCTAssertNotEqual(label.shadowOffset, .zero, "影がずれていないと輪郭が出ない")
+    }
+
+    /// CTAの文字は太字。細いままだと淡い地の上で線が痩せて読みにくい
+    func testAuroraButtonUsesBoldTitle() {
+        let button = AuroraButton(frame: CGRect(x: 0, y: 0, width: 120, height: 44))
+        button.setTitle("テスト", for: .normal)
+        let weight = (button.titleLabel?.font.fontDescriptor
+            .object(forKey: .traits) as? [UIFontDescriptor.TraitKey: Any])?[.weight] as? CGFloat ?? 0
+        XCTAssertGreaterThanOrEqual(weight, UIFont.Weight.semibold.rawValue,
+                                    "CTAの文字が十分に太くない")
+    }
+
+    /// 色と位置の数が揃っていないと、グラデーションが崩れるか描画されない
+    func testAuroraStopsAreConsistent() {
+        XCTAssertEqual(Aurora.colors.count, Aurora.locations.count)
+        XCTAssertEqual(Aurora.locations.first, 0.0)
+        XCTAssertEqual(Aurora.locations.last, 1.0)
+        XCTAssertEqual(Aurora.colors.first, Aurora.colors.last,
+                       "端の色が違うと、繰り返したときに継ぎ目が見える")
+    }
+
     /// キーボードの列数は App Group に持たせ、拡張が作り直されても選択が残るようにしている。
     /// 未設定のとき integer(forKey:) は 0 を返すため、既定値へ倒せていないと
     /// 列数 0 で除算に入りセルが作れなくなる。

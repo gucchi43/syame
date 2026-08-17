@@ -74,7 +74,7 @@
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" spacing="28" translatesAutoresizingMaskIntoConstraints="NO" id="84v-GF-uTh">
                             <rect key="frame" x="32" y="135.5" width="236" height="101"/>
                             <subviews>
-                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3c7-EO-cos">
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3c7-EO-cos" customClass="AuroraButton" customModule="PhotoKeyboardFramework">
                                     <rect key="frame" x="70" y="0.0" width="96" height="32"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="32" id="DvI-gf-nw1"/>

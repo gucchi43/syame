@@ -170,9 +170,8 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         self.nextKeyboardButton.applySymbol(Symbol.globe)
         self.nextKeyboardButton.addTarget(self, action: #selector(handleInputModeList(from:with:)), for: .allTouchEvents)
         self.notFullBGView.backgroundColor = .clear
-        self.notFullButton.backgroundColor = .accent
         self.notFullButton.titleLabel?.adjustsFontSizeToFitWidth = true
-        self.notFullButton.setTitleColor(.onAccent, for: .normal)
+        // 文字色と影は AuroraButton が持つ
         self.notFullButton.applyCornerRadius(Radius.small)
         
         if Lang.langRootKey() == "JP" {

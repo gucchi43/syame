@@ -190,6 +190,22 @@ public class RealmManager {
     // MARK: - CRUD
 
     // データを保存するための処理
+    /// 保存できる枚数の上限。見本画像は数に入れない。
+    ///
+    /// 上限は制限ではなく道具の性格として置いている(DESIGN.md)。
+    /// 厳選して持ち歩くという建て付けなので、数を増やす導線は今は用意していない。
+    public static let photoLimit = 8
+
+    /// 利用者自身が保存した枚数。見本画像は含めない
+    public var userPhotoCount: Int {
+        return realmData.filter { $0.isUserOwned }.count
+    }
+
+    /// あと1枚保存できるか。見本画像の投入はこの判定を通さない
+    public var canSaveMorePhotos: Bool {
+        return userPhotoCount < RealmManager.photoLimit
+    }
+
     public func save(data: RealmPhoto, success: @escaping () -> Void, failure: @escaping (String) -> Void) {
         guard let realm = diskRealm() else {
             failure("failure save...")

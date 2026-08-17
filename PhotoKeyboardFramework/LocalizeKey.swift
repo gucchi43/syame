@@ -36,6 +36,8 @@ public enum LocalizeKey: String, CaseIterable {
     case settingDiscription
     case settingDone
     case settingLater
+    case limitReachedTitle
+    case limitReachedMessage
     
     case topHeadline
     case topSubtitle
