@@ -43,9 +43,51 @@ public class RealmManager {
         let container = RealmManager.containerURL()
         RealmManager.applyFileProtection(to: container)
         let fileURL = container.appendingPathComponent(RealmManager.realmFileName)
+
+        // 復元は Realm を開く前に済ませる。開いたあとに差し替えても、
+        // 既に握られたファイルハンドルは古い本体を指したままになる。
+        backup = RealmManager.makeBackup(sharedContainer: container)
+        if backup.needsRestore {
+            try? backup.restore(to: fileURL)
+        }
+        backup.markAlive()
+
         RealmManager.consolidateLegacyFilesIfNeeded(container: container, target: fileURL)
         configuration = RealmManager.makeConfiguration(fileURL: fileURL)
         startObserving()
+    }
+
+    // MARK: - 消失対策
+
+    private let backup: RealmBackup
+    /// 直前に複製を取ったときの件数。変化が無ければ作り直さない
+    private var lastSnapshotCount: Int?
+
+    /// 複製の置き場所はアプリ本体のコンテナ。
+    /// 共有コンテナに置くと、守りたい相手(コンテナごとの消失)と一緒に消えて意味がない。
+    private static func makeBackup(sharedContainer: URL) -> RealmBackup {
+        let appContainer = FileManager.default
+            .urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first
+            ?? URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
+        return RealmBackup(appContainer: appContainer, sharedContainer: sharedContainer)
+    }
+
+    /// 複製を取り直す。アプリが背面に回るときに呼ぶ。
+    ///
+    /// 件数が変わっていなければ何もしない。writeCopy はファイル全体を書き出すので、
+    /// 毎回走らせると画像の枚数に比例して背面遷移が重くなる。
+    public func snapshotIfNeeded() {
+        let count = realmData.count
+        guard count != lastSnapshotCount else { return }
+        guard let realm = diskRealm() else { return }
+        do {
+            try backup.write(from: realm)
+            lastSnapshotCount = count
+        } catch {
+            // 複製が作れなくても本体は無事なので、起動や保存は止めない
+            print("realm snapshot error: \(error)")
+        }
     }
 
     deinit {
@@ -84,6 +126,13 @@ public class RealmManager {
             // deleteRealmIfMigrationNeeded はユーザーの保存画像を消してしまうため使わない。
         }
         configuration.objectTypes = [RealmPhoto.self]
+        // 削除しても Realm のファイルは縮まない。肥大すると端末バックアップの容量を
+        // 圧迫し、利用者に「このアプリのバックアップ」を切られる。
+        // 10MB を超え、かつ半分以上が使われていない場合だけ起動時に詰める。
+        configuration.shouldCompactOnLaunch = { totalBytes, usedBytes in
+            let tenMB = 10 * 1024 * 1024
+            return totalBytes > tenMB && Double(usedBytes) / Double(totalBytes) < 0.5
+        }
         return configuration
     }
 

@@ -8,6 +8,7 @@
 
 import XCTest
 import UIKit
+import RealmSwift
 @testable import PhotoKeyboardFramework
 
 class PhotoKeyboardFrameworkTests: XCTestCase {
@@ -321,6 +322,90 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         XCTAssertLessThanOrEqual(max(thumbnail.size.width, thumbnail.size.height), 80)
     }
 
+    // MARK: - 消失からの復元
+
+    /// 一時ディレクトリに、共有コンテナとアプリ本体コンテナの組を作る
+    private func makeBackupFixture() -> (backup: RealmBackup, shared: URL, app: URL) {
+        let root = URL(fileURLWithPath: NSTemporaryDirectory())
+            .appendingPathComponent("backup-\(UUID().uuidString)")
+        let shared = root.appendingPathComponent("shared")
+        let app = root.appendingPathComponent("app")
+        for url in [shared, app] {
+            try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
+        }
+        return (RealmBackup(appContainer: app, sharedContainer: shared), shared, app)
+    }
+
+    private func makeRealm(at url: URL) throws -> Realm {
+        return try RealmBackup.openRealm(at: url)
+    }
+
+    /// 初回起動では目印も複製も無い。ここで復元をかけると、
+    /// 使い始めたばかりの利用者に無関係なデータを流し込むことになる
+    func testFirstLaunchDoesNotTriggerRestore() {
+        let fixture = makeBackupFixture()
+        XCTAssertTrue(fixture.backup.containerWasReset, "目印がまだ無い")
+        XCTAssertFalse(fixture.backup.hasSnapshot)
+        XCTAssertFalse(fixture.backup.needsRestore, "初回起動で復元が走ってはいけない")
+    }
+
+    /// 目印を書けば、次に見たときは「生きている」と判断される
+    func testMarkAliveMakesContainerLookHealthy() {
+        let fixture = makeBackupFixture()
+        XCTAssertTrue(fixture.backup.markAlive())
+        XCTAssertFalse(fixture.backup.containerWasReset)
+        XCTAssertFalse(fixture.backup.needsRestore)
+    }
+
+    /// 本命。共有コンテナが丸ごと作り直されたときに、画像が戻ること
+    func testRestoreRecoversPhotosAfterContainerIsWiped() throws {
+        let fixture = makeBackupFixture()
+        let realmURL = fixture.shared.appendingPathComponent("db.realm.shared")
+
+        let realm = try makeRealm(at: realmURL)
+        try realm.write {
+            realm.add(RealmPhoto.create(id: "keep-me", text: "残ってほしい",
+                                        image: makeImage(), imageHeight: 40, imageWidth: 40,
+                                        getDay: "", isPublic: false, ownerId: ""))
+        }
+        try fixture.backup.write(from: realm)
+        fixture.backup.markAlive()
+        XCTAssertTrue(fixture.backup.hasSnapshot)
+
+        // 共有コンテナが作り直された状況を作る
+        try FileManager.default.removeItem(at: fixture.shared)
+        try FileManager.default.createDirectory(at: fixture.shared, withIntermediateDirectories: true)
+
+        XCTAssertTrue(fixture.backup.containerWasReset, "目印の消失を検知できていない")
+        XCTAssertTrue(fixture.backup.needsRestore)
+
+        try fixture.backup.restore(to: realmURL)
+        let restored = try makeRealm(at: realmURL)
+        XCTAssertEqual(restored.objects(RealmPhoto.self).count, 1)
+        XCTAssertEqual(restored.objects(RealmPhoto.self).first?.text, "残ってほしい")
+    }
+
+    /// writeCopy は出力先が既に在ると失敗する。2回目以降も撮り直せること
+    func testSnapshotCanBeOverwritten() throws {
+        let fixture = makeBackupFixture()
+        let realmURL = fixture.shared.appendingPathComponent("db.realm.shared")
+        let realm = try makeRealm(at: realmURL)
+
+        try fixture.backup.write(from: realm)
+        try realm.write {
+            realm.add(RealmPhoto.create(id: "second", text: "2枚目",
+                                        image: makeImage(), imageHeight: 40, imageWidth: 40,
+                                        getDay: "", isPublic: false, ownerId: ""))
+        }
+        XCTAssertNoThrow(try fixture.backup.write(from: realm), "2回目の複製で失敗している")
+
+        try FileManager.default.removeItem(at: fixture.shared)
+        try FileManager.default.createDirectory(at: fixture.shared, withIntermediateDirectories: true)
+        try fixture.backup.restore(to: realmURL)
+        let restored = try makeRealm(at: realmURL)
+        XCTAssertEqual(restored.objects(RealmPhoto.self).count, 1, "新しい方の複製に入れ替わっていない")
+    }
+
     // MARK: - デザイントークン
 
     /// 相対輝度からコントラスト比を求める(WCAG 2.1)
@@ -481,7 +566,7 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
     /// ロゴ素材が Framework のバンドルから読めること。
     /// 素材の置き場所を間違えると、焼き込みを有効にしても黙って無視され続ける。
     func testWatermarkLogoIsBundledInFramework() {
-        let logo = UIImage(named: "photo_logo_2",
+        let logo = UIImage(named: "periperi_watermark",
                            in: Bundle(for: RealmPhoto.self),
                            compatibleWith: nil)
         XCTAssertNotNil(logo, "ロゴ素材が Framework のバンドルに入っていない")
@@ -506,10 +591,47 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         defer { Watermark.isEnabled = original }
 
         Watermark.isEnabled = true
-        let base = makeImage(size: CGSize(width: 300, height: 300), color: .white)
+        let base = makeImage(size: CGSize(width: 600, height: 600), color: .white)
         let result = Watermark.applied(to: base)
         XCTAssertEqual(result.size, base.size, "焼き込みで寸法が変わっている")
         XCTAssertNotEqual(result.pngData(), base.pngData(), "有効なのに焼き込まれていない")
+    }
+
+    /// 透かしは右下に置く。被写体の中心や左上に乗ると画像が使えなくなる
+    func testWatermarkIsPlacedAtBottomRight() {
+        let original = Watermark.isEnabled
+        defer { Watermark.isEnabled = original }
+
+        Watermark.isEnabled = true
+        let base = makeImage(size: CGSize(width: 600, height: 600), color: .red)
+        let result = Watermark.applied(to: base)
+
+        guard let topLeft = rgb(of: result, x: 40, y: 40) else {
+            return XCTFail("焼き込み後の画像から色を取り出せなかった")
+        }
+        XCTAssertEqual(topLeft.r, 255, accuracy: 2, "左上まで透かしが伸びている")
+        XCTAssertEqual(topLeft.g, 0, accuracy: 2)
+
+        // 文字と文字の隙間は元の色のままなので、1点だけ見ても当たらない。
+        // ロゴが入る領域を走査して、白側へ寄った画素があることを確かめる。
+        var touched = 0
+        for x in stride(from: 440, through: 575, by: 8) {
+            for y in stride(from: 546, through: 576, by: 4) {
+                if let pixel = rgb(of: result, x: x, y: y), pixel.g > 40 { touched += 1 }
+            }
+        }
+        XCTAssertGreaterThan(touched, 10, "右下に透かしが乗っていない")
+    }
+
+    /// 小さすぎる画像には焼かない。潰れたロゴは宣伝にならず画像を汚すだけ
+    func testWatermarkSkipsImagesTooSmallToReadTheLogo() {
+        let original = Watermark.isEnabled
+        defer { Watermark.isEnabled = original }
+
+        Watermark.isEnabled = true
+        let base = makeImage(size: CGSize(width: 120, height: 120), color: .white)
+        let result = Watermark.applied(to: base)
+        XCTAssertEqual(result.pngData(), base.pngData(), "読めない大きさなのに焼き込んでいる")
     }
 
     // MARK: - 見本画像

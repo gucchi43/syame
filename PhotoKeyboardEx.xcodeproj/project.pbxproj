@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		AA0100000000000000000002 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000001 /* PrivacyInfo.xcprivacy */; };
 		0DCDE157A8684CE5B1245DAF /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = DBE2F314B6894F9D8465E945 /* Supabase */; };
+		82RT0002000000000000CC02 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 82RT0001000000000000CC01 /* RealmSwift */; };
 		1BA58F922609467F9EF8371F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CF8919C3BF774918835C4DB7 /* RealmSwift */; };
 		1CA5C392CE37392557119E2C /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		1E44638CECA145E2872694EB /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 95D0F842613E4ABBB11239EF /* Alamofire */; };
@@ -60,6 +61,7 @@
 		82EA891A2328D7280022832E /* CommonUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EA89192328D7280022832E /* CommonUtil.swift */; };
 		82DS0004000000000000AA04 /* Watermark.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DS0003000000000000AA03 /* Watermark.swift */; };
 		82DS0006000000000000AA06 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 82DS0005000000000000AA05 /* Media.xcassets */; };
+		82RB0002000000000000BB02 /* RealmBackup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82RB0001000000000000BB01 /* RealmBackup.swift */; };
 		82DS0002000000000000AA02 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DS0001000000000000AA01 /* DesignSystem.swift */; };
 		82EA891F2328D7E10022832E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 82EA89212328D7E10022832E /* Localizable.strings */; };
 		82EA8924232A8E380022832E /* UpdateExtention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EA8923232A8E380022832E /* UpdateExtention.swift */; };
@@ -209,6 +211,7 @@
 		82EA89192328D7280022832E /* CommonUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonUtil.swift; sourceTree = "<group>"; };
 		82DS0003000000000000AA03 /* Watermark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Watermark.swift; sourceTree = "<group>"; };
 		82DS0005000000000000AA05 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		82RB0001000000000000BB01 /* RealmBackup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmBackup.swift; sourceTree = "<group>"; };
 		82DS0001000000000000AA01 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
 		82EA891D2328D7A20022832E /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Main.strings; sourceTree = "<group>"; };
 		82EA891E2328D7A40022832E /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/LaunchScreen.strings; sourceTree = "<group>"; };
@@ -300,6 +303,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				82RT0002000000000000CC02 /* RealmSwift in Frameworks */,
 				82F9F40322F6B2610062F451 /* PhotoKeyboardFramework.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -424,6 +428,7 @@
 				82DS0003000000000000AA03 /* Watermark.swift */,
 				82DS0005000000000000AA05 /* Media.xcassets */,
 				82DS0001000000000000AA01 /* DesignSystem.swift */,
+				82RB0001000000000000BB01 /* RealmBackup.swift */,
 				8221370A2304D1A60046E095 /* Extension.swift */,
 				821ABDDB230EC43E00B3DCFE /* DefaultsKeys.swift */,
 				82F9F3FD22F6B2610062F451 /* Info.plist */,
@@ -606,6 +611,9 @@
 				82F9F40722F6B2610062F451 /* PBXTargetDependency */,
 			);
 			name = PhotoKeyboardFrameworkTests;
+			packageProductDependencies = (
+				82RT0001000000000000CC01 /* RealmSwift */,
+			);
 			productName = PhotoKeyboardFrameworkTests;
 			productReference = 82F9F40222F6B2610062F451 /* PhotoKeyboardFrameworkTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -830,6 +838,7 @@
 				82EA891A2328D7280022832E /* CommonUtil.swift in Sources */,
 				82DS0004000000000000AA04 /* Watermark.swift in Sources */,
 				82DS0002000000000000AA02 /* DesignSystem.swift in Sources */,
+				82RB0002000000000000BB02 /* RealmBackup.swift in Sources */,
 				82F9F41922F6B2920062F451 /* Photo.swift in Sources */,
 				826D657F22F831B500F66583 /* RealmManager.swift in Sources */,
 				82BB3A582328D49A003D830B /* LocalizeKey.swift in Sources */,
@@ -1059,7 +1068,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = PhotoKeyboardEx/PhotoKeyboardEx.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.10;
+				CURRENT_PROJECT_VERSION = 2.0.0;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = PhotoKeyboardEx/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -1067,7 +1076,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.10;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -1082,7 +1091,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = PhotoKeyboardEx/PhotoKeyboardEx.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.10;
+				CURRENT_PROJECT_VERSION = 2.0.0;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = PhotoKeyboardEx/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -1090,7 +1099,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.10;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
@@ -1185,7 +1194,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = PhotoKeyboardExOrigin/PhotoKeyboardExOrigin.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.10;
+				CURRENT_PROJECT_VERSION = 2.0.0;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = PhotoKeyboardExOrigin/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -1194,7 +1203,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.10;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx.PhotoKeyboardExOrigin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1208,7 +1217,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = PhotoKeyboardExOrigin/PhotoKeyboardExOrigin.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.10;
+				CURRENT_PROJECT_VERSION = 2.0.0;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = PhotoKeyboardExOrigin/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -1217,7 +1226,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.10;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx.PhotoKeyboardExOrigin;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1231,7 +1240,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.10;
+				CURRENT_PROJECT_VERSION = 2.0.0;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = ServiceNotification/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -1240,7 +1249,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.10;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx.ServiceNotification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1255,7 +1264,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.10;
+				CURRENT_PROJECT_VERSION = 2.0.0;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = ServiceNotification/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -1264,7 +1273,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0.10;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx.ServiceNotification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1281,7 +1290,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.10;
+				CURRENT_PROJECT_VERSION = 2.0.0;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1298,7 +1307,7 @@
 					"@loader_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_dylib;
-				MARKETING_VERSION = 1.0.10;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardFramework;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -1317,7 +1326,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.0.10;
+				CURRENT_PROJECT_VERSION = 2.0.0;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1334,7 +1343,7 @@
 					"@loader_path/Frameworks",
 				);
 				MACH_O_TYPE = mh_dylib;
-				MARKETING_VERSION = 1.0.10;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardFramework;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
@@ -1526,6 +1535,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 43277EB9462847AFB66D5549 /* XCRemoteSwiftPackageReference "lottie-ios" */;
 			productName = Lottie;
+		};
+		82RT0001000000000000CC01 /* RealmSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FB38203D02814BB8A17B9205 /* XCRemoteSwiftPackageReference "realm-swift" */;
+			productName = RealmSwift;
 		};
 		584F21B3BDC74D14BE270281 /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;
