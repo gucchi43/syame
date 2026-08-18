@@ -35,6 +35,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UNUserNotificationCenter.current().setBadgeCount(0)
     }
 
+    /// 背面に回るタイミングで複製を取り直す。
+    /// 共有コンテナが消えても、次の起動でここから戻せる。
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        RealmManager.shared.snapshotIfNeeded()
+    }
+
     /// キーボード拡張から渡されたURLを開く。
     /// 拡張から外部URL(LINEなど)を直接開けない場合に、
     /// photokeyboardex-app://open?url=... の形でアプリへ委譲されてくる。
