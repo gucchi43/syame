@@ -108,15 +108,16 @@ public class RealmPhoto: Object {
 }
 
 /// チュートリアル用の初期画像。
-/// officialPhotoFirst はアプリ本体のAssetsにしか含まれずキーボード拡張からは解決できないため、
+/// officialPhotoWelcome はアプリ本体のAssetsにしか含まれずキーボード拡張からは解決できないため、
 /// 強制アンラップせず画像が見つからない場合は nil を返す。
+/// ID は画像ごとの固定値。投入済み判定に使うため、画像を差し替えるときは ID も新しくする。
 public func makeOfficialPhoto() -> RealmPhoto? {
-    guard let image = UIImage(named: "officialPhotoFirst") else { return nil }
-    return RealmPhoto.create(id: "A04C59BD-F2CC-43ED-B0B5-39E55A03E283",
-                             text: "おもんない！",
+    guard let image = UIImage(named: "officialPhotoWelcome") else { return nil }
+    return RealmPhoto.create(id: "8E988DA6-194D-47F2-8500-3384FA99B725",
+                             text: "まーまーらいおん君",
                              image: image,
-                             imageHeight: 600,
-                             imageWidth: 532,
+                             imageHeight: 800,
+                             imageWidth: 800,
                              getDay: Date().toString(),
                              isPublic: false,
                              ownerId: RealmPhoto.officialOwnerId)
