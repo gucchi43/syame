@@ -24,9 +24,9 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="DEQ-tb-Dez">
                                 <rect key="frame" x="0.0" y="44" width="414" height="97.5"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lX6-u8-JMY">
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lX6-u8-JMY">
                                         <rect key="frame" x="16" y="32" width="382" height="33.5"/>
-                                        <fontDescription key="fontDescription" type="boldSystem" pointSize="28"/>
+                                        <fontDescription key="fontDescription" style="UICTFontTextStyleTitle2"/>
                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <nil key="highlightedColor"/>
                                     </label>
@@ -64,7 +64,7 @@
                             <constraint firstItem="aaw-Qd-yBr" firstAttribute="trailing" secondItem="apg-8p-i7j" secondAttribute="trailing" constant="24" id="VSY-ik-ESB"/>
                             <constraint firstItem="a5Y-De-pqO" firstAttribute="leading" secondItem="aaw-Qd-yBr" secondAttribute="leading" constant="24" id="ZSM-Zn-W0A"/>
                             <constraint firstItem="DEQ-tb-Dez" firstAttribute="trailing" secondItem="aaw-Qd-yBr" secondAttribute="trailing" id="cZu-iG-7wE"/>
-                            <constraint firstItem="DEQ-tb-Dez" firstAttribute="top" secondItem="aaw-Qd-yBr" secondAttribute="top" id="i94-6E-p7w"/>
+                            <constraint firstItem="a5Y-De-pqO" firstAttribute="top" secondItem="DEQ-tb-Dez" secondAttribute="bottom" constant="8" id="i94-6E-p7w"/>
                             <constraint firstItem="Zll-dI-fw2" firstAttribute="leading" secondItem="aaw-Qd-yBr" secondAttribute="leading" id="jvb-Zs-BAZ"/>
                             <constraint firstAttribute="bottom" secondItem="Zll-dI-fw2" secondAttribute="bottom" id="tgc-OQ-aLT"/>
                         </constraints>
