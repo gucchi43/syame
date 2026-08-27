@@ -56,12 +56,31 @@ class PhotoDetailViewController: UIViewController {
 
         self.view.backgroundColor = .bgBase
         bgView.backgroundColor = UIColor.clear
-        captionLabel.textColor = .textPrimary
+        applySubtitle(rPhoto?.text)
+    }
+
+    /// 画像の上に重ねる字幕。映画の字幕にならい、白文字を黒フチで縁取る。
+    ///
+    /// 背後に来るのはアプリの地ではなく画像なので、色は常に白で固定する。
+    /// 地に追従する textPrimary ではライトモードで黒文字になり、暗い画像に沈む。
+    private func applySubtitle(_ text: String?) {
+        guard let text = text, !text.isEmpty else {
+            captionLabel.isHidden = true
+            return
+        }
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .center
         captionLabel.adjustsFontForContentSizeCategory = true
-        captionLabel.sizeToFit()
-        captionLabel.shadowColor = .black
-        captionLabel.shadowOffset = CGSize(width: 1, height: 1)
-        captionLabel.text = rPhoto?.text
+        // strokeWidth は負値で「塗りつぶし＋フチ」になる。正値だと中抜きの文字になる。
+        // 和文書体はイタリック体を持たないため、傾きは obliqueness で幾何的にかける
+        captionLabel.attributedText = NSAttributedString(string: text, attributes: [
+            .font: UIFont.scaled(.title2, weight: .bold),
+            .foregroundColor: UIColor.onAurora,
+            .strokeColor: UIColor.black,
+            .strokeWidth: -4.0,
+            .obliqueness: 0.2,
+            .paragraphStyle: paragraph
+        ])
     }
 
     @IBAction func tapCloseButton(_ sender: Any) {
