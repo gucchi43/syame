@@ -18,6 +18,7 @@ class PhotoDetailViewController: UIViewController {
     @IBOutlet weak var otherButton: UIButton!
     @IBOutlet weak var bgView: UIView!
     @IBOutlet weak var captionLabel: UILabel!
+    @IBOutlet weak var captionTopConstraint: NSLayoutConstraint!
     private var zoomImageView: UIImageView!
     var rPhoto: RealmPhoto?
 
@@ -71,16 +72,42 @@ class PhotoDetailViewController: UIViewController {
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = .center
         captionLabel.adjustsFontForContentSizeCategory = true
+        // 字幕は画像に添えるものなので、見出し級の大きさから一段落とす
+        let base = UIFont.scaled(.title2, weight: .bold)
         // strokeWidth は負値で「塗りつぶし＋フチ」になる。正値だと中抜きの文字になる。
         // 和文書体はイタリック体を持たないため、傾きは obliqueness で幾何的にかける
         captionLabel.attributedText = NSAttributedString(string: text, attributes: [
-            .font: UIFont.scaled(.title2, weight: .bold),
+            .font: base.withSize(base.pointSize * 0.7),
             .foregroundColor: UIColor.onAurora,
             .strokeColor: UIColor.black,
             .strokeWidth: -4.0,
             .obliqueness: 0.2,
             .paragraphStyle: paragraph
         ])
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        positionSubtitleUnderImage()
+    }
+
+    /// 字幕を画像の下端のすぐ下に置く。
+    ///
+    /// 画像は縦横比を保って収まるため、下端の位置は画像ごとに変わる。
+    /// 画面いっぱいに伸びる縦長の画像では下端が画面の外に出るので、
+    /// 閉じるボタンに掛からないところで止める。
+    private func positionSubtitleUnderImage() {
+        guard let size = zoomImageView.image?.size, size.width > 0, size.height > 0 else { return }
+        let area = scrollView.frame
+        let scale = min(area.width / size.width, area.height / size.height)
+        let imageBottom = area.minY + (area.height + size.height * scale) / 2
+        // 字幕が閉じるボタンに重ならない下限
+        let lowest = closeButton.frame.minY - Spacing.s - bgView.frame.height
+        let top = min(imageBottom + Spacing.s, lowest) - view.safeAreaInsets.top
+        // 制約の変更は再度レイアウトを呼ぶため、動いていないときは何もしない
+        guard abs(captionTopConstraint.constant - top) > 0.5 else { return }
+        captionTopConstraint.constant = top
+        view.layoutIfNeeded()
     }
 
     @IBAction func tapCloseButton(_ sender: Any) {

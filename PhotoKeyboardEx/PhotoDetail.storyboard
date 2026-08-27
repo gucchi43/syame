@@ -34,8 +34,8 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <constraints>
                                     <constraint firstItem="lX6-u8-JMY" firstAttribute="leading" secondItem="DEQ-tb-Dez" secondAttribute="leading" constant="16" id="fC0-lX-m4S"/>
-                                    <constraint firstAttribute="bottom" secondItem="lX6-u8-JMY" secondAttribute="bottom" constant="32" id="jLQ-eC-YdX"/>
-                                    <constraint firstItem="lX6-u8-JMY" firstAttribute="top" secondItem="DEQ-tb-Dez" secondAttribute="top" constant="32" id="kVw-mR-Grs"/>
+                                    <constraint firstAttribute="bottom" secondItem="lX6-u8-JMY" secondAttribute="bottom" constant="8" id="jLQ-eC-YdX"/>
+                                    <constraint firstItem="lX6-u8-JMY" firstAttribute="top" secondItem="DEQ-tb-Dez" secondAttribute="top" constant="8" id="kVw-mR-Grs"/>
                                     <constraint firstAttribute="trailing" secondItem="lX6-u8-JMY" secondAttribute="trailing" constant="16" id="tNQ-nu-Umb"/>
                                 </constraints>
                             </view>
@@ -64,7 +64,7 @@
                             <constraint firstItem="aaw-Qd-yBr" firstAttribute="trailing" secondItem="apg-8p-i7j" secondAttribute="trailing" constant="24" id="VSY-ik-ESB"/>
                             <constraint firstItem="a5Y-De-pqO" firstAttribute="leading" secondItem="aaw-Qd-yBr" secondAttribute="leading" constant="24" id="ZSM-Zn-W0A"/>
                             <constraint firstItem="DEQ-tb-Dez" firstAttribute="trailing" secondItem="aaw-Qd-yBr" secondAttribute="trailing" id="cZu-iG-7wE"/>
-                            <constraint firstItem="a5Y-De-pqO" firstAttribute="top" secondItem="DEQ-tb-Dez" secondAttribute="bottom" constant="8" id="i94-6E-p7w"/>
+                            <constraint firstItem="DEQ-tb-Dez" firstAttribute="top" secondItem="aaw-Qd-yBr" secondAttribute="top" id="i94-6E-p7w"/>
                             <constraint firstItem="Zll-dI-fw2" firstAttribute="leading" secondItem="aaw-Qd-yBr" secondAttribute="leading" id="jvb-Zs-BAZ"/>
                             <constraint firstAttribute="bottom" secondItem="Zll-dI-fw2" secondAttribute="bottom" id="tgc-OQ-aLT"/>
                         </constraints>
@@ -73,6 +73,7 @@
                     <connections>
                         <outlet property="bgView" destination="DEQ-tb-Dez" id="spr-XM-nSa"/>
                         <outlet property="captionLabel" destination="lX6-u8-JMY" id="93t-gi-NDh"/>
+                        <outlet property="captionTopConstraint" destination="i94-6E-p7w" id="cap-To-p01"/>
                         <outlet property="closeButton" destination="a5Y-De-pqO" id="Wgk-y6-hmi"/>
                         <outlet property="otherButton" destination="apg-8p-i7j" id="VhR-bK-yd2"/>
                         <outlet property="scrollView" destination="Zll-dI-fw2" id="rZm-VK-giE"/>
