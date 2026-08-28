@@ -20,7 +20,6 @@
 
 "addNavTitle" = "ペリを追加";
 "addInputTitle" = "タイトル";
-"addPublicSwitchOn" = "公開";
 "addDone" = "OK";
 
 "settingTitle" = "キーボードから直接送れるようにする。";
@@ -41,8 +40,6 @@
 "topRequestFourth" = "プライバシーポリシー";
 "topRequestFifth" = "に同意することとします。";
 
-"blockContent" = "ブロックする";
-"cancel" = "キャンセル";
 
 //キーボード側
 "notFullButton" = "設定画面へ";

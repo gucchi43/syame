@@ -19,7 +19,6 @@
 
 "addNavTitle" = "Add a peri";
 "addInputTitle" = "Title";
-"addPublicSwitchOn" = "Public";
 "addDone" = "OK";
 
 "settingTitle" = "Send directly from the keyboard.";
@@ -40,8 +39,6 @@
 "topRequestFourth" = "Privacy Policy";
 "topRequestFifth" = ".";
 
-"blockContent" = "This content will be hidden";
-"cancel" = "Cancel";
 
 //キーボード側
 "notFullButton" = "Go to setting";

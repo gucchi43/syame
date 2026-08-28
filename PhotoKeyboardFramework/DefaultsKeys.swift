@@ -18,7 +18,6 @@ public final class GroupeDefaults {
     private enum Keys: String {
         case launchCount, sendCount, keyboardColumns
         case usageNeedFlag, registerNeedFlag
-        case blockContents
         case lastKeyboardOpenResult
     }
 
@@ -84,16 +83,5 @@ public final class GroupeDefaults {
             return true
         }
         return false
-    }
-
-    public func addBlockContents(id: String) {
-        var list = sharedDefaults.stringArray(forKey: Keys.blockContents.rawValue) ?? []
-        guard !list.contains(id) else { return }
-        list.append(id)
-        sharedDefaults.set(list, forKey: Keys.blockContents.rawValue)
-    }
-
-    public func getBlockContens() -> [String] {
-        return sharedDefaults.stringArray(forKey: Keys.blockContents.rawValue) ?? []
     }
 }

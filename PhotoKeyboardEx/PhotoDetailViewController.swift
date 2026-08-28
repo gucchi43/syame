@@ -15,7 +15,6 @@ class PhotoDetailViewController: UIViewController {
 
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var closeButton: UIButton!
-    @IBOutlet weak var otherButton: UIButton!
     @IBOutlet weak var bgView: UIView!
     @IBOutlet weak var captionLabel: UILabel!
     @IBOutlet weak var captionTopConstraint: NSLayoutConstraint!
@@ -50,10 +49,6 @@ class PhotoDetailViewController: UIViewController {
         closeButton.applySymbol(Symbol.close)
         closeButton.titleLabel?.shadowColor = .black
         closeButton.titleLabel?.shadowOffset = CGSize(width: 1, height: 1)
-
-        // 通報・ブロックが無くなり中身が空になったため隠す。
-        // アプリ内コピー導線を実装する際にこのボタンを再利用する。
-        otherButton.isHidden = true
 
         self.view.backgroundColor = .bgBase
         bgView.backgroundColor = UIColor.clear
@@ -112,10 +107,6 @@ class PhotoDetailViewController: UIViewController {
 
     @IBAction func tapCloseButton(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
-    }
-
-    /// Storyboardからの接続が残っているため定義だけ残す。ボタン自体は隠してある。
-    @IBAction func tapOtherButton(_ sender: Any) {
     }
 }
 

@@ -20,7 +20,7 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
     /// (キー名を変えると既存ユーザーの保存値が失われるため、変更時はこのテストも落ちてよい)。
     private static let managedDefaultsKeys = [
         "sendCount",
-        "registerNeedFlag", "usageNeedFlag", "blockContents", "keyboardColumns"
+        "registerNeedFlag", "usageNeedFlag", "keyboardColumns"
     ]
     private var savedDefaults: [String: Any] = [:]
 
@@ -222,21 +222,6 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         XCTAssertEqual(resized.scale, 1.0)
     }
 
-    /// 同じコンテンツを何度ブロックしてもリストは1件。
-    /// 重複するとブロック一覧が際限なく膨らみ、一覧のフィルタが重くなる
-    func testAddBlockContentsIgnoresDuplicates() {
-        let defaults = GroupeDefaults.shared
-        defaults.addBlockContents(id: "photo-1")
-        defaults.addBlockContents(id: "photo-1")
-        defaults.addBlockContents(id: "photo-2")
-
-        XCTAssertEqual(defaults.getBlockContens(), ["photo-1", "photo-2"])
-    }
-
-    /// ブロックしていない状態でも空配列を返すこと(nilでクラッシュしない)
-    func testGetBlockContentsIsEmptyByDefault() {
-        XCTAssertEqual(GroupeDefaults.shared.getBlockContens(), [])
-    }
 
     /// オンボーディングは初回だけ出す。
     /// 初期値が false になると一度も表示されず、キーボードの設定方法を案内できない
@@ -552,7 +537,7 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
 
     /// 使用するSF Symbolsが実在すること。名前を間違えるとアイコンが消える
     func testAllSymbolsExist() {
-        let names = [Symbol.menu, Symbol.saveCount, Symbol.more, Symbol.textMode, Symbol.globe,
+        let names = [Symbol.menu, Symbol.more, Symbol.textMode, Symbol.globe,
                      Symbol.emptyState, Symbol.home, Symbol.imageMode, Symbol.add,
                      Symbol.gridSparse, Symbol.gridDense, Symbol.close,
                      Symbol.copy, Symbol.delete]

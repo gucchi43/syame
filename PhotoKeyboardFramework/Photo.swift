@@ -22,7 +22,9 @@ public class RealmPhoto: Object {
     @objc public dynamic var text = ""
     @objc public dynamic var getDay = ""
     @objc public dynamic var useNum = 0
-    @objc public dynamic var isPublic = true
+    /// 公開投稿は廃止済み。サーバ経路自体が無いので読み手はいないが、
+    /// 既定を true にしておくと将来この型を作る経路が公開扱いで始まってしまう
+    @objc public dynamic var isPublic = false
     @objc public dynamic var imageHeight = 0
     @objc public dynamic var imageWidth = 0
     @objc public dynamic var ownerId = ""

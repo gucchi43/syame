@@ -13,7 +13,6 @@
 		82RT0002000000000000CC02 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 82RT0001000000000000CC01 /* RealmSwift */; };
 		1BA58F922609467F9EF8371F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CF8919C3BF774918835C4DB7 /* RealmSwift */; };
 		1CA5C392CE37392557119E2C /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		1E44638CECA145E2872694EB /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 95D0F842613E4ABBB11239EF /* Alamofire */; };
 		2A5293AE4B1CE75911AAD26B /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		393231D5EC54450C9836C6F9 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = 7E2F3E9D8C6F468E9A1BD4CD /* SwiftDate */; };
 		3ACE86CEBB02C3D24A38DC01 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
@@ -73,12 +72,10 @@
 		82F9F40C22F6B2610062F451 /* PhotoKeyboardFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = 82F9F3FC22F6B2610062F451 /* PhotoKeyboardFramework.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		82F9F40F22F6B2610062F451 /* PhotoKeyboardFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82F9F3FA22F6B2610062F451 /* PhotoKeyboardFramework.framework */; };
 		82F9F41922F6B2920062F451 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9F41822F6B2920062F451 /* Photo.swift */; };
-		A1841986CFEB41DD8CD17BA4 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 84D1A66F29D645DF92231776 /* SwiftyJSON */; };
 		C73AF9F078134AE583792C0A /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 42A00FB9C3F24E1D87CE50B6 /* Lottie */; };
 		E4C2A35456354852A8AB32F6 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 584F21B3BDC74D14BE270281 /* RealmSwift */; };
 		EDB839492F9819690068143E /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = CF8919C3BF774918835C4DB7 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		EE49C6519FBD408388F2AED5 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = CA3065527272466C964C992A /* SwiftDate */; };
-		F3FD5CBEE09F4B1E806714C1 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = FFFCDEE5A23543BEA4C54024 /* Alamofire */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -229,10 +226,8 @@
 			files = (
 				82F9F40F22F6B2610062F451 /* PhotoKeyboardFramework.framework in Frameworks */,
 				822F932F22F72A0C006998E2 /* (null) in Frameworks */,
-				1E44638CECA145E2872694EB /* Alamofire in Frameworks */,
 				1BA58F922609467F9EF8371F /* RealmSwift in Frameworks */,
 				393231D5EC54450C9836C6F9 /* SwiftDate in Frameworks */,
-				A1841986CFEB41DD8CD17BA4 /* SwiftyJSON in Frameworks */,
 				3ADA80A7C5E8499BBE4A96AA /* Toast in Frameworks */,
 				C73AF9F078134AE583792C0A /* Lottie in Frameworks */,
 			);
@@ -271,7 +266,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				826D658122F99EC500F66583 /* (null) in Frameworks */,
-				F3FD5CBEE09F4B1E806714C1 /* Alamofire in Frameworks */,
 				E4C2A35456354852A8AB32F6 /* RealmSwift in Frameworks */,
 				EE49C6519FBD408388F2AED5 /* SwiftDate in Frameworks */,
 			);
@@ -451,10 +445,8 @@
 			);
 			name = PhotoKeyboardEx;
 			packageProductDependencies = (
-				95D0F842613E4ABBB11239EF /* Alamofire */,
 				CF8919C3BF774918835C4DB7 /* RealmSwift */,
 				7E2F3E9D8C6F468E9A1BD4CD /* SwiftDate */,
-				84D1A66F29D645DF92231776 /* SwiftyJSON */,
 				6C2B5E648EF740DE8D381735 /* Toast */,
 				42A00FB9C3F24E1D87CE50B6 /* Lottie */,
 			);
@@ -534,7 +526,6 @@
 			);
 			name = PhotoKeyboardFramework;
 			packageProductDependencies = (
-				FFFCDEE5A23543BEA4C54024 /* Alamofire */,
 				584F21B3BDC74D14BE270281 /* RealmSwift */,
 				CA3065527272466C964C992A /* SwiftDate */,
 			);
@@ -625,11 +616,9 @@
 			);
 			mainGroup = 8278D12D22EE5A700034C2CC;
 			packageReferences = (
-				B3DE6C121B644FA4B1465C36 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				FB38203D02814BB8A17B9205 /* XCRemoteSwiftPackageReference "realm-swift" */,
 				43277EB9462847AFB66D5549 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 				A726229955BD487B9C58A99D /* XCRemoteSwiftPackageReference "SwiftDate" */,
-				CFF33F3F993F468BA5267D81 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 				0D06669193874E7F801F5D0A /* XCRemoteSwiftPackageReference "Toast-Swift" */,
 			);
 			productRefGroup = 8278D13722EE5A700034C2CC /* Products */;
@@ -1357,22 +1346,6 @@
 				minimumVersion = 7.0.0;
 			};
 		};
-		B3DE6C121B644FA4B1465C36 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.10.0;
-			};
-		};
-		CFF33F3F993F468BA5267D81 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.2;
-			};
-		};
 		FB38203D02814BB8A17B9205 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/realm/realm-swift.git";
@@ -1409,20 +1382,10 @@
 			package = A726229955BD487B9C58A99D /* XCRemoteSwiftPackageReference "SwiftDate" */;
 			productName = SwiftDate;
 		};
-		84D1A66F29D645DF92231776 /* SwiftyJSON */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CFF33F3F993F468BA5267D81 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
-			productName = SwiftyJSON;
-		};
 		8E472C01B83C4C73818F93AA /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = FB38203D02814BB8A17B9205 /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
-		};
-		95D0F842613E4ABBB11239EF /* Alamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B3DE6C121B644FA4B1465C36 /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = Alamofire;
 		};
 		C27D3E2C284F4289B6FC641E /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -1438,11 +1401,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = FB38203D02814BB8A17B9205 /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
-		};
-		FFFCDEE5A23543BEA4C54024 /* Alamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B3DE6C121B644FA4B1465C36 /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = Alamofire;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

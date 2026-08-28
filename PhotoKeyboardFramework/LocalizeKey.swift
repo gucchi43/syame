@@ -23,7 +23,6 @@ public enum LocalizeKey: String, CaseIterable {
 
     case addNavTitle
     case addInputTitle
-    case addPublicSwitchOn
     case addDone
     
     case settingTitle
@@ -47,8 +46,6 @@ public enum LocalizeKey: String, CaseIterable {
     case topRequestThird
     case topRequestFourth
     case topRequestFifth
-    case blockContent
-    case cancel
     case menuCopy
     case menuDelete
     case menuDeleteConfirm

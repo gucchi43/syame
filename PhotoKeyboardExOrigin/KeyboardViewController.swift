@@ -68,7 +68,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
 
     var heightConstraint: NSLayoutConstraint!
     @IBOutlet weak var collectionViewHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var homeButtonLeadingConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var collectionViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var collectionView: UICollectionView!

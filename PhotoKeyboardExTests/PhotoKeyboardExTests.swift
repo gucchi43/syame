@@ -103,12 +103,11 @@ class PhotoKeyboardExTests: XCTestCase {
     // MARK: - 公開投稿の停止
 
     /// 一般ユーザーの公開投稿は著作権リスクの源泉のため停止した。
-    /// 既定値がtrueに戻ると、投稿がそのままサーバへ上がってしまう。
-    @MainActor
-    func testPublicPostingIsDisabledByDefault() {
-        let controller = AddViewController()
-        XCTAssertFalse(controller.publicFlag,
-                       "公開投稿が有効に戻っている。画像がサーバへアップロードされる")
+    /// 公開/非公開のフラグとスイッチUIは撤去済みで、サーバ経路そのものも無い。
+    /// 残っているのは Realm の列だけなので、その既定値が公開に戻らないことを見張る。
+    func testPhotoIsNotPublicByDefault() {
+        XCTAssertFalse(RealmPhoto().isPublic,
+                       "既定が公開に戻っている。この型を作る経路が増えたとき公開扱いで始まってしまう")
     }
 
     // MARK: - 投稿画像の縮小

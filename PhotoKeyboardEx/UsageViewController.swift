@@ -22,7 +22,6 @@ class UsageViewController: UIViewController {
     @IBOutlet weak var subLabel: UILabel!
     @IBOutlet weak var nextButton: UIButton!
     
-    @IBOutlet weak var topConstraint: NSLayoutConstraint!
     
     override func viewDidLoad() {
         super.viewDidLoad()
