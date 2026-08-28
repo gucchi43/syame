@@ -68,7 +68,6 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
 
     var heightConstraint: NSLayoutConstraint!
     @IBOutlet weak var collectionViewHeightConstraint: NSLayoutConstraint!
-    @IBOutlet weak var homeButtonLeadingConstraint: NSLayoutConstraint!
     
     @IBOutlet weak var collectionViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var collectionView: UICollectionView!
@@ -174,17 +173,13 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         // 文字色と影は AuroraButton が持つ
         self.notFullButton.applyCornerRadius(Radius.small)
         
-        if Lang.langRootKey() == "JP" {
-            self.notFullButton.setTitle("設定画面へ", for: .normal)
-            let notFullLabelStrig = "[ペリペリ]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary) + "→".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary) + "[キーボード]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary) +
-                "→".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary) + "[フルアクセスを許可する]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary) + "をオンにしてください。".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary)
-            self.notFullLabel.attributedText = notFullLabelStrig
-        } else {
-            self.notFullButton.setTitle("Go to setting", for: .normal)
-            let notFullLabelStrig = "[PERIPERI]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary) + "→".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary) + "[Keyboards]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary) +
-                "→".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary) + "Turn on ".withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textPrimary) + "[Allow Full Access]".withFont(UIFont.scaled(.footnote, weight: .bold)).withTextColor(.textPrimary)
-            self.notFullLabel.attributedText = notFullLabelStrig
-        }
+        // 案内文は言語ごとに語順が変わるため、断片を連結せず1文として strings に置く。
+        // 角括弧で囲んだ部分が太字になる
+        self.notFullButton.setTitle(LocalizeKey.notFullButton.localizedString(), for: .normal)
+        self.notFullLabel.attributedText = LocalizeKey.notFullGuide.localizedString()
+            .emphasizingBracketed(base: UIFont.scaled(.footnote, weight: .regular),
+                                  emphasis: UIFont.scaled(.footnote, weight: .bold),
+                                  color: .textPrimary)
         generator.prepare()
     }
     

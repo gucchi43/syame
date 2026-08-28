@@ -49,28 +49,9 @@
                                                             </textField>
                                                         </subviews>
                                                     </stackView>
-                                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="7gx-cV-1Pp">
-                                                        <rect key="frame" x="0.0" y="151" width="390" height="59.5"/>
-                                                        <subviews>
-                                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="公開" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dGc-Nl-B3q">
-                                                                <rect key="frame" x="0.0" y="0.0" width="390" height="20.5"/>
-                                                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                                <nil key="textColor"/>
-                                                                <nil key="highlightedColor"/>
-                                                            </label>
-                                                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="j8r-JF-YKF">
-                                                                <rect key="frame" x="0.0" y="28.5" width="392" height="31"/>
-                                                                <connections>
-                                                                    <action selector="switchChanged:" destination="VYM-Tt-eab" eventType="valueChanged" id="mUD-7J-Gtg"/>
-                                                                </connections>
-                                                            </switch>
-                                                        </subviews>
-                                                    </stackView>
                                                 </subviews>
                                                 <constraints>
                                                     <constraint firstItem="ZAv-UI-Ono" firstAttribute="leading" secondItem="lU4-hm-2Q8" secondAttribute="leading" id="5uB-JW-LTV"/>
-                                                    <constraint firstAttribute="trailing" secondItem="7gx-cV-1Pp" secondAttribute="trailing" id="AZY-H0-Hp5"/>
-                                                    <constraint firstItem="7gx-cV-1Pp" firstAttribute="leading" secondItem="lU4-hm-2Q8" secondAttribute="leading" id="KcG-eq-gvD"/>
                                                     <constraint firstAttribute="trailing" secondItem="ZAv-UI-Ono" secondAttribute="trailing" id="Rn0-Ip-3wR"/>
                                                 </constraints>
                                             </stackView>
@@ -130,9 +111,7 @@
                         <outlet property="closeButton" destination="1Xz-zB-4ks" id="eDD-Rb-5Qh"/>
                         <outlet property="doneButton" destination="LmT-RX-YZQ" id="ffr-O9-dgR"/>
                         <outlet property="imageView" destination="UFe-T6-h0D" id="yIs-YV-ETg"/>
-                        <outlet property="publicLabel" destination="dGc-Nl-B3q" id="oH9-MG-3F9"/>
                         <outlet property="scrollView" destination="NTC-22-ldv" id="Ap1-Sc-r0l"/>
-                        <outlet property="publicSwitch" destination="j8r-JF-YKF" id="2E0-24-2Er"/>
                         <outlet property="titleLabel" destination="PtK-lM-8uT" id="vcp-FS-5AB"/>
                         <outlet property="titleTextField" destination="mN9-6W-0E2" id="siF-ZF-cjI"/>
                     </connections>

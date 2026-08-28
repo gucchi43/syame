@@ -295,7 +295,6 @@ extension UILabel {
 /// 文字列直書きを避け、typo によるアイコン欠落を防ぐ。
 public enum Symbol {
     public static let menu = "line.3.horizontal"
-    public static let saveCount = "arrow.down.circle"
     public static let more = "ellipsis"
     public static let textMode = "textformat"
     public static let globe = "globe"

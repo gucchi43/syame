@@ -39,13 +39,6 @@
                                     <constraint firstAttribute="trailing" secondItem="lX6-u8-JMY" secondAttribute="trailing" constant="16" id="tNQ-nu-Umb"/>
                                 </constraints>
                             </view>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="apg-8p-i7j">
-                                <rect key="frame" x="344" y="808" width="46" height="30"/>
-                                <state key="normal" title="Button"/>
-                                <connections>
-                                    <action selector="tapOtherButton:" destination="oSA-ia-Gok" eventType="touchUpInside" id="CKf-gD-O0F"/>
-                                </connections>
-                            </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="a5Y-De-pqO">
                                 <rect key="frame" x="24" y="808" width="46" height="30"/>
                                 <state key="normal" title="Button"/>
@@ -58,10 +51,8 @@
                         <constraints>
                             <constraint firstItem="aaw-Qd-yBr" firstAttribute="bottom" secondItem="a5Y-De-pqO" secondAttribute="bottom" constant="24" id="5Iy-Kt-7iy"/>
                             <constraint firstItem="DEQ-tb-Dez" firstAttribute="leading" secondItem="aaw-Qd-yBr" secondAttribute="leading" id="IQ8-1G-HTt"/>
-                            <constraint firstItem="aaw-Qd-yBr" firstAttribute="bottom" secondItem="apg-8p-i7j" secondAttribute="bottom" constant="24" id="NwP-D1-m51"/>
                             <constraint firstItem="Zll-dI-fw2" firstAttribute="trailing" secondItem="aaw-Qd-yBr" secondAttribute="trailing" id="OB5-Qf-cwl"/>
                             <constraint firstItem="Zll-dI-fw2" firstAttribute="top" secondItem="aVY-JG-jze" secondAttribute="top" id="Q8J-Pa-9gV"/>
-                            <constraint firstItem="aaw-Qd-yBr" firstAttribute="trailing" secondItem="apg-8p-i7j" secondAttribute="trailing" constant="24" id="VSY-ik-ESB"/>
                             <constraint firstItem="a5Y-De-pqO" firstAttribute="leading" secondItem="aaw-Qd-yBr" secondAttribute="leading" constant="24" id="ZSM-Zn-W0A"/>
                             <constraint firstItem="DEQ-tb-Dez" firstAttribute="trailing" secondItem="aaw-Qd-yBr" secondAttribute="trailing" id="cZu-iG-7wE"/>
                             <constraint firstItem="DEQ-tb-Dez" firstAttribute="top" secondItem="aaw-Qd-yBr" secondAttribute="top" id="i94-6E-p7w"/>
@@ -75,7 +66,6 @@
                         <outlet property="captionLabel" destination="lX6-u8-JMY" id="93t-gi-NDh"/>
                         <outlet property="captionTopConstraint" destination="i94-6E-p7w" id="cap-To-p01"/>
                         <outlet property="closeButton" destination="a5Y-De-pqO" id="Wgk-y6-hmi"/>
-                        <outlet property="otherButton" destination="apg-8p-i7j" id="VhR-bK-yd2"/>
                         <outlet property="scrollView" destination="Zll-dI-fw2" id="rZm-VK-giE"/>
                     </connections>
                 </viewController>

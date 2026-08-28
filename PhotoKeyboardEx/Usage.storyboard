@@ -160,7 +160,6 @@
                         <outlet property="secondLabel" destination="zWJ-8u-dOj" id="Hxu-PY-Lp9"/>
                         <outlet property="subLabel" destination="ddr-QQ-eth" id="5Tc-xb-2hK"/>
                         <outlet property="thirdLabel" destination="9sa-hD-cZk" id="qDG-tY-fpI"/>
-                        <outlet property="topConstraint" destination="UwV-S8-ghn" id="bVy-MK-1AJ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="MsU-bV-UyJ" userLabel="First Responder" sceneMemberID="firstResponder"/>

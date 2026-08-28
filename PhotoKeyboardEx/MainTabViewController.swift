@@ -136,7 +136,7 @@ class MainTabViewController: UIViewController {
     }
 
     @objc func finishToast(notification: Notification) {
-        let toast = AuroraView.makeToast(message: LocalizeKey.doneUploadToast.localizedString(),
+        let toast = AuroraView.makeToast(message: LocalizeKey.doneSaveToast.localizedString(),
                                          maxWidth: view.bounds.width - Spacing.l * 2)
         view.showToast(toast, duration: 3.0, position: .top)
         NotificationCenter.default.post(name: .allReload, object: nil, userInfo: nil)

@@ -1,7 +1,12 @@
 import UIKit
 import PhotoKeyboardFramework
 
-// アプリバージョン管理 (Supabase app_config テーブル使用)
+// アプリバージョン管理。ストアの最新版を itunes lookup で調べ、古ければ案内する。
+//
+// 以前は「この版はもう使わせない」という強制アップデートの判定を Supabase の
+// app_config テーブルから引いていたが、Supabase のプロジェクトが消滅しており、
+// 取得失敗を握りつぶしていたため案内自体が一度も出ない状態になっていた。
+// 強制の区別が再び必要になったら、静的な JSON を1本置いて読むだけで足りる。
 extension AppDelegate {
 
     /// App Store のアプリID。lookup と itms-apps の遷移先で別々のIDを使っていたため一箇所にまとめる。
@@ -29,38 +34,10 @@ extension AppDelegate {
                 let lookup = try JSONDecoder().decode(LookupResponse.self, from: data)
                 guard let storeVersion = lookup.results.first?.version else { return }
                 guard AppDelegate.isVersion(currentVersion, olderThan: storeVersion) else { return }
-                await mustUpdateCheck(currentVersion: currentVersion)
+                await showUpdateAlert()
             } catch {
                 print("app version check error: \(error)")
             }
-        }
-    }
-
-    @MainActor
-    func mustUpdateCheck(currentVersion: String) async {
-        let supabase = SupabaseManager.shared.client
-        do {
-            let configs: [AppConfig] = try await supabase
-                .from("app_config")
-                .select()
-                .execute()
-                .value
-
-            // キーが重複していてもクラッシュしないよう後勝ちでまとめる
-            var configMap: [String: String] = [:]
-            for config in configs {
-                configMap[config.key] = config.value
-            }
-            let mustUpdateVersion = configMap["must_update_ver"] ?? "1.0.0"
-            let mustUpdateMessage = configMap["must_update_message"] ?? ""
-
-            if AppDelegate.isVersion(currentVersion, olderThan: mustUpdateVersion) {
-                showMustUpdateAlert(message: mustUpdateMessage)
-            } else {
-                showUpdateAlert()
-            }
-        } catch {
-            print("app_config fetch error: \(error)")
         }
     }
 
@@ -95,27 +72,10 @@ extension AppDelegate {
         present(alert)
     }
 
-    @MainActor
-    func showMustUpdateAlert(message: String) {
-        let alert = UIAlertController(
-            title: LocalizeKey.updateAlertTitle.localizedString(),
-            message: message,
-            preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: LocalizeKey.updateAlertUpdate.localizedString(), style: .default) { [weak self] _ in
-            self?.openAppStore()
-        })
-        present(alert)
-    }
-
     /// rootViewController が既に別の画面を表示していると present に失敗するため最前面を使う
     @MainActor
     private func present(_ alert: UIAlertController) {
         guard let topController = UIApplication.topViewController() else { return }
         topController.present(alert, animated: true, completion: nil)
     }
-}
-
-struct AppConfig: Codable {
-    let key: String
-    let value: String
 }

@@ -7,19 +7,18 @@
  */
 
 "baseOK" = "OK";
-"baseCancel" = "Cansell";
+"baseCancel" = "Cancel";
 
 "navMyBoard" = "PERIPERI";
 
-"doneUploadToast" = "Success upload!";
-"myBoardEmptyTitle" = "Ret's save photo \nin MYBOARD→";
+"doneSaveToast" = "Saved!";
+"myBoardEmptyTitle" = "Save the images \nyou want to use →";
 
 "menuHome" = "Home";
 "menuSetting" = "Set up keyboard";
 
 "addNavTitle" = "Add a peri";
 "addInputTitle" = "Title";
-"addPublicSwitchOn" = "Public";
 "addDone" = "OK";
 
 "settingTitle" = "Send directly from the keyboard.";
@@ -35,16 +34,15 @@
 "topSubtitle" = "Photos, screenshots, anything. Paste without leaving the conversation.";
 "topStart" = "Get started";
 "topRequestFirst" = "By starting, you agree to the ";
-"topRequestSecond" = "the Terms of Service";
+"topRequestSecond" = "Terms of Service";
 "topRequestThird" = " and ";
 "topRequestFourth" = "Privacy Policy";
 "topRequestFifth" = ".";
 
-"blockContent" = "This content will be hidden";
-"cancel" = "Cancel";
 
 //キーボード側
 "notFullButton" = "Go to setting";
+"notFullGuide" = "[PERIPERI]→[Keyboards]→Turn on [Allow Full Access]";
 
 "addPhotoFromApp" = "Add images from the app";
 "updateAlertTitle" = "Update available";

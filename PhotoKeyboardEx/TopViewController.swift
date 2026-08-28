@@ -19,7 +19,6 @@ class TopViewController: UIViewController, UITextViewDelegate {
 
     @IBOutlet weak var subTitleLabel: UILabel!
 
-    @IBOutlet weak var registerStack: UIStackView!
     @IBOutlet weak var startButton: UIButton!
 
     @IBOutlet weak var requestDescription: UITextView!

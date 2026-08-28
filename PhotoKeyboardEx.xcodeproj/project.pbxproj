@@ -8,17 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		AA0100000000000000000002 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000001 /* PrivacyInfo.xcprivacy */; };
-		0DCDE157A8684CE5B1245DAF /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = DBE2F314B6894F9D8465E945 /* Supabase */; };
+		AA0100000000000000000012 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000011 /* PrivacyInfo.xcprivacy */; };
+		AA0100000000000000000022 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000021 /* PrivacyInfo.xcprivacy */; };
 		82RT0002000000000000CC02 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 82RT0001000000000000CC01 /* RealmSwift */; };
 		1BA58F922609467F9EF8371F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CF8919C3BF774918835C4DB7 /* RealmSwift */; };
 		1CA5C392CE37392557119E2C /* (null) in Frameworks */ = {isa = PBXBuildFile; };
-		1E44638CECA145E2872694EB /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 95D0F842613E4ABBB11239EF /* Alamofire */; };
 		2A5293AE4B1CE75911AAD26B /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		393231D5EC54450C9836C6F9 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = 7E2F3E9D8C6F468E9A1BD4CD /* SwiftDate */; };
 		3ACE86CEBB02C3D24A38DC01 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		3ADA80A7C5E8499BBE4A96AA /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 6C2B5E648EF740DE8D381735 /* Toast */; };
 		4105F920130C4F5180B8CA1E /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = C27D3E2C284F4289B6FC641E /* Lottie */; };
-		4A07DCBC2AA54010BFE26316 /* SupabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EC333A154A34905AC3E20A7 /* SupabaseManager.swift */; };
 		551D4C3130734866870EB9E3 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8E472C01B83C4C73818F93AA /* RealmSwift */; };
 		729D6FAE63DA48C982591D94 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
 		821ABDD8230C641600B3DCFE /* Usage.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 821ABDD7230C641600B3DCFE /* Usage.storyboard */; };
@@ -65,8 +64,6 @@
 		82DS0002000000000000AA02 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82DS0001000000000000AA01 /* DesignSystem.swift */; };
 		82EA891F2328D7E10022832E /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 82EA89212328D7E10022832E /* Localizable.strings */; };
 		82EA8924232A8E380022832E /* UpdateExtention.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EA8923232A8E380022832E /* UpdateExtention.swift */; };
-		82EA896C232D53530022832E /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82EA896B232D53530022832E /* NotificationService.swift */; };
-		82EA8970232D53540022832E /* ServiceNotification.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 82EA8969232D53530022832E /* ServiceNotification.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		82F9F3EE22F588290062F451 /* MainNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9F3ED22F588290062F451 /* MainNavigationViewController.swift */; };
 		82F9F3F022F589400062F451 /* MainMenuTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9F3EF22F589400062F451 /* MainMenuTableViewController.swift */; };
 		82F9F3F222F636FE0062F451 /* Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9F3F122F636FE0062F451 /* Extension.swift */; };
@@ -75,13 +72,10 @@
 		82F9F40C22F6B2610062F451 /* PhotoKeyboardFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = 82F9F3FC22F6B2610062F451 /* PhotoKeyboardFramework.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		82F9F40F22F6B2610062F451 /* PhotoKeyboardFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 82F9F3FA22F6B2610062F451 /* PhotoKeyboardFramework.framework */; };
 		82F9F41922F6B2920062F451 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9F41822F6B2920062F451 /* Photo.swift */; };
-		A1841986CFEB41DD8CD17BA4 /* SwiftyJSON in Frameworks */ = {isa = PBXBuildFile; productRef = 84D1A66F29D645DF92231776 /* SwiftyJSON */; };
-		B0BDA78D9C324191848AC408 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = D6194FC5B44E4C339EE42D1D /* Supabase */; };
 		C73AF9F078134AE583792C0A /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 42A00FB9C3F24E1D87CE50B6 /* Lottie */; };
 		E4C2A35456354852A8AB32F6 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 584F21B3BDC74D14BE270281 /* RealmSwift */; };
 		EDB839492F9819690068143E /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = CF8919C3BF774918835C4DB7 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		EE49C6519FBD408388F2AED5 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = CA3065527272466C964C992A /* SwiftDate */; };
-		F3FD5CBEE09F4B1E806714C1 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = FFFCDEE5A23543BEA4C54024 /* Alamofire */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -105,13 +99,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8278D16A22EE5AC30034C2CC;
 			remoteInfo = PhotoKeyboardExOrigin;
-		};
-		82EA896E232D53540022832E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 8278D12E22EE5A700034C2CC /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 82EA8968232D53530022832E;
-			remoteInfo = ServiceNotification;
 		};
 		82F9F40422F6B2610062F451 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -144,7 +131,6 @@
 			dstSubfolderSpec = 13;
 			files = (
 				8278D17222EE5AC30034C2CC /* PhotoKeyboardExOrigin.appex in Embed App Extensions */,
-				82EA8970232D53540022832E /* ServiceNotification.appex in Embed App Extensions */,
 			);
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -165,7 +151,8 @@
 
 /* Begin PBXFileReference section */
 		AA0100000000000000000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		6EC333A154A34905AC3E20A7 /* SupabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseManager.swift; sourceTree = "<group>"; };
+		AA0100000000000000000011 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = PhotoKeyboardFramework/PrivacyInfo.xcprivacy; sourceTree = SOURCE_ROOT; };
+		AA0100000000000000000021 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = PhotoKeyboardExOrigin/PrivacyInfo.xcprivacy; sourceTree = SOURCE_ROOT; };
 		821ABDD7230C641600B3DCFE /* Usage.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Usage.storyboard; sourceTree = "<group>"; };
 		821ABDD9230C642A00B3DCFE /* UsageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageViewController.swift; sourceTree = "<group>"; };
 		821ABDDB230EC43E00B3DCFE /* DefaultsKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsKeys.swift; sourceTree = "<group>"; };
@@ -218,9 +205,6 @@
 		82EA89202328D7E10022832E /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		82EA89222328D7FC0022832E /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		82EA8923232A8E380022832E /* UpdateExtention.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateExtention.swift; sourceTree = "<group>"; };
-		82EA8969232D53530022832E /* ServiceNotification.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ServiceNotification.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		82EA896B232D53530022832E /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
-		82EA896D232D53530022832E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		82F9F3ED22F588290062F451 /* MainNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainNavigationViewController.swift; sourceTree = "<group>"; };
 		82F9F3EF22F589400062F451 /* MainMenuTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuTableViewController.swift; sourceTree = "<group>"; };
 		82F9F3F122F636FE0062F451 /* Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extension.swift; sourceTree = "<group>"; };
@@ -242,13 +226,10 @@
 			files = (
 				82F9F40F22F6B2610062F451 /* PhotoKeyboardFramework.framework in Frameworks */,
 				822F932F22F72A0C006998E2 /* (null) in Frameworks */,
-				1E44638CECA145E2872694EB /* Alamofire in Frameworks */,
 				1BA58F922609467F9EF8371F /* RealmSwift in Frameworks */,
 				393231D5EC54450C9836C6F9 /* SwiftDate in Frameworks */,
-				A1841986CFEB41DD8CD17BA4 /* SwiftyJSON in Frameworks */,
 				3ADA80A7C5E8499BBE4A96AA /* Toast in Frameworks */,
 				C73AF9F078134AE583792C0A /* Lottie in Frameworks */,
-				B0BDA78D9C324191848AC408 /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,22 +261,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		82EA8966232D53530022832E /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		82F9F3F722F6B2610062F451 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				826D658122F99EC500F66583 /* (null) in Frameworks */,
-				F3FD5CBEE09F4B1E806714C1 /* Alamofire in Frameworks */,
 				E4C2A35456354852A8AB32F6 /* RealmSwift in Frameworks */,
 				EE49C6519FBD408388F2AED5 /* SwiftDate in Frameworks */,
-				0DCDE157A8684CE5B1245DAF /* Supabase in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -320,7 +292,6 @@
 				8278D16C22EE5AC30034C2CC /* PhotoKeyboardExOrigin */,
 				82F9F3FB22F6B2610062F451 /* PhotoKeyboardFramework */,
 				82F9F40822F6B2610062F451 /* PhotoKeyboardFrameworkTests */,
-				82EA896A232D53530022832E /* ServiceNotification */,
 				8278D13722EE5A700034C2CC /* Products */,
 				DEEDB2204F451E14EA336469 /* Frameworks */,
 			);
@@ -335,7 +306,6 @@
 				8278D16B22EE5AC30034C2CC /* PhotoKeyboardExOrigin.appex */,
 				82F9F3FA22F6B2610062F451 /* PhotoKeyboardFramework.framework */,
 				82F9F40222F6B2610062F451 /* PhotoKeyboardFrameworkTests.xctest */,
-				82EA8969232D53530022832E /* ServiceNotification.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -407,15 +377,6 @@
 			path = PhotoKeyboardExOrigin;
 			sourceTree = "<group>";
 		};
-		82EA896A232D53530022832E /* ServiceNotification */ = {
-			isa = PBXGroup;
-			children = (
-				82EA896B232D53530022832E /* NotificationService.swift */,
-				82EA896D232D53530022832E /* Info.plist */,
-			);
-			path = ServiceNotification;
-			sourceTree = "<group>";
-		};
 		82F9F3FB22F6B2610062F451 /* PhotoKeyboardFramework */ = {
 			isa = PBXGroup;
 			children = (
@@ -432,7 +393,6 @@
 				8221370A2304D1A60046E095 /* Extension.swift */,
 				821ABDDB230EC43E00B3DCFE /* DefaultsKeys.swift */,
 				82F9F3FD22F6B2610062F451 /* Info.plist */,
-				6EC333A154A34905AC3E20A7 /* SupabaseManager.swift */,
 			);
 			path = PhotoKeyboardFramework;
 			sourceTree = "<group>";
@@ -482,17 +442,13 @@
 			dependencies = (
 				8278D17122EE5AC30034C2CC /* PBXTargetDependency */,
 				82F9F40E22F6B2610062F451 /* PBXTargetDependency */,
-				82EA896F232D53540022832E /* PBXTargetDependency */,
 			);
 			name = PhotoKeyboardEx;
 			packageProductDependencies = (
-				95D0F842613E4ABBB11239EF /* Alamofire */,
 				CF8919C3BF774918835C4DB7 /* RealmSwift */,
 				7E2F3E9D8C6F468E9A1BD4CD /* SwiftDate */,
-				84D1A66F29D645DF92231776 /* SwiftyJSON */,
 				6C2B5E648EF740DE8D381735 /* Toast */,
 				42A00FB9C3F24E1D87CE50B6 /* Lottie */,
-				D6194FC5B44E4C339EE42D1D /* Supabase */,
 			);
 			productName = PhotoKeyboardEx;
 			productReference = 8278D13622EE5A700034C2CC /* PhotoKeyboardEx.app */;
@@ -555,23 +511,6 @@
 			productReference = 8278D16B22EE5AC30034C2CC /* PhotoKeyboardExOrigin.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
-		82EA8968232D53530022832E /* ServiceNotification */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 82EA8973232D53540022832E /* Build configuration list for PBXNativeTarget "ServiceNotification" */;
-			buildPhases = (
-				82EA8965232D53530022832E /* Sources */,
-				82EA8966232D53530022832E /* Frameworks */,
-				82EA8967232D53530022832E /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = ServiceNotification;
-			productName = ServiceNotification;
-			productReference = 82EA8969232D53530022832E /* ServiceNotification.appex */;
-			productType = "com.apple.product-type.app-extension";
-		};
 		82F9F3F922F6B2610062F451 /* PhotoKeyboardFramework */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 82F9F41522F6B2610062F451 /* Build configuration list for PBXNativeTarget "PhotoKeyboardFramework" */;
@@ -587,10 +526,8 @@
 			);
 			name = PhotoKeyboardFramework;
 			packageProductDependencies = (
-				FFFCDEE5A23543BEA4C54024 /* Alamofire */,
 				584F21B3BDC74D14BE270281 /* RealmSwift */,
 				CA3065527272466C964C992A /* SwiftDate */,
-				DBE2F314B6894F9D8465E945 /* Supabase */,
 			);
 			productName = PhotoKeyboardFramework;
 			productReference = 82F9F3FA22F6B2610062F451 /* PhotoKeyboardFramework.framework */;
@@ -658,9 +595,6 @@
 							};
 						};
 					};
-					82EA8968232D53530022832E = {
-						CreatedOnToolsVersion = 10.2.1;
-					};
 					82F9F3F922F6B2610062F451 = {
 						CreatedOnToolsVersion = 10.2.1;
 						LastSwiftMigration = 1020;
@@ -682,13 +616,10 @@
 			);
 			mainGroup = 8278D12D22EE5A700034C2CC;
 			packageReferences = (
-				B3DE6C121B644FA4B1465C36 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				FB38203D02814BB8A17B9205 /* XCRemoteSwiftPackageReference "realm-swift" */,
 				43277EB9462847AFB66D5549 /* XCRemoteSwiftPackageReference "lottie-ios" */,
 				A726229955BD487B9C58A99D /* XCRemoteSwiftPackageReference "SwiftDate" */,
-				CFF33F3F993F468BA5267D81 /* XCRemoteSwiftPackageReference "SwiftyJSON" */,
 				0D06669193874E7F801F5D0A /* XCRemoteSwiftPackageReference "Toast-Swift" */,
-				8334B0B5FC7C4334A3323B47 /* XCRemoteSwiftPackageReference "supabase-swift" */,
 			);
 			productRefGroup = 8278D13722EE5A700034C2CC /* Products */;
 			projectDirPath = "";
@@ -700,7 +631,6 @@
 				8278D13522EE5A700034C2CC /* PhotoKeyboardEx */,
 				82F9F3F922F6B2610062F451 /* PhotoKeyboardFramework */,
 				82F9F40122F6B2610062F451 /* PhotoKeyboardFrameworkTests */,
-				82EA8968232D53530022832E /* ServiceNotification */,
 			);
 		};
 /* End PBXProject section */
@@ -741,6 +671,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA0100000000000000000022 /* PrivacyInfo.xcprivacy in Resources */,
 				AA01000000000000000004 /* InfoPlist.strings in Resources */,
 				8258686422F2302D002941F4 /* LottieFile in Resources */,
 				8258686122F2302D002941F4 /* PhotoCollectionViewCell.xib in Resources */,
@@ -750,17 +681,11 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		82EA8967232D53530022832E /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		82F9F3F822F6B2610062F451 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA0100000000000000000012 /* PrivacyInfo.xcprivacy in Resources */,
 				82DS0006000000000000AA06 /* Media.xcassets in Resources */,
 				82EA891F2328D7E10022832E /* Localizable.strings in Resources */,
 			);
@@ -821,14 +746,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		82EA8965232D53530022832E /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				82EA896C232D53530022832E /* NotificationService.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		82F9F3F622F6B2610062F451 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -842,7 +759,6 @@
 				82F9F41922F6B2920062F451 /* Photo.swift in Sources */,
 				826D657F22F831B500F66583 /* RealmManager.swift in Sources */,
 				82BB3A582328D49A003D830B /* LocalizeKey.swift in Sources */,
-				4A07DCBC2AA54010BFE26316 /* SupabaseManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -871,11 +787,6 @@
 			isa = PBXTargetDependency;
 			target = 8278D16A22EE5AC30034C2CC /* PhotoKeyboardExOrigin */;
 			targetProxy = 8278D17022EE5AC30034C2CC /* PBXContainerItemProxy */;
-		};
-		82EA896F232D53540022832E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 82EA8968232D53530022832E /* ServiceNotification */;
-			targetProxy = 82EA896E232D53540022832E /* PBXContainerItemProxy */;
 		};
 		82F9F40522F6B2610062F451 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1235,54 +1146,6 @@
 			};
 			name = Release;
 		};
-		82EA8971232D53540022832E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.0.0;
-				DEVELOPMENT_TEAM = 48KBV2T232;
-				INFOPLIST_FILE = ServiceNotification/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 2.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx.ServiceNotification;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		82EA8972232D53540022832E /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.0.0;
-				DEVELOPMENT_TEAM = 48KBV2T232;
-				INFOPLIST_FILE = ServiceNotification/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 2.0.0;
-				PRODUCT_BUNDLE_IDENTIFIER = bocchi.PhotoKeyboardEx.ServiceNotification;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
 		82F9F41122F6B2610062F451 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1297,8 +1160,6 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = PhotoKeyboardFramework/Info.plist;
-				SUPABASE_URL = "rmolayttdgofyoshhzhm.supabase.co";
-				SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtb2xheXR0ZGdvZnlvc2hoemhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0ODk2NTYsImV4cCI6MjA5MjA2NTY1Nn0.f1_l4bOzBKfdK3vUbECIperYoTkH4Qk_YEWRPxfxQJ4";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1333,8 +1194,6 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = PhotoKeyboardFramework/Info.plist;
-				SUPABASE_URL = "rmolayttdgofyoshhzhm.supabase.co";
-				SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJtb2xheXR0ZGdvZnlvc2hoemhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY0ODk2NTYsImV4cCI6MjA5MjA2NTY1Nn0.f1_l4bOzBKfdK3vUbECIperYoTkH4Qk_YEWRPxfxQJ4";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1442,15 +1301,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		82EA8973232D53540022832E /* Build configuration list for PBXNativeTarget "ServiceNotification" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				82EA8971232D53540022832E /* Debug */,
-				82EA8972232D53540022832E /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		82F9F41522F6B2610062F451 /* Build configuration list for PBXNativeTarget "PhotoKeyboardFramework" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1488,36 +1338,12 @@
 				minimumVersion = 4.5.0;
 			};
 		};
-		8334B0B5FC7C4334A3323B47 /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/supabase/supabase-swift.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 2.0.0;
-			};
-		};
 		A726229955BD487B9C58A99D /* XCRemoteSwiftPackageReference "SwiftDate" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/malcommac/SwiftDate.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 7.0.0;
-			};
-		};
-		B3DE6C121B644FA4B1465C36 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.10.0;
-			};
-		};
-		CFF33F3F993F468BA5267D81 /* XCRemoteSwiftPackageReference "SwiftyJSON" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/SwiftyJSON/SwiftyJSON.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 5.0.2;
 			};
 		};
 		FB38203D02814BB8A17B9205 /* XCRemoteSwiftPackageReference "realm-swift" */ = {
@@ -1556,20 +1382,10 @@
 			package = A726229955BD487B9C58A99D /* XCRemoteSwiftPackageReference "SwiftDate" */;
 			productName = SwiftDate;
 		};
-		84D1A66F29D645DF92231776 /* SwiftyJSON */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CFF33F3F993F468BA5267D81 /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
-			productName = SwiftyJSON;
-		};
 		8E472C01B83C4C73818F93AA /* RealmSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = FB38203D02814BB8A17B9205 /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
-		};
-		95D0F842613E4ABBB11239EF /* Alamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B3DE6C121B644FA4B1465C36 /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = Alamofire;
 		};
 		C27D3E2C284F4289B6FC641E /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -1585,21 +1401,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = FB38203D02814BB8A17B9205 /* XCRemoteSwiftPackageReference "realm-swift" */;
 			productName = RealmSwift;
-		};
-		D6194FC5B44E4C339EE42D1D /* Supabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8334B0B5FC7C4334A3323B47 /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Supabase;
-		};
-		DBE2F314B6894F9D8465E945 /* Supabase */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 8334B0B5FC7C4334A3323B47 /* XCRemoteSwiftPackageReference "supabase-swift" */;
-			productName = Supabase;
-		};
-		FFFCDEE5A23543BEA4C54024 /* Alamofire */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = B3DE6C121B644FA4B1465C36 /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = Alamofire;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

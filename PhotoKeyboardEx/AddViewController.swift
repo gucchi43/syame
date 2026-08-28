@@ -15,18 +15,15 @@ class AddViewController: UIViewController {
 
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var publicLabel: UILabel!
     @IBOutlet weak var closeButton: UIBarButtonItem!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var titleTextField: UITextField!
     @IBOutlet weak var doneButton: UIButton!
 
-    @IBOutlet weak var publicSwitch: UISwitch!
     var choiceImage: UIImage! //選択された元画像
 
     /// 一般ユーザーによる公開投稿は停止したため常に false。
     /// 画像はサーバへ送らず端末内のRealmにのみ保存する。
-    var publicFlag = false
 
     
     override func viewDidLoad() {
@@ -93,11 +90,8 @@ class AddViewController: UIViewController {
         navigationItem.title = LocalizeKey.addNavTitle.localizedString()
         doneButton.setTitle(LocalizeKey.addDone.localizedString() , for: .normal)
         titleLabel.text = LocalizeKey.addInputTitle.localizedString()
-        publicLabel.text = LocalizeKey.addPublicSwitchOn.localizedString()
         titleLabel.textColor = .textPrimary
         titleLabel.adjustsFontForContentSizeCategory = true
-        publicLabel.textColor = .textPrimary
-        publicLabel.adjustsFontForContentSizeCategory = true
         view.backgroundColor = .bgBase
         titleTextField.delegate = self
         titleTextField.addTarget(self, action: #selector(self.textFieldDidChange(_:)),
@@ -105,10 +99,6 @@ class AddViewController: UIViewController {
         if let image = choiceImage {
             imageView.image = image
         }
-        // 公開投稿を停止したため、公開/非公開の切り替えUIは出さない
-        publicSwitch.isOn = false
-        publicSwitch.isHidden = true
-        publicLabel.isHidden = true
         closeButton.applySymbol(Symbol.close)
         addButtonState()
     }
@@ -126,12 +116,6 @@ class AddViewController: UIViewController {
         doneButton.alpha = canSubmit ? 1.0 : 0.4
     }
     
-    /// Storyboardからの接続が残っているため定義だけ残す。
-    /// 公開投稿は停止したので、操作されても非公開のまま固定する。
-    @IBAction func switchChanged(_ sender: UISwitch) {
-        sender.isOn = false
-        publicFlag = false
-    }
     
     
     // 長い方の辺をmaxLengthに合わせる
@@ -181,7 +165,7 @@ class AddViewController: UIViewController {
         doneButton.isEnabled = false
 
         // 公開投稿を廃止したためサーバ通信は無く、端末内でIDを採番して保存するだけ
-        guard saveRealm(id: UUID().uuidString, title: titleText, postedImage: postImage, isPublic: false) else {
+        guard saveRealm(id: UUID().uuidString, title: titleText, postedImage: postImage) else {
             doneButton.isEnabled = true
             showUploadError(UploadError.realmSaveFailed)
             return
@@ -199,14 +183,14 @@ class AddViewController: UIViewController {
     }
 
     @discardableResult
-    private func saveRealm(id: String, title: String, postedImage: UIImage, isPublic: Bool) -> Bool {
+    private func saveRealm(id: String, title: String, postedImage: UIImage) -> Bool {
         let new = RealmPhoto.create(id: id,
                                     text: title,
                                     image: postedImage,
                                     imageHeight: Int(postedImage.size.height),
                                     imageWidth: Int(postedImage.size.width),
                                     getDay: Date().toString(),
-                                    isPublic: isPublic,
+                                    isPublic: false,
                                     // ownerId は見本画像の判定("official")にしか使っていない。
                                     // 利用者の画像は端末内にしか無いため所有者の概念が要らない
                                     ownerId: "")

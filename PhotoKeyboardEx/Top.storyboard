@@ -89,7 +89,6 @@
                         <outlet property="heightConstraint" destination="N4d-GH-UDB" id="3VK-Kn-HSG"/>
                         <outlet property="leftConstraint" destination="yWg-mm-hDq" id="G7e-yq-XpG"/>
                         <outlet property="logoImage" destination="Kvk-gY-weX" id="mPK-Hl-6wO"/>
-                        <outlet property="registerStack" destination="1NS-dF-wc6" id="Snb-UZ-0ea"/>
                         <outlet property="requestDescription" destination="3Kz-s9-H9p" id="Zps-4b-4Jq"/>
                         <outlet property="startButton" destination="8BQ-vn-sCG" id="Wft-AB-xaP"/>
                         <outlet property="subTitleLabel" destination="Q3S-uU-mLF" id="MGZ-Kx-XKu"/>
