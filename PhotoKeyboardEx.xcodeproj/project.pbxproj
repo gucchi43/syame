@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		AA0100000000000000000002 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000001 /* PrivacyInfo.xcprivacy */; };
+		AA0100000000000000000012 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000011 /* PrivacyInfo.xcprivacy */; };
+		AA0100000000000000000022 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000021 /* PrivacyInfo.xcprivacy */; };
 		82RT0002000000000000CC02 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 82RT0001000000000000CC01 /* RealmSwift */; };
 		1BA58F922609467F9EF8371F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CF8919C3BF774918835C4DB7 /* RealmSwift */; };
 		1CA5C392CE37392557119E2C /* (null) in Frameworks */ = {isa = PBXBuildFile; };
@@ -152,6 +154,8 @@
 
 /* Begin PBXFileReference section */
 		AA0100000000000000000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		AA0100000000000000000011 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = PhotoKeyboardFramework/PrivacyInfo.xcprivacy; sourceTree = SOURCE_ROOT; };
+		AA0100000000000000000021 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = PhotoKeyboardExOrigin/PrivacyInfo.xcprivacy; sourceTree = SOURCE_ROOT; };
 		821ABDD7230C641600B3DCFE /* Usage.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Usage.storyboard; sourceTree = "<group>"; };
 		821ABDD9230C642A00B3DCFE /* UsageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageViewController.swift; sourceTree = "<group>"; };
 		821ABDDB230EC43E00B3DCFE /* DefaultsKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultsKeys.swift; sourceTree = "<group>"; };
@@ -678,6 +682,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA0100000000000000000022 /* PrivacyInfo.xcprivacy in Resources */,
 				AA01000000000000000004 /* InfoPlist.strings in Resources */,
 				8258686422F2302D002941F4 /* LottieFile in Resources */,
 				8258686122F2302D002941F4 /* PhotoCollectionViewCell.xib in Resources */,
@@ -691,6 +696,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA0100000000000000000012 /* PrivacyInfo.xcprivacy in Resources */,
 				82DS0006000000000000AA06 /* Media.xcassets in Resources */,
 				82EA891F2328D7E10022832E /* Localizable.strings in Resources */,
 			);
