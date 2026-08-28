@@ -75,6 +75,43 @@ extension UIImage {
 
 // MARK: - NSAttributedString helpers (SwiftyAttributes代替)
 public extension String {
+    /// `[...]` で囲んだ部分だけを強調した文字列を作る。角括弧自体も表示に残す。
+    ///
+    /// 文中の一部だけ太字にしたい文言を、コード側で断片を連結せずに
+    /// Localizable.strings へ1文として置けるようにするための記法。
+    /// 連結方式だと言語ごとに語順が変わったときにコードの分岐が増えていく。
+    func emphasizingBracketed(base: UIFont, emphasis: UIFont, color: UIColor) -> NSAttributedString {
+        let result = NSMutableAttributedString()
+        var buffer = ""
+        var isEmphasis = false
+
+        func flush() {
+            guard !buffer.isEmpty else { return }
+            result.append(NSAttributedString(string: buffer, attributes: [
+                .font: isEmphasis ? emphasis : base,
+                .foregroundColor: color
+            ]))
+            buffer = ""
+        }
+
+        for character in self {
+            switch character {
+            case "[":
+                flush()
+                isEmphasis = true
+                buffer.append(character)
+            case "]":
+                buffer.append(character)
+                flush()
+                isEmphasis = false
+            default:
+                buffer.append(character)
+            }
+        }
+        flush()
+        return result
+    }
+
     func withFont(_ font: UIFont) -> NSAttributedString {
         return NSAttributedString(string: self, attributes: [.font: font])
     }

@@ -12,8 +12,8 @@
 //"navMyBoard" = "日本語";
 "navMyBoard" = "ペリペリ";
 
-"doneUploadToast" = "アップロード完了！";
-"myBoardEmptyTitle" = "使いたい画像をsaveしよう →";
+"doneSaveToast" = "保存しました！";
+"myBoardEmptyTitle" = "使いたい画像を保存しよう →";
 
 "menuHome" = "ホーム";
 "menuSetting" = "キーボード設定方法";
@@ -46,6 +46,7 @@
 
 //キーボード側
 "notFullButton" = "設定画面へ";
+"notFullGuide" = "[ペリペリ]→[キーボード]→[フルアクセスを許可する]をオンにしてください。";
 "addPhotoFromApp" = "アプリから画像を追加";
 "updateAlertTitle" = "アップデートのお知らせ";
 "updateAlertMessage" = "新しいバージョンが公開されています。";

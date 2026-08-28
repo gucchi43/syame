@@ -665,4 +665,48 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         let empties = LocalizeKey.allCases.filter { $0.localizedString().isEmpty }.map { $0.rawValue }
         XCTAssertTrue(empties.isEmpty, "訳が空のキー: \(empties)")
     }
+
+    // MARK: - 文中の一部だけを強調する記法
+
+    private func makeEmphasized(_ text: String) -> NSAttributedString {
+        return text.emphasizingBracketed(base: .systemFont(ofSize: 12, weight: .regular),
+                                         emphasis: .systemFont(ofSize: 12, weight: .bold),
+                                         color: .black)
+    }
+
+    /// 角括弧は目印であると同時に表示にも残る。取り除くと案内文の見た目が変わる
+    func testEmphasizingBracketedKeepsEveryCharacter() {
+        let source = "[ペリペリ]→[キーボード]をオンにしてください。"
+        XCTAssertEqual(makeEmphasized(source).string, source)
+    }
+
+    /// 囲んだ部分だけが強調され、外は素のままであること
+    func testEmphasizingBracketedAppliesEmphasisOnlyInsideBrackets() {
+        let attributed = makeEmphasized("[太字]と素")
+        let bold = UIFont.systemFont(ofSize: 12, weight: .bold)
+        let regular = UIFont.systemFont(ofSize: 12, weight: .regular)
+
+        // 先頭の "[" は強調側に含まれる
+        XCTAssertEqual(attributed.attribute(.font, at: 0, effectiveRange: nil) as? UIFont, bold)
+        // "]" の次の文字は素に戻る
+        let afterBracket = "[太字]".count
+        XCTAssertEqual(attributed.attribute(.font, at: afterBracket, effectiveRange: nil) as? UIFont, regular)
+    }
+
+    /// 角括弧が無い文でも欠落なく組み立てられること
+    func testEmphasizingBracketedHandlesPlainText() {
+        let source = "強調のない案内文"
+        let attributed = makeEmphasized(source)
+        XCTAssertEqual(attributed.string, source)
+        XCTAssertEqual(attributed.attribute(.font, at: 0, effectiveRange: nil) as? UIFont,
+                       UIFont.systemFont(ofSize: 12, weight: .regular))
+    }
+
+    /// 実際の案内文が、記法として壊れていない(括弧の数が合っている)こと
+    func testNotFullGuideIsBalanced() {
+        let guide = LocalizeKey.notFullGuide.localizedString()
+        XCTAssertEqual(guide.filter { $0 == "[" }.count, guide.filter { $0 == "]" }.count,
+                       "角括弧の対応が取れていない: \(guide)")
+        XCTAssertEqual(makeEmphasized(guide).string, guide)
+    }
 }

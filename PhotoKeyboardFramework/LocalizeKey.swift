@@ -15,7 +15,7 @@ public enum LocalizeKey: String, CaseIterable {
     
     case navMyBoard
     
-    case doneUploadToast
+    case doneSaveToast
     case myBoardEmptyTitle
     
     case menuHome
@@ -57,6 +57,7 @@ public enum LocalizeKey: String, CaseIterable {
     
     //キーボード側
     case notFullButton
+    case notFullGuide
     case addPhotoFromApp
 
     case updateAlertTitle
