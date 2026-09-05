@@ -69,7 +69,11 @@
 
 ### オンボーディング
 
-初回起動時に Top → Usage（キーボード設定案内）→ Welcome の順で表示。各段階の表示要否は UserDefaults のフラグで管理。
+起動時に出すのは Top のみ。Usage（キーボード設定案内）は最初の1枚を保存した直後に出す。
+キーボードの有効化を初めて検知したとき（アプリが前面に戻ったタイミングで `AppleKeyboards` に
+拡張のバンドルIDが含まれる）に「送り方」（`HowToSendViewController`、タップ→長押しでペースト→送信）を
+一度だけ出す。Usage と送り方はサイドメニューからも開ける。各段階の表示要否は App Group の UserDefaults の
+フラグ（registerNeedFlag / usageNeedFlag / howToSendNeedFlag）で管理。
 
 ## キーボード拡張
 

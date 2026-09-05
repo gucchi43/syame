@@ -46,7 +46,7 @@ class MyMenuTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 2
+        return 3
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -64,8 +64,10 @@ class MyMenuTableViewController: UITableViewController {
         switch (indexPath.row) {
         case 0:
             cell.textLabel?.text = LocalizeKey.menuHome.localizedString()
-        default:
+        case 1:
             cell.textLabel?.text = LocalizeKey.menuSetting.localizedString()
+        default:
+            cell.textLabel?.text = LocalizeKey.menuHowTo.localizedString()
         }
         return cell
     }
@@ -87,13 +89,17 @@ class MyMenuTableViewController: UITableViewController {
             guard let nvc = mainStoryboard.instantiateInitialViewController() as? UINavigationController,
                   let destVC = nvc.viewControllers.first as? MainTabViewController else { return }
             mainNav?.setContentViewController(destVC)
-        default:
+        case 1:
             guard indexPath.row != selectedMenuItem else { return }
             selectedMenuItem = indexPath.row
             let sb = UIStoryboard(name: "Usage", bundle: nil)
             guard let nvc = sb.instantiateInitialViewController() as? UINavigationController,
                   let destVC = nvc.viewControllers.first as? UsageViewController else { return }
             mainNav?.setContentViewController(destVC)
+        default:
+            guard indexPath.row != selectedMenuItem else { return }
+            selectedMenuItem = indexPath.row
+            mainNav?.setContentViewController(HowToSendViewController())
         }
     }
     

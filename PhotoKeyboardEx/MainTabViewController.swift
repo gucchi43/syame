@@ -101,6 +101,37 @@ class MainTabViewController: UIViewController {
         super.viewDidAppear(animated)
         // viewWillAppear での present は遷移中に失敗するため viewDidAppear で行う
         presentOnboardingIfNeeded()
+        showHowToSendIfNeeded()
+        NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive),
+                                               name: UIApplication.didBecomeActiveNotification, object: nil)
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
+    }
+
+    /// 設定アプリでキーボードを有効にして戻ってきた瞬間を拾う
+    @objc private func didBecomeActive() {
+        showHowToSendIfNeeded()
+    }
+
+    /// キーボードが有効になっているのを初めて検知したら「送り方」を一度だけ案内する。
+    ///
+    /// 有効化した直後が、送り方を知りたい気持ちがいちばん強い瞬間のため。
+    /// Top や Usage が出ている間は重ねない。
+    private func showHowToSendIfNeeded() {
+        guard presentedViewController == nil else { return }
+        guard GroupeDefaults.shared.isHowToSendPush() else { return }
+        guard isKeyboardExtensionEnabled else { return }
+        let nvc = UINavigationController(rootViewController: HowToSendViewController())
+        present(nvc, animated: true, completion: nil)
+    }
+
+    /// 端末で有効になっているキーボードの一覧(AppleKeyboards)に拡張のバンドルIDがあるか
+    private var isKeyboardExtensionEnabled: Bool {
+        let keyboards = UserDefaults.standard.array(forKey: "AppleKeyboards") as? [String] ?? []
+        return keyboards.contains(GroupeDefaults.keyboardExtensionBundleId)
     }
 
     /// 起動時に出すのは Top だけにする。

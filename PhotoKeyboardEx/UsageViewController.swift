@@ -83,8 +83,7 @@ class UsageViewController: UIViewController {
     /// アプリ内で完結するコピー導線ができたので、後回しにしても体験は壊れない。
     /// サイドメニューから開いた場合は閉じる先が無いため出さない。
     private func addLaterButtonIfPresentedModally() {
-        let isModal = presentingViewController != nil || navigationController?.presentingViewController != nil
-        guard isModal, let container = nextButton.superview else { return }
+        guard isPresentedModally, let container = nextButton.superview else { return }
 
         let later = UIButton(type: .system)
         later.setTitle(LocalizeKey.settingLater.localizedString(), for: .normal)

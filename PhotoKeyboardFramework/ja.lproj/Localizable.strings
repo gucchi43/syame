@@ -55,5 +55,15 @@
 "copiedToast" = "コピーしました";
 "topHeadline" = "好きな画像を、キーボードから送る。";
 "settingLater" = "あとで";
+"howToTitle" = "送り方は、これだけ。";
+"howToFirstBoldText" = "キーボードで画像";
+"howToFirstNormalText" = "をタップ";
+"howToSecondBoldText" = "入力欄を長押し";
+"howToSecondNormalText" = "して「ペースト」";
+"howToThirdBoldText" = "そのまま";
+"howToThirdNormalText" = "送信";
+"howToDescription" = "コピーして、貼る。3秒で終わる。";
+"howToDone" = "わかった";
+"menuHowTo" = "送り方";
 "limitReachedTitle" = "保存できるのは8枚まで。";
 "limitReachedMessage" = "新しく入れるには、いま持っている画像をどれか消してください。";

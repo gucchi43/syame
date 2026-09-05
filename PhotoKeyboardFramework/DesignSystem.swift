@@ -308,6 +308,10 @@ public enum Symbol {
     public static let close = "xmark"
     public static let copy = "doc.on.doc"
     public static let delete = "trash"
+    /// 送り方の案内(HowToSendViewController)の3ステップ
+    public static let stepTap = "hand.tap"
+    public static let stepClipboard = "doc.on.clipboard"
+    public static let stepSend = "paperplane"
 }
 
 extension UIImage {

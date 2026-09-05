@@ -55,5 +55,15 @@
 "copiedToast" = "Copied";
 "topHeadline" = "Send your favorite images from the keyboard.";
 "settingLater" = "Later";
+"howToTitle" = "That's all it takes.";
+"howToFirstNormalText" = "Tap ";
+"howToFirstBoldText" = "an image on the keyboard";
+"howToSecondNormalText" = "Long-press ";
+"howToSecondBoldText" = "the text field, then Paste";
+"howToThirdNormalText" = "Then ";
+"howToThirdBoldText" = "send as usual";
+"howToDescription" = "Copy, paste, done.";
+"howToDone" = "Got it";
+"menuHowTo" = "How to send";
 "limitReachedTitle" = "You can keep up to 8.";
 "limitReachedMessage" = "Delete one of your images to add a new one.";
