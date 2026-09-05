@@ -37,6 +37,18 @@ public enum LocalizeKey: String, CaseIterable {
     case settingLater
     case limitReachedTitle
     case limitReachedMessage
+
+    // 送り方の案内
+    case howToTitle
+    case howToFirstBoldText
+    case howToFirstNormalText
+    case howToSecondBoldText
+    case howToSecondNormalText
+    case howToThirdBoldText
+    case howToThirdNormalText
+    case howToDescription
+    case howToDone
+    case menuHowTo
     
     case topHeadline
     case topSubtitle

@@ -17,7 +17,7 @@ public final class GroupeDefaults {
 
     private enum Keys: String {
         case launchCount, sendCount, keyboardColumns
-        case usageNeedFlag, registerNeedFlag
+        case usageNeedFlag, registerNeedFlag, howToSendNeedFlag
         case lastKeyboardOpenResult
     }
 
@@ -64,6 +64,18 @@ public final class GroupeDefaults {
 
     public func usageDone() {
         sharedDefaults.set(false, forKey: Keys.usageNeedFlag.rawValue)
+    }
+
+    /// 「送り方」の案内をまだ出していないか。キーボードの有効化を初めて検知したときに一度だけ出す
+    public func isHowToSendPush() -> Bool {
+        if sharedDefaults.object(forKey: Keys.howToSendNeedFlag.rawValue) == nil {
+            return true
+        }
+        return sharedDefaults.bool(forKey: Keys.howToSendNeedFlag.rawValue)
+    }
+
+    public func howToSendDone() {
+        sharedDefaults.set(false, forKey: Keys.howToSendNeedFlag.rawValue)
     }
 
     public func incrementLaunchCount() {
