@@ -33,11 +33,6 @@ final class HowToSendViewController: UIViewController {
         }
     }
 
-    /// モーダルなら閉じるボタン、サイドメニューの中ならメニューボタンを左上に置く
-    private var isPresentedModally: Bool {
-        return presentingViewController != nil || navigationController?.presentingViewController != nil
-    }
-
     private func configureNavigationItem() {
         let item = UIBarButtonItem(title: nil, style: .plain, target: self,
                                    action: isPresentedModally ? #selector(tapClose) : #selector(tapMenu))
@@ -76,9 +71,9 @@ final class HowToSendViewController: UIViewController {
         contentStack.addArrangedSubview(title)
 
         let steps: [(String, LocalizeKey, LocalizeKey)] = [
-            ("hand.tap", .howToFirstBoldText, .howToFirstNormalText),
-            ("doc.on.clipboard", .howToSecondBoldText, .howToSecondNormalText),
-            ("paperplane", .howToThirdBoldText, .howToThirdNormalText)
+            (Symbol.stepTap, .howToFirstBoldText, .howToFirstNormalText),
+            (Symbol.stepClipboard, .howToSecondBoldText, .howToSecondNormalText),
+            (Symbol.stepSend, .howToThirdBoldText, .howToThirdNormalText)
         ]
         for (symbol, bold, normal) in steps {
             contentStack.addArrangedSubview(makeStepRow(symbol: symbol, bold: bold, normal: normal))

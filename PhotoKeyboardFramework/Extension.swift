@@ -187,3 +187,11 @@ public extension UICollectionView {
         })
     }
 }
+
+public extension UIViewController {
+    /// モーダル(またはモーダルなナビゲーションスタック)から出されているか。
+    /// Usage / HowToSend が「閉じる」導線を出すかどうかの判定に使う。
+    var isPresentedModally: Bool {
+        return presentingViewController != nil || navigationController?.presentingViewController != nil
+    }
+}

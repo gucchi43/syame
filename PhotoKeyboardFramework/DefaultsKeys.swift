@@ -12,6 +12,9 @@ public final class GroupeDefaults {
     fileprivate init() {}
     public static let shared = GroupeDefaults()
     public static let appGroupIdentifier = "group.bocchi.PhotoKeyboardEx"
+    /// キーボード拡張(PhotoKeyboardExOrigin)のバンドルID。
+    /// 有効化検知(AppleKeyboards との突合)と os_log の subsystem の両方で使う共有の値
+    public static let keyboardExtensionBundleId = "bocchi.PhotoKeyboardEx.PhotoKeyboardExOrigin"
     /// App Group が利用できない環境でもクラッシュせず standard にフォールバックする(拡張とは共有されない)
     public let sharedDefaults = UserDefaults(suiteName: GroupeDefaults.appGroupIdentifier) ?? .standard
 
@@ -44,39 +47,27 @@ public final class GroupeDefaults {
     public static let defaultKeyboardColumns = 3
     public static let denseKeyboardColumns = 5
 
-    public func isRegisterPush() -> Bool {
-        if sharedDefaults.object(forKey: Keys.registerNeedFlag.rawValue) == nil {
+    /// 一度きりの案内フラグの共通実装。未設定(nil)なら「まだ案内していない」= true とみなす
+    private func isPending(_ key: Keys) -> Bool {
+        if sharedDefaults.object(forKey: key.rawValue) == nil {
             return true
         }
-        return sharedDefaults.bool(forKey: Keys.registerNeedFlag.rawValue)
+        return sharedDefaults.bool(forKey: key.rawValue)
     }
 
-    public func registerDone() {
-        sharedDefaults.set(false, forKey: Keys.registerNeedFlag.rawValue)
+    private func markDone(_ key: Keys) {
+        sharedDefaults.set(false, forKey: key.rawValue)
     }
 
-    public func isUsagePush() -> Bool {
-        if sharedDefaults.object(forKey: Keys.usageNeedFlag.rawValue) == nil {
-            return true
-        }
-        return sharedDefaults.bool(forKey: Keys.usageNeedFlag.rawValue)
-    }
+    public func isRegisterPush() -> Bool { isPending(.registerNeedFlag) }
+    public func registerDone() { markDone(.registerNeedFlag) }
 
-    public func usageDone() {
-        sharedDefaults.set(false, forKey: Keys.usageNeedFlag.rawValue)
-    }
+    public func isUsagePush() -> Bool { isPending(.usageNeedFlag) }
+    public func usageDone() { markDone(.usageNeedFlag) }
 
     /// 「送り方」の案内をまだ出していないか。キーボードの有効化を初めて検知したときに一度だけ出す
-    public func isHowToSendPush() -> Bool {
-        if sharedDefaults.object(forKey: Keys.howToSendNeedFlag.rawValue) == nil {
-            return true
-        }
-        return sharedDefaults.bool(forKey: Keys.howToSendNeedFlag.rawValue)
-    }
-
-    public func howToSendDone() {
-        sharedDefaults.set(false, forKey: Keys.howToSendNeedFlag.rawValue)
-    }
+    public func isHowToSendPush() -> Bool { isPending(.howToSendNeedFlag) }
+    public func howToSendDone() { markDone(.howToSendNeedFlag) }
 
     public func incrementLaunchCount() {
         let count = sharedDefaults.integer(forKey: Keys.launchCount.rawValue)

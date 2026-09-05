@@ -131,10 +131,8 @@ class MainTabViewController: UIViewController {
     /// 端末で有効になっているキーボードの一覧(AppleKeyboards)に拡張のバンドルIDがあるか
     private var isKeyboardExtensionEnabled: Bool {
         let keyboards = UserDefaults.standard.array(forKey: "AppleKeyboards") as? [String] ?? []
-        return keyboards.contains(MainTabViewController.keyboardExtensionBundleId)
+        return keyboards.contains(GroupeDefaults.keyboardExtensionBundleId)
     }
-
-    private static let keyboardExtensionBundleId = "bocchi.PhotoKeyboardEx.PhotoKeyboardExOrigin"
 
     /// 起動時に出すのは Top だけにする。
     ///

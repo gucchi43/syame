@@ -313,7 +313,7 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     /// 拡張は実機でデバッガを繋ぎにくいため、操作の記録を端末のログと
     /// App Group の両方に残し、アプリ側からも確認できるようにする
     static func log(_ message: String) {
-        os_log("%{public}@", log: OSLog(subsystem: "bocchi.PhotoKeyboardEx.PhotoKeyboardExOrigin", category: "openURL"), type: .info, message)
+        os_log("%{public}@", log: OSLog(subsystem: GroupeDefaults.keyboardExtensionBundleId, category: "openURL"), type: .info, message)
         GroupeDefaults.shared.setLastKeyboardOpenResult(message)
     }
 
