@@ -13,6 +13,174 @@ import PhotoKeyboardFramework
 
 class PhotoKeyboardExTests: XCTestCase {
 
+    // MARK: - 案内図に流し込む画像
+
+    private func makeGuideImage(color: UIColor) -> UIImage {
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = 1
+        return UIGraphicsImageRenderer(size: CGSize(width: 10, height: 10), format: format).image { context in
+            color.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 10, height: 10))
+        }
+    }
+
+    /// 保存画像が1枚も無くても図のスロットは埋まること。
+    /// 空のまま描くと、キーボードに何も並んでいない絵になって手順が伝わらない
+    func testSlotsAreFilledWithFallbackWhenUserHasNoPhotos() {
+        let fallback = makeGuideImage(color: .blue)
+        let slots = GuidePhotoSource.slots(userPhotos: [], fallback: fallback)
+        XCTAssertEqual(slots.count, GuidePhotoSource.slotCount)
+    }
+
+    /// 保存画像が足りないぶんだけを見本で埋め、持っている画像は先に出すこと
+    func testSlotsKeepUserPhotosFirstAndPadTheRest() {
+        let user = makeGuideImage(color: .red)
+        let fallback = makeGuideImage(color: .blue)
+
+        let slots = GuidePhotoSource.slots(userPhotos: [user], fallback: fallback)
+
+        XCTAssertEqual(slots.count, GuidePhotoSource.slotCount)
+        XCTAssertTrue(slots[0] === user, "利用者の画像が先頭に来ていない")
+        XCTAssertTrue(slots[1] === fallback)
+        XCTAssertTrue(slots[2] === fallback)
+    }
+
+    /// スロットの数だけ持っていれば見本は混ぜないこと
+    func testSlotsUseOnlyUserPhotosWhenThereAreEnough() {
+        let photos = (0..<5).map { _ in makeGuideImage(color: .red) }
+        let fallback = makeGuideImage(color: .blue)
+
+        let slots = GuidePhotoSource.slots(userPhotos: photos, fallback: fallback)
+
+        XCTAssertEqual(slots.count, GuidePhotoSource.slotCount)
+        XCTAssertFalse(slots.contains { $0 === fallback }, "足りているのに見本が混ざっている")
+        XCTAssertTrue(slots[0] === photos[0])
+        XCTAssertTrue(slots[2] === photos[2])
+    }
+
+    private func makeGuidePhoto(ownerId: String, color: UIColor) -> RealmPhoto {
+        return RealmPhoto.create(id: UUID().uuidString,
+                                 text: "",
+                                 image: makeGuideImage(color: color),
+                                 imageHeight: 10,
+                                 imageWidth: 10,
+                                 getDay: "",
+                                 isPublic: false,
+                                 ownerId: ownerId)
+    }
+
+    /// 見本画像を利用者の画像として数えないこと。
+    /// 見本は起動時に必ず投入されるので、素朴に先頭から取ると
+    /// 「利用者の画像が0枚」という状態を表現できず、補填が働かない
+    func testUserImagesExcludeTheOfficialSample() {
+        let official = makeGuidePhoto(ownerId: RealmPhoto.officialOwnerId, color: .blue)
+        let mine = makeGuidePhoto(ownerId: "", color: .red)
+
+        let images = GuidePhotoSource.userImages(from: [official, mine], maxPixelSize: 40)
+
+        XCTAssertEqual(images.count, 1, "見本が利用者の画像として数えられている")
+    }
+
+    /// ビューを描画し、指定した色の画素が含まれるかを見る。
+    /// 図が「見えているか」はサブビューの有無では分からない(隠れている・大きさ0でも存在はする)
+    private func containsColor(_ view: UIView, _ color: UIColor, tolerance: Int = 16) -> Bool {
+        let size = view.bounds.size
+        guard size.width > 0, size.height > 0 else { return false }
+
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = 1
+        format.opaque = true
+        let image = UIGraphicsImageRenderer(size: size, format: format).image { context in
+            // 地を白にすると .bgSurface(ライトテーマでは白)と見分けが付かない。
+            // 図に出てこない色を敷いて、描かれた面だけを拾えるようにする
+            UIColor.magenta.setFill()
+            context.fill(CGRect(origin: .zero, size: size))
+            view.layer.render(in: context.cgContext)
+        }
+        guard let cgImage = image.cgImage else { return false }
+
+        let width = cgImage.width
+        let height = cgImage.height
+        var pixels = [UInt8](repeating: 0, count: width * height * 4)
+        guard let context = CGContext(data: &pixels,
+                                      width: width,
+                                      height: height,
+                                      bitsPerComponent: 8,
+                                      bytesPerRow: width * 4,
+                                      space: CGColorSpaceCreateDeviceRGB(),
+                                      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else {
+            return false
+        }
+        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        color.getRed(&r, green: &g, blue: &b, alpha: &a)
+        let target = (Int(r * 255), Int(g * 255), Int(b * 255))
+
+        for i in stride(from: 0, to: pixels.count, by: 4) {
+            if abs(Int(pixels[i]) - target.0) <= tolerance,
+               abs(Int(pixels[i + 1]) - target.1) <= tolerance,
+               abs(Int(pixels[i + 2]) - target.2) <= tolerance {
+                return true
+            }
+        }
+        return false
+    }
+
+    private func layOut(_ view: UIView, width: CGFloat = 320, height: CGFloat = 140) -> UIView {
+        view.frame = CGRect(x: 0, y: 0, width: width, height: height)
+        view.layoutIfNeeded()
+        return view
+    }
+
+    /// 渡した画像が3枚とも図に出ること。
+    /// 1枚でも欠けると「自分の画像が並ぶ」という手順①の説明が成立しない
+    func testKeyboardStripDrawsEveryPhoto() {
+        let colors: [UIColor] = [.red, .green, .blue]
+        let strip = GuideKeyboardStripView(photos: colors.map { makeGuideImage(color: $0) })
+        _ = layOut(strip)
+
+        for color in colors {
+            XCTAssertTrue(containsColor(strip, color), "\(color) の画像が図に描かれていない")
+        }
+    }
+
+    /// 先頭の1枚に「コピーされた」印が乗ること。
+    /// 印が無いと、タップが何を起こすのかが図から読み取れず、次の手順(貼る)に繋がらない
+    func testKeyboardStripMarksTheTappedPhoto() {
+        let strip = GuideKeyboardStripView(photos: (0..<3).map { _ in makeGuideImage(color: .lightGray) })
+        _ = layOut(strip)
+
+        XCTAssertTrue(containsColor(strip, .accent), "コピーを示す印が図に描かれていない")
+    }
+
+    /// 入力欄と「ペースト」の吹き出しが両方描かれること。
+    /// 手順②は一番つまずくところなので、貼り先(入力欄)と操作(ペースト)の
+    /// どちらが欠けても図として成立しない
+    func testComposerDrawsInputBarAndPasteBubble() {
+        let composer = layOut(GuideComposerView(), height: 120)
+
+        XCTAssertTrue(containsColor(composer, .bgSurface), "入力欄が描かれていない")
+        XCTAssertTrue(containsColor(composer, .accent), "「ペースト」の吹き出しが描かれていない")
+    }
+
+    /// 送った画像がトークの図に出ること。
+    /// ここに出ないと「貼ったものがそのまま送られる」という結末が伝わらない
+    func testChatDrawsTheSentPhoto() {
+        let chat = GuideChatView(sentPhoto: makeGuideImage(color: .red))
+        _ = layOut(chat, height: 160)
+
+        XCTAssertTrue(containsColor(chat, .red), "送った画像が図に描かれていない")
+    }
+
+    /// 相手の吹き出しも描くこと。会話の中に置かれている、という文脈が要る
+    func testChatDrawsIncomingBubble() {
+        let chat = GuideChatView(sentPhoto: makeGuideImage(color: .red))
+        _ = layOut(chat, height: 160)
+
+        XCTAssertTrue(containsColor(chat, .bgSurface), "相手の吹き出しが描かれていない")
+    }
+
     // MARK: - 一覧のグリッド
 
     /// 高さを可変にすると同じ行の2つのセルで高さが揃わず隙間ができるため、

@@ -67,3 +67,5 @@
 "menuHowTo" = "送り方";
 "limitReachedTitle" = "保存できるのは8枚まで。";
 "limitReachedMessage" = "新しく入れるには、いま持っている画像をどれか消してください。";
+"guideCopyBadge" = "コピー";
+"guidePasteBadge" = "ペースト";
