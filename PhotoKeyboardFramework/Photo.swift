@@ -33,7 +33,7 @@ public class RealmPhoto: Object {
         set{
             self._image = newValue
             if let value = newValue {
-                self.imageData = value.jpegData(compressionQuality: RealmPhoto.jpegCompressionQuality)
+                self.imageData = RealmPhoto.encodeForStorage(value)
             }
         }
         get{
@@ -47,6 +47,19 @@ public class RealmPhoto: Object {
         }
     }
     @objc dynamic private var imageData: Data? = nil
+
+    /// 端末に保存する形式へ変換する。
+    ///
+    /// JPEGはアルファチャンネルを持てないため、透過PNGをそのまま通すと透明部分が黒く潰れる。
+    /// 透過を持つ画像だけPNGで保存し、それ以外は従来どおりJPEGにする。
+    /// 全部PNGにすると写真のファイルサイズが数倍に膨らみ、メモリ上限の厳しい
+    /// キーボード拡張が読み込む負担も増えるため、必要なものだけをPNGに倒す。
+    static func encodeForStorage(_ image: UIImage) -> Data? {
+        if image.hasTransparentPixels, let png = image.pngData() {
+            return png
+        }
+        return image.jpegData(compressionQuality: RealmPhoto.jpegCompressionQuality)
+    }
 
     private static let thumbnailCache: NSCache<NSString, UIImage> = {
         let cache = NSCache<NSString, UIImage>()
@@ -109,14 +122,26 @@ public class RealmPhoto: Object {
     }
 }
 
+/// 現在配っている見本画像のID。
+/// 投入済み判定に使うため、画像でも文言でも中身を変えたときは新しくする。
+public let officialPhotoId = "2D29BE67-106E-4AB2-AD15-47E8F868DD4C"
+
+/// 過去に配っていた見本画像のID。
+/// 新しいIDで入れ直すだけだと古い版がボードに残って2枚並ぶため、投入時にこれらを消す。
+/// 8E98... は保存がJPEG固定だった頃のもので、透過が黒く潰れた状態で入っている。
+/// 1763... は透過を直した版だが、文言が「まーまーらいおん君」だけで用途が伝わらなかった。
+public let retiredOfficialPhotoIds = [
+    "8E988DA6-194D-47F2-8500-3384FA99B725",
+    "17637AF3-7F59-42CB-B38B-9E513396716A"
+]
+
 /// チュートリアル用の初期画像。
 /// officialPhotoWelcome はアプリ本体のAssetsにしか含まれずキーボード拡張からは解決できないため、
 /// 強制アンラップせず画像が見つからない場合は nil を返す。
-/// ID は画像ごとの固定値。投入済み判定に使うため、画像を差し替えるときは ID も新しくする。
 public func makeOfficialPhoto() -> RealmPhoto? {
     guard let image = UIImage(named: "officialPhotoWelcome") else { return nil }
-    return RealmPhoto.create(id: "8E988DA6-194D-47F2-8500-3384FA99B725",
-                             text: "まーまーらいおん君",
+    return RealmPhoto.create(id: officialPhotoId,
+                             text: "まーまーらいおん君による使い方の説明！",
                              image: image,
                              imageHeight: 800,
                              imageWidth: 800,

@@ -61,6 +61,36 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         }
     }
 
+    /// 左半分だけを塗り、右半分を透明にした画像。透過の判定・保存の検証に使う。
+    private func makeHalfTransparentImage(size: CGSize = CGSize(width: 40, height: 40)) -> UIImage {
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = 1
+        format.opaque = false
+        return UIGraphicsImageRenderer(size: size, format: format).image { context in
+            UIColor.red.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: size.width / 2, height: size.height))
+        }
+    }
+
+    /// 画像の指定ピクセル(左上原点)のアルファ値を取り出す。
+    private func alpha(of image: UIImage, x: Int, y: Int) -> Int? {
+        guard let cropped = image.cgImage?.cropping(to: CGRect(x: x, y: y, width: 1, height: 1)) else {
+            return nil
+        }
+        var pixel = [UInt8](repeating: 0, count: 4)
+        guard let context = CGContext(data: &pixel,
+                                      width: 1,
+                                      height: 1,
+                                      bitsPerComponent: 8,
+                                      bytesPerRow: 4,
+                                      space: CGColorSpaceCreateDeviceRGB(),
+                                      bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else {
+            return nil
+        }
+        context.draw(cropped, in: CGRect(x: 0, y: 0, width: 1, height: 1))
+        return Int(pixel[3])
+    }
+
     /// 画像の指定ピクセル(左上原点)の色を取り出す。合成位置の検証に使う。
     private func rgb(of image: UIImage, x: Int, y: Int) -> (r: Int, g: Int, b: Int)? {
         guard let cropped = image.cgImage?.cropping(to: CGRect(x: x, y: y, width: 1, height: 1)) else {
@@ -148,6 +178,65 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
             return XCTFail("JPEGへの変換または復元に失敗した")
         }
         XCTAssertEqual(decoded.size, original.size)
+    }
+
+    /// 塗りつぶした画像を透過扱いしないこと。
+    ///
+    /// resize も composite も opaque=false のコンテキストで描き直すため、
+    /// 中身が不透明でもアルファチャンネルは必ず付く。チャンネルの有無で判定すると
+    /// 保存する画像がすべてPNGになり、写真のファイルサイズが数倍に膨らむ。
+    func testOpaqueImageIsNotTreatedAsTransparent() {
+        XCTAssertFalse(makeImage().hasTransparentPixels,
+                       "塗りつぶした画像が透過と判定されている")
+        XCTAssertFalse(makeImage(size: CGSize(width: 200, height: 200)).resize(size: CGSize(width: 100, height: 100))!
+                        .hasTransparentPixels,
+                       "リサイズを通しただけで透過と判定されている")
+    }
+
+    /// 透明な画素を持つ画像を見落とさないこと
+    func testTransparentImageIsDetected() {
+        XCTAssertTrue(makeHalfTransparentImage().hasTransparentPixels)
+    }
+
+    /// 透過を持つ画像はPNGで保存すること。JPEGはアルファを持てないため透明部分が黒く潰れる
+    func testTransparentImageIsStoredAsPNG() {
+        guard let data = RealmPhoto.encodeForStorage(makeHalfTransparentImage()) else {
+            return XCTFail("保存用データへの変換に失敗した")
+        }
+        XCTAssertEqual(Array(data.prefix(4)), [0x89, 0x50, 0x4E, 0x47], "PNGとして保存されていない")
+    }
+
+    /// 透過を持たない画像は従来どおりJPEGで保存すること
+    func testOpaqueImageIsStoredAsJPEG() {
+        guard let data = RealmPhoto.encodeForStorage(makeImage()) else {
+            return XCTFail("保存用データへの変換に失敗した")
+        }
+        XCTAssertEqual(Array(data.prefix(2)), [0xFF, 0xD8], "JPEGとして保存されていない")
+    }
+
+    /// 保存して読み直しても透過が残ること。ここが落ちると透過PNGを貼っても背景が黒くなる
+    func testTransparencySurvivesStorageRoundTrip() {
+        let photo = RealmPhoto.create(id: UUID().uuidString,
+                                      text: "test",
+                                      image: makeHalfTransparentImage(size: CGSize(width: 40, height: 40)),
+                                      imageHeight: 40,
+                                      imageWidth: 40,
+                                      getDay: "",
+                                      isPublic: false,
+                                      ownerId: "")
+        // setter が保持している元画像ではなく、保存されたバイト列から復元させる
+        photo.image = nil
+        guard let restored = photo.image else {
+            return XCTFail("保存した画像を復元できなかった")
+        }
+        XCTAssertEqual(alpha(of: restored, x: 30, y: 20), 0, "透明だった部分が不透明になっている")
+        XCTAssertEqual(alpha(of: restored, x: 10, y: 20), 255, "塗ってあった部分まで透明になっている")
+    }
+
+    /// 見本画像を差し替えるときはIDを新しくする。使い回すと投入済み判定で新しい版が届かない
+    func testOfficialPhotoIdIsNotReused() {
+        XCTAssertFalse(retiredOfficialPhotoIds.contains(officialPhotoId),
+                       "見本画像のIDが過去に配ったものと同じになっている")
     }
 
     /// composite はデバイススケールではなく等倍で描画すること。

@@ -22,6 +22,7 @@ public final class GroupeDefaults {
         case launchCount, sendCount, keyboardColumns
         case usageNeedFlag, registerNeedFlag, howToSendNeedFlag
         case lastKeyboardOpenResult
+        case seededOfficialPhotoIds
     }
 
     /// キーボード拡張はデバッガを繋ぎにくいため、URLオープンの結果だけApp Group経由で
@@ -68,6 +69,22 @@ public final class GroupeDefaults {
     /// 「送り方」の案内をまだ出していないか。キーボードの有効化を初めて検知したときに一度だけ出す
     public func isHowToSendPush() -> Bool { isPending(.howToSendNeedFlag) }
     public func howToSendDone() { markDone(.howToSendNeedFlag) }
+
+    /// 投入済みの見本画像のID。
+    ///
+    /// Realm に在るかどうかで判定すると、利用者が見本を消しても起動のたびに戻ってきてしまう。
+    /// 「配ったことがあるか」はRealmの中身とは別に持つ。
+    public func hasSeededOfficialPhoto(id: String) -> Bool {
+        let seeded = sharedDefaults.stringArray(forKey: Keys.seededOfficialPhotoIds.rawValue) ?? []
+        return seeded.contains(id)
+    }
+
+    public func markOfficialPhotoSeeded(id: String) {
+        var seeded = sharedDefaults.stringArray(forKey: Keys.seededOfficialPhotoIds.rawValue) ?? []
+        guard !seeded.contains(id) else { return }
+        seeded.append(id)
+        sharedDefaults.set(seeded, forKey: Keys.seededOfficialPhotoIds.rawValue)
+    }
 
     public func incrementLaunchCount() {
         let count = sharedDefaults.integer(forKey: Keys.launchCount.rawValue)

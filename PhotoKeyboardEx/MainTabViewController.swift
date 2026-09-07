@@ -100,6 +100,7 @@ class MainTabViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         // viewWillAppear での present は遷移中に失敗するため viewDidAppear で行う
+        seedTutorialPhotoIfNeeded()
         presentOnboardingIfNeeded()
         showHowToSendIfNeeded()
         NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive),
@@ -142,19 +143,35 @@ class MainTabViewController: UIViewController {
     private func presentOnboardingIfNeeded() {
         guard presentedViewController == nil else { return }
         guard GroupeDefaults.shared.isRegisterPush() else { return }
-        seedTutorialPhotoIfNeeded()
         guard let vc = UIStoryboard(name: "Top", bundle: nil).instantiateInitialViewController() else { return }
         present(vc, animated: false, completion: nil)
     }
 
     /// 見本の画像を1枚入れておく。
-    /// 以前はキーボード設定画面の表示時に投入していたため、
-    /// その画面を出さなくなるとボードが空のままになる。
+    ///
+    /// 以前はキーボード設定画面の表示時に投入していたため、その画面を出さなくなるとボードが空のままになった。
+    /// 次にオンボーディングの表示条件へ寄せたが、それも初回起動の一度きりで、
+    /// 見本を差し替えても既存の利用者には新しい版が届かなかった。そのため起動のたびに呼び、
+    /// 投入済みかどうかだけで判断する。
     private func seedTutorialPhotoIfNeeded() {
+        guard !GroupeDefaults.shared.hasSeededOfficialPhoto(id: officialPhotoId) else { return }
         guard let photo = makeOfficialPhoto() else { return }
-        let alreadySeeded = RealmManager.shared.realmData.contains { $0.id == photo.id }
-        guard !alreadySeeded else { return }
-        RealmManager.shared.save(data: photo, success: {}, failure: { error in print(error) })
+        removeRetiredOfficialPhotos()
+        RealmManager.shared.save(data: photo,
+                                 success: { GroupeDefaults.shared.markOfficialPhotoSeeded(id: officialPhotoId) },
+                                 failure: { error in print(error) })
+    }
+
+    /// 差し替え前の見本画像を消す。
+    /// 新しいIDで入れ直すだけだと、透過が黒く潰れた古い1枚がボードに残り続ける。
+    private func removeRetiredOfficialPhotos() {
+        let retiredIds = RealmManager.shared.realmData
+            .filter { retiredOfficialPhotoIds.contains($0.id) }
+            .map { $0.id }
+        // Results は生きた結果集合なので、走査しながら消さずにIDを取り切ってから消す
+        for id in retiredIds {
+            RealmManager.shared.delete(docId: id, success: {}, failure: { error in print(error) })
+        }
     }
 
     /// 最初の1枚が保存できたところでキーボード設定を案内する。
