@@ -49,6 +49,11 @@ public enum LocalizeKey: String, CaseIterable {
     case howToDescription
     case howToDone
     case menuHowTo
+
+    /// 案内図の中に出す短い語。手順の文言(howTo*)は既存のものを使い、
+    /// 図の上に重ねるこの2語だけを持つ
+    case guideCopyBadge
+    case guidePasteBadge
     
     case topHeadline
     case topSubtitle

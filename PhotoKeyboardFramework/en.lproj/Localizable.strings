@@ -67,3 +67,5 @@
 "menuHowTo" = "How to send";
 "limitReachedTitle" = "You can keep up to 8.";
 "limitReachedMessage" = "Delete one of your images to add a new one.";
+"guideCopyBadge" = "Copied";
+"guidePasteBadge" = "Paste";
