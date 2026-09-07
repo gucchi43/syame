@@ -17,6 +17,10 @@ final class HowToSendViewController: UIViewController {
     private let contentStack = UIStackView()
     private let doneButton = AuroraButton()
 
+    /// 図に出すサムネイルの最大辺。図の中では数十ptなので、
+    /// フル解像度をデコードするとキーボード拡張と同じくメモリを無駄に食う
+    private static let thumbnailPixelSize: CGFloat = 240
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .bgBase
@@ -70,13 +74,19 @@ final class HowToSendViewController: UIViewController {
         title.attributedText = LocalizeKey.howToTitle.localizedString().withFont(UIFont.scaled(.title3, weight: .bold))
         contentStack.addArrangedSubview(title)
 
-        let steps: [(String, LocalizeKey, LocalizeKey)] = [
-            (Symbol.stepTap, .howToFirstBoldText, .howToFirstNormalText),
-            (Symbol.stepClipboard, .howToSecondBoldText, .howToSecondNormalText),
-            (Symbol.stepSend, .howToThirdBoldText, .howToThirdNormalText)
+        // 図に出す画像は利用者自身の保存画像。ダミーを焼かないので
+        // 「自分のボードの話だ」と伝わり、中身が常に現物と一致する
+        let photos = GuidePhotoSource.currentSlots(maxPixelSize: HowToSendViewController.thumbnailPixelSize)
+        let steps: [(LocalizeKey, LocalizeKey, UIView)] = [
+            (.howToFirstBoldText, .howToFirstNormalText, GuideKeyboardStripView(photos: photos)),
+            (.howToSecondBoldText, .howToSecondNormalText, GuideComposerView()),
+            (.howToThirdBoldText, .howToThirdNormalText, GuideChatView(sentPhoto: photos[0]))
         ]
-        for (symbol, bold, normal) in steps {
-            contentStack.addArrangedSubview(makeStepRow(symbol: symbol, bold: bold, normal: normal))
+        for (index, step) in steps.enumerated() {
+            contentStack.addArrangedSubview(GuideStepView(number: index + 1,
+                                                          bold: step.0,
+                                                          normal: step.1,
+                                                          illustration: step.2))
         }
 
         let description = UILabel()
@@ -97,29 +107,6 @@ final class HowToSendViewController: UIViewController {
             contentStack.setCustomSpacing(Spacing.xl * 2, after: description)
             contentStack.addArrangedSubview(doneButton)
         }
-    }
-
-    /// Usage 画面と同じく、日本語は太字が先、英語は通常文が先
-    private func makeStepRow(symbol: String, bold: LocalizeKey, normal: LocalizeKey) -> UIView {
-        let icon = UIImageView(image: UIImage.symbol(symbol, pointSize: 26))
-        icon.tintColor = .accent
-        icon.contentMode = .center
-        icon.setContentHuggingPriority(.required, for: .horizontal)
-        icon.widthAnchor.constraint(equalToConstant: 44).isActive = true
-
-        let label = UILabel()
-        label.numberOfLines = 0
-        label.textColor = .textPrimary
-        label.adjustsFontForContentSizeCategory = true
-        let boldText = bold.localizedString().withFont(UIFont.scaled(.body, weight: .bold))
-        let normalText = normal.localizedString().withFont(UIFont.scaled(.body, weight: .regular))
-        label.attributedText = Lang.langRootKey() == "JP" ? boldText + normalText : normalText + boldText
-
-        let row = UIStackView(arrangedSubviews: [icon, label])
-        row.axis = .horizontal
-        row.alignment = .center
-        row.spacing = Spacing.m
-        return row
     }
 
     @objc private func tapClose() {

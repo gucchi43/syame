@@ -15,12 +15,13 @@ class PhotoKeyboardExTests: XCTestCase {
 
     // MARK: - 案内図に流し込む画像
 
-    private func makeGuideImage(color: UIColor) -> UIImage {
+    private func makeGuideImage(color: UIColor,
+                                size: CGSize = CGSize(width: 10, height: 10)) -> UIImage {
         let format = UIGraphicsImageRendererFormat.default()
         format.scale = 1
-        return UIGraphicsImageRenderer(size: CGSize(width: 10, height: 10), format: format).image { context in
+        return UIGraphicsImageRenderer(size: size, format: format).image { context in
             color.setFill()
-            context.fill(CGRect(x: 0, y: 0, width: 10, height: 10))
+            context.fill(CGRect(origin: .zero, size: size))
         }
     }
 
@@ -160,7 +161,7 @@ class PhotoKeyboardExTests: XCTestCase {
     func testComposerDrawsInputBarAndPasteBubble() {
         let composer = layOut(GuideComposerView(), height: 120)
 
-        XCTAssertTrue(containsColor(composer, .bgSurface), "入力欄が描かれていない")
+        XCTAssertTrue(containsColor(composer, .bgBase), "入力欄が描かれていない")
         XCTAssertTrue(containsColor(composer, .accent), "「ペースト」の吹き出しが描かれていない")
     }
 
@@ -178,7 +179,45 @@ class PhotoKeyboardExTests: XCTestCase {
         let chat = GuideChatView(sentPhoto: makeGuideImage(color: .red))
         _ = layOut(chat, height: 160)
 
-        XCTAssertTrue(containsColor(chat, .bgSurface), "相手の吹き出しが描かれていない")
+        XCTAssertTrue(containsColor(chat, .bgBase), "相手の吹き出しが描かれていない")
+    }
+
+    private func makeStep(illustrationColor: UIColor) -> GuideStepView {
+        let illustration = UIView()
+        illustration.backgroundColor = illustrationColor
+        illustration.translatesAutoresizingMaskIntoConstraints = false
+        illustration.heightAnchor.constraint(equalToConstant: 80).isActive = true
+        return GuideStepView(number: 1,
+                             bold: .howToFirstBoldText,
+                             normal: .howToFirstNormalText,
+                             illustration: illustration)
+    }
+
+    /// 渡した図が実際に描かれること。器が図を落としていたら手順が絵にならない
+    func testStepDrawsItsIllustration() {
+        let step = makeStep(illustrationColor: .red)
+        _ = layOut(step, height: 260)
+
+        XCTAssertTrue(containsColor(step, .red), "図が描かれていない")
+    }
+
+    /// 手順の文言は既存のキーから引くこと。
+    /// 図の中に文字を焼くと、英語のときに日本語のままになる
+    func testStepShowsLocalizedText() {
+        let step = makeStep(illustrationColor: .red)
+        _ = layOut(step, height: 260)
+
+        let texts = step.subviewTexts()
+        XCTAssertTrue(texts.contains { $0.contains(LocalizeKey.howToFirstBoldText.localizedString()) },
+                      "手順の文言が出ていない。実際の文字列: \(texts)")
+    }
+
+    /// 番号を出すこと。3つ並んだときに順番が読めない
+    func testStepShowsItsNumber() {
+        let step = makeStep(illustrationColor: .red)
+        _ = layOut(step, height: 260)
+
+        XCTAssertTrue(step.subviewTexts().contains("1"), "番号が出ていない")
     }
 
     // MARK: - 一覧のグリッド
@@ -398,5 +437,19 @@ class PhotoKeyboardExTests: XCTestCase {
         let controller = AddViewController()
         let converted = controller.convertedImageSize(size: .zero)
         XCTAssertEqual(converted, .zero)
+    }
+}
+
+/// ビュー階層に出ている文字を集める。文言が実際に画面へ届いているかを見る
+private extension UIView {
+    func subviewTexts() -> [String] {
+        var result: [String] = []
+        if let label = self as? UILabel, let text = label.text {
+            result.append(text)
+        }
+        for subview in subviews {
+            result.append(contentsOf: subview.subviewTexts())
+        }
+        return result
     }
 }

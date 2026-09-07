@@ -26,13 +26,14 @@ final class GuideChatView: UIView {
     }
 
     private func setupSubviews(sentPhoto: UIImage) {
-        backgroundColor = .bgBase
+        // 図の面。地(bgBase)のままだと画面に溶けて「図」に見えない
+        backgroundColor = .bgSurface
         applyCornerRadius(Radius.card)
         clipsToBounds = true
 
         // 相手の発言。左に寄せる
         let incoming = UIView()
-        incoming.backgroundColor = .bgSurface
+        incoming.backgroundColor = .bgBase
         incoming.applyCornerRadius(Radius.small)
         incoming.translatesAutoresizingMaskIntoConstraints = false
         addSubview(incoming)
@@ -43,6 +44,11 @@ final class GuideChatView: UIView {
         sent.clipsToBounds = true
         sent.applyCornerRadius(Radius.small)
         sent.translatesAutoresizingMaskIntoConstraints = false
+        // 大きさは縦横比で決める。UIImageView の intrinsicContentSize に任せると
+        // 元画像の実寸(見本は800x800)まで膨らんで図が画面からはみ出す
+        sent.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
+        sent.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        sent.setContentHuggingPriority(.defaultLow, for: .vertical)
         addSubview(sent)
 
         NSLayoutConstraint.activate([
@@ -55,7 +61,8 @@ final class GuideChatView: UIView {
             sent.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Spacing.m),
             sent.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -Spacing.m),
             sent.widthAnchor.constraint(equalTo: widthAnchor,
-                                        multiplier: GuideChatView.sentPhotoWidthRatio)
+                                        multiplier: GuideChatView.sentPhotoWidthRatio),
+            sent.heightAnchor.constraint(equalTo: sent.widthAnchor)
         ])
     }
 }

@@ -32,4 +32,30 @@ enum GuidePhotoSource {
             .prefix(slotCount)
             .compactMap { $0.thumbnail(maxPixelSize: maxPixelSize) }
     }
+
+    /// 図に出す画像を、いま端末にあるものから決める。
+    /// 見本のアセットはアプリ本体にしか無いため、解決できないときは空を返さず
+    /// 単色で埋めて図の形だけは保つ(空のキーボードを見せるより崩れが小さい)。
+    static func currentSlots(maxPixelSize: CGFloat) -> [UIImage] {
+        let photos = Array(RealmManager.shared.realmData)
+        // 見本もサムネイルに落としてから渡す。図に出るのは数十ptなので、
+        // フル解像度(800x800)を抱えたままにする理由がない
+        let sample = UIImage(named: "officialPhotoWelcome")
+        let fallback = sample?.resize(size: CGSize(width: maxPixelSize, height: maxPixelSize))
+            ?? sample
+            ?? UIImage.filled(color: .keyboardSurface)
+        return slots(userPhotos: userImages(from: photos, maxPixelSize: maxPixelSize),
+                     fallback: fallback)
+    }
+}
+
+private extension UIImage {
+    static func filled(color: UIColor) -> UIImage {
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = 1
+        return UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1), format: format).image { context in
+            color.setFill()
+            context.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
+        }
+    }
 }

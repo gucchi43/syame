@@ -26,12 +26,13 @@ final class GuideComposerView: UIView {
     }
 
     private func setupSubviews() {
-        backgroundColor = .bgBase
+        // 図の面。地(bgBase)のままだと画面に溶けて「図」に見えない
+        backgroundColor = .bgSurface
         applyCornerRadius(Radius.card)
         clipsToBounds = true
 
         let bar = UIView()
-        bar.backgroundColor = .bgSurface
+        bar.backgroundColor = .bgBase
         bar.applyCornerRadius(Radius.small)
         bar.translatesAutoresizingMaskIntoConstraints = false
         addSubview(bar)
