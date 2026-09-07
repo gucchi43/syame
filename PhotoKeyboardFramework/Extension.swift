@@ -44,6 +44,51 @@ extension UIImage {
         return resizedImage
     }
 
+    /// 透明な画素を含むかどうか。
+    ///
+    /// アルファチャンネルの有無では判定できない。`UIGraphicsBeginImageContextWithOptions` に
+    /// opaque=false を渡して描き直した画像は、中身が完全に不透明でも必ずアルファチャンネルを持つ。
+    /// resize も composite もその経路を通るため、チャンネルの有無で見ると保存する画像がすべて
+    /// 透過扱いになり、写真まで PNG で抱え込むことになる。実際の画素を見て判断する。
+    ///
+    /// 走査するのはアルファ値だけの8bitバッファなので、確保するのは画素数と同じバイト数で済む。
+    public var hasTransparentPixels: Bool {
+        guard let cgImage = cgImage else { return false }
+
+        // アルファチャンネルを持たない画像(カメラロールのJPEGなど)は走査するまでもなく不透明
+        switch cgImage.alphaInfo {
+        case .none, .noneSkipFirst, .noneSkipLast:
+            return false
+        default:
+            break
+        }
+
+        let width = cgImage.width
+        let height = cgImage.height
+        guard width > 0, height > 0 else { return false }
+
+        var alpha = [UInt8](repeating: 0, count: width * height)
+        let didDraw = alpha.withUnsafeMutableBytes { buffer -> Bool in
+            guard let baseAddress = buffer.baseAddress,
+                  let context = CGContext(data: baseAddress,
+                                          width: width,
+                                          height: height,
+                                          bitsPerComponent: 8,
+                                          bytesPerRow: width,
+                                          space: CGColorSpaceCreateDeviceGray(),
+                                          bitmapInfo: CGImageAlphaInfo.alphaOnly.rawValue) else {
+                return false
+            }
+            context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+            return true
+        }
+        // 描き直せなかったときは不透明として扱う。判定に失敗しただけで
+        // JPEGに倒れるのは従来と同じ挙動で、透過を持たない大多数の画像に影響が出ない
+        guard didDraw else { return false }
+
+        return alpha.contains { $0 < 255 }
+    }
+
     /// 画像を汎用ペーストボードへ書き込む。
     ///
     /// `UIPasteboard.typeListImage` の先頭は "public.png" のため、そこへ `jpegData(...)` の
