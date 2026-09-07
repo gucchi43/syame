@@ -56,8 +56,9 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
 
     private static let gridSpacing: CGFloat = 8
     private static let gridColumns = 2
-    /// セル下部の情報エリアの高さ。セル側の定義をそのまま使う
-    private static let cellInfoHeight = PhotoCollectionViewCell.infoHeight
+    /// セル下部の情報エリアの高さ。セル側の定義をそのまま使う。
+    /// 文字サイズ設定で変わるため、起動時に固めず参照のたびに読む
+    private static var cellInfoHeight: CGFloat { PhotoCollectionViewCell.infoHeight }
 
     /// 1行の高さを求める。画像は正方形にし、その下に情報エリアを積む。
     /// 高さを可変(estimated)にすると、同じ行の2つのセルで高さが揃わず隙間ができる。

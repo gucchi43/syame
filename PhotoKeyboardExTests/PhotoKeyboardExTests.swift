@@ -37,6 +37,95 @@ class PhotoKeyboardExTests: XCTestCase {
                        accuracy: 0.001)
     }
 
+    /// タイトルは2行まで出す。
+    /// 見本画像のように説明的な題名が入るため、1行だとほとんど読めないまま省略される
+    func testTitleAllowsTwoLines() {
+        XCTAssertEqual(PhotoCollectionViewCell.titleLineLimit, 2)
+    }
+
+    /// 情報エリアは行数ぶんの高さを確保すること。
+    /// 行の高さは絶対値で決めているため、ここが足りないと2行目が切れる
+    func testInfoHeightFitsTitleLines() {
+        let lineHeight = UIFont.scaled(.footnote).lineHeight
+        let needed = lineHeight * CGFloat(PhotoCollectionViewCell.titleLineLimit)
+        XCTAssertGreaterThanOrEqual(PhotoCollectionViewCell.infoHeight, needed,
+                                    "情報エリアがタイトルの行数ぶんに足りていない")
+    }
+
+    /// ラベルに実際に描かれた文字の行数を、描画結果のピクセルから数える。
+    ///
+    /// textRect(forBounds:limitedToNumberOfLines:) は lineBreakMode による折り返しの有無を
+    /// 反映しないため、行数の検証には使えない(2行と答えるのに画面は1行、が起きる)。
+    private func renderedLineCount(of label: UILabel) -> Int {
+        let size = label.bounds.size
+        guard size.width > 0, size.height > 0 else { return 0 }
+
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = 1
+        format.opaque = true
+        let image = UIGraphicsImageRenderer(size: size, format: format).image { context in
+            UIColor.white.setFill()
+            context.fill(CGRect(origin: .zero, size: size))
+            label.layer.render(in: context.cgContext)
+        }
+        guard let cgImage = image.cgImage else { return 0 }
+
+        let width = cgImage.width
+        let height = cgImage.height
+        var pixels = [UInt8](repeating: 0, count: width * height)
+        guard let context = CGContext(data: &pixels,
+                                      width: width,
+                                      height: height,
+                                      bitsPerComponent: 8,
+                                      bytesPerRow: width,
+                                      space: CGColorSpaceCreateDeviceGray(),
+                                      bitmapInfo: CGImageAlphaInfo.none.rawValue) else {
+            return 0
+        }
+        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+
+        // 文字のある行が縦に何本の帯を作るかを数える
+        var bands = 0
+        var wasInk = false
+        for y in 0..<height {
+            let hasInk = (0..<width).contains { pixels[y * width + $0] < 200 }
+            if hasInk && !wasInk { bands += 1 }
+            wasInk = hasInk
+        }
+        return bands
+    }
+
+    private func makeLaidOutCell(title: String) -> PhotoCollectionViewCell {
+        let metrics = ChildContentViewController.gridMetrics(containerWidth: 393)
+        let cell = PhotoCollectionViewCell(frame: CGRect(x: 0, y: 0,
+                                                         width: metrics.itemWidth,
+                                                         height: metrics.rowHeight))
+        cell.titleLabel.text = title
+        cell.layoutIfNeeded()
+        return cell
+    }
+
+    /// 長い題名が実際に2行で描かれること。
+    /// numberOfLines を 2 にしても、lineBreakMode が切り詰め系だと折り返さず1行のままになる
+    func testLongTitleRendersOnTwoLines() {
+        let cell = makeLaidOutCell(title: "まーまーらいおん君による使い方の説明！")
+        XCTAssertGreaterThan(cell.titleLabel.bounds.width, 0, "ラベルに幅が割り当てられていない")
+        XCTAssertEqual(renderedLineCount(of: cell.titleLabel), 2,
+                       "長い題名が2行で描かれていない")
+    }
+
+    /// 短い題名まで2行に引き伸ばさないこと
+    func testShortTitleStaysOnOneLine() {
+        let cell = makeLaidOutCell(title: "おもんない！")
+        XCTAssertEqual(renderedLineCount(of: cell.titleLabel), 1)
+    }
+
+    /// 上限は2行。折り返しモードにしたぶん、長すぎる題名で3行目がはみ出さないこと
+    func testVeryLongTitleStopsAtTwoLines() {
+        let cell = makeLaidOutCell(title: String(repeating: "あ", count: 120))
+        XCTAssertEqual(renderedLineCount(of: cell.titleLabel), 2)
+    }
+
     /// 幅が極端に狭くても破綻しないこと
     func testGridMetricsHandlesTinyContainer() {
         let metrics = ChildContentViewController.gridMetrics(containerWidth: 10)
