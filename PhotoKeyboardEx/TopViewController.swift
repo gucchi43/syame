@@ -21,7 +21,21 @@ class TopViewController: UIViewController, UITextViewDelegate {
 
     @IBOutlet weak var startButton: UIButton!
 
+    /// 開始ボタンと規約文を積んでいる下段のスタック。
+    /// 図はこの先頭へ差し込む。Storyboard 側は容器の参照を1つ増やすだけにして、
+    /// 中身の組み立てはコードに寄せる
+    @IBOutlet weak var bottomStackView: UIStackView!
+
     @IBOutlet weak var requestDescription: UITextView!
+
+    /// 図に出すサムネイルの最大辺。図の中では数十ptしかない
+    private static let thumbnailPixelSize: CGFloat = 240
+    /// 下段スタックの幅に対する図の幅。
+    ///
+    /// 図の高さは幅に従属する(正方形のサムネイル3枚 + 余白)ため、幅で高さを決めている。
+    /// 0.92 だと iPhone SE で図が見出しに重なった。この画面はロゴ・見出し・ボタン・
+    /// 規約文で既に埋まっており、下端固定の下段スタックへ足すと上へ押し上がる。
+    private static let guideWidthRatio: CGFloat = 0.6
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,6 +101,22 @@ class TopViewController: UIViewController, UITextViewDelegate {
         requestDescription.isScrollEnabled = false
         requestDescription.backgroundColor = .clear
         requestDescription.delegate = self
+        insertGuideIllustration()
+    }
+
+    /// 何をするアプリなのかを絵で伝える。
+    ///
+    /// ロゴと見出しだけでは伝わらないため、見出しと同じ「キーボードから送る」を図にする。
+    /// 図に出るのは利用者自身の保存画像で、まだ無ければ見本で埋まる。
+    private func insertGuideIllustration() {
+        let photos = GuidePhotoSource.currentSlots(maxPixelSize: TopViewController.thumbnailPixelSize)
+        let strip = GuideKeyboardStripView(photos: photos)
+        strip.translatesAutoresizingMaskIntoConstraints = false
+        bottomStackView.insertArrangedSubview(strip, at: 0)
+        // スタックは alignment=center なので、幅を与えないと図が潰れる
+        strip.widthAnchor.constraint(equalTo: bottomStackView.widthAnchor,
+                                     multiplier: TopViewController.guideWidthRatio).isActive = true
+        bottomStackView.setCustomSpacing(Spacing.xl, after: strip)
     }
     
     func animateLogo () {

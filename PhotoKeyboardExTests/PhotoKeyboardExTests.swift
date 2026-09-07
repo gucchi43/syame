@@ -220,6 +220,90 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertTrue(step.subviewTexts().contains("1"), "番号が出ていない")
     }
 
+    /// 起動直後の画面にも図を出すこと。
+    /// ロゴと見出しだけでは、何をするアプリなのかが絵から伝わらない
+    func testTopShowsGuideIllustration() {
+        guard let root = UIStoryboard(name: "Top", bundle: nil).instantiateInitialViewController() else {
+            return XCTFail("Top を読み込めなかった")
+        }
+        root.loadViewIfNeeded()
+        root.view.frame = CGRect(x: 0, y: 0, width: 402, height: 874)
+        root.view.layoutIfNeeded()
+
+        XCTAssertNotNil(root.view.firstSubview(ofType: GuideKeyboardStripView.self),
+                        "起動直後の画面に図が出ていない")
+    }
+
+    private func loadTop(width: CGFloat, height: CGFloat) -> (UIViewController, TopViewController)? {
+        guard let root = UIStoryboard(name: "Top", bundle: nil).instantiateInitialViewController() else {
+            return nil
+        }
+        let top = (root as? TopViewController)
+            ?? (root as? UINavigationController)?.viewControllers.first as? TopViewController
+        guard let top = top else { return nil }
+        root.loadViewIfNeeded()
+        root.view.frame = CGRect(x: 0, y: 0, width: width, height: height)
+        root.view.layoutIfNeeded()
+        return (root, top)
+    }
+
+    /// 小さい画面で図が見出しに重ならないこと。
+    /// 起動画面はロゴ・見出し・ボタン・規約文で既に埋まっており、
+    /// 図を足すと下から押し上がって見出しに突き当たる
+    func testTopKeepsGuideClearOfTheSubtitleOnASmallScreen() {
+        // iPhone SE (第3世代)
+        guard let (root, top) = loadTop(width: 375, height: 667) else {
+            return XCTFail("Top を読み込めなかった")
+        }
+        guard let strip = root.view.firstSubview(ofType: GuideKeyboardStripView.self) else {
+            return XCTFail("図が出ていない")
+        }
+
+        let stripFrame = strip.convert(strip.bounds, to: root.view)
+        let subtitleFrame = top.subTitleLabel.convert(top.subTitleLabel.bounds, to: root.view)
+
+        XCTAssertFalse(stripFrame.intersects(subtitleFrame),
+                       "小さい画面で図が見出しに重なっている。図: \(stripFrame) 見出し: \(subtitleFrame)")
+        XCTAssertGreaterThanOrEqual(stripFrame.minY, 0, "図が画面の上に飛び出している")
+    }
+
+    /// ダークモードで図が地に沈まないこと。
+    /// ダークの bgBase と bgSurface は明度差が小さいので、
+    /// 見分けが付く程度の許容差(4)で「別の面として描かれている」ことを見る
+    func testComposerStaysVisibleInDarkMode() {
+        let composer = GuideComposerView()
+        // ウインドウに載せないと配色の切り替えが伝わらず、
+        // 動的な色がライトのまま CGColor に固定される
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 320, height: 120))
+        window.overrideUserInterfaceStyle = .dark
+        window.addSubview(composer)
+        composer.frame = window.bounds
+        window.layoutIfNeeded()
+
+        let dark = UITraitCollection(userInterfaceStyle: .dark)
+        XCTAssertTrue(containsColor(composer, UIColor.bgSurface.resolvedColor(with: dark), tolerance: 4),
+                      "ダークモードで図の面が描かれていない")
+        XCTAssertTrue(containsColor(composer, UIColor.bgBase.resolvedColor(with: dark), tolerance: 4),
+                      "ダークモードで入力欄が面と区別できない")
+    }
+
+    /// 文字サイズを最大にしても図が横にはみ出さないこと。
+    /// 番号バッジと文言を横に並べているので、文字が伸びると幅を押し広げる
+    func testStepFitsWidthAtLargestTextSize() {
+        let largest = UITraitCollection(preferredContentSizeCategory: .accessibilityExtraExtraExtraLarge)
+        var step: GuideStepView!
+        largest.performAsCurrent {
+            step = makeStep(illustrationColor: .red)
+        }
+
+        let fitted = step.systemLayoutSizeFitting(CGSize(width: 320, height: 0),
+                                                  withHorizontalFittingPriority: .required,
+                                                  verticalFittingPriority: .fittingSizeLevel)
+
+        XCTAssertLessThanOrEqual(fitted.width, 320, "最大の文字サイズで図が横にはみ出している")
+        XCTAssertGreaterThan(fitted.height, 0)
+    }
+
     // MARK: - 一覧のグリッド
 
     /// 高さを可変にすると同じ行の2つのセルで高さが揃わず隙間ができるため、
@@ -451,5 +535,15 @@ private extension UIView {
             result.append(contentsOf: subview.subviewTexts())
         }
         return result
+    }
+}
+
+private extension UIView {
+    func firstSubview<T: UIView>(ofType type: T.Type) -> T? {
+        if let match = self as? T { return match }
+        for subview in subviews {
+            if let match = subview.firstSubview(ofType: type) { return match }
+        }
+        return nil
     }
 }
