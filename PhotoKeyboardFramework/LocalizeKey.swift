@@ -79,6 +79,42 @@ public enum LocalizeKey: String, CaseIterable {
     case updateAlertUpdate
     case updateAlertLater
 
+    // MARK: - 有料プラン
+
+    case paywallTitle
+    case paywallSubtitle
+    case paywallFeatureUnlimited
+    case paywallColumnFree
+    case paywallColumnPremium
+    case paywallRowSaveCount
+    case paywallFreeLimitValue
+    case paywallUnlimitedValue
+    case paywallPlanMonthly
+    case paywallPlanYearly
+    case paywallYearlyPerMonth
+    case paywallYearlyDiscount
+    case paywallTrialBadge
+    case paywallPurchase
+    case paywallPurchaseWithTrial
+    case paywallRestore
+    case paywallTerms
+    case paywallPrivacy
+    case paywallRenewalNote
+    case paywallSeePremium
+    case paywallClose
+    case paywallPurchaseFailed
+    case paywallRestoreFailed
+    case paywallRestoreNothing
+    case menuPremium
+    case menuPremiumActive
+    case premiumActiveTitle
+    case premiumActiveMessage
+
+    /// 数値などを差し込む文言に使う。書式は Localizable.strings 側が持つ
+    public func localizedString(_ arguments: CVarArg...) -> String {
+        return String(format: localizedString(), arguments: arguments)
+    }
+
     // selfの値をローカライズして返す
     public func localizedString() -> String {
         

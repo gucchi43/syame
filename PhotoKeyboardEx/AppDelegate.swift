@@ -22,6 +22,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let keyboardResult = GroupeDefaults.shared.lastKeyboardOpenResult() {
             print("[keyboard openURL] \(keyboardResult)")
         }
+        // アプリ外での購入・更新・返金を取りこぼさないよう、起動直後から監視する
+        PremiumStore.shared.startObservingTransactions()
+        Task { await PremiumStore.shared.refreshEntitlements() }
         return true
     }
 

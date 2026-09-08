@@ -218,7 +218,7 @@ class MainTabViewController: UIViewController {
 
     @objc func tapFAB() {
         // 上限は写真を選ぶ前に伝える。選ばせてから断ると徒労になる
-        guard RealmManager.shared.canSaveMorePhotos else {
+        guard PhotoQuota.canSave else {
             presentLimitReachedAlert()
             return
         }
@@ -231,11 +231,7 @@ class MainTabViewController: UIViewController {
     }
 
     private func presentLimitReachedAlert() {
-        let alert = UIAlertController(title: LocalizeKey.limitReachedTitle.localizedString(),
-                                      message: LocalizeKey.limitReachedMessage.localizedString(),
-                                      preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: LocalizeKey.baseOK.localizedString(), style: .default))
-        present(alert, animated: true)
+        PaywallPresenter.presentLimitReached(from: self)
     }
 
     @IBAction func tapBarMenuButton(_ sender: Any) {

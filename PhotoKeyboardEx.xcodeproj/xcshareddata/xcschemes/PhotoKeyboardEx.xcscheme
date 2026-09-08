@@ -61,7 +61,10 @@
             </BuildableReference>
          </TestableReference>
       </Testables>
-   </TestAction>
+         <StoreKitConfigurationFileReference
+         identifier = "../../../../PhotoKeyboardEx/PhotoKeyboardEx.storekit">
+      </StoreKitConfigurationFileReference>
+</TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
@@ -82,7 +85,10 @@
             ReferencedContainer = "container:PhotoKeyboardEx.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-   </LaunchAction>
+         <StoreKitConfigurationFileReference
+         identifier = "../../../../PhotoKeyboardEx/PhotoKeyboardEx.storekit">
+      </StoreKitConfigurationFileReference>
+</LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
       shouldUseLaunchSchemeArgsEnv = "YES"
