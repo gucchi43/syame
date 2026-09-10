@@ -140,12 +140,10 @@ class AddViewController: UIViewController {
 
     private enum UploadError: LocalizedError {
         case realmSaveFailed
-        case limitReached
 
         var errorDescription: String? {
             switch self {
             case .realmSaveFailed: return "端末への保存に失敗しました"
-            case .limitReached: return LocalizeKey.limitReachedMessage.localizedString()
             }
         }
     }

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		016E8E8FFBE26D573A69BC5C /* PhotoKeyboardEx.storekit in Sources */ = {isa = PBXBuildFile; fileRef = 4043FCB63BC521B268037404 /* PhotoKeyboardEx.storekit */; };
 		020F8C5EF9412556E4E89330 /* PhotoQuota.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D82B8661A81BE5AB8061313 /* PhotoQuota.swift */; };
 		0C3FA8DCC26D4ADFCECCE942 /* GuideStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FBFD095097990BB98F818A /* GuideStepView.swift */; };
 		1BA58F922609467F9EF8371F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CF8919C3BF774918835C4DB7 /* RealmSwift */; };
@@ -769,7 +768,6 @@
 				020F8C5EF9412556E4E89330 /* PhotoQuota.swift in Sources */,
 				2D4737E85345832B666CFF25 /* PaywallViewController.swift in Sources */,
 				F7E67923C349F247131F8DC1 /* PaywallPresenter.swift in Sources */,
-				016E8E8FFBE26D573A69BC5C /* PhotoKeyboardEx.storekit in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

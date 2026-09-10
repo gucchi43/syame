@@ -217,6 +217,15 @@ class MainTabViewController: UIViewController {
     }
 
     @objc func tapFAB() {
+        // 起動直後は権利がまだ確定していないことがある。確定を待たずに判定すると
+        // 加入者に上限アラートを出してしまう
+        Task {
+            await PremiumStore.shared.ensureEntitlementsResolved()
+            presentPickerIfAllowed()
+        }
+    }
+
+    private func presentPickerIfAllowed() {
         // 上限は写真を選ぶ前に伝える。選ばせてから断ると徒労になる
         guard PhotoQuota.canSave else {
             presentLimitReachedAlert()

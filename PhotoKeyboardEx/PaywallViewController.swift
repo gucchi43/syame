@@ -24,6 +24,7 @@ final class PaywallViewController: UIViewController {
     private let purchaseButton = AuroraButton()
     private let planStack = UIStackView()
     private let indicator = UIActivityIndicatorView(style: .medium)
+    private let retryButton = UIButton(type: .system)
 
     private var planButtons: [PlanButton] = []
     private var selectedProduct: Product?
@@ -67,7 +68,10 @@ final class PaywallViewController: UIViewController {
         ])
 
         contentStack.addArrangedSubview(makeTitle())
-        contentStack.addArrangedSubview(makeSubtitle())
+        let subtitle = makeSubtitle()
+        contentStack.addArrangedSubview(subtitle)
+        // arrangedSubview になった後でないと効かない
+        contentStack.setCustomSpacing(Spacing.s, after: subtitle)
         contentStack.addArrangedSubview(makeComparisonTable())
 
         planStack.axis = .vertical
@@ -77,6 +81,15 @@ final class PaywallViewController: UIViewController {
 
         indicator.startAnimating()
         contentStack.addArrangedSubview(indicator)
+
+        retryButton.setTitle(LocalizeKey.paywallRetry.localizedString(), for: .normal)
+        retryButton.titleLabel?.font = .scaled(.footnote)
+        retryButton.titleLabel?.adjustsFontForContentSizeCategory = true
+        retryButton.isHidden = true
+        retryButton.addAction(UIAction { [weak self] _ in
+            Task { await self?.loadProducts() }
+        }, for: .touchUpInside)
+        contentStack.addArrangedSubview(retryButton)
 
         purchaseButton.applyCornerRadius(Radius.small)
         purchaseButton.titleLabel?.adjustsFontSizeToFitWidth = true
@@ -108,7 +121,6 @@ final class PaywallViewController: UIViewController {
         label.adjustsFontForContentSizeCategory = true
         label.font = .scaled(.footnote)
         label.text = LocalizeKey.paywallSubtitle.localizedString()
-        contentStack.setCustomSpacing(Spacing.s, after: label)
         return label
     }
 
@@ -199,15 +211,33 @@ final class PaywallViewController: UIViewController {
     // MARK: - 商品
 
     private func loadProducts() async {
-        await PremiumStore.shared.loadProducts()
-        indicator.stopAnimating()
-        indicator.isHidden = true
+        retryButton.isHidden = true
+        indicator.startAnimating()
+        indicator.isHidden = false
+        defer {
+            indicator.stopAnimating()
+            indicator.isHidden = true
+        }
+
+        do {
+            try await PremiumStore.shared.loadProducts()
+        } catch {
+            // 黙って空のペイウォールを見せない。再試行の導線を出す
+            retryButton.isHidden = false
+            return
+        }
 
         let products = PremiumStore.shared.products
-        guard !products.isEmpty else { return }
+        guard !products.isEmpty else {
+            retryButton.isHidden = false
+            return
+        }
 
+        planButtons.forEach { $0.removeFromSuperview() }
+        planButtons.removeAll()
         for product in products {
             let button = PlanButton(product: product)
+            button.showTrial = await PremiumStore.shared.isEligibleForIntroductoryOffer(product)
             button.addTarget(self, action: #selector(tapPlan(_:)), for: .touchUpInside)
             planStack.addArrangedSubview(button)
             planButtons.append(button)
@@ -218,13 +248,16 @@ final class PaywallViewController: UIViewController {
 
     private func select(_ product: Product) {
         selectedProduct = product
+        var eligible = false
         for button in planButtons {
-            button.setSelected(button.product.id == product.id)
+            let isSelected = button.product.id == product.id
+            button.setSelected(isSelected)
+            if isSelected { eligible = button.showTrial }
         }
         purchaseButton.isEnabled = true
-        let hasTrial = product.subscription?.introductoryOffer?.paymentMode == .freeTrial
+        // 商品に設定があるかではなく、この利用者が受けられるかで出し分ける
         purchaseButton.setTitle(
-            (hasTrial ? LocalizeKey.paywallPurchaseWithTrial : LocalizeKey.paywallPurchase).localizedString(),
+            (eligible ? LocalizeKey.paywallPurchaseWithTrial : LocalizeKey.paywallPurchase).localizedString(),
             for: .normal)
     }
 
@@ -240,8 +273,17 @@ final class PaywallViewController: UIViewController {
         Task {
             defer { setBusy(false) }
             do {
-                let purchased = try await PremiumStore.shared.purchase(product)
-                if purchased { dismiss(animated: true) }
+                switch try await PremiumStore.shared.purchase(product) {
+                case .purchased:
+                    dismiss(animated: true)
+                case .pending:
+                    // 何も出さないと「押したのに無反応」に見えて何度も押される
+                    showMessage(LocalizeKey.paywallPurchasePending.localizedString())
+                case .unverified:
+                    showMessage(LocalizeKey.paywallPurchaseFailed.localizedString())
+                case .cancelled:
+                    break
+                }
             } catch {
                 showMessage(LocalizeKey.paywallPurchaseFailed.localizedString())
             }
@@ -285,7 +327,12 @@ final class PaywallViewController: UIViewController {
 private final class PlanButton: UIControl {
 
     let product: Product
-    private let border = UIView()
+
+    /// この利用者がトライアルを受けられるか。商品の設定ではなく資格で決まる
+    var showTrial = false {
+        didSet { detailLabel.text = detailText }
+    }
+    private let detailLabel = UILabel()
 
     init(product: Product) {
         self.product = product
@@ -318,14 +365,13 @@ private final class PlanButton: UIControl {
         let top = UIStackView(arrangedSubviews: [name, price])
         top.axis = .horizontal
 
-        let detail = UILabel()
-        detail.font = .scaled(.caption2)
-        detail.adjustsFontForContentSizeCategory = true
-        detail.textColor = .textSecondary
-        detail.numberOfLines = 0
-        detail.text = detailText
+        detailLabel.font = .scaled(.caption2)
+        detailLabel.adjustsFontForContentSizeCategory = true
+        detailLabel.textColor = .textSecondary
+        detailLabel.numberOfLines = 0
+        detailLabel.text = detailText
 
-        let column = UIStackView(arrangedSubviews: [top, detail])
+        let column = UIStackView(arrangedSubviews: [top, detailLabel])
         column.axis = .vertical
         column.spacing = Spacing.grid
         column.isUserInteractionEnabled = false
@@ -353,7 +399,7 @@ private final class PlanButton: UIControl {
             }
             parts.append(LocalizeKey.paywallYearlyDiscount.localizedString())
         }
-        if let offer = product.subscription?.introductoryOffer, offer.paymentMode == .freeTrial {
+        if showTrial, let offer = product.subscription?.introductoryOffer {
             parts.append(LocalizeKey.paywallTrialBadge.localizedString(offer.period.formatted(product.subscriptionPeriodFormatStyle)))
         }
         return parts.joined(separator: " ・ ")

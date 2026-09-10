@@ -28,6 +28,18 @@ class MyMenuTableViewController: UITableViewController {
         tableView.scrollsToTop = false
         clearsSelectionOnViewWillAppear = false
         tableView.selectRow(at: IndexPath(row: selectedMenuItem, section: 0), animated: false, scrollPosition: .middle)
+        // 課金の行の文言は加入状態で変わる。このビューは一度敷いたら作り直されないため、
+        // 通知を受けて引き直さないと購入後もずっと勧誘のままになる
+        NotificationCenter.default.addObserver(self,
+                                              selector: #selector(reloadForPremiumChange),
+                                              name: .premiumStateChanged,
+                                              object: nil)
+    }
+
+    @objc private func reloadForPremiumChange() {
+        tableView.reloadData()
+        tableView.selectRow(at: IndexPath(row: selectedMenuItem, section: 0),
+                            animated: false, scrollPosition: .none)
     }
 
     override func viewDidLayoutSubviews() {
@@ -109,7 +121,10 @@ class MyMenuTableViewController: UITableViewController {
         case .premium:
             // ペイウォールはモーダル。画面を差し替えると戻り先が無くなる。
             // selectedMenuItem も更新しない(ホーム等の選択状態を保つ)
-            tableView.deselectRow(at: indexPath, animated: true)
+            // 単一選択なので、この行を選んだ時点で前の行の選択は外れている。
+            // 元の画面の選択状態が消えたままにならないよう選び直す
+            tableView.selectRow(at: IndexPath(row: selectedMenuItem, section: 0),
+                                animated: true, scrollPosition: .none)
             mainNav?.toggleSideMenu()
             guard let host = mainNav else { return }
             if PremiumStore.shared.isPremium {

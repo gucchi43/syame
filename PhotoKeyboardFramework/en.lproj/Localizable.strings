@@ -80,7 +80,7 @@
 "paywallPlanMonthly" = "Monthly";
 "paywallPlanYearly" = "Yearly";
 "paywallYearlyPerMonth" = "%@ / month";
-"paywallYearlyDiscount" = "Save 38%%";
+"paywallYearlyDiscount" = "Save 38%";
 "paywallTrialBadge" = "%@ free";
 "paywallPurchase" = "Get Premium";
 "paywallPurchaseWithTrial" = "Start free";
@@ -97,3 +97,5 @@
 "menuPremiumActive" = "Your plan";
 "premiumActiveTitle" = "Premium is active.";
 "premiumActiveMessage" = "You can save unlimited images. Manage your subscription in Settings > Apple ID > Subscriptions.";
+"paywallRetry" = "Try again";
+"paywallPurchasePending" = "Waiting for approval. It will apply automatically once approved.";

@@ -80,7 +80,7 @@
 "paywallPlanMonthly" = "月額";
 "paywallPlanYearly" = "年額";
 "paywallYearlyPerMonth" = "月あたり%@";
-"paywallYearlyDiscount" = "38%%おトク";
+"paywallYearlyDiscount" = "38%おトク";
 "paywallTrialBadge" = "%@は無料";
 "paywallPurchase" = "プレミアムにする";
 "paywallPurchaseWithTrial" = "無料ではじめる";
@@ -97,3 +97,5 @@
 "menuPremiumActive" = "ご利用中のプラン";
 "premiumActiveTitle" = "プレミアムをご利用中です。";
 "premiumActiveMessage" = "保存枚数は無制限です。解約はiPhoneの「設定」＞Apple ID＞「サブスクリプション」からできます。";
+"paywallRetry" = "読み込み直す";
+"paywallPurchasePending" = "購入の承認を待っています。承認されると自動で反映されます。";

@@ -239,7 +239,7 @@ public class RealmManager {
     // MARK: - CRUD
 
     // データを保存するための処理
-    /// 保存できる枚数の上限。見本画像は数に入れない。
+    /// 保存できる枚数の上限。見本画像も数に入れる。
     ///
     /// 上限は制限ではなく道具の性格として置いている(DESIGN.md)。
     /// 厳選して持ち歩くという建て付けなので、数を増やす導線は今は用意していない。
@@ -258,7 +258,8 @@ public class RealmManager {
         return RealmManager.countTowardQuota(Array(realmData))
     }
 
-    /// あと1枚保存できるか。見本画像の投入はこの判定を通さない
+    /// あと1枚保存できるか。見本画像も枠を消費する。
+    /// なお見本の投入(seedTutorialPhotoIfNeeded)はこの判定を通さない
     public var canSaveMorePhotos: Bool {
         return savedPhotoCount < RealmManager.photoLimit
     }

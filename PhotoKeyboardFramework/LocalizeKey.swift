@@ -97,6 +97,8 @@ public enum LocalizeKey: String, CaseIterable {
     case paywallPurchase
     case paywallPurchaseWithTrial
     case paywallRestore
+    case paywallRetry
+    case paywallPurchasePending
     case paywallTerms
     case paywallPrivacy
     case paywallRenewalNote

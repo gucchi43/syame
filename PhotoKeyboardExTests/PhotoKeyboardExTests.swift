@@ -345,6 +345,15 @@ class PhotoKeyboardExTests: XCTestCase {
         }
     }
 
+    /// 図に出す短い文言に書式指定子が残らないこと。
+    /// %% は String(format:) を通したときだけ % になる。素の localizedString() で
+    /// 引くキーに %% を書くと、画面に "38%%おトク" と二重の % が出る
+    func testDiscountBadgeHasNoLeftoverFormatSpecifier() {
+        let text = LocalizeKey.paywallYearlyDiscount.localizedString()
+        XCTAssertFalse(text.contains("%%"), "書式指定子が残っている: \(text)")
+        XCTAssertTrue(text.contains("38%"), "割引率が出ていない: \(text)")
+    }
+
     // MARK: - 一覧のグリッド
 
     /// 高さを可変にすると同じ行の2つのセルで高さが揃わず隙間ができるため、
