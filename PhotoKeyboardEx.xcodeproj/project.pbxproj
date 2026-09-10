@@ -7,10 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		020F8C5EF9412556E4E89330 /* PhotoQuota.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D82B8661A81BE5AB8061313 /* PhotoQuota.swift */; };
 		0C3FA8DCC26D4ADFCECCE942 /* GuideStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FBFD095097990BB98F818A /* GuideStepView.swift */; };
 		1BA58F922609467F9EF8371F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CF8919C3BF774918835C4DB7 /* RealmSwift */; };
 		1CA5C392CE37392557119E2C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		2A5293AE4B1CE75911AAD26B /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		2D4737E85345832B666CFF25 /* PaywallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 466107055132CE2E0B02FC30 /* PaywallViewController.swift */; };
 		33DE8B8E9EDEAC8780228FAE /* GuideComposerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8DCF51AEA21D5ACF31D816 /* GuideComposerView.swift */; };
 		393231D5EC54450C9836C6F9 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = 7E2F3E9D8C6F468E9A1BD4CD /* SwiftDate */; };
 		3ACE86CEBB02C3D24A38DC01 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
@@ -79,9 +81,11 @@
 		AA01000000000000000004 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AA01000000000000000003 /* InfoPlist.strings */; };
 		C73AF9F078134AE583792C0A /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 42A00FB9C3F24E1D87CE50B6 /* Lottie */; };
 		CFD5D85F61661B98449A3666 /* GuideKeyboardStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB30358838FB25745C8B7EE0 /* GuideKeyboardStripView.swift */; };
+		D2B34B4D25C085C01DEB40AC /* PremiumStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6F627618CF5716D1B09F7C9 /* PremiumStore.swift */; };
 		E4C2A35456354852A8AB32F6 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 584F21B3BDC74D14BE270281 /* RealmSwift */; };
 		EDB839492F9819690068143E /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = CF8919C3BF774918835C4DB7 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		EE49C6519FBD408388F2AED5 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = CA3065527272466C964C992A /* SwiftDate */; };
+		F7E67923C349F247131F8DC1 /* PaywallPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC6FE59F327556F25A20E4F /* PaywallPresenter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -157,7 +161,11 @@
 
 /* Begin PBXFileReference section */
 		18FBFD095097990BB98F818A /* GuideStepView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideStepView.swift; sourceTree = "<group>"; };
+		1BC6FE59F327556F25A20E4F /* PaywallPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaywallPresenter.swift; sourceTree = "<group>"; };
+		2D82B8661A81BE5AB8061313 /* PhotoQuota.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhotoQuota.swift; sourceTree = "<group>"; };
 		2E8DCF51AEA21D5ACF31D816 /* GuideComposerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideComposerView.swift; sourceTree = "<group>"; };
+		4043FCB63BC521B268037404 /* PhotoKeyboardEx.storekit */ = {isa = PBXFileReference; includeInIndex = 1; path = PhotoKeyboardEx.storekit; sourceTree = "<group>"; };
+		466107055132CE2E0B02FC30 /* PaywallViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaywallViewController.swift; sourceTree = "<group>"; };
 		7A1E5EED2B0900010000A001 /* HowToSendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HowToSendViewController.swift; sourceTree = "<group>"; };
 		821ABDD7230C641600B3DCFE /* Usage.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Usage.storyboard; sourceTree = "<group>"; };
 		821ABDD9230C642A00B3DCFE /* UsageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageViewController.swift; sourceTree = "<group>"; };
@@ -226,6 +234,7 @@
 		AA0100000000000000000021 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = PhotoKeyboardExOrigin/PrivacyInfo.xcprivacy; sourceTree = SOURCE_ROOT; };
 		AA01000000000000000001 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		AA01000000000000000002 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		C6F627618CF5716D1B09F7C9 /* PremiumStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PremiumStore.swift; sourceTree = "<group>"; };
 		C9BABCA4B9AFAE70E77ED974 /* GuidePhotoSource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuidePhotoSource.swift; sourceTree = "<group>"; };
 		F18345C571FA51EC48507654 /* GuideChatView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideChatView.swift; sourceTree = "<group>"; };
 		FB30358838FB25745C8B7EE0 /* GuideKeyboardStripView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideKeyboardStripView.swift; sourceTree = "<group>"; };
@@ -364,6 +373,11 @@
 				AA0100000000000000000001 /* PrivacyInfo.xcprivacy */,
 				822B4DE123678B1900108FC1 /* InfoPlist.strings */,
 				3AFC413268D4AE00CD13CD28 /* Guide */,
+				C6F627618CF5716D1B09F7C9 /* PremiumStore.swift */,
+				2D82B8661A81BE5AB8061313 /* PhotoQuota.swift */,
+				466107055132CE2E0B02FC30 /* PaywallViewController.swift */,
+				1BC6FE59F327556F25A20E4F /* PaywallPresenter.swift */,
+				4043FCB63BC521B268037404 /* PhotoKeyboardEx.storekit */,
 			);
 			path = PhotoKeyboardEx;
 			sourceTree = "<group>";
@@ -750,6 +764,10 @@
 				33DE8B8E9EDEAC8780228FAE /* GuideComposerView.swift in Sources */,
 				A5396D415C41006E74ECD582 /* GuideChatView.swift in Sources */,
 				0C3FA8DCC26D4ADFCECCE942 /* GuideStepView.swift in Sources */,
+				D2B34B4D25C085C01DEB40AC /* PremiumStore.swift in Sources */,
+				020F8C5EF9412556E4E89330 /* PhotoQuota.swift in Sources */,
+				2D4737E85345832B666CFF25 /* PaywallViewController.swift in Sources */,
+				F7E67923C349F247131F8DC1 /* PaywallPresenter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -140,12 +140,10 @@ class AddViewController: UIViewController {
 
     private enum UploadError: LocalizedError {
         case realmSaveFailed
-        case limitReached
 
         var errorDescription: String? {
             switch self {
             case .realmSaveFailed: return "端末への保存に失敗しました"
-            case .limitReached: return LocalizeKey.limitReachedMessage.localizedString()
             }
         }
     }
@@ -157,8 +155,9 @@ class AddViewController: UIViewController {
             return
         }
         // 入口(FAB)でも見ているが、写真を選んでいる間に別経路で増える可能性があるため保存直前にも確かめる
-        guard RealmManager.shared.canSaveMorePhotos else {
-            showUploadError(UploadError.limitReached)
+        guard PhotoQuota.canSave else {
+            // 上限は保存の失敗ではなく課金の入口。OKだけのアラートで終わらせない
+            PaywallPresenter.presentLimitReached(from: self)
             return
         }
         let titleText = titleTextField.text ?? ""

@@ -304,6 +304,56 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertGreaterThan(fitted.height, 0)
     }
 
+    // MARK: - 有料プラン
+
+    /// 販売する Product ID は ASC に登録したものと一致していること。
+    /// ずれると商品が取得できず、ペイウォールが空のまま出る
+    func testProductIDsMatchAppStoreConnect() {
+        XCTAssertEqual(PremiumStore.ProductID.monthly, "bocchi.PhotoKeyboardEx.premium.monthly")
+        XCTAssertEqual(PremiumStore.ProductID.yearly, "bocchi.PhotoKeyboardEx.premium.yearly")
+        XCTAssertEqual(PremiumStore.ProductID.all.count, 2)
+    }
+
+    /// 無料枠の値はフレームワーク側の定義をそのまま使うこと。
+    /// 直書きするとペイウォールの表示と実際の上限がずれる
+    @MainActor
+    func testFreeLimitComesFromTheSingleDefinition() {
+        XCTAssertEqual(PhotoQuota.freeLimit, RealmManager.photoLimit)
+    }
+
+    /// 上限の文言に枚数を差し込めること。
+    /// 直書きのままだと photoLimit を変えたときに文言だけ古い数字が残る
+    func testLimitReachedTitleTakesTheCount() {
+        let text = LocalizeKey.limitReachedTitle.localizedString(8)
+        XCTAssertTrue(text.contains("8"), "枚数が文言に入っていない: \(text)")
+        XCTAssertFalse(text.contains("%d"), "書式指定子が残っている: \(text)")
+    }
+
+    /// ペイウォールに審査required な要素が揃っていること。
+    /// 購入の復元・利用規約・プライバシーポリシーが無いとガイドライン3.1.2でリジェクトされる
+    func testPaywallShowsRequiredElements() {
+        let paywall = PaywallViewController()
+        paywall.loadViewIfNeeded()
+        paywall.view.frame = CGRect(x: 0, y: 0, width: 402, height: 874)
+        paywall.view.layoutIfNeeded()
+
+        let texts = paywall.view.subviewTexts()
+        for key in [LocalizeKey.paywallRestore, .paywallTerms, .paywallPrivacy, .paywallRenewalNote] {
+            let expected = key.localizedString()
+            XCTAssertTrue(texts.contains { $0.contains(expected) },
+                          "ペイウォールに「\(expected)」が出ていない")
+        }
+    }
+
+    /// 図に出す短い文言に書式指定子が残らないこと。
+    /// %% は String(format:) を通したときだけ % になる。素の localizedString() で
+    /// 引くキーに %% を書くと、画面に "38%%おトク" と二重の % が出る
+    func testDiscountBadgeHasNoLeftoverFormatSpecifier() {
+        let text = LocalizeKey.paywallYearlyDiscount.localizedString()
+        XCTAssertFalse(text.contains("%%"), "書式指定子が残っている: \(text)")
+        XCTAssertTrue(text.contains("38%"), "割引率が出ていない: \(text)")
+    }
+
     // MARK: - 一覧のグリッド
 
     /// 高さを可変にすると同じ行の2つのセルで高さが揃わず隙間ができるため、
@@ -530,6 +580,9 @@ private extension UIView {
         var result: [String] = []
         if let label = self as? UILabel, let text = label.text {
             result.append(text)
+        }
+        if let button = self as? UIButton, let title = button.title(for: .normal) {
+            result.append(title)
         }
         for subview in subviews {
             result.append(contentsOf: subview.subviewTexts())

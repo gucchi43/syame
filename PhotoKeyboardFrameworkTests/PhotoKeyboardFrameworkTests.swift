@@ -339,6 +339,34 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         XCTAssertFalse(defaults.isRateAlert(), "カウンタがリセットされず毎回レビュー依頼が出る")
     }
 
+    // MARK: - 無料枠
+
+    private func makeQuotaPhoto(ownerId: String) -> RealmPhoto {
+        return RealmPhoto.create(id: UUID().uuidString,
+                                 text: "",
+                                 image: makeImage(),
+                                 imageHeight: 40,
+                                 imageWidth: 40,
+                                 getDay: "",
+                                 isPublic: false,
+                                 ownerId: ownerId)
+    }
+
+    /// 見本画像も無料枠を消費すること。
+    /// 例外を設けると「8枚のはずが9枚入る」ことになり、上限の説明が破綻する
+    func testQuotaCountsTheOfficialSample() {
+        let sample = makeQuotaPhoto(ownerId: RealmPhoto.officialOwnerId)
+        let mine = makeQuotaPhoto(ownerId: "")
+
+        XCTAssertEqual(RealmManager.countTowardQuota([sample, mine]), 2,
+                       "見本画像が無料枠に数えられていない")
+    }
+
+    /// 空なら0
+    func testQuotaCountsNothingWhenEmpty() {
+        XCTAssertEqual(RealmManager.countTowardQuota([]), 0)
+    }
+
     // MARK: - サムネイルのキャッシュ
 
     private func makePhoto(size: CGSize) -> RealmPhoto {

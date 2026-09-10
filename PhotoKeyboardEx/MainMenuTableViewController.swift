@@ -28,6 +28,18 @@ class MyMenuTableViewController: UITableViewController {
         tableView.scrollsToTop = false
         clearsSelectionOnViewWillAppear = false
         tableView.selectRow(at: IndexPath(row: selectedMenuItem, section: 0), animated: false, scrollPosition: .middle)
+        // 課金の行の文言は加入状態で変わる。このビューは一度敷いたら作り直されないため、
+        // 通知を受けて引き直さないと購入後もずっと勧誘のままになる
+        NotificationCenter.default.addObserver(self,
+                                              selector: #selector(reloadForPremiumChange),
+                                              name: .premiumStateChanged,
+                                              object: nil)
+    }
+
+    @objc private func reloadForPremiumChange() {
+        tableView.reloadData()
+        tableView.selectRow(at: IndexPath(row: selectedMenuItem, section: 0),
+                            animated: false, scrollPosition: .none)
     }
 
     override func viewDidLayoutSubviews() {
@@ -45,8 +57,13 @@ class MyMenuTableViewController: UITableViewController {
         return 1
     }
     
+    /// 行の並び。row の数値を直に書くと3箇所(件数・表示・選択)がずれるため列挙で持つ
+    private enum MenuRow: Int, CaseIterable {
+        case home, setting, howToSend, premium
+    }
+
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return MenuRow.allCases.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -61,12 +78,17 @@ class MyMenuTableViewController: UITableViewController {
         selectedBackgroundView.backgroundColor = UIColor.gray.withAlphaComponent(0.2)
         cell.selectedBackgroundView = selectedBackgroundView
 
-        switch (indexPath.row) {
-        case 0:
+        switch MenuRow(rawValue: indexPath.row) {
+        case .home:
             cell.textLabel?.text = LocalizeKey.menuHome.localizedString()
-        case 1:
+        case .setting:
             cell.textLabel?.text = LocalizeKey.menuSetting.localizedString()
-        default:
+        case .premium:
+            // 加入済みの人に購入を勧めない
+            cell.textLabel?.text = PremiumStore.shared.isPremium
+                ? LocalizeKey.menuPremiumActive.localizedString()
+                : LocalizeKey.menuPremium.localizedString()
+        case .howToSend, .none:
             cell.textLabel?.text = LocalizeKey.menuHowTo.localizedString()
         }
         return cell
@@ -81,22 +103,36 @@ class MyMenuTableViewController: UITableViewController {
             ?? parent as? MainNavigationViewController
             ?? navigationController as? MainNavigationViewController
 
-        switch (indexPath.row) {
-        case 0:
+        switch MenuRow(rawValue: indexPath.row) {
+        case .home:
             guard indexPath.row != selectedMenuItem else { return }
             selectedMenuItem = indexPath.row
             let mainStoryboard = UIStoryboard(name: "Main", bundle: nil)
             guard let nvc = mainStoryboard.instantiateInitialViewController() as? UINavigationController,
                   let destVC = nvc.viewControllers.first as? MainTabViewController else { return }
             mainNav?.setContentViewController(destVC)
-        case 1:
+        case .setting:
             guard indexPath.row != selectedMenuItem else { return }
             selectedMenuItem = indexPath.row
             let sb = UIStoryboard(name: "Usage", bundle: nil)
             guard let nvc = sb.instantiateInitialViewController() as? UINavigationController,
                   let destVC = nvc.viewControllers.first as? UsageViewController else { return }
             mainNav?.setContentViewController(destVC)
-        default:
+        case .premium:
+            // ペイウォールはモーダル。画面を差し替えると戻り先が無くなる。
+            // selectedMenuItem も更新しない(ホーム等の選択状態を保つ)
+            // 単一選択なので、この行を選んだ時点で前の行の選択は外れている。
+            // 元の画面の選択状態が消えたままにならないよう選び直す
+            tableView.selectRow(at: IndexPath(row: selectedMenuItem, section: 0),
+                                animated: true, scrollPosition: .none)
+            mainNav?.toggleSideMenu()
+            guard let host = mainNav else { return }
+            if PremiumStore.shared.isPremium {
+                PaywallPresenter.presentActiveState(from: host)
+            } else {
+                PaywallPresenter.present(from: host)
+            }
+        case .howToSend, .none:
             guard indexPath.row != selectedMenuItem else { return }
             selectedMenuItem = indexPath.row
             mainNav?.setContentViewController(HowToSendViewController())

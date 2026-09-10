@@ -22,6 +22,8 @@ extension Notification.Name {
     static let updateSaveState = Notification.Name("updateSaveState")
     static let finishUpload = Notification.Name("finishUpload")
     static let allReload = Notification.Name("allReload")
+    /// 課金状態が変わったとき。既存コードが通知を使っているので方式を揃える
+    static let premiumStateChanged = Notification.Name("premiumStateChanged")
 }
 
 extension UIApplication {
