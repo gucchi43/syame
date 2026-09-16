@@ -19,6 +19,7 @@
 		3ADA80A7C5E8499BBE4A96AA /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 6C2B5E648EF740DE8D381735 /* Toast */; };
 		4105F920130C4F5180B8CA1E /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = C27D3E2C284F4289B6FC641E /* Lottie */; };
 		551D4C3130734866870EB9E3 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8E472C01B83C4C73818F93AA /* RealmSwift */; };
+		5911FB9D9B206B202BB42E94 /* OnboardingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F89E41C32AE8F51E23E5FC /* OnboardingCoordinator.swift */; };
 		6E76805505B4AFC3BC26E11F /* GuidePhotoSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9BABCA4B9AFAE70E77ED974 /* GuidePhotoSource.swift */; };
 		729D6FAE63DA48C982591D94 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		7A1E5EED2B0900010000A002 /* HowToSendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1E5EED2B0900010000A001 /* HowToSendViewController.swift */; };
@@ -74,6 +75,7 @@
 		82F9F41922F6B2920062F451 /* Photo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F9F41822F6B2920062F451 /* Photo.swift */; };
 		82RB0002000000000000BB02 /* RealmBackup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82RB0001000000000000BB01 /* RealmBackup.swift */; };
 		82RT0002000000000000CC02 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 82RT0001000000000000CC01 /* RealmSwift */; };
+		8CEB65DD0558ECA4C9E61C54 /* OnboardingHintView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E1B897FFA5A256EA97357A /* OnboardingHintView.swift */; };
 		A5396D415C41006E74ECD582 /* GuideChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F18345C571FA51EC48507654 /* GuideChatView.swift */; };
 		AA0100000000000000000002 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000001 /* PrivacyInfo.xcprivacy */; };
 		AA0100000000000000000012 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000011 /* PrivacyInfo.xcprivacy */; };
@@ -160,6 +162,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		11E1B897FFA5A256EA97357A /* OnboardingHintView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingHintView.swift; sourceTree = "<group>"; };
 		18FBFD095097990BB98F818A /* GuideStepView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideStepView.swift; sourceTree = "<group>"; };
 		1BC6FE59F327556F25A20E4F /* PaywallPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaywallPresenter.swift; sourceTree = "<group>"; };
 		2D82B8661A81BE5AB8061313 /* PhotoQuota.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhotoQuota.swift; sourceTree = "<group>"; };
@@ -237,6 +240,7 @@
 		C6F627618CF5716D1B09F7C9 /* PremiumStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PremiumStore.swift; sourceTree = "<group>"; };
 		C9BABCA4B9AFAE70E77ED974 /* GuidePhotoSource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuidePhotoSource.swift; sourceTree = "<group>"; };
 		F18345C571FA51EC48507654 /* GuideChatView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideChatView.swift; sourceTree = "<group>"; };
+		F9F89E41C32AE8F51E23E5FC /* OnboardingCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingCoordinator.swift; sourceTree = "<group>"; };
 		FB30358838FB25745C8B7EE0 /* GuideKeyboardStripView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideKeyboardStripView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -304,6 +308,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1A71B5992D78F8A1A56AA5D1 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				F9F89E41C32AE8F51E23E5FC /* OnboardingCoordinator.swift */,
+				11E1B897FFA5A256EA97357A /* OnboardingHintView.swift */,
+			);
+			name = Onboarding;
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
 		3AFC413268D4AE00CD13CD28 /* Guide */ = {
 			isa = PBXGroup;
 			children = (
@@ -378,6 +392,7 @@
 				466107055132CE2E0B02FC30 /* PaywallViewController.swift */,
 				1BC6FE59F327556F25A20E4F /* PaywallPresenter.swift */,
 				4043FCB63BC521B268037404 /* PhotoKeyboardEx.storekit */,
+				1A71B5992D78F8A1A56AA5D1 /* Onboarding */,
 			);
 			path = PhotoKeyboardEx;
 			sourceTree = "<group>";
@@ -768,6 +783,8 @@
 				020F8C5EF9412556E4E89330 /* PhotoQuota.swift in Sources */,
 				2D4737E85345832B666CFF25 /* PaywallViewController.swift in Sources */,
 				F7E67923C349F247131F8DC1 /* PaywallPresenter.swift in Sources */,
+				5911FB9D9B206B202BB42E94 /* OnboardingCoordinator.swift in Sources */,
+				8CEB65DD0558ECA4C9E61C54 /* OnboardingHintView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

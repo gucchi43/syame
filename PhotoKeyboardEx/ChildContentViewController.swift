@@ -16,6 +16,10 @@ import Toast
 class ChildContentViewController: UIViewController, RealmManagerDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
+
+    /// 「次にやること」の常設案内。モーダルを閉じても手がかりが残るようにする
+    private let onboardingHint = OnboardingHintView()
+    private var onboardingStep: OnboardingStep = .done
     var realmPhotos: Results<RealmPhoto>?
     private let refreshControl = UIRefreshControl()
 
@@ -34,7 +38,46 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         updateEmptyState()
     }
 
+    /// いまの手順を受け取り、案内行の表示を更新する
+    func applyOnboarding(step: OnboardingStep) {
+        onboardingStep = step
+        guard isViewLoaded else { return }
+        onboardingHint.apply(step: step)
+    }
+
+    /// 案内行を一覧の上に敷く
+    private func setupOnboardingHint() {
+        onboardingHint.translatesAutoresizingMaskIntoConstraints = false
+        onboardingHint.addTarget(self, action: #selector(tapOnboardingHint), for: .touchUpInside)
+        view.addSubview(onboardingHint)
+
+        NSLayoutConstraint.activate([
+            onboardingHint.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
+                                                constant: Spacing.s),
+            onboardingHint.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Spacing.s),
+            onboardingHint.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Spacing.s)
+        ])
+        onboardingHint.apply(step: onboardingStep)
+    }
+
+    /// 案内行から、その手順の画面へ送る
+    @objc private func tapOnboardingHint() {
+        switch onboardingStep {
+        case .savePhoto:
+            // 保存は親のFABが持っている。同じ導線に乗せる
+            NotificationCenter.default.post(name: .requestAddPhoto, object: nil)
+        case .enableKeyboard:
+            guard let nvc = UIStoryboard(name: "Usage", bundle: nil).instantiateInitialViewController() else { return }
+            present(nvc, animated: true)
+        case .howToSend:
+            present(UINavigationController(rootViewController: HowToSendViewController()), animated: true)
+        case .welcome, .done:
+            break
+        }
+    }
+
     func commonInit() {
+        setupOnboardingHint()
         collectionView.dataSource = self
         collectionView.delegate = self
         setupCollectionView()

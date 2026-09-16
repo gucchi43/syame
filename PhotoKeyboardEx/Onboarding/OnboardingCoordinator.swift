@@ -1,0 +1,74 @@
+//
+//  OnboardingCoordinator.swift
+//  PhotoKeyboardEx
+//
+
+import Foundation
+import UIKit
+import PhotoKeyboardFramework
+
+/// 初回利用の手順。順番に意味がある。
+enum OnboardingStep: Int, CaseIterable {
+    /// 何ができるアプリかを知る
+    case welcome
+    /// 画像を1枚保存する
+    case savePhoto
+    /// キーボードを有効にする
+    case enableKeyboard
+    /// 送り方を知る
+    case howToSend
+    /// すべて済んだ
+    case done
+}
+
+/// いまどの手順にいるかを1箇所で決める。
+enum OnboardingCoordinator {
+
+    /// いまどの手順にいるかを決める。
+    ///
+    /// 判定は真偽フラグではなく**実際の状態**から導く。アプリの外で先に
+    /// キーボードを有効にした人にも追従でき、既存の利用者も現在地に着地する。
+    ///
+    /// 上から順に見るので、先の手順が先に出ることはない。
+    static func currentStep(hasSeenWelcome: Bool,
+                            userOwnedPhotoCount: Int,
+                            isKeyboardEnabled: Bool,
+                            hasSeenHowToSend: Bool) -> OnboardingStep {
+        guard hasSeenWelcome else { return .welcome }
+        // 見本は起動時に自動で入るため、自分で保存した枚数だけを見る。
+        // 混ぜると1枚も入れていない人を素通りさせてしまう
+        guard userOwnedPhotoCount > 0 else { return .savePhoto }
+        // フルアクセスという重い許可は、価値を体験してから求める
+        guard isKeyboardEnabled else { return .enableKeyboard }
+        guard hasSeenHowToSend else { return .howToSend }
+        return .done
+    }
+
+    /// いまの端末の状態から現在地を出す
+    @MainActor
+    static var current: OnboardingStep {
+        return currentStep(hasSeenWelcome: !GroupeDefaults.shared.isRegisterPush(),
+                           userOwnedPhotoCount: RealmManager.shared.userOwnedPhotoCount,
+                           isKeyboardEnabled: isKeyboardExtensionEnabled,
+                           hasSeenHowToSend: !GroupeDefaults.shared.isHowToSendPush())
+    }
+
+    /// 端末で有効になっているキーボードの一覧に拡張のバンドルIDがあるか
+    static var isKeyboardExtensionEnabled: Bool {
+        let keyboards = UserDefaults.standard.array(forKey: "AppleKeyboards") as? [String] ?? []
+        return keyboards.contains(GroupeDefaults.keyboardExtensionBundleId)
+    }
+}
+
+extension OnboardingStep {
+    /// ボードの上に常設で出す一行。モーダルは閉じたら消えるため、
+    /// 「次に何をすればいいか」が画面に残り続けるようにする
+    var hintKey: LocalizeKey? {
+        switch self {
+        case .welcome, .done: return nil
+        case .savePhoto: return .onboardingHintSavePhoto
+        case .enableKeyboard: return .onboardingHintEnableKeyboard
+        case .howToSend: return .onboardingHintHowToSend
+        }
+    }
+}

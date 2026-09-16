@@ -354,6 +354,118 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertTrue(text.contains("38%"), "割引率が出ていない: \(text)")
     }
 
+    // MARK: - 課金の入口の出し分け
+
+    /// 有料アプリ契約が未締結のあいだは課金の入口を出さないこと。
+    /// 購入導線があるのに購入できない状態は審査で落ちる
+    @MainActor
+    func testPremiumEntryIsHiddenWhileUnavailable() {
+        let original = PremiumStore.isAvailable
+        defer { PremiumStore.isAvailable = original }
+
+        PremiumStore.isAvailable = false
+        let menu = MyMenuTableViewController()
+        menu.loadViewIfNeeded()
+        let hidden = menu.tableView.numberOfRows(inSection: 0)
+
+        PremiumStore.isAvailable = true
+        menu.tableView.reloadData()
+        let shown = menu.tableView.numberOfRows(inSection: 0)
+
+        XCTAssertEqual(shown, hidden + 1, "課金の入口が行数に反映されていない")
+    }
+
+    /// 隠しているあいだ、残る行が本来の画面に対応していること。
+    /// 索引がずれると「送り方」を押して設定が開くような事故になる
+    @MainActor
+    func testMenuRowsStayAlignedWhilePremiumIsHidden() {
+        let original = PremiumStore.isAvailable
+        defer { PremiumStore.isAvailable = original }
+        PremiumStore.isAvailable = false
+
+        let menu = MyMenuTableViewController()
+        menu.loadViewIfNeeded()
+        let titles = (0..<menu.tableView.numberOfRows(inSection: 0)).compactMap {
+            menu.tableView(menu.tableView, cellForRowAt: IndexPath(row: $0, section: 0)).textLabel?.text
+        }
+
+        XCTAssertEqual(titles, [LocalizeKey.menuHome.localizedString(),
+                                LocalizeKey.menuSetting.localizedString(),
+                                LocalizeKey.menuHowTo.localizedString()])
+    }
+
+    // MARK: - オンボーディングの進み方
+
+    private func step(welcome: Bool = true, photos: Int = 1,
+                      keyboard: Bool = true, howTo: Bool = true) -> OnboardingStep {
+        return OnboardingCoordinator.currentStep(hasSeenWelcome: welcome,
+                                                 userOwnedPhotoCount: photos,
+                                                 isKeyboardEnabled: keyboard,
+                                                 hasSeenHowToSend: howTo)
+    }
+
+    /// 何も済んでいなければ最初の手順から始まること
+    func testOnboardingStartsAtWelcome() {
+        XCTAssertEqual(step(welcome: false, photos: 0, keyboard: false, howTo: false), .welcome)
+    }
+
+    /// Top を見たら、次は1枚保存する手順に進むこと
+    func testOnboardingAsksToSaveAfterWelcome() {
+        XCTAssertEqual(step(welcome: true, photos: 0, keyboard: false, howTo: false), .savePhoto)
+    }
+
+    /// 1枚保存したら、次はキーボードの有効化。
+    /// フルアクセスという重い許可は、価値を体験してから求める
+    func testOnboardingAsksForKeyboardAfterFirstPhoto() {
+        XCTAssertEqual(step(welcome: true, photos: 1, keyboard: false, howTo: false), .enableKeyboard)
+    }
+
+    /// キーボードが有効になったら送り方を案内すること
+    func testOnboardingShowsHowToSendAfterKeyboardIsEnabled() {
+        XCTAssertEqual(step(welcome: true, photos: 1, keyboard: true, howTo: false), .howToSend)
+    }
+
+    /// 全部済んだら終わること
+    func testOnboardingFinishes() {
+        XCTAssertEqual(step(), .done)
+    }
+
+    /// 先の手順が先に出ないこと。
+    /// アプリの外で先にキーボードを有効にしても、保存がまだなら保存を先に案内する
+    func testOnboardingNeverSkipsAhead() {
+        XCTAssertEqual(step(welcome: true, photos: 0, keyboard: true, howTo: false), .savePhoto)
+        XCTAssertEqual(step(welcome: false, photos: 5, keyboard: true, howTo: true), .welcome)
+    }
+
+    /// 見本画像は自分で保存したものに数えない。
+    /// 数えると起動しただけで「保存済み」になり、1枚も入れていない人を素通りさせる
+    func testOnboardingDoesNotCountTheSampleAsSaved() {
+        XCTAssertEqual(step(welcome: true, photos: 0, keyboard: false, howTo: false), .savePhoto)
+    }
+
+    /// 手順ごとに案内の文言が出ること。終わったら消えること
+    @MainActor
+    func testOnboardingHintShowsTextPerStep() {
+        let hint = OnboardingHintView()
+        hint.frame = CGRect(x: 0, y: 0, width: 360, height: 56)
+
+        hint.apply(step: .enableKeyboard)
+        hint.layoutIfNeeded()
+        XCTAssertFalse(hint.isHidden)
+        XCTAssertTrue(hint.subviewTexts().contains(LocalizeKey.onboardingHintEnableKeyboard.localizedString()))
+
+        hint.apply(step: .done)
+        XCTAssertTrue(hint.isHidden, "すべて済んだのに案内が残っている")
+    }
+
+    /// Top を出している最中は案内行を出さないこと(重ねても読めない)
+    @MainActor
+    func testOnboardingHintIsHiddenDuringWelcome() {
+        let hint = OnboardingHintView()
+        hint.apply(step: .welcome)
+        XCTAssertTrue(hint.isHidden)
+    }
+
     // MARK: - 一覧のグリッド
 
     /// 高さを可変にすると同じ行の2つのセルで高さが揃わず隙間ができるため、

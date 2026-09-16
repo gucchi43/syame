@@ -312,6 +312,8 @@ public enum Symbol {
     public static let stepTap = "hand.tap"
     public static let stepClipboard = "doc.on.clipboard"
     public static let stepSend = "paperplane"
+    /// 次の手順へ進めることを示す(オンボーディングの案内行)
+    public static let next = "chevron.right"
 }
 
 extension UIImage {

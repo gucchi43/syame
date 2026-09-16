@@ -253,6 +253,14 @@ public class RealmManager {
         return photos.count
     }
 
+    /// 利用者自身が保存した枚数。オンボーディングの進捗判定に使う。
+    ///
+    /// 見本は起動時に自動で入るため、無料枠の判定(`countTowardQuota`)とは別物。
+    /// 混ぜると「1枚も入れていない人」を表現できなくなる。
+    public var userOwnedPhotoCount: Int {
+        return realmData.filter { $0.isUserOwned }.count
+    }
+
     /// 無料枠が数えている枚数
     public var savedPhotoCount: Int {
         return RealmManager.countTowardQuota(Array(realmData))
