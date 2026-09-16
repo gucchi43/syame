@@ -59,6 +59,43 @@ class UsageViewController: UIViewController {
         nextButton.applyCornerRadius(Radius.small)
         subLabel.textColor = .textPrimary
         subLabel.adjustsFontForContentSizeCategory = true
+        insertFullAccessIllustration()
+    }
+
+    /// フルアクセスの許可を絵で示す。
+    ///
+    /// この画面だけ文字だけで、Top や送り方の案内と揃っていなかった。
+    /// フルアクセスは一番離脱しやすいところなので、何をオンにするのかを図で見せる。
+    ///
+    /// Storyboard 側は3つの手順が親スタックを持たず制約で並んでいるため、
+    /// 図を挟むには subLabel の上端の制約を1本だけ付け替える。
+    /// 制約を足すだけだと元の位置に固定されたままで、図と重なる。
+    private func insertFullAccessIllustration() {
+        guard let container = subLabel.superview else { return }
+        guard let stepRow = fourthLabel.superview else { return }
+
+        // 角括弧は手順の文中で強調を示す記法。設定の行を模した図の中では記号として浮くので外す
+        let title = LocalizeKey.settingThirdBoaldText.localizedString()
+            .replacingOccurrences(of: "[", with: "")
+            .replacingOccurrences(of: "]", with: "")
+            .trimmingCharacters(in: .whitespaces)
+        let figure = GuideSettingsRowView(title: title)
+        figure.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(figure)
+
+        // subLabel を上に繋いでいる制約を外す
+        let topConstraints = container.constraints.filter {
+            ($0.firstItem === subLabel && $0.firstAttribute == .top)
+                || ($0.secondItem === subLabel && $0.secondAttribute == .top)
+        }
+        NSLayoutConstraint.deactivate(topConstraints)
+
+        NSLayoutConstraint.activate([
+            figure.topAnchor.constraint(equalTo: stepRow.bottomAnchor, constant: Spacing.m),
+            figure.leadingAnchor.constraint(equalTo: subLabel.leadingAnchor),
+            figure.trailingAnchor.constraint(equalTo: subLabel.trailingAnchor),
+            subLabel.topAnchor.constraint(equalTo: figure.bottomAnchor, constant: Spacing.m)
+        ])
     }
     
     func setText() {

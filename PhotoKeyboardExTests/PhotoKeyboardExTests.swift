@@ -33,8 +33,12 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertEqual(slots.count, GuidePhotoSource.slotCount)
     }
 
-    /// 保存画像が足りないぶんだけを見本で埋め、持っている画像は先に出すこと
-    func testSlotsKeepUserPhotosFirstAndPadTheRest() {
+    /// 持っている画像を先に出し、残りは空きスロットで埋めること。
+    ///
+    /// 以前は足りないぶんを見本で埋めていたが、同じ絵が並んで
+    /// 「もう何枚も持っている」と読めてしまうため、埋め草は空きスロットにした。
+    /// 見本を使うのは、自分の画像が1枚も無いときの先頭だけ
+    func testSlotsKeepUserPhotosFirstAndPadWithEmptySlots() {
         let user = makeGuideImage(color: .red)
         let fallback = makeGuideImage(color: .blue)
 
@@ -42,8 +46,8 @@ class PhotoKeyboardExTests: XCTestCase {
 
         XCTAssertEqual(slots.count, GuidePhotoSource.slotCount)
         XCTAssertTrue(slots[0] === user, "利用者の画像が先頭に来ていない")
-        XCTAssertTrue(slots[1] === fallback)
-        XCTAssertTrue(slots[2] === fallback)
+        XCTAssertFalse(slots[1] === fallback, "足りないぶんが見本で埋まっている")
+        XCTAssertFalse(slots[2] === fallback, "足りないぶんが見本で埋まっている")
     }
 
     /// スロットの数だけ持っていれば見本は混ぜないこと
@@ -464,6 +468,58 @@ class PhotoKeyboardExTests: XCTestCase {
         let hint = OnboardingHintView()
         hint.apply(step: .welcome)
         XCTAssertTrue(hint.isHidden)
+    }
+
+    /// 保存画像が無いとき、同じ見本を3枚並べないこと。
+    /// 同じ絵が3つ出るより「ここに自分の画像が入る」と伝わる形にする
+    func testSlotsDoNotRepeatTheSampleThreeTimes() {
+        let fallback = makeGuideImage(color: .blue)
+        let filled = GuidePhotoSource.slots(userPhotos: [], fallback: fallback)
+
+        let sampleCount = filled.filter { $0 === fallback }.count
+        XCTAssertEqual(sampleCount, 1, "見本が \(sampleCount) 枚並んでいる")
+        XCTAssertEqual(filled.count, GuidePhotoSource.slotCount, "スロットの数は変えない")
+    }
+
+    /// 埋め草は見分けが付くこと。見本と同じ絵だと「3枚持っている」と読めてしまう
+    func testEmptySlotsAreDistinctFromTheSample() {
+        let fallback = makeGuideImage(color: .blue)
+        let filled = GuidePhotoSource.slots(userPhotos: [], fallback: fallback)
+
+        XCTAssertFalse(filled[1] === fallback)
+        XCTAssertFalse(filled[2] === fallback)
+    }
+
+    /// キーボード設定の案内にフルアクセスの図が入っていること。
+    /// この画面だけ文字だけだと、一番離脱しやすいところに手がかりが無い
+    @MainActor
+    func testUsageShowsFullAccessIllustration() {
+        guard let root = UIStoryboard(name: "Usage", bundle: nil).instantiateInitialViewController() else {
+            return XCTFail("Usage を読み込めなかった")
+        }
+        root.loadViewIfNeeded()
+        root.view.frame = CGRect(x: 0, y: 0, width: 402, height: 874)
+        root.view.layoutIfNeeded()
+
+        XCTAssertNotNil(root.view.firstSubview(ofType: GuideSettingsRowView.self),
+                        "フルアクセスの図が出ていない")
+    }
+
+    /// 図の中では強調の角括弧を出さないこと。設定の行を模した絵の中では記号が浮く
+    @MainActor
+    func testSettingsRowTitleHasNoBrackets() {
+        guard let root = UIStoryboard(name: "Usage", bundle: nil).instantiateInitialViewController(),
+              let figure = { () -> GuideSettingsRowView? in
+                  root.loadViewIfNeeded()
+                  root.view.frame = CGRect(x: 0, y: 0, width: 402, height: 874)
+                  root.view.layoutIfNeeded()
+                  return root.view.firstSubview(ofType: GuideSettingsRowView.self)
+              }() else {
+            return XCTFail("図が出ていない")
+        }
+        for text in figure.subviewTexts() {
+            XCTAssertFalse(text.contains("["), "角括弧が残っている: \(text)")
+        }
     }
 
     // MARK: - 一覧のグリッド
