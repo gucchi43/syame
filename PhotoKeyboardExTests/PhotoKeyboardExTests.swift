@@ -522,6 +522,47 @@ class PhotoKeyboardExTests: XCTestCase {
         }
     }
 
+    /// 案内行のタップが、その手順の画面へ繋がっていること。
+    ///
+    /// 「はじめる」の直後に案内が出ない不具合は、画面を実際に動かして初めて分かった。
+    /// 同じ種類の見落としを防ぐため、押した先も固定する。
+    @MainActor
+    private func presentedController(after step: OnboardingStep) -> UIViewController? {
+        let board = UIStoryboard(name: "ChildContent", bundle: nil)
+            .instantiateInitialViewController() as? ChildContentViewController
+        guard let board = board else { return nil }
+        board.loadViewIfNeeded()
+        board.view.frame = CGRect(x: 0, y: 0, width: 402, height: 874)
+        board.view.layoutIfNeeded()
+        board.applyOnboarding(step: step)
+
+        // 画面に載っていないと present できないため、ウインドウへ入れる
+        let window = UIWindow(frame: board.view.bounds)
+        window.rootViewController = board
+        window.isHidden = false
+
+        board.simulateOnboardingHintTapForTesting()
+        return board.presentedViewController
+    }
+
+    /// キーボードを有効にする手順では、設定の案内へ送ること
+    @MainActor
+    func testHintOpensKeyboardSetup() {
+        let presented = presentedController(after: .enableKeyboard)
+        let nav = presented as? UINavigationController
+        XCTAssertTrue(nav?.viewControllers.first is UsageViewController,
+                      "キーボード設定の案内が開いていない: \(String(describing: presented))")
+    }
+
+    /// 送り方の手順では、送り方の案内へ送ること
+    @MainActor
+    func testHintOpensHowToSend() {
+        let presented = presentedController(after: .howToSend)
+        let nav = presented as? UINavigationController
+        XCTAssertTrue(nav?.viewControllers.first is HowToSendViewController,
+                      "送り方の案内が開いていない: \(String(describing: presented))")
+    }
+
     // MARK: - 一覧のグリッド
 
     /// 高さを可変にすると同じ行の2つのセルで高さが揃わず隙間ができるため、

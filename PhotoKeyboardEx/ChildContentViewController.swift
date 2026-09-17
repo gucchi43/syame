@@ -60,6 +60,11 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         onboardingHint.apply(step: onboardingStep)
     }
 
+    /// 案内行を押したのと同じ経路を通す。押し先の検証に使う
+    func simulateOnboardingHintTapForTesting() {
+        tapOnboardingHint()
+    }
+
     /// 案内行から、その手順の画面へ送る
     @objc private func tapOnboardingHint() {
         switch onboardingStep {
