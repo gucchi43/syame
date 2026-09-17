@@ -39,6 +39,10 @@ class MainTabViewController: UIViewController {
         layoutFAB()
         NotificationCenter.default.addObserver(self, selector: #selector(finishToast(notification:)), name: .finishUpload, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(tapFAB), name: .requestAddPhoto, object: nil)
+        // 案内を閉じた直後に次の手順へ進める。viewDidAppear は閉じても呼ばれないことがあり、
+        // それだけに頼ると「はじめる」を押した後ボードに案内が出ないまま次の起動まで待つことになる
+        NotificationCenter.default.addObserver(self, selector: #selector(onboardingDidAdvance),
+                                               name: .onboardingDidAdvance, object: nil)
     }
 
     /// ナビゲーションバーの高さは44ptなので、上下に余白が残る大きさにする
@@ -115,6 +119,13 @@ class MainTabViewController: UIViewController {
     /// 設定アプリから戻ってきた瞬間を拾う。キーボードを有効にして戻る経路がある
     @objc private func didBecomeActive() {
         advanceOnboarding()
+    }
+
+    /// 案内をひとつ見終わったとき。閉じるアニメーションの後に引き直す
+    @objc private func onboardingDidAdvance() {
+        DispatchQueue.main.async { [weak self] in
+            self?.advanceOnboarding()
+        }
     }
 
     /// いまの手順にあわせて、案内行を更新し、出すべき画面があれば出す。

@@ -135,6 +135,7 @@ class TopViewController: UIViewController, UITextViewDelegate {
     @IBAction func tapStartButton(_ sender: Any) {
         //このTopを開くか判断するフラグを切り替える
         GroupeDefaults.shared.registerDone()
+        NotificationCenter.default.post(name: .onboardingDidAdvance, object: nil)
         goNextView()
     }
     

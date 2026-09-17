@@ -25,6 +25,25 @@ class PhotoKeyboardExUITests: XCTestCase {
         super.tearDown()
     }
 
+    /// Top を閉じた直後に、ボードへ「次にやること」が出ること。
+    ///
+    /// 案内行の更新を viewDidAppear だけに任せると、Top を閉じても呼ばれず
+    /// 次の起動まで案内が出ないままになる。実際にその不具合が出たので固定する。
+    func testHintAppearsRightAfterWelcome() {
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 30))
+
+        let start = app.buttons["はじめる"]
+        guard start.waitForExistence(timeout: 10) else {
+            // 初回状態でなければこの検証は成立しない
+            return
+        }
+        start.tap()
+
+        let hint = app.staticTexts["好きな画像を1枚入れてみる"]
+        XCTAssertTrue(hint.waitForExistence(timeout: 10),
+                      "Top を閉じた直後にボードへ案内が出ていない")
+    }
+
     /// 起動直後にクラッシュしないこと。
     /// AppDelegate は起動時にRealmの初期化・バージョン確認・広告SDKの初期化を行っており、
     /// ここが落ちるとアプリが一切使えない。ユニットテストではAppDelegateを通らないため
