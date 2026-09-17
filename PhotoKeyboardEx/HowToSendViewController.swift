@@ -34,6 +34,7 @@ final class HowToSendViewController: UIViewController {
         // 一度見せたら自動表示はしない。閉じ方に関わらず表示した時点で記録する
         if GroupeDefaults.shared.isHowToSendPush() {
             GroupeDefaults.shared.howToSendDone()
+            NotificationCenter.default.post(name: .onboardingDidAdvance, object: nil)
         }
     }
 

@@ -34,6 +34,7 @@ class UsageViewController: UIViewController {
         // 見本画像の投入は起動時に移した。ここでは案内済みの記録だけ行う
         if GroupeDefaults.shared.isUsagePush() {
             GroupeDefaults.shared.usageDone()
+            NotificationCenter.default.post(name: .onboardingDidAdvance, object: nil)
         }
     }
     

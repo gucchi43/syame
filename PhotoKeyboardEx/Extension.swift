@@ -26,6 +26,8 @@ extension Notification.Name {
     static let premiumStateChanged = Notification.Name("premiumStateChanged")
     /// 案内行から「画像を入れる」を押したとき。保存の導線は親のFABが持っている
     static let requestAddPhoto = Notification.Name("requestAddPhoto")
+    /// 案内をひとつ見終わったとき。閉じたあとに次の手順へ進めるために使う
+    static let onboardingDidAdvance = Notification.Name("onboardingDidAdvance")
 }
 
 extension UIApplication {
