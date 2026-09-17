@@ -24,6 +24,8 @@ extension Notification.Name {
     static let allReload = Notification.Name("allReload")
     /// 課金状態が変わったとき。既存コードが通知を使っているので方式を揃える
     static let premiumStateChanged = Notification.Name("premiumStateChanged")
+    /// 案内行から「画像を入れる」を押したとき。保存の導線は親のFABが持っている
+    static let requestAddPhoto = Notification.Name("requestAddPhoto")
 }
 
 extension UIApplication {

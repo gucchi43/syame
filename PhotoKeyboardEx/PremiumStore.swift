@@ -19,6 +19,15 @@ final class PremiumStore {
 
     static let shared = PremiumStore()
 
+    /// 課金の入口を出すかどうか。
+    ///
+    /// 有料アプリ契約が未締結のあいだは商品を取得できず購入が成立しない。
+    /// 購入導線があるのに購入できない状態は審査で落ちるため、入口ごと隠す。
+    /// **App Transfer が完了して契約を結んだら true に戻す。**
+    /// 実装・商品登録は済んでいるので、この1行だけで復帰できる。
+    /// (同じ作りは `Watermark.isEnabled` にもある)
+    nonisolated(unsafe) static var isAvailable = false
+
     /// 販売しているサブスクリプションの Product ID
     enum ProductID {
         static let monthly = "bocchi.PhotoKeyboardEx.premium.monthly"

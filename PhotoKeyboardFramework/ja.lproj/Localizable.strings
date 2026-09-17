@@ -99,3 +99,6 @@
 "premiumActiveMessage" = "保存枚数は無制限です。解約はiPhoneの「設定」＞Apple ID＞「サブスクリプション」からできます。";
 "paywallRetry" = "読み込み直す";
 "paywallPurchasePending" = "購入の承認を待っています。承認されると自動で反映されます。";
+"onboardingHintSavePhoto" = "好きな画像を1枚入れてみる";
+"onboardingHintEnableKeyboard" = "キーボードを有効にする";
+"onboardingHintHowToSend" = "送り方を見る";

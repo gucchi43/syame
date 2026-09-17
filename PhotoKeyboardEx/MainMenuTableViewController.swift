@@ -60,10 +60,15 @@ class MyMenuTableViewController: UITableViewController {
     /// 行の並び。row の数値を直に書くと3箇所(件数・表示・選択)がずれるため列挙で持つ
     private enum MenuRow: Int, CaseIterable {
         case home, setting, howToSend, premium
+
+        /// いま出す行。課金が使えないあいだはプレミアムを並べない
+        static var visible: [MenuRow] {
+            return allCases.filter { $0 != .premium || PremiumStore.isAvailable }
+        }
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return MenuRow.allCases.count
+        return MenuRow.visible.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -78,7 +83,7 @@ class MyMenuTableViewController: UITableViewController {
         selectedBackgroundView.backgroundColor = UIColor.gray.withAlphaComponent(0.2)
         cell.selectedBackgroundView = selectedBackgroundView
 
-        switch MenuRow(rawValue: indexPath.row) {
+        switch MenuRow.visible[safe: indexPath.row] {
         case .home:
             cell.textLabel?.text = LocalizeKey.menuHome.localizedString()
         case .setting:
@@ -103,7 +108,7 @@ class MyMenuTableViewController: UITableViewController {
             ?? parent as? MainNavigationViewController
             ?? navigationController as? MainNavigationViewController
 
-        switch MenuRow(rawValue: indexPath.row) {
+        switch MenuRow.visible[safe: indexPath.row] {
         case .home:
             guard indexPath.row != selectedMenuItem else { return }
             selectedMenuItem = indexPath.row
@@ -139,4 +144,11 @@ class MyMenuTableViewController: UITableViewController {
         }
     }
     
+}
+
+private extension Array {
+    /// 範囲外でも落ちない添字。行の出し分けで件数と索引がずれたときに守る
+    subscript(safe index: Int) -> Element? {
+        return indices.contains(index) ? self[index] : nil
+    }
 }

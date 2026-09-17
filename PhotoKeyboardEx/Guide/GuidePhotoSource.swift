@@ -13,14 +13,39 @@ enum GuidePhotoSource {
     static let slotCount = 3
 
     /// 図に並べる画像を決める。
-    /// 利用者の画像を先頭から取り、`slotCount` に満たないぶんを見本で埋める。
+    ///
+    /// 利用者の画像を先頭から取る。足りないぶんは、**最初の1枚だけ見本**で埋め、
+    /// 残りは空きスロットにする。同じ見本を3枚並べると「もう3枚持っている」と
+    /// 読めてしまい、これから入れる場所があることが伝わらない。
     /// 空のまま描くと、キーボードに何も並んでいない絵になって手順が伝わらない。
     static func slots(userPhotos: [UIImage], fallback: UIImage) -> [UIImage] {
         var slots = Array(userPhotos.prefix(slotCount))
-        while slots.count < slotCount {
+        if slots.isEmpty {
             slots.append(fallback)
         }
+        while slots.count < slotCount {
+            slots.append(emptySlotImage())
+        }
         return slots
+    }
+
+    /// 「ここに自分の画像が入る」ことを示す空きスロット。
+    /// 破線の枠だけを描く。塗ると写真が入っているように見える
+    static func emptySlotImage(side: CGFloat = 120) -> UIImage {
+        let size = CGSize(width: side, height: side)
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = 1
+        format.opaque = false
+        return UIGraphicsImageRenderer(size: size, format: format).image { context in
+            let cg = context.cgContext
+            cg.setStrokeColor(UIColor.textSecondary.withAlphaComponent(0.5).cgColor)
+            cg.setLineWidth(side * 0.02)
+            cg.setLineDash(phase: 0, lengths: [side * 0.08, side * 0.06])
+            let inset = side * 0.06
+            let rect = CGRect(x: inset, y: inset, width: side - inset * 2, height: side - inset * 2)
+            cg.addPath(UIBezierPath(roundedRect: rect, cornerRadius: side * 0.12).cgPath)
+            cg.strokePath()
+        }
     }
 
     /// 利用者自身が保存した画像だけを、ボードに並ぶ順で取り出す。

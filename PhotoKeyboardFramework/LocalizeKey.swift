@@ -107,6 +107,9 @@ public enum LocalizeKey: String, CaseIterable {
     case paywallPurchaseFailed
     case paywallRestoreFailed
     case paywallRestoreNothing
+    case onboardingHintSavePhoto
+    case onboardingHintEnableKeyboard
+    case onboardingHintHowToSend
     case menuPremium
     case menuPremiumActive
     case premiumActiveTitle

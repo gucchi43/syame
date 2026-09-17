@@ -33,8 +33,12 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertEqual(slots.count, GuidePhotoSource.slotCount)
     }
 
-    /// 保存画像が足りないぶんだけを見本で埋め、持っている画像は先に出すこと
-    func testSlotsKeepUserPhotosFirstAndPadTheRest() {
+    /// 持っている画像を先に出し、残りは空きスロットで埋めること。
+    ///
+    /// 以前は足りないぶんを見本で埋めていたが、同じ絵が並んで
+    /// 「もう何枚も持っている」と読めてしまうため、埋め草は空きスロットにした。
+    /// 見本を使うのは、自分の画像が1枚も無いときの先頭だけ
+    func testSlotsKeepUserPhotosFirstAndPadWithEmptySlots() {
         let user = makeGuideImage(color: .red)
         let fallback = makeGuideImage(color: .blue)
 
@@ -42,8 +46,8 @@ class PhotoKeyboardExTests: XCTestCase {
 
         XCTAssertEqual(slots.count, GuidePhotoSource.slotCount)
         XCTAssertTrue(slots[0] === user, "利用者の画像が先頭に来ていない")
-        XCTAssertTrue(slots[1] === fallback)
-        XCTAssertTrue(slots[2] === fallback)
+        XCTAssertFalse(slots[1] === fallback, "足りないぶんが見本で埋まっている")
+        XCTAssertFalse(slots[2] === fallback, "足りないぶんが見本で埋まっている")
     }
 
     /// スロットの数だけ持っていれば見本は混ぜないこと
@@ -352,6 +356,170 @@ class PhotoKeyboardExTests: XCTestCase {
         let text = LocalizeKey.paywallYearlyDiscount.localizedString()
         XCTAssertFalse(text.contains("%%"), "書式指定子が残っている: \(text)")
         XCTAssertTrue(text.contains("38%"), "割引率が出ていない: \(text)")
+    }
+
+    // MARK: - 課金の入口の出し分け
+
+    /// 有料アプリ契約が未締結のあいだは課金の入口を出さないこと。
+    /// 購入導線があるのに購入できない状態は審査で落ちる
+    @MainActor
+    func testPremiumEntryIsHiddenWhileUnavailable() {
+        let original = PremiumStore.isAvailable
+        defer { PremiumStore.isAvailable = original }
+
+        PremiumStore.isAvailable = false
+        let menu = MyMenuTableViewController()
+        menu.loadViewIfNeeded()
+        let hidden = menu.tableView.numberOfRows(inSection: 0)
+
+        PremiumStore.isAvailable = true
+        menu.tableView.reloadData()
+        let shown = menu.tableView.numberOfRows(inSection: 0)
+
+        XCTAssertEqual(shown, hidden + 1, "課金の入口が行数に反映されていない")
+    }
+
+    /// 隠しているあいだ、残る行が本来の画面に対応していること。
+    /// 索引がずれると「送り方」を押して設定が開くような事故になる
+    @MainActor
+    func testMenuRowsStayAlignedWhilePremiumIsHidden() {
+        let original = PremiumStore.isAvailable
+        defer { PremiumStore.isAvailable = original }
+        PremiumStore.isAvailable = false
+
+        let menu = MyMenuTableViewController()
+        menu.loadViewIfNeeded()
+        let titles = (0..<menu.tableView.numberOfRows(inSection: 0)).compactMap {
+            menu.tableView(menu.tableView, cellForRowAt: IndexPath(row: $0, section: 0)).textLabel?.text
+        }
+
+        XCTAssertEqual(titles, [LocalizeKey.menuHome.localizedString(),
+                                LocalizeKey.menuSetting.localizedString(),
+                                LocalizeKey.menuHowTo.localizedString()])
+    }
+
+    // MARK: - オンボーディングの進み方
+
+    private func step(welcome: Bool = true, photos: Int = 1,
+                      keyboard: Bool = true, howTo: Bool = true) -> OnboardingStep {
+        return OnboardingCoordinator.currentStep(hasSeenWelcome: welcome,
+                                                 userOwnedPhotoCount: photos,
+                                                 isKeyboardEnabled: keyboard,
+                                                 hasSeenHowToSend: howTo)
+    }
+
+    /// 何も済んでいなければ最初の手順から始まること
+    func testOnboardingStartsAtWelcome() {
+        XCTAssertEqual(step(welcome: false, photos: 0, keyboard: false, howTo: false), .welcome)
+    }
+
+    /// Top を見たら、次は1枚保存する手順に進むこと
+    func testOnboardingAsksToSaveAfterWelcome() {
+        XCTAssertEqual(step(welcome: true, photos: 0, keyboard: false, howTo: false), .savePhoto)
+    }
+
+    /// 1枚保存したら、次はキーボードの有効化。
+    /// フルアクセスという重い許可は、価値を体験してから求める
+    func testOnboardingAsksForKeyboardAfterFirstPhoto() {
+        XCTAssertEqual(step(welcome: true, photos: 1, keyboard: false, howTo: false), .enableKeyboard)
+    }
+
+    /// キーボードが有効になったら送り方を案内すること
+    func testOnboardingShowsHowToSendAfterKeyboardIsEnabled() {
+        XCTAssertEqual(step(welcome: true, photos: 1, keyboard: true, howTo: false), .howToSend)
+    }
+
+    /// 全部済んだら終わること
+    func testOnboardingFinishes() {
+        XCTAssertEqual(step(), .done)
+    }
+
+    /// 先の手順が先に出ないこと。
+    /// アプリの外で先にキーボードを有効にしても、保存がまだなら保存を先に案内する
+    func testOnboardingNeverSkipsAhead() {
+        XCTAssertEqual(step(welcome: true, photos: 0, keyboard: true, howTo: false), .savePhoto)
+        XCTAssertEqual(step(welcome: false, photos: 5, keyboard: true, howTo: true), .welcome)
+    }
+
+    /// 見本画像は自分で保存したものに数えない。
+    /// 数えると起動しただけで「保存済み」になり、1枚も入れていない人を素通りさせる
+    func testOnboardingDoesNotCountTheSampleAsSaved() {
+        XCTAssertEqual(step(welcome: true, photos: 0, keyboard: false, howTo: false), .savePhoto)
+    }
+
+    /// 手順ごとに案内の文言が出ること。終わったら消えること
+    @MainActor
+    func testOnboardingHintShowsTextPerStep() {
+        let hint = OnboardingHintView()
+        hint.frame = CGRect(x: 0, y: 0, width: 360, height: 56)
+
+        hint.apply(step: .enableKeyboard)
+        hint.layoutIfNeeded()
+        XCTAssertFalse(hint.isHidden)
+        XCTAssertTrue(hint.subviewTexts().contains(LocalizeKey.onboardingHintEnableKeyboard.localizedString()))
+
+        hint.apply(step: .done)
+        XCTAssertTrue(hint.isHidden, "すべて済んだのに案内が残っている")
+    }
+
+    /// Top を出している最中は案内行を出さないこと(重ねても読めない)
+    @MainActor
+    func testOnboardingHintIsHiddenDuringWelcome() {
+        let hint = OnboardingHintView()
+        hint.apply(step: .welcome)
+        XCTAssertTrue(hint.isHidden)
+    }
+
+    /// 保存画像が無いとき、同じ見本を3枚並べないこと。
+    /// 同じ絵が3つ出るより「ここに自分の画像が入る」と伝わる形にする
+    func testSlotsDoNotRepeatTheSampleThreeTimes() {
+        let fallback = makeGuideImage(color: .blue)
+        let filled = GuidePhotoSource.slots(userPhotos: [], fallback: fallback)
+
+        let sampleCount = filled.filter { $0 === fallback }.count
+        XCTAssertEqual(sampleCount, 1, "見本が \(sampleCount) 枚並んでいる")
+        XCTAssertEqual(filled.count, GuidePhotoSource.slotCount, "スロットの数は変えない")
+    }
+
+    /// 埋め草は見分けが付くこと。見本と同じ絵だと「3枚持っている」と読めてしまう
+    func testEmptySlotsAreDistinctFromTheSample() {
+        let fallback = makeGuideImage(color: .blue)
+        let filled = GuidePhotoSource.slots(userPhotos: [], fallback: fallback)
+
+        XCTAssertFalse(filled[1] === fallback)
+        XCTAssertFalse(filled[2] === fallback)
+    }
+
+    /// キーボード設定の案内にフルアクセスの図が入っていること。
+    /// この画面だけ文字だけだと、一番離脱しやすいところに手がかりが無い
+    @MainActor
+    func testUsageShowsFullAccessIllustration() {
+        guard let root = UIStoryboard(name: "Usage", bundle: nil).instantiateInitialViewController() else {
+            return XCTFail("Usage を読み込めなかった")
+        }
+        root.loadViewIfNeeded()
+        root.view.frame = CGRect(x: 0, y: 0, width: 402, height: 874)
+        root.view.layoutIfNeeded()
+
+        XCTAssertNotNil(root.view.firstSubview(ofType: GuideSettingsRowView.self),
+                        "フルアクセスの図が出ていない")
+    }
+
+    /// 図の中では強調の角括弧を出さないこと。設定の行を模した絵の中では記号が浮く
+    @MainActor
+    func testSettingsRowTitleHasNoBrackets() {
+        guard let root = UIStoryboard(name: "Usage", bundle: nil).instantiateInitialViewController(),
+              let figure = { () -> GuideSettingsRowView? in
+                  root.loadViewIfNeeded()
+                  root.view.frame = CGRect(x: 0, y: 0, width: 402, height: 874)
+                  root.view.layoutIfNeeded()
+                  return root.view.firstSubview(ofType: GuideSettingsRowView.self)
+              }() else {
+            return XCTFail("図が出ていない")
+        }
+        for text in figure.subviewTexts() {
+            XCTAssertFalse(text.contains("["), "角括弧が残っている: \(text)")
+        }
     }
 
     // MARK: - 一覧のグリッド

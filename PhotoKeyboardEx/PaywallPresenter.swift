@@ -27,11 +27,16 @@ enum PaywallPresenter {
             title: LocalizeKey.limitReachedTitle.localizedString(PhotoQuota.freeLimit),
             message: LocalizeKey.limitReachedMessage.localizedString(),
             preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: LocalizeKey.paywallSeePremium.localizedString(),
-                                      style: .default) { _ in
-            present(from: viewController)
-        })
-        alert.addAction(UIAlertAction(title: LocalizeKey.paywallClose.localizedString(), style: .cancel))
+        if PremiumStore.isAvailable {
+            alert.addAction(UIAlertAction(title: LocalizeKey.paywallSeePremium.localizedString(),
+                                          style: .default) { _ in
+                present(from: viewController)
+            })
+            alert.addAction(UIAlertAction(title: LocalizeKey.paywallClose.localizedString(), style: .cancel))
+        } else {
+            // 課金が使えないあいだは、逃げ道だけの元の形に戻す
+            alert.addAction(UIAlertAction(title: LocalizeKey.baseOK.localizedString(), style: .default))
+        }
         viewController.present(alert, animated: true)
     }
 

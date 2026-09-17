@@ -38,6 +38,7 @@ class MainTabViewController: UIViewController {
         embedBoardViewController()
         layoutFAB()
         NotificationCenter.default.addObserver(self, selector: #selector(finishToast(notification:)), name: .finishUpload, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(tapFAB), name: .requestAddPhoto, object: nil)
     }
 
     /// ナビゲーションバーの高さは44ptなので、上下に余白が残る大きさにする
@@ -101,8 +102,7 @@ class MainTabViewController: UIViewController {
         super.viewDidAppear(animated)
         // viewWillAppear での present は遷移中に失敗するため viewDidAppear で行う
         seedTutorialPhotoIfNeeded()
-        presentOnboardingIfNeeded()
-        showHowToSendIfNeeded()
+        advanceOnboarding()
         NotificationCenter.default.addObserver(self, selector: #selector(didBecomeActive),
                                                name: UIApplication.didBecomeActiveNotification, object: nil)
     }
@@ -112,39 +112,36 @@ class MainTabViewController: UIViewController {
         NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
     }
 
-    /// 設定アプリでキーボードを有効にして戻ってきた瞬間を拾う
+    /// 設定アプリから戻ってきた瞬間を拾う。キーボードを有効にして戻る経路がある
     @objc private func didBecomeActive() {
-        showHowToSendIfNeeded()
+        advanceOnboarding()
     }
 
-    /// キーボードが有効になっているのを初めて検知したら「送り方」を一度だけ案内する。
+    /// いまの手順にあわせて、案内行を更新し、出すべき画面があれば出す。
     ///
-    /// 有効化した直後が、送り方を知りたい気持ちがいちばん強い瞬間のため。
-    /// Top や Usage が出ている間は重ねない。
-    private func showHowToSendIfNeeded() {
-        guard presentedViewController == nil else { return }
-        guard GroupeDefaults.shared.isHowToSendPush() else { return }
-        guard isKeyboardExtensionEnabled else { return }
-        let nvc = UINavigationController(rootViewController: HowToSendViewController())
-        present(nvc, animated: true, completion: nil)
-    }
+    /// 以前は3つの真偽フラグが別々の出来事をきっかけに画面を出していたため、
+    /// 順番が保証されなかった。とくに**1枚も保存しない利用者にはキーボード設定の
+    /// 案内が永久に出ず**、有効化の方法を知る機会が無かった。
+    /// 現在地の判断は OnboardingCoordinator に集約し、ここは出すだけにする。
+    private func advanceOnboarding() {
+        let step = OnboardingCoordinator.current
+        boardViewController.applyOnboarding(step: step)
 
-    /// 端末で有効になっているキーボードの一覧(AppleKeyboards)に拡張のバンドルIDがあるか
-    private var isKeyboardExtensionEnabled: Bool {
-        let keyboards = UserDefaults.standard.array(forKey: "AppleKeyboards") as? [String] ?? []
-        return keyboards.contains(GroupeDefaults.keyboardExtensionBundleId)
-    }
-
-    /// 起動時に出すのは Top だけにする。
-    ///
-    /// 以前はこの直後にキーボード設定の案内を挟んでいたが、
-    /// フルアクセスという重い許可を、価値を体験する前に要求する構造になっていた。
-    /// 設定の案内は最初の1枚を保存したあとに出す(showKeyboardSetupIfNeeded)。
-    private func presentOnboardingIfNeeded() {
+        // 画面を重ねない。前の案内を閉じたら次の起動・復帰で続きから出る
         guard presentedViewController == nil else { return }
-        guard GroupeDefaults.shared.isRegisterPush() else { return }
-        guard let vc = UIStoryboard(name: "Top", bundle: nil).instantiateInitialViewController() else { return }
-        present(vc, animated: false, completion: nil)
+        switch step {
+        case .welcome:
+            guard let vc = UIStoryboard(name: "Top", bundle: nil).instantiateInitialViewController() else { return }
+            present(vc, animated: false, completion: nil)
+        case .howToSend:
+            // 有効化した直後が、送り方を知りたい気持ちがいちばん強い瞬間
+            present(UINavigationController(rootViewController: HowToSendViewController()),
+                    animated: true, completion: nil)
+        case .savePhoto, .enableKeyboard, .done:
+            // この2つは自分で動いてもらう手順なので、案内行だけ出して待つ。
+            // モーダルで塞ぐと保存もキーボード設定もできない
+            break
+        }
     }
 
     /// 見本の画像を1枚入れておく。
@@ -177,7 +174,9 @@ class MainTabViewController: UIViewController {
     /// 最初の1枚が保存できたところでキーボード設定を案内する。
     /// 保存するものができて初めてキーボードが役に立つため、この順序にしている。
     private func showKeyboardSetupIfNeeded() {
+        boardViewController.applyOnboarding(step: OnboardingCoordinator.current)
         guard presentedViewController == nil else { return }
+        guard OnboardingCoordinator.current == .enableKeyboard else { return }
         guard GroupeDefaults.shared.isUsagePush() else { return }
         guard let nvc = UIStoryboard(name: "Usage", bundle: nil).instantiateInitialViewController() else { return }
         present(nvc, animated: true, completion: nil)

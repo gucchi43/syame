@@ -99,3 +99,6 @@
 "premiumActiveMessage" = "You can save unlimited images. Manage your subscription in Settings > Apple ID > Subscriptions.";
 "paywallRetry" = "Try again";
 "paywallPurchasePending" = "Waiting for approval. It will apply automatically once approved.";
+"onboardingHintSavePhoto" = "Add your first image";
+"onboardingHintEnableKeyboard" = "Turn on the keyboard";
+"onboardingHintHowToSend" = "See how to send";
