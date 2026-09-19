@@ -563,6 +563,52 @@ class PhotoKeyboardExTests: XCTestCase {
                       "送り方の案内が開いていない: \(String(describing: presented))")
     }
 
+    /// 起動直後の画面に「貼られた先」と「貼る元」が両方出ること。
+    /// キーボードの帯だけでは、貼った結果どうなるかが伝わらない
+    @MainActor
+    func testTopShowsChatAndKeyboardTogether() {
+        guard let (root, _) = loadTop(width: 402, height: 874) else {
+            return XCTFail("Top を読み込めなかった")
+        }
+        XCTAssertNotNil(root.view.firstSubview(ofType: GuideChatView.self), "トークの図が出ていない")
+        XCTAssertNotNil(root.view.firstSubview(ofType: GuideKeyboardStripView.self), "キーボードの図が出ていない")
+    }
+
+    /// 上から下へ「見出し → 図 → ボタン → 規約」の順に並ぶこと。
+    /// 以前は縦位置がすべて画面中央基準で、図を大きくすると見出しに重なった
+    @MainActor
+    func testTopFlowsTopToBottom() {
+        guard let (root, top) = loadTop(width: 375, height: 667) else {
+            return XCTFail("Top を読み込めなかった")
+        }
+        guard let hero = root.view.firstSubview(ofType: GuideHeroView.self) else {
+            return XCTFail("図が出ていない")
+        }
+        func frame(_ v: UIView) -> CGRect { v.convert(v.bounds, to: root.view) }
+
+        let subtitle = frame(top.subTitleLabel)
+        let heroFrame = frame(hero)
+        let button = frame(top.startButton)
+        let terms = frame(top.requestDescription)
+
+        XCTAssertLessThanOrEqual(subtitle.maxY, heroFrame.minY + 1, "見出しより図が上に来ている")
+        XCTAssertLessThanOrEqual(heroFrame.maxY, button.minY + 1, "図よりボタンが上に来ている")
+        XCTAssertLessThanOrEqual(button.maxY, terms.minY + 1, "ボタンより規約文が上に来ている")
+        XCTAssertFalse(subtitle.intersects(heroFrame), "見出しと図が重なっている")
+    }
+
+    /// 小さい画面では縦に収まらないので、スクロールできること
+    @MainActor
+    func testTopScrollsWhenContentIsTallerThanTheScreen() {
+        guard let (root, _) = loadTop(width: 375, height: 667) else {
+            return XCTFail("Top を読み込めなかった")
+        }
+        guard let scroll = root.view.firstSubview(ofType: UIScrollView.self) else {
+            return XCTFail("スクロールできない")
+        }
+        XCTAssertGreaterThan(scroll.contentSize.height, 0)
+    }
+
     // MARK: - 一覧のグリッド
 
     /// 高さを可変にすると同じ行の2つのセルで高さが揃わず隙間ができるため、
