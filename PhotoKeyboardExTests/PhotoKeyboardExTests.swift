@@ -686,6 +686,72 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertEqual(sent.alpha, 1, accuracy: 0.01, "止めたのに画像が消えたままになっている")
     }
 
+    // MARK: - 設定完了の祝い
+
+    /// 最後の手順を終えた瞬間に出すこと。ここが達成感のピーク
+    func testCelebratesWhenTheLastStepIsFinished() {
+        XCTAssertTrue(OnboardingCoordinator.shouldCelebrate(previous: .howToSend,
+                                                            current: .done,
+                                                            hasCelebrated: false))
+    }
+
+    /// 一度出したら二度と出さないこと
+    func testDoesNotCelebrateTwice() {
+        XCTAssertFalse(OnboardingCoordinator.shouldCelebrate(previous: .howToSend,
+                                                             current: .done,
+                                                             hasCelebrated: true))
+    }
+
+    /// 途中の手順では出さないこと
+    func testDoesNotCelebrateMidway() {
+        XCTAssertFalse(OnboardingCoordinator.shouldCelebrate(previous: .savePhoto,
+                                                             current: .enableKeyboard,
+                                                             hasCelebrated: false))
+    }
+
+    /// 既に全部終わっている利用者に、いきなり祝いを出さないこと。
+    /// アップデートしただけの人に脈絡のないダイアログが出るのを防ぐ
+    func testDoesNotCelebrateForAlreadyFinishedUsers() {
+        XCTAssertFalse(OnboardingCoordinator.shouldCelebrate(previous: nil,
+                                                             current: .done,
+                                                             hasCelebrated: false))
+    }
+
+    /// 完了のまま起動し直しても出さないこと
+    func testDoesNotCelebrateOnEveryLaunchAfterDone() {
+        XCTAssertFalse(OnboardingCoordinator.shouldCelebrate(previous: .done,
+                                                             current: .done,
+                                                             hasCelebrated: false))
+    }
+
+    /// 完了のダイアログに、試し先と逃げ道が揃っていること。
+    /// 準備が終わった直後が一番使ってみたい瞬間なので、行き先を必ず出す
+    @MainActor
+    func testCelebrationOffersDestinations() {
+        let host = UIViewController()
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 402, height: 874))
+        window.rootViewController = host
+        window.isHidden = false
+
+        OnboardingCelebration.present(from: host)
+
+        let expectation = XCTestExpectation(description: "ダイアログが出る")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { expectation.fulfill() }
+        wait(for: [expectation], timeout: 3)
+
+        guard let alert = host.presentedViewController as? UIAlertController else {
+            return XCTFail("ダイアログが出ていない")
+        }
+        let titles = alert.actions.map { $0.title ?? "" }
+        XCTAssertTrue(titles.contains(LocalizeKey.celebrateOpenLine.localizedString()),
+                      "LINE への導線が無い: \(titles)")
+        XCTAssertTrue(titles.contains(LocalizeKey.celebrateOpenInstagram.localizedString()),
+                      "Instagram への導線が無い: \(titles)")
+        XCTAssertTrue(alert.actions.contains { $0.style == .cancel },
+                      "逃げ道が無い。押せる先が全部アプリ起動だと閉じられない")
+        XCTAssertEqual(alert.title, LocalizeKey.celebrateTitle.localizedString())
+    }
+
     // MARK: - 一覧のグリッド
 
     /// 高さを可変にすると同じ行の2つのセルで高さが揃わず隙間ができるため、

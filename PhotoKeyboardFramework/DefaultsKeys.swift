@@ -23,6 +23,7 @@ public final class GroupeDefaults {
         case usageNeedFlag, registerNeedFlag, howToSendNeedFlag
         case lastKeyboardOpenResult
         case seededOfficialPhotoIds
+        case lastOnboardingStep, hasCelebratedOnboarding
     }
 
     /// キーボード拡張はデバッガを繋ぎにくいため、URLオープンの結果だけApp Group経由で
@@ -84,6 +85,26 @@ public final class GroupeDefaults {
         guard !seeded.contains(id) else { return }
         seeded.append(id)
         sharedDefaults.set(seeded, forKey: Keys.seededOfficialPhotoIds.rawValue)
+    }
+
+    /// 直前に観測したオンボーディングの手順。
+    /// 「いま完了した」を「ずっと完了している」と区別するために持つ
+    public func lastOnboardingStep() -> Int? {
+        guard sharedDefaults.object(forKey: Keys.lastOnboardingStep.rawValue) != nil else { return nil }
+        return sharedDefaults.integer(forKey: Keys.lastOnboardingStep.rawValue)
+    }
+
+    public func setLastOnboardingStep(_ value: Int) {
+        sharedDefaults.set(value, forKey: Keys.lastOnboardingStep.rawValue)
+    }
+
+    /// 完了の祝いを出したか。出すのは一度きり
+    public func hasCelebratedOnboarding() -> Bool {
+        return sharedDefaults.bool(forKey: Keys.hasCelebratedOnboarding.rawValue)
+    }
+
+    public func markOnboardingCelebrated() {
+        sharedDefaults.set(true, forKey: Keys.hasCelebratedOnboarding.rawValue)
     }
 
     public func incrementLaunchCount() {

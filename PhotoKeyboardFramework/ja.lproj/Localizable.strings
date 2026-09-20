@@ -110,3 +110,8 @@
 "sampleTitleTown" = "きれい";
 "chatIncomingFirst" = "さっきバイト終わった";
 "chatIncomingSecond" = "今日つかれた〜";
+"celebrateTitle" = "設定完了！";
+"celebrateMessage" = "早速使ってみよう。好きなアプリでキーボードを開いて、画像をタップするだけ。";
+"celebrateOpenLine" = "LINEで試す";
+"celebrateOpenInstagram" = "Instagramで試す";
+"celebrateLater" = "あとで";

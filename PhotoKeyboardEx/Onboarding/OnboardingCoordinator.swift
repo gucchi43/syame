@@ -44,6 +44,27 @@ enum OnboardingCoordinator {
         return .done
     }
 
+    /// 完了の祝いを出すべきか判定する。
+    ///
+    /// **最後の手順を終えた瞬間だけ**出す。達成感のピークで、実際に使ってみる気に
+    /// なりやすいため。次の条件を全部満たしたときに限る。
+    ///
+    /// - まだ一度も出していない
+    /// - いま完了した(`current == .done`)
+    /// - 直前は完了していなかった
+    ///
+    /// `previous` が nil のとき(＝この端末で手順を観測したことがない)は出さない。
+    /// 既に全部終わっている利用者がアップデートしただけで、脈絡のない
+    /// ダイアログを見ることになる。
+    static func shouldCelebrate(previous: OnboardingStep?,
+                                current: OnboardingStep,
+                                hasCelebrated: Bool) -> Bool {
+        guard !hasCelebrated else { return false }
+        guard current == .done else { return false }
+        guard let previous = previous else { return false }
+        return previous != .done
+    }
+
     /// いまの端末の状態から現在地を出す
     @MainActor
     static var current: OnboardingStep {

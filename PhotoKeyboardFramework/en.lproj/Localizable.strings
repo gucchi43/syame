@@ -110,3 +110,8 @@
 "sampleTitleTown" = "Pretty";
 "chatIncomingFirst" = "Just finished my shift";
 "chatIncomingSecond" = "So tired today";
+"celebrateTitle" = "All set!";
+"celebrateMessage" = "Give it a try. Open the keyboard in any app and tap an image.";
+"celebrateOpenLine" = "Try in LINE";
+"celebrateOpenInstagram" = "Try in Instagram";
+"celebrateLater" = "Later";

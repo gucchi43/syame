@@ -121,6 +121,26 @@ class MainTabViewController: UIViewController {
         advanceOnboarding()
     }
 
+    /// 全部終わった瞬間なら、そのまま試しに行ってもらう。
+    /// 準備が終わった直後が、実際に使ってみる気のいちばん強いところ
+    private func celebrateIfJustFinished(step: OnboardingStep) -> Bool {
+        let previous = GroupeDefaults.shared.lastOnboardingStep().flatMap { OnboardingStep(rawValue: $0) }
+        guard OnboardingCoordinator.shouldCelebrate(previous: previous,
+                                                    current: step,
+                                                    hasCelebrated: GroupeDefaults.shared.hasCelebratedOnboarding())
+        else { return false }
+
+        GroupeDefaults.shared.markOnboardingCelebrated()
+        rememberStep(step)
+        OnboardingCelebration.present(from: self)
+        return true
+    }
+
+    /// いまの手順を覚える。次に「completed した瞬間」を見分けるために要る
+    private func rememberStep(_ step: OnboardingStep) {
+        GroupeDefaults.shared.setLastOnboardingStep(step.rawValue)
+    }
+
     /// 案内をひとつ見終わったとき。閉じるアニメーションの後に引き直す
     @objc private func onboardingDidAdvance() {
         DispatchQueue.main.async { [weak self] in
@@ -140,6 +160,10 @@ class MainTabViewController: UIViewController {
 
         // 画面を重ねない。前の案内を閉じたら次の起動・復帰で続きから出る
         guard presentedViewController == nil else { return }
+
+        if celebrateIfJustFinished(step: step) { return }
+        rememberStep(step)
+
         switch step {
         case .welcome:
             guard let vc = UIStoryboard(name: "Top", bundle: nil).instantiateInitialViewController() else { return }
