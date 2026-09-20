@@ -401,11 +401,82 @@ class PhotoKeyboardExTests: XCTestCase {
     // MARK: - オンボーディングの進み方
 
     private func step(welcome: Bool = true, photos: Int = 1,
-                      keyboard: Bool = true, howTo: Bool = true) -> OnboardingStep {
+                      keyboard: Bool = true, fullAccess: Bool = true,
+                      howTo: Bool = true) -> OnboardingStep {
         return OnboardingCoordinator.currentStep(hasSeenWelcome: welcome,
                                                  userOwnedPhotoCount: photos,
                                                  isKeyboardEnabled: keyboard,
+                                                 hasFullAccess: fullAccess,
                                                  hasSeenHowToSend: howTo)
+    }
+
+    /// キーボードを一覧に足しただけでは終わりにしないこと。
+    ///
+    /// ペリペリはフルアクセスが無いと画像をコピーできず、まったく使えない。
+    /// 追加済みというだけで案内を止めると、**一番肝心な設定が済んでいないのに
+    /// 何の案内も出ない**状態になる。実機でこれが起きた
+    func testKeyboardStepNeedsFullAccessNotJustBeingAdded() {
+        XCTAssertEqual(step(photos: 1, keyboard: true, fullAccess: false, howTo: false),
+                       .allowFullAccess,
+                       "フルアクセスが無いのに手順を終わりにしている")
+    }
+
+    /// 案内のモーダルは、閉じ終わったときに現在地を引き直させること。
+    ///
+    /// 開いた時点で通知を投げても、本体側は自分が前面にいるため
+    /// `presentedViewController != nil` で素通りする。閉じるときに誰も知らせないと、
+    /// 手順が最後まで進んだことに気づく機会が二度と来ず、
+    /// 「設定完了」のダイアログが永久に出なかった。
+    @MainActor
+    func testClosingOnboardingModalAsksToReevaluate() {
+        // Usage は Storyboard の Outlet を持つため、実物と同じ経路で組み立てる
+        let usage = UIStoryboard(name: "Usage", bundle: nil).instantiateInitialViewController()
+        let targets: [UIViewController] = [UINavigationController(rootViewController: HowToSendViewController())]
+            + (usage.map { [$0] } ?? [])
+        XCTAssertEqual(targets.count, 2, "Usage を組み立てられていない")
+
+        for vc in targets {
+            let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+            let root = UIViewController()
+            window.rootViewController = root
+            window.makeKeyAndVisible()
+
+            let shown = expectation(description: "表示")
+            root.present(vc, animated: false) { shown.fulfill() }
+            wait(for: [shown], timeout: 5)
+
+            let advanced = expectation(description: "閉じたら引き直し: \(type(of: vc))")
+            advanced.assertForOverFulfill = false
+            let token = NotificationCenter.default.addObserver(forName: .onboardingDidAdvance,
+                                                              object: nil, queue: .main) { _ in
+                advanced.fulfill()
+            }
+            root.dismiss(animated: false, completion: nil)
+            wait(for: [advanced], timeout: 5)
+            NotificationCenter.default.removeObserver(token)
+        }
+    }
+
+    /// 追加済みのときは「追加する」ではなく「フルアクセスを許可する」と出すこと。
+    /// 済んだ作業を促しても、利用者は何をすればいいのか分からない
+    func testHintTellsWhatIsActuallyLeft() {
+        let added = step(photos: 1, keyboard: true, fullAccess: false, howTo: false)
+        XCTAssertEqual(added.hintKey, .onboardingHintAllowFullAccess)
+
+        let notAdded = step(photos: 1, keyboard: false, fullAccess: false, howTo: false)
+        XCTAssertEqual(notAdded.hintKey, .onboardingHintEnableKeyboard)
+    }
+
+    /// フルアクセスまで済んで初めて次へ進むこと
+    func testKeyboardStepFinishesOnlyWithFullAccess() {
+        XCTAssertEqual(step(photos: 1, keyboard: true, fullAccess: true, howTo: false),
+                       .howToSend)
+    }
+
+    /// 追加すらしていなければ当然そこで止まること
+    func testKeyboardStepStopsWhenNotAdded() {
+        XCTAssertEqual(step(photos: 1, keyboard: false, fullAccess: false, howTo: false),
+                       .enableKeyboard)
     }
 
     /// 何も済んでいなければ最初の手順から始まること

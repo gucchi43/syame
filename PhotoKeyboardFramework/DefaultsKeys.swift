@@ -24,6 +24,7 @@ public final class GroupeDefaults {
         case lastKeyboardOpenResult
         case seededOfficialPhotoIds
         case lastOnboardingStep, hasCelebratedOnboarding
+        case fullAccessConfirmedAt
     }
 
     /// キーボード拡張はデバッガを繋ぎにくいため、URLオープンの結果だけApp Group経由で
@@ -105,6 +106,26 @@ public final class GroupeDefaults {
 
     public func markOnboardingCelebrated() {
         sharedDefaults.set(true, forKey: Keys.hasCelebratedOnboarding.rawValue)
+    }
+
+    /// キーボード拡張がフルアクセスありで動いたことを記録する。
+    ///
+    /// **拡張はフルアクセスが無いと App Group へ書き込めない。**
+    /// だから「ここに書けた」こと自体が、許可されている証拠になる。
+    /// アプリ本体からフルアクセスの可否を直接問い合わせる方法は無い。
+    public func markFullAccessConfirmed() {
+        sharedDefaults.set(Date().timeIntervalSince1970, forKey: Keys.fullAccessConfirmedAt.rawValue)
+    }
+
+    /// フルアクセスありで拡張が動いたことがあるか。
+    ///
+    /// 一度も使っていなければ false のままで、案内は出続ける。
+    /// 「追加しただけで使えない」状態を見逃すより、使うまで案内が残る方がよい。
+    /// なお許可を後から外された場合、この記録は残ったままになる。
+    /// その状態はキーボード自身が `hasFullAccess` をその場で見て
+    /// 専用の案内(notFullBGView)を出すため、本体の案内行では扱わない。
+    public func hasConfirmedFullAccess() -> Bool {
+        return sharedDefaults.object(forKey: Keys.fullAccessConfirmedAt.rawValue) != nil
     }
 
     public func incrementLaunchCount() {

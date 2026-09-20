@@ -172,7 +172,7 @@ class MainTabViewController: UIViewController {
             // 有効化した直後が、送り方を知りたい気持ちがいちばん強い瞬間
             present(UINavigationController(rootViewController: HowToSendViewController()),
                     animated: true, completion: nil)
-        case .savePhoto, .enableKeyboard, .done:
+        case .savePhoto, .enableKeyboard, .allowFullAccess, .done:
             // この2つは自分で動いてもらう手順なので、案内行だけ出して待つ。
             // モーダルで塞ぐと保存もキーボード設定もできない
             break

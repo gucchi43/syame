@@ -34,8 +34,15 @@ final class HowToSendViewController: UIViewController {
         // 一度見せたら自動表示はしない。閉じ方に関わらず表示した時点で記録する
         if GroupeDefaults.shared.isHowToSendPush() {
             GroupeDefaults.shared.howToSendDone()
-            NotificationCenter.default.post(name: .onboardingDidAdvance, object: nil)
         }
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        // 閉じ終わってから現在地を引き直させる。開いた時点で投げても、
+        // 本体側はまだ自分が前面にいるため判定が素通りしてしまい、
+        // 手順が最後まで進んだことに気づく機会が来なかった
+        NotificationCenter.default.post(name: .onboardingDidAdvance, object: nil)
     }
 
     private func configureNavigationItem() {

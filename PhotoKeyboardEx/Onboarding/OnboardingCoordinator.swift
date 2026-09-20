@@ -13,8 +13,10 @@ enum OnboardingStep: Int, CaseIterable {
     case welcome
     /// 画像を1枚保存する
     case savePhoto
-    /// キーボードを有効にする
+    /// キーボードを一覧に追加する
     case enableKeyboard
+    /// フルアクセスを許可して、一度キーボードを開く
+    case allowFullAccess
     /// 送り方を知る
     case howToSend
     /// すべて済んだ
@@ -33,13 +35,20 @@ enum OnboardingCoordinator {
     static func currentStep(hasSeenWelcome: Bool,
                             userOwnedPhotoCount: Int,
                             isKeyboardEnabled: Bool,
+                            hasFullAccess: Bool = true,
                             hasSeenHowToSend: Bool) -> OnboardingStep {
         guard hasSeenWelcome else { return .welcome }
         // 見本は起動時に自動で入るため、自分で保存した枚数だけを見る。
         // 混ぜると1枚も入れていない人を素通りさせてしまう
         guard userOwnedPhotoCount > 0 else { return .savePhoto }
-        // フルアクセスという重い許可は、価値を体験してから求める
+        // フルアクセスという重い許可は、価値を体験してから求める。
+        //
+        // 一覧に追加しただけでは終わりにしない。ペリペリはフルアクセスが無いと
+        // 画像をコピーできず、まったく使えない。追加済みというだけで案内を止めると、
+        // 一番肝心な設定が済んでいないのに何の案内も出ない状態になる。
         guard isKeyboardEnabled else { return .enableKeyboard }
+        // 追加しただけでは使えない。フルアクセスまで確かめる
+        guard hasFullAccess else { return .allowFullAccess }
         guard hasSeenHowToSend else { return .howToSend }
         return .done
     }
@@ -71,10 +80,13 @@ enum OnboardingCoordinator {
         return currentStep(hasSeenWelcome: !GroupeDefaults.shared.isRegisterPush(),
                            userOwnedPhotoCount: RealmManager.shared.userOwnedPhotoCount,
                            isKeyboardEnabled: isKeyboardExtensionEnabled,
+                           hasFullAccess: GroupeDefaults.shared.hasConfirmedFullAccess(),
                            hasSeenHowToSend: !GroupeDefaults.shared.isHowToSendPush())
     }
 
-    /// 端末で有効になっているキーボードの一覧に拡張のバンドルIDがあるか
+    /// 端末で有効になっているキーボードの一覧に拡張のバンドルIDがあるか。
+    ///
+    /// これは「一覧に追加されたか」しか分からない。フルアクセスの可否は別に見る。
     static var isKeyboardExtensionEnabled: Bool {
         let keyboards = UserDefaults.standard.array(forKey: "AppleKeyboards") as? [String] ?? []
         return keyboards.contains(GroupeDefaults.keyboardExtensionBundleId)
@@ -89,6 +101,7 @@ extension OnboardingStep {
         case .welcome, .done: return nil
         case .savePhoto: return .onboardingHintSavePhoto
         case .enableKeyboard: return .onboardingHintEnableKeyboard
+        case .allowFullAccess: return .onboardingHintAllowFullAccess
         case .howToSend: return .onboardingHintHowToSend
         }
     }

@@ -122,6 +122,7 @@ public enum LocalizeKey: String, CaseIterable {
     case celebrateLater
     case onboardingHintSavePhoto
     case onboardingHintEnableKeyboard
+    case onboardingHintAllowFullAccess
     case onboardingHintHowToSend
     case menuPremium
     case menuPremiumActive
