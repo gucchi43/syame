@@ -20,6 +20,7 @@
 		4105F920130C4F5180B8CA1E /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = C27D3E2C284F4289B6FC641E /* Lottie */; };
 		551D4C3130734866870EB9E3 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8E472C01B83C4C73818F93AA /* RealmSwift */; };
 		5911FB9D9B206B202BB42E94 /* OnboardingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F89E41C32AE8F51E23E5FC /* OnboardingCoordinator.swift */; };
+		5A1F845C0D5D9A7847C44EA4 /* GuideSampleGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1295265A3BC90109D77794B /* GuideSampleGallery.swift */; };
 		6A7F014B61121075865D965B /* GuideSettingsRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F13CFAAA897B6FE9F1D418 /* GuideSettingsRowView.swift */; };
 		6E76805505B4AFC3BC26E11F /* GuidePhotoSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9BABCA4B9AFAE70E77ED974 /* GuidePhotoSource.swift */; };
 		729D6FAE63DA48C982591D94 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
@@ -88,6 +89,7 @@
 		E4C2A35456354852A8AB32F6 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 584F21B3BDC74D14BE270281 /* RealmSwift */; };
 		EDB839492F9819690068143E /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = CF8919C3BF774918835C4DB7 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		EE49C6519FBD408388F2AED5 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = CA3065527272466C964C992A /* SwiftDate */; };
+		EFE2E672BDF4B664CCA80363 /* GuideHeroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5F625F80AD2D5D385B90DF /* GuideHeroView.swift */; };
 		F7E67923C349F247131F8DC1 /* PaywallPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC6FE59F327556F25A20E4F /* PaywallPresenter.swift */; };
 /* End PBXBuildFile section */
 
@@ -241,6 +243,8 @@
 		C1F13CFAAA897B6FE9F1D418 /* GuideSettingsRowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideSettingsRowView.swift; sourceTree = "<group>"; };
 		C6F627618CF5716D1B09F7C9 /* PremiumStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PremiumStore.swift; sourceTree = "<group>"; };
 		C9BABCA4B9AFAE70E77ED974 /* GuidePhotoSource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuidePhotoSource.swift; sourceTree = "<group>"; };
+		EB5F625F80AD2D5D385B90DF /* GuideHeroView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideHeroView.swift; sourceTree = "<group>"; };
+		F1295265A3BC90109D77794B /* GuideSampleGallery.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideSampleGallery.swift; sourceTree = "<group>"; };
 		F18345C571FA51EC48507654 /* GuideChatView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideChatView.swift; sourceTree = "<group>"; };
 		F9F89E41C32AE8F51E23E5FC /* OnboardingCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingCoordinator.swift; sourceTree = "<group>"; };
 		FB30358838FB25745C8B7EE0 /* GuideKeyboardStripView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideKeyboardStripView.swift; sourceTree = "<group>"; };
@@ -329,6 +333,8 @@
 				F18345C571FA51EC48507654 /* GuideChatView.swift */,
 				18FBFD095097990BB98F818A /* GuideStepView.swift */,
 				C1F13CFAAA897B6FE9F1D418 /* GuideSettingsRowView.swift */,
+				EB5F625F80AD2D5D385B90DF /* GuideHeroView.swift */,
+				F1295265A3BC90109D77794B /* GuideSampleGallery.swift */,
 			);
 			name = Guide;
 			path = Guide;
@@ -789,6 +795,8 @@
 				5911FB9D9B206B202BB42E94 /* OnboardingCoordinator.swift in Sources */,
 				8CEB65DD0558ECA4C9E61C54 /* OnboardingHintView.swift in Sources */,
 				6A7F014B61121075865D965B /* GuideSettingsRowView.swift in Sources */,
+				EFE2E672BDF4B664CCA80363 /* GuideHeroView.swift in Sources */,
+				5A1F845C0D5D9A7847C44EA4 /* GuideSampleGallery.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1051,7 +1059,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = PhotoKeyboardEx/PhotoKeyboardEx.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.2.1;
+				CURRENT_PROJECT_VERSION = 2.2.2;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = PhotoKeyboardEx/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -1074,7 +1082,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = PhotoKeyboardEx/PhotoKeyboardEx.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.2.1;
+				CURRENT_PROJECT_VERSION = 2.2.2;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = PhotoKeyboardEx/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -1177,7 +1185,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = PhotoKeyboardExOrigin/PhotoKeyboardExOrigin.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.2.1;
+				CURRENT_PROJECT_VERSION = 2.2.2;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = PhotoKeyboardExOrigin/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -1200,7 +1208,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = PhotoKeyboardExOrigin/PhotoKeyboardExOrigin.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.2.1;
+				CURRENT_PROJECT_VERSION = 2.2.2;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = PhotoKeyboardExOrigin/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -1225,7 +1233,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.2.1;
+				CURRENT_PROJECT_VERSION = 2.2.2;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1259,7 +1267,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.2.1;
+				CURRENT_PROJECT_VERSION = 2.2.2;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				DYLIB_COMPATIBILITY_VERSION = 1;

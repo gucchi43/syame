@@ -32,7 +32,7 @@
 "settingDiscription" = "フルアクセスは、画像をコピーして貼り付けるために必要です。入力した文字を読み取ったり、どこかへ送ったりすることはありません。";
 "settingDone" = "設定を開く";
 
-"topSubtitle" = "写真も、スクショも、推しも。会話の流れを切らずに貼れる。";
+"topSubtitle" = "どんなアプリでも使える";
 "topStart" = "はじめる";
 "topRequestFirst" = "はじめると";
 "topRequestSecond" = "利用規約";
@@ -53,7 +53,7 @@
 "menuDelete" = "削除";
 "menuDeleteConfirm" = "この画像を削除しますか？";
 "copiedToast" = "コピーしました";
-"topHeadline" = "好きな画像を、キーボードから送る。";
+"topHeadline" = "好きな画像をペリっと貼っちゃおう";
 "settingLater" = "あとで";
 "howToTitle" = "送り方は、これだけ。";
 "howToFirstBoldText" = "キーボードで画像";
@@ -102,3 +102,11 @@
 "onboardingHintSavePhoto" = "好きな画像を1枚入れてみる";
 "onboardingHintEnableKeyboard" = "キーボードを有効にする";
 "onboardingHintHowToSend" = "送り方を見る";
+"heroTapAndPaste" = "タップして、貼るだけ。";
+"topSubtitleSecond" = "どんな画像でも使える";
+"keyboardTextMode" = "あぁ";
+"sampleTitleCat" = "ねむい";
+"sampleTitleFood" = "腹へった";
+"sampleTitleTown" = "きれい";
+"chatIncomingFirst" = "さっきバイト終わった";
+"chatIncomingSecond" = "今日つかれた〜";

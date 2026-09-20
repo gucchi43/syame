@@ -30,12 +30,14 @@ class TopViewController: UIViewController, UITextViewDelegate {
 
     /// 図に出すサムネイルの最大辺。図の中では数十ptしかない
     private static let thumbnailPixelSize: CGFloat = 240
+    /// ロゴの高さ。図を主役にするため控えめにする
+    private static let logoHeight: CGFloat = 72
     /// 下段スタックの幅に対する図の幅。
     ///
     /// 図の高さは幅に従属する(正方形のサムネイル3枚 + 余白)ため、幅で高さを決めている。
     /// 0.92 だと iPhone SE で図が見出しに重なった。この画面はロゴ・見出し・ボタン・
     /// 規約文で既に埋まっており、下端固定の下段スタックへ足すと上へ押し上がる。
-    private static let guideWidthRatio: CGFloat = 0.6
+    private static let guideWidthRatio: CGFloat = 0.62
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -62,10 +64,14 @@ class TopViewController: UIViewController, UITextViewDelegate {
         subTitleLabel.numberOfLines = 0
         subTitleLabel.textAlignment = .center
         subTitleLabel.adjustsFontForContentSizeCategory = true
+        // サブは2行に分ける。「どんなアプリでも」「どんな画像でも」を並べると、
+        // 制限の無さが対で伝わる
         subTitleLabel.attributedText =
             (LocalizeKey.topHeadline.localizedString() + "\n\n")
                 .withFont(UIFont.scaled(.title3, weight: .bold)).withTextColor(.textPrimary)
-            + LocalizeKey.topSubtitle.localizedString()
+            + (LocalizeKey.topSubtitle.localizedString() + "\n")
+                .withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textSecondary)
+            + LocalizeKey.topSubtitleSecond.localizedString()
                 .withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textSecondary)
         // 地の塗りは AuroraButton が layer 側で持つので backgroundColor は触らない
         // 文字色と影は AuroraButton が持つので、ここでは触らない
@@ -101,28 +107,78 @@ class TopViewController: UIViewController, UITextViewDelegate {
         requestDescription.isScrollEnabled = false
         requestDescription.backgroundColor = .clear
         requestDescription.delegate = self
-        insertGuideIllustration()
+        rebuildLayoutAsVerticalFlow()
     }
 
-    /// 何をするアプリなのかを絵で伝える。
+    /// 上から下へ流れる1本のレイアウトに組み直す。
     ///
-    /// ロゴと見出しだけでは伝わらないため、見出しと同じ「キーボードから送る」を図にする。
-    /// 図に出るのは利用者自身の保存画像で、まだ無ければ見本で埋まる。
-    private func insertGuideIllustration() {
-        let photos = GuidePhotoSource.currentSlots(maxPixelSize: TopViewController.thumbnailPixelSize)
-        let strip = GuideKeyboardStripView(photos: photos)
-        strip.translatesAutoresizingMaskIntoConstraints = false
-        bottomStackView.insertArrangedSubview(strip, at: 0)
-        // スタックは alignment=center なので、幅を与えないと図が潰れる
-        strip.widthAnchor.constraint(equalTo: bottomStackView.widthAnchor,
-                                     multiplier: TopViewController.guideWidthRatio).isActive = true
-        bottomStackView.setCustomSpacing(Spacing.xl, after: strip)
+    /// Storyboard 側は縦位置がすべて「画面の中央」基準で、上から下への流れになって
+    /// いなかった。ロゴも見出しも centerY に置かれており、図を大きくすると必ず
+    /// 見出しに当たる。図を「トーク＋キーボード」に変えて縦に伸びたので、
+    /// 中央基準のままでは iPhone SE で成立しない。
+    ///
+    /// 既存の制約は引き継がない。Storyboard の子を別の親へ移すと、親との制約は
+    /// 外れる。中途半端に残すと壊れた状態になるため、ここで全部張り直す。
+    private func rebuildLayoutAsVerticalFlow() {
+        // 起動直後はまだ自分の画像が無い。ここは紹介用の決まった絵を出す
+        let gallery = GuideSampleGallery.photos
+        let photos = gallery.isEmpty
+            ? GuidePhotoSource.currentSlots(maxPixelSize: TopViewController.thumbnailPixelSize)
+            : gallery
+        let sent = GuideSampleGallery.sentPhoto ?? photos[0]
+        let hero = GuideHeroView(photos: photos, sentPhoto: sent)
+
+        let scroll = UIScrollView()
+        scroll.alwaysBounceVertical = false
+        scroll.showsVerticalScrollIndicator = false
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+
+        // 図とボタンは中身の幅いっぱいには広げず、左右に余白を残す
+        let column = UIStackView(arrangedSubviews: [logoImage, subTitleLabel, hero, startButton, requestDescription])
+        column.axis = .vertical
+        column.alignment = .center
+        column.spacing = Spacing.xl
+        column.translatesAutoresizingMaskIntoConstraints = false
+
+        view.addSubview(scroll)
+        scroll.addSubview(column)
+
+        NSLayoutConstraint.activate([
+            scroll.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scroll.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scroll.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scroll.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+
+            column.topAnchor.constraint(equalTo: scroll.contentLayoutGuide.topAnchor, constant: Spacing.xl),
+            column.bottomAnchor.constraint(equalTo: scroll.contentLayoutGuide.bottomAnchor, constant: -Spacing.xl),
+            column.leadingAnchor.constraint(equalTo: scroll.contentLayoutGuide.leadingAnchor, constant: Spacing.l),
+            column.trailingAnchor.constraint(equalTo: scroll.contentLayoutGuide.trailingAnchor, constant: -Spacing.l),
+            column.widthAnchor.constraint(equalTo: scroll.frameLayoutGuide.widthAnchor,
+                                          constant: -Spacing.l * 2),
+
+            // ロゴは小さく。主役は図に譲る
+            logoImage.heightAnchor.constraint(equalToConstant: TopViewController.logoHeight),
+            hero.widthAnchor.constraint(equalTo: column.widthAnchor,
+                                        multiplier: TopViewController.guideWidthRatio),
+            startButton.widthAnchor.constraint(equalTo: column.widthAnchor, multiplier: 0.6),
+            startButton.heightAnchor.constraint(equalToConstant: 48),
+            subTitleLabel.widthAnchor.constraint(equalTo: column.widthAnchor),
+            requestDescription.widthAnchor.constraint(equalTo: column.widthAnchor)
+        ])
+
+        logoImage.contentMode = .scaleAspectFit
+        subTitleLabel.textAlignment = .center
+        requestDescription.textAlignment = .center
+        column.setCustomSpacing(Spacing.m, after: logoImage)
+        column.setCustomSpacing(Spacing.m, after: startButton)
     }
     
+    /// ロゴと見出しを淡く出す。
+    ///
+    /// 以前はロゴを上へ滑らせていたが、その動きは Storyboard の制約
+    /// (heightConstraint / leftConstraint)に依存していた。縦の流れへ組み直して
+    /// それらを使わなくなったため、位置は動かさず出現だけを残す。
     func animateLogo () {
-        
-        self.heightConstraint.constant = -160
-        self.leftConstraint.constant = 80
         UIView.animate(withDuration: 1.0, animations: {
             self.animateBaseView.layoutIfNeeded()
             self.logoImage.alpha = 1.0

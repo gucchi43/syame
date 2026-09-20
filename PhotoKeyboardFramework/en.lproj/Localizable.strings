@@ -31,7 +31,7 @@
 "settingDiscription" = "Full Access is required to copy and paste images. We never read or transmit what you type.";
 "settingDone" = "Open Settings";
 
-"topSubtitle" = "Photos, screenshots, anything. Paste without leaving the conversation.";
+"topSubtitle" = "Works in any app";
 "topStart" = "Get started";
 "topRequestFirst" = "By starting, you agree to the ";
 "topRequestSecond" = "Terms of Service";
@@ -53,7 +53,7 @@
 "menuDelete" = "Delete";
 "menuDeleteConfirm" = "Delete this image?";
 "copiedToast" = "Copied";
-"topHeadline" = "Send your favorite images from the keyboard.";
+"topHeadline" = "Paste your favorite images in a snap.";
 "settingLater" = "Later";
 "howToTitle" = "That's all it takes.";
 "howToFirstNormalText" = "Tap ";
@@ -102,3 +102,11 @@
 "onboardingHintSavePhoto" = "Add your first image";
 "onboardingHintEnableKeyboard" = "Turn on the keyboard";
 "onboardingHintHowToSend" = "See how to send";
+"heroTapAndPaste" = "Just tap, then paste.";
+"topSubtitleSecond" = "Works with any image";
+"keyboardTextMode" = "Aa";
+"sampleTitleCat" = "Sleepy";
+"sampleTitleFood" = "Hungry";
+"sampleTitleTown" = "Pretty";
+"chatIncomingFirst" = "Just finished my shift";
+"chatIncomingSecond" = "So tired today";

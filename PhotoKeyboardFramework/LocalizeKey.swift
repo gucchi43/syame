@@ -57,6 +57,7 @@ public enum LocalizeKey: String, CaseIterable {
     
     case topHeadline
     case topSubtitle
+    case topSubtitleSecond
     case topStart
     case topRequestFirst
     case topRequestSecond
@@ -107,6 +108,13 @@ public enum LocalizeKey: String, CaseIterable {
     case paywallPurchaseFailed
     case paywallRestoreFailed
     case paywallRestoreNothing
+    case heroTapAndPaste
+    case keyboardTextMode
+    case chatIncomingFirst
+    case chatIncomingSecond
+    case sampleTitleCat
+    case sampleTitleFood
+    case sampleTitleTown
     case onboardingHintSavePhoto
     case onboardingHintEnableKeyboard
     case onboardingHintHowToSend
