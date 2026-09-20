@@ -32,6 +32,7 @@ class TopViewController: UIViewController, UITextViewDelegate {
     private static let thumbnailPixelSize: CGFloat = 240
     /// ロゴの高さ。図を主役にするため控えめにする
     private static let logoHeight: CGFloat = 72
+    private weak var heroView: GuideHeroView?
     /// 下段スタックの幅に対する図の幅。
     ///
     /// 図の高さは幅に従属する(正方形のサムネイル3枚 + 余白)ため、幅で高さを決めている。
@@ -44,6 +45,17 @@ class TopViewController: UIViewController, UITextViewDelegate {
         initLayout()
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        heroView?.stopAnimating()
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // viewWillAppear の時点ではまだウインドウに載っておらず、動きが始まらない
+        heroView?.startAnimating()
+    }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         animateLogo()
@@ -127,6 +139,7 @@ class TopViewController: UIViewController, UITextViewDelegate {
             : gallery
         let sent = GuideSampleGallery.sentPhoto ?? photos[0]
         let hero = GuideHeroView(photos: photos, sentPhoto: sent)
+        heroView = hero
 
         let scroll = UIScrollView()
         scroll.alwaysBounceVertical = false

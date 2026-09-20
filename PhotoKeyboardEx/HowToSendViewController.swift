@@ -77,11 +77,16 @@ final class HowToSendViewController: UIViewController {
 
         // 図に出す画像は利用者自身の保存画像。ダミーを焼かないので
         // 「自分のボードの話だ」と伝わり、中身が常に現物と一致する
-        let photos = GuidePhotoSource.currentSlots(maxPixelSize: HowToSendViewController.thumbnailPixelSize)
+        // 起動直後の画面と同じ見た目に揃える。案内のたびに絵柄が変わると、
+        // 同じ操作の話だと分かりにくい
+        let gallery = GuidePhotoSource.currentGallery(maxPixelSize: HowToSendViewController.thumbnailPixelSize)
+        let photos = gallery.photos
+        let sent = photos.first ?? UIImage()
         let steps: [(LocalizeKey, LocalizeKey, UIView)] = [
-            (.howToFirstBoldText, .howToFirstNormalText, GuideKeyboardStripView(photos: photos)),
+            (.howToFirstBoldText, .howToFirstNormalText,
+             GuideKeyboardStripView(photos: photos, titles: gallery.titles, showsChrome: true)),
             (.howToSecondBoldText, .howToSecondNormalText, GuideComposerView()),
-            (.howToThirdBoldText, .howToThirdNormalText, GuideChatView(sentPhoto: photos[0]))
+            (.howToThirdBoldText, .howToThirdNormalText, GuideChatView(sentPhoto: sent))
         ]
         for (index, step) in steps.enumerated() {
             contentStack.addArrangedSubview(GuideStepView(number: index + 1,

@@ -16,6 +16,9 @@ final class GuideChatView: UIView {
     /// 送った画像の幅。図全体に対する比。会話の中の一要素に見える大きさにする
     private static let sentPhotoWidthRatio: CGFloat = 0.45
 
+    /// 送った画像。届く動きを付けるために持つ
+    private(set) weak var sentPhotoView: UIView?
+
     init(sentPhoto: UIImage) {
         super.init(frame: .zero)
         setupSubviews(sentPhoto: sentPhoto)
@@ -79,6 +82,7 @@ final class GuideChatView: UIView {
         sent.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         sent.setContentHuggingPriority(.defaultLow, for: .vertical)
         addSubview(sent)
+        sentPhotoView = sent
 
         NSLayoutConstraint.activate([
             incoming.topAnchor.constraint(equalTo: topAnchor, constant: Spacing.m),

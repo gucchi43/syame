@@ -646,6 +646,46 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertNotNil(GuideSampleGallery.sentPhoto)
     }
 
+    /// 送り方の図も起動直後と同じ見た目であること。
+    /// 案内のたびに絵柄が変わると、同じ操作の話だと分かりにくい
+    @MainActor
+    func testHowToUsesTheSameFiguresAsTop() {
+        let vc = HowToSendViewController()
+        vc.view.frame = CGRect(x: 0, y: 0, width: 402, height: 1400)
+        vc.view.layoutIfNeeded()
+
+        guard let strip = vc.view.firstSubview(ofType: GuideKeyboardStripView.self) else {
+            return XCTFail("キーボードの図が出ていない")
+        }
+        let texts = strip.subviewTexts()
+        XCTAssertTrue(texts.contains(LocalizeKey.keyboardTextMode.localizedString()),
+                      "実物寄せのツールバーが出ていない: \(texts)")
+
+        guard let chat = vc.view.firstSubview(ofType: GuideChatView.self) else {
+            return XCTFail("トークの図が出ていない")
+        }
+        XCTAssertTrue(chat.subviewTexts().contains(LocalizeKey.chatIncomingFirst.localizedString()),
+                      "会話文が出ていない")
+    }
+
+    /// 動きを止めたら完成形に戻すこと。
+    /// 途中で止まったまま残ると、画像もコピーの印も欠けた絵になる
+    @MainActor
+    func testHeroSettlesToTheFinishedStateWhenStopped() {
+        let hero = GuideHeroView(photos: GuideSampleGallery.photos,
+                                 sentPhoto: GuideSampleGallery.sentPhoto ?? UIImage())
+        hero.frame = CGRect(x: 0, y: 0, width: 300, height: 400)
+        hero.layoutIfNeeded()
+        hero.startAnimating()
+        hero.stopAnimating()
+
+        guard let chat = hero.firstSubview(ofType: GuideChatView.self),
+              let sent = chat.sentPhotoView else {
+            return XCTFail("送った画像が見つからない")
+        }
+        XCTAssertEqual(sent.alpha, 1, accuracy: 0.01, "止めたのに画像が消えたままになっている")
+    }
+
     // MARK: - 一覧のグリッド
 
     /// 高さを可変にすると同じ行の2つのセルで高さが揃わず隙間ができるため、
