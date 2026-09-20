@@ -28,7 +28,9 @@ final class GuideHeroView: UIView {
         let chat = GuideChatView(sentPhoto: sentPhoto)
         chat.translatesAutoresizingMaskIntoConstraints = false
 
-        let strip = GuideKeyboardStripView(photos: photos)
+        let strip = GuideKeyboardStripView(photos: photos,
+                                           titles: GuideSampleGallery.titles,
+                                           showsChrome: true)
         strip.translatesAutoresizingMaskIntoConstraints = false
 
         // 上(トーク)から下(キーボード)へ、貼られた先と貼る元の関係を示す

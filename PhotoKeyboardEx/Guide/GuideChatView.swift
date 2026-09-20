@@ -25,16 +25,45 @@ final class GuideChatView: UIView {
         super.init(coder: coder)
     }
 
+    /// 相手の吹き出し1つ
+    private func makeIncomingBubble(_ text: String) -> UIView {
+        let label = UILabel()
+        label.text = text
+        label.font = .scaled(.caption2)
+        label.adjustsFontForContentSizeCategory = true
+        label.textColor = .textPrimary
+        label.numberOfLines = 1
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        let bubble = UIView()
+        bubble.backgroundColor = .bgBase
+        bubble.applyCornerRadius(Radius.small)
+        bubble.translatesAutoresizingMaskIntoConstraints = false
+        bubble.addSubview(label)
+
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: bubble.topAnchor, constant: Spacing.s),
+            label.bottomAnchor.constraint(equalTo: bubble.bottomAnchor, constant: -Spacing.s),
+            label.leadingAnchor.constraint(equalTo: bubble.leadingAnchor, constant: Spacing.m),
+            label.trailingAnchor.constraint(equalTo: bubble.trailingAnchor, constant: -Spacing.m)
+        ])
+        return bubble
+    }
+
     private func setupSubviews(sentPhoto: UIImage) {
         // 図の面。地(bgBase)のままだと画面に溶けて「図」に見えない
         backgroundColor = .bgSurface
         applyCornerRadius(Radius.card)
         clipsToBounds = true
 
-        // 相手の発言。左に寄せる
-        let incoming = UIView()
-        incoming.backgroundColor = .bgBase
-        incoming.applyCornerRadius(Radius.small)
+        // 相手の発言。左に寄せる。2つ並べると会話の途中だと分かる
+        let incoming = UIStackView(arrangedSubviews: [
+            makeIncomingBubble(LocalizeKey.chatIncomingFirst.localizedString()),
+            makeIncomingBubble(LocalizeKey.chatIncomingSecond.localizedString())
+        ])
+        incoming.axis = .vertical
+        incoming.alignment = .leading
+        incoming.spacing = Spacing.grid * 2
         incoming.translatesAutoresizingMaskIntoConstraints = false
         addSubview(incoming)
 
@@ -54,8 +83,7 @@ final class GuideChatView: UIView {
         NSLayoutConstraint.activate([
             incoming.topAnchor.constraint(equalTo: topAnchor, constant: Spacing.m),
             incoming.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Spacing.m),
-            incoming.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.45),
-            incoming.heightAnchor.constraint(equalToConstant: 28),
+            incoming.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -Spacing.m),
 
             sent.topAnchor.constraint(equalTo: incoming.bottomAnchor, constant: Spacing.s),
             sent.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Spacing.m),

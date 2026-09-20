@@ -64,10 +64,14 @@ class TopViewController: UIViewController, UITextViewDelegate {
         subTitleLabel.numberOfLines = 0
         subTitleLabel.textAlignment = .center
         subTitleLabel.adjustsFontForContentSizeCategory = true
+        // サブは2行に分ける。「どんなアプリでも」「どんな画像でも」を並べると、
+        // 制限の無さが対で伝わる
         subTitleLabel.attributedText =
             (LocalizeKey.topHeadline.localizedString() + "\n\n")
                 .withFont(UIFont.scaled(.title3, weight: .bold)).withTextColor(.textPrimary)
-            + LocalizeKey.topSubtitle.localizedString()
+            + (LocalizeKey.topSubtitle.localizedString() + "\n")
+                .withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textSecondary)
+            + LocalizeKey.topSubtitleSecond.localizedString()
                 .withFont(UIFont.scaled(.footnote, weight: .regular)).withTextColor(.textSecondary)
         // 地の塗りは AuroraButton が layer 側で持つので backgroundColor は触らない
         // 文字色と影は AuroraButton が持つので、ここでは触らない
@@ -116,8 +120,13 @@ class TopViewController: UIViewController, UITextViewDelegate {
     /// 既存の制約は引き継がない。Storyboard の子を別の親へ移すと、親との制約は
     /// 外れる。中途半端に残すと壊れた状態になるため、ここで全部張り直す。
     private func rebuildLayoutAsVerticalFlow() {
-        let photos = GuidePhotoSource.currentSlots(maxPixelSize: TopViewController.thumbnailPixelSize)
-        let hero = GuideHeroView(photos: photos, sentPhoto: photos[0])
+        // 起動直後はまだ自分の画像が無い。ここは紹介用の決まった絵を出す
+        let gallery = GuideSampleGallery.photos
+        let photos = gallery.isEmpty
+            ? GuidePhotoSource.currentSlots(maxPixelSize: TopViewController.thumbnailPixelSize)
+            : gallery
+        let sent = GuideSampleGallery.sentPhoto ?? photos[0]
+        let hero = GuideHeroView(photos: photos, sentPhoto: sent)
 
         let scroll = UIScrollView()
         scroll.alwaysBounceVertical = false
