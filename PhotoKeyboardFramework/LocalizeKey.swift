@@ -115,8 +115,14 @@ public enum LocalizeKey: String, CaseIterable {
     case sampleTitleCat
     case sampleTitleFood
     case sampleTitleTown
+    case celebrateTitle
+    case celebrateMessage
+    case celebrateOpenLine
+    case celebrateOpenInstagram
+    case celebrateLater
     case onboardingHintSavePhoto
     case onboardingHintEnableKeyboard
+    case onboardingHintAllowFullAccess
     case onboardingHintHowToSend
     case menuPremium
     case menuPremiumActive

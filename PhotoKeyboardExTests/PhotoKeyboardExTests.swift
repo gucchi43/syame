@@ -401,11 +401,82 @@ class PhotoKeyboardExTests: XCTestCase {
     // MARK: - オンボーディングの進み方
 
     private func step(welcome: Bool = true, photos: Int = 1,
-                      keyboard: Bool = true, howTo: Bool = true) -> OnboardingStep {
+                      keyboard: Bool = true, fullAccess: Bool = true,
+                      howTo: Bool = true) -> OnboardingStep {
         return OnboardingCoordinator.currentStep(hasSeenWelcome: welcome,
                                                  userOwnedPhotoCount: photos,
                                                  isKeyboardEnabled: keyboard,
+                                                 hasFullAccess: fullAccess,
                                                  hasSeenHowToSend: howTo)
+    }
+
+    /// キーボードを一覧に足しただけでは終わりにしないこと。
+    ///
+    /// ペリペリはフルアクセスが無いと画像をコピーできず、まったく使えない。
+    /// 追加済みというだけで案内を止めると、**一番肝心な設定が済んでいないのに
+    /// 何の案内も出ない**状態になる。実機でこれが起きた
+    func testKeyboardStepNeedsFullAccessNotJustBeingAdded() {
+        XCTAssertEqual(step(photos: 1, keyboard: true, fullAccess: false, howTo: false),
+                       .allowFullAccess,
+                       "フルアクセスが無いのに手順を終わりにしている")
+    }
+
+    /// 案内のモーダルは、閉じ終わったときに現在地を引き直させること。
+    ///
+    /// 開いた時点で通知を投げても、本体側は自分が前面にいるため
+    /// `presentedViewController != nil` で素通りする。閉じるときに誰も知らせないと、
+    /// 手順が最後まで進んだことに気づく機会が二度と来ず、
+    /// 「設定完了」のダイアログが永久に出なかった。
+    @MainActor
+    func testClosingOnboardingModalAsksToReevaluate() {
+        // Usage は Storyboard の Outlet を持つため、実物と同じ経路で組み立てる
+        let usage = UIStoryboard(name: "Usage", bundle: nil).instantiateInitialViewController()
+        let targets: [UIViewController] = [UINavigationController(rootViewController: HowToSendViewController())]
+            + (usage.map { [$0] } ?? [])
+        XCTAssertEqual(targets.count, 2, "Usage を組み立てられていない")
+
+        for vc in targets {
+            let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 390, height: 844))
+            let root = UIViewController()
+            window.rootViewController = root
+            window.makeKeyAndVisible()
+
+            let shown = expectation(description: "表示")
+            root.present(vc, animated: false) { shown.fulfill() }
+            wait(for: [shown], timeout: 5)
+
+            let advanced = expectation(description: "閉じたら引き直し: \(type(of: vc))")
+            advanced.assertForOverFulfill = false
+            let token = NotificationCenter.default.addObserver(forName: .onboardingDidAdvance,
+                                                              object: nil, queue: .main) { _ in
+                advanced.fulfill()
+            }
+            root.dismiss(animated: false, completion: nil)
+            wait(for: [advanced], timeout: 5)
+            NotificationCenter.default.removeObserver(token)
+        }
+    }
+
+    /// 追加済みのときは「追加する」ではなく「フルアクセスを許可する」と出すこと。
+    /// 済んだ作業を促しても、利用者は何をすればいいのか分からない
+    func testHintTellsWhatIsActuallyLeft() {
+        let added = step(photos: 1, keyboard: true, fullAccess: false, howTo: false)
+        XCTAssertEqual(added.hintKey, .onboardingHintAllowFullAccess)
+
+        let notAdded = step(photos: 1, keyboard: false, fullAccess: false, howTo: false)
+        XCTAssertEqual(notAdded.hintKey, .onboardingHintEnableKeyboard)
+    }
+
+    /// フルアクセスまで済んで初めて次へ進むこと
+    func testKeyboardStepFinishesOnlyWithFullAccess() {
+        XCTAssertEqual(step(photos: 1, keyboard: true, fullAccess: true, howTo: false),
+                       .howToSend)
+    }
+
+    /// 追加すらしていなければ当然そこで止まること
+    func testKeyboardStepStopsWhenNotAdded() {
+        XCTAssertEqual(step(photos: 1, keyboard: false, fullAccess: false, howTo: false),
+                       .enableKeyboard)
     }
 
     /// 何も済んでいなければ最初の手順から始まること
@@ -644,6 +715,112 @@ class PhotoKeyboardExTests: XCTestCase {
     func testSampleGalleryResolvesAllImages() {
         XCTAssertEqual(GuideSampleGallery.photos.count, 3)
         XCTAssertNotNil(GuideSampleGallery.sentPhoto)
+    }
+
+    /// 送り方の図も起動直後と同じ見た目であること。
+    /// 案内のたびに絵柄が変わると、同じ操作の話だと分かりにくい
+    @MainActor
+    func testHowToUsesTheSameFiguresAsTop() {
+        let vc = HowToSendViewController()
+        vc.view.frame = CGRect(x: 0, y: 0, width: 402, height: 1400)
+        vc.view.layoutIfNeeded()
+
+        guard let strip = vc.view.firstSubview(ofType: GuideKeyboardStripView.self) else {
+            return XCTFail("キーボードの図が出ていない")
+        }
+        let texts = strip.subviewTexts()
+        XCTAssertTrue(texts.contains(LocalizeKey.keyboardTextMode.localizedString()),
+                      "実物寄せのツールバーが出ていない: \(texts)")
+
+        guard let chat = vc.view.firstSubview(ofType: GuideChatView.self) else {
+            return XCTFail("トークの図が出ていない")
+        }
+        XCTAssertTrue(chat.subviewTexts().contains(LocalizeKey.chatIncomingFirst.localizedString()),
+                      "会話文が出ていない")
+    }
+
+    /// 動きを止めたら完成形に戻すこと。
+    /// 途中で止まったまま残ると、画像もコピーの印も欠けた絵になる
+    @MainActor
+    func testHeroSettlesToTheFinishedStateWhenStopped() {
+        let hero = GuideHeroView(photos: GuideSampleGallery.photos,
+                                 sentPhoto: GuideSampleGallery.sentPhoto ?? UIImage())
+        hero.frame = CGRect(x: 0, y: 0, width: 300, height: 400)
+        hero.layoutIfNeeded()
+        hero.startAnimating()
+        hero.stopAnimating()
+
+        guard let chat = hero.firstSubview(ofType: GuideChatView.self),
+              let sent = chat.sentPhotoView else {
+            return XCTFail("送った画像が見つからない")
+        }
+        XCTAssertEqual(sent.alpha, 1, accuracy: 0.01, "止めたのに画像が消えたままになっている")
+    }
+
+    // MARK: - 設定完了の祝い
+
+    /// 最後の手順を終えた瞬間に出すこと。ここが達成感のピーク
+    func testCelebratesWhenTheLastStepIsFinished() {
+        XCTAssertTrue(OnboardingCoordinator.shouldCelebrate(previous: .howToSend,
+                                                            current: .done,
+                                                            hasCelebrated: false))
+    }
+
+    /// 一度出したら二度と出さないこと
+    func testDoesNotCelebrateTwice() {
+        XCTAssertFalse(OnboardingCoordinator.shouldCelebrate(previous: .howToSend,
+                                                             current: .done,
+                                                             hasCelebrated: true))
+    }
+
+    /// 途中の手順では出さないこと
+    func testDoesNotCelebrateMidway() {
+        XCTAssertFalse(OnboardingCoordinator.shouldCelebrate(previous: .savePhoto,
+                                                             current: .enableKeyboard,
+                                                             hasCelebrated: false))
+    }
+
+    /// 既に全部終わっている利用者に、いきなり祝いを出さないこと。
+    /// アップデートしただけの人に脈絡のないダイアログが出るのを防ぐ
+    func testDoesNotCelebrateForAlreadyFinishedUsers() {
+        XCTAssertFalse(OnboardingCoordinator.shouldCelebrate(previous: nil,
+                                                             current: .done,
+                                                             hasCelebrated: false))
+    }
+
+    /// 完了のまま起動し直しても出さないこと
+    func testDoesNotCelebrateOnEveryLaunchAfterDone() {
+        XCTAssertFalse(OnboardingCoordinator.shouldCelebrate(previous: .done,
+                                                             current: .done,
+                                                             hasCelebrated: false))
+    }
+
+    /// 完了のダイアログに、試し先と逃げ道が揃っていること。
+    /// 準備が終わった直後が一番使ってみたい瞬間なので、行き先を必ず出す
+    @MainActor
+    func testCelebrationOffersDestinations() {
+        let host = UIViewController()
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 402, height: 874))
+        window.rootViewController = host
+        window.isHidden = false
+
+        OnboardingCelebration.present(from: host)
+
+        let expectation = XCTestExpectation(description: "ダイアログが出る")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { expectation.fulfill() }
+        wait(for: [expectation], timeout: 3)
+
+        guard let alert = host.presentedViewController as? UIAlertController else {
+            return XCTFail("ダイアログが出ていない")
+        }
+        let titles = alert.actions.map { $0.title ?? "" }
+        XCTAssertTrue(titles.contains(LocalizeKey.celebrateOpenLine.localizedString()),
+                      "LINE への導線が無い: \(titles)")
+        XCTAssertTrue(titles.contains(LocalizeKey.celebrateOpenInstagram.localizedString()),
+                      "Instagram への導線が無い: \(titles)")
+        XCTAssertTrue(alert.actions.contains { $0.style == .cancel },
+                      "逃げ道が無い。押せる先が全部アプリ起動だと閉じられない")
+        XCTAssertEqual(alert.title, LocalizeKey.celebrateTitle.localizedString())
     }
 
     // MARK: - 一覧のグリッド

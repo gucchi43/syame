@@ -71,7 +71,8 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         case .savePhoto:
             // 保存は親のFABが持っている。同じ導線に乗せる
             NotificationCenter.default.post(name: .requestAddPhoto, object: nil)
-        case .enableKeyboard:
+        case .enableKeyboard, .allowFullAccess:
+            // どちらも案内先は同じ「キーボードの設定」の画面
             guard let nvc = UIStoryboard(name: "Usage", bundle: nil).instantiateInitialViewController() else { return }
             present(nvc, animated: true)
         case .howToSend:

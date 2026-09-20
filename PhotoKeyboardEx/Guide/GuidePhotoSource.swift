@@ -58,6 +58,31 @@ enum GuidePhotoSource {
             .compactMap { $0.thumbnail(maxPixelSize: maxPixelSize) }
     }
 
+    /// 図に出す画像と題名。
+    ///
+    /// 利用者が自分で保存したものがあれば、その画像と本人が付けた題名を使う。
+    /// まだ無ければ紹介用の決まった絵に差し替える。空きスロットを並べるより、
+    /// 何が起きるかが伝わる。
+    static func currentGallery(maxPixelSize: CGFloat) -> (photos: [UIImage], titles: [String]) {
+        let saved = Array(RealmManager.shared.realmData).filter { $0.isUserOwned }
+        guard !saved.isEmpty else {
+            return (GuideSampleGallery.photos, GuideSampleGallery.titles)
+        }
+        let picked = saved.prefix(slotCount)
+        var photos = picked.compactMap { $0.thumbnail(maxPixelSize: maxPixelSize) }
+        var titles = picked.map { $0.text }
+        // 足りないぶんは紹介用で埋める。図の形を保つため
+        let sample = GuideSampleGallery.photos
+        let sampleTitles = GuideSampleGallery.titles
+        var index = 0
+        while photos.count < slotCount && index < sample.count {
+            photos.append(sample[index])
+            titles.append(sampleTitles[index])
+            index += 1
+        }
+        return (photos, titles)
+    }
+
     /// 図に出す画像を、いま端末にあるものから決める。
     /// 見本のアセットはアプリ本体にしか無いため、解決できないときは空を返さず
     /// 単色で埋めて図の形だけは保つ(空のキーボードを見せるより崩れが小さい)。

@@ -198,6 +198,14 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        // フルアクセスありで動けたことをアプリ本体へ伝える。
+        // アプリ本体からは可否を直接問い合わせられず、かつ拡張はフルアクセスが
+        // 無いと App Group へ書けないため、ここに書けること自体が証拠になる。
+        // これが無いと「キーボードは追加したがフルアクセスは許可していない」人に
+        // 案内が出ず、まったく使えないまま放置されてしまう。
+        if hasFullAccess {
+            GroupeDefaults.shared.markFullAccessConfirmed()
+        }
         self.nextKeyboardButton.isHidden = !self.needsInputModeSwitchKey
         if self.needsInputModeSwitchKey {
             collectionViewBottomConstraint.constant = -self.nextKeyboardButton.frame.height

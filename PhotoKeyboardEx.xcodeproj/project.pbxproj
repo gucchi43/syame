@@ -83,6 +83,7 @@
 		AA0100000000000000000012 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000011 /* PrivacyInfo.xcprivacy */; };
 		AA0100000000000000000022 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000021 /* PrivacyInfo.xcprivacy */; };
 		AA01000000000000000004 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AA01000000000000000003 /* InfoPlist.strings */; };
+		B0B3CF3A0B731F0AE6B96C4C /* OnboardingCelebration.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF086916758BEEE4FD1D55AA /* OnboardingCelebration.swift */; };
 		C73AF9F078134AE583792C0A /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 42A00FB9C3F24E1D87CE50B6 /* Lottie */; };
 		CFD5D85F61661B98449A3666 /* GuideKeyboardStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB30358838FB25745C8B7EE0 /* GuideKeyboardStripView.swift */; };
 		D2B34B4D25C085C01DEB40AC /* PremiumStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6F627618CF5716D1B09F7C9 /* PremiumStore.swift */; };
@@ -243,6 +244,7 @@
 		C1F13CFAAA897B6FE9F1D418 /* GuideSettingsRowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideSettingsRowView.swift; sourceTree = "<group>"; };
 		C6F627618CF5716D1B09F7C9 /* PremiumStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PremiumStore.swift; sourceTree = "<group>"; };
 		C9BABCA4B9AFAE70E77ED974 /* GuidePhotoSource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuidePhotoSource.swift; sourceTree = "<group>"; };
+		DF086916758BEEE4FD1D55AA /* OnboardingCelebration.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingCelebration.swift; sourceTree = "<group>"; };
 		EB5F625F80AD2D5D385B90DF /* GuideHeroView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideHeroView.swift; sourceTree = "<group>"; };
 		F1295265A3BC90109D77794B /* GuideSampleGallery.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideSampleGallery.swift; sourceTree = "<group>"; };
 		F18345C571FA51EC48507654 /* GuideChatView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideChatView.swift; sourceTree = "<group>"; };
@@ -319,6 +321,7 @@
 			children = (
 				F9F89E41C32AE8F51E23E5FC /* OnboardingCoordinator.swift */,
 				11E1B897FFA5A256EA97357A /* OnboardingHintView.swift */,
+				DF086916758BEEE4FD1D55AA /* OnboardingCelebration.swift */,
 			);
 			name = Onboarding;
 			path = Onboarding;
@@ -797,6 +800,7 @@
 				6A7F014B61121075865D965B /* GuideSettingsRowView.swift in Sources */,
 				EFE2E672BDF4B664CCA80363 /* GuideHeroView.swift in Sources */,
 				5A1F845C0D5D9A7847C44EA4 /* GuideSampleGallery.swift in Sources */,
+				B0B3CF3A0B731F0AE6B96C4C /* OnboardingCelebration.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1059,7 +1063,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = PhotoKeyboardEx/PhotoKeyboardEx.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.2.2;
+				CURRENT_PROJECT_VERSION = 2.2.4;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = PhotoKeyboardEx/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -1082,7 +1086,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = PhotoKeyboardEx/PhotoKeyboardEx.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.2.2;
+				CURRENT_PROJECT_VERSION = 2.2.4;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = PhotoKeyboardEx/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -1185,7 +1189,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = PhotoKeyboardExOrigin/PhotoKeyboardExOrigin.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.2.2;
+				CURRENT_PROJECT_VERSION = 2.2.4;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = PhotoKeyboardExOrigin/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -1208,7 +1212,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = PhotoKeyboardExOrigin/PhotoKeyboardExOrigin.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.2.2;
+				CURRENT_PROJECT_VERSION = 2.2.4;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				INFOPLIST_FILE = PhotoKeyboardExOrigin/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -1233,7 +1237,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.2.2;
+				CURRENT_PROJECT_VERSION = 2.2.4;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1267,7 +1271,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2.2.2;
+				CURRENT_PROJECT_VERSION = 2.2.4;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = 48KBV2T232;
 				DYLIB_COMPATIBILITY_VERSION = 1;

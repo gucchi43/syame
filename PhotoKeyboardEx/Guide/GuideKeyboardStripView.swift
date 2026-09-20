@@ -31,6 +31,10 @@ final class GuideKeyboardStripView: UIView {
 
     private let titles: [String]
 
+    /// タップの対象になっているセルと、その上のコピーの印。動きを付けるために持つ
+    private(set) weak var tappedCell: UIView?
+    private(set) weak var copyBadge: UIView?
+
     required init?(coder: NSCoder) {
         self.showsChrome = false
         self.titles = []
@@ -158,6 +162,8 @@ final class GuideKeyboardStripView: UIView {
 
         let badge = makeCopyBadge()
         container.addSubview(badge)
+        copyBadge = badge
+        tappedCell = container
 
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: container.topAnchor),
