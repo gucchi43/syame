@@ -1166,7 +1166,27 @@ class PhotoKeyboardExTests: XCTestCase {
                         "レイアウト後もセルが無い。演出の当て先が無くなる")
     }
 
-    /// 並びが変わっていない Realm 通知では一覧を作り直さないこと。保存直後の演出を途中で消さない
+    /// cellForItemAt の回数を数える。元のデータソースへそのまま転送する。
+    /// セルの同一性比較だと再利用プールが同じインスタンスを返すことがあり、
+    /// 作り直しの有無を区別できないため、呼び出し回数で見る
+    private final class CountingDataSource: NSObject, UICollectionViewDataSource {
+        let base: UICollectionViewDataSource
+        var cellRequests = 0
+        init(base: UICollectionViewDataSource) { self.base = base }
+        func collectionView(_ cv: UICollectionView, numberOfItemsInSection s: Int) -> Int {
+            base.collectionView(cv, numberOfItemsInSection: s)
+        }
+        func collectionView(_ cv: UICollectionView, cellForItemAt ip: IndexPath) -> UICollectionViewCell {
+            cellRequests += 1
+            return base.collectionView(cv, cellForItemAt: ip)
+        }
+        func collectionView(_ cv: UICollectionView, viewForSupplementaryElementOfKind kind: String, at ip: IndexPath) -> UICollectionReusableView {
+            base.collectionView!(cv, viewForSupplementaryElementOfKind: kind, at: ip)
+        }
+    }
+
+    /// 並びが変わっていない Realm 通知では一覧を作り直さないこと。保存直後の演出を途中で消さない。
+    /// セルの同一性ではなく cellForItemAt の呼び出し回数で「作り直したかどうか」を見る
     @MainActor
     func testUnchangedRealmChangeDoesNotReload() {
         let board = UIStoryboard(name: "ChildContent", bundle: nil)
@@ -1179,15 +1199,23 @@ class PhotoKeyboardExTests: XCTestCase {
         window.isHidden = false
         board.view.layoutIfNeeded()
         board.viewWillAppear(false)          // knownPhotoIds を現状で揃える
+
+        guard let baseDataSource = board.collectionView.dataSource else {
+            return XCTFail("dataSource が設定されていない")
+        }
+        let spy = CountingDataSource(base: baseDataSource)
+        board.collectionView.dataSource = spy
+        board.collectionView.reloadData()
         board.collectionView.layoutIfNeeded()
-        let cellBefore = board.collectionView.cellForItem(at: IndexPath(item: 0, section: 0))
+        let before = spy.cellRequests
+
         board.realmObjectDidChange()
         let settled = expectation(description: "main.async を消化")
         DispatchQueue.main.async { settled.fulfill() }
         wait(for: [settled], timeout: 2)
         board.collectionView.layoutIfNeeded()
-        let cellAfter = board.collectionView.cellForItem(at: IndexPath(item: 0, section: 0))
-        XCTAssertTrue(cellBefore === cellAfter, "並びが同じなのにセルが作り直されている")
+
+        XCTAssertEqual(spy.cellRequests, before, "並びが同じなのに一覧を作り直している")
     }
 
     /// 幅が極端に狭くても破綻しないこと
