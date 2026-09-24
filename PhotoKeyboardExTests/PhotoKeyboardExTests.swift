@@ -1015,6 +1015,21 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertEqual(renderedLineCount(of: cell.titleLabel), 2)
     }
 
+    /// 写真セルは膨らんだ面の上に載ること。押すと沈む
+    @MainActor
+    func testPhotoCellSitsOnRaisedSurfaceAndSinks() {
+        Motion.isReducedOverride = false
+        defer { Motion.isReducedOverride = nil }
+        let metrics = ChildContentViewController.gridMetrics(containerWidth: 393)
+        let cell = PhotoCollectionViewCell(frame: CGRect(x: 0, y: 0, width: metrics.itemWidth, height: metrics.rowHeight))
+        cell.layoutIfNeeded()
+        XCTAssertTrue(cell.contentView.subviews.contains { $0 is ClaySurface }, "面が ClaySurface ではない")
+        cell.isHighlighted = true
+        XCTAssertLessThan(cell.transform.a, 1.0, "押しても沈んでいない")
+        cell.isHighlighted = false
+        XCTAssertEqual(cell.transform.a, 1.0, accuracy: 0.001)
+    }
+
     /// 幅が極端に狭くても破綻しないこと
     func testGridMetricsHandlesTinyContainer() {
         let metrics = ChildContentViewController.gridMetrics(containerWidth: 10)
