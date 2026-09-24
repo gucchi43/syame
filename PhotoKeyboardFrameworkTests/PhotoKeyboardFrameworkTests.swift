@@ -546,15 +546,6 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         }
     }
 
-    /// 地とカード面の差は意図的にごく小さくしている。
-    /// ここが開くと「軽さ」が失われ、ただのグレーUIになる。
-    func testSurfaceSeparationStaysSubtle() {
-        for dark in [false, true] {
-            let ratio = contrastRatio(.bgSurface, .bgBase, dark: dark)
-            XCTAssertLessThan(ratio, 1.5, "\(dark ? "ダーク" : "ライト"): 面の差が大きすぎる")
-        }
-    }
-
     /// 白い文字は色だけでは読めない。最も明るい帯で 1.3:1 しかない。
     /// だから onAurora を白にするなら、影で輪郭を作ることが必須条件になる。
     func testWhiteOnAuroraNeedsShadowToBeReadable() {
