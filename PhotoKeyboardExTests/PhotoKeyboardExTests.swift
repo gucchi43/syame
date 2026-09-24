@@ -1109,6 +1109,26 @@ class PhotoKeyboardExTests: XCTestCase {
                        "案内行が消えたときにスクロール位置が飛んでいる")
     }
 
+    /// 案内行が消えたら、一覧の押し下げも戻ること。手でレイアウトを起こさなくても
+    @MainActor
+    func testInsetReturnsToZeroWhenHintHides() {
+        let board = UIStoryboard(name: "ChildContent", bundle: nil)
+            .instantiateInitialViewController() as? ChildContentViewController
+        guard let board = board else { return XCTFail("マイボードを組み立てられない") }
+        board.loadViewIfNeeded()
+        board.view.frame = CGRect(x: 0, y: 0, width: 402, height: 874)
+        board.applyOnboarding(step: .savePhoto)
+        let window = UIWindow(frame: board.view.bounds)
+        window.rootViewController = board
+        window.isHidden = false
+        board.view.layoutIfNeeded()
+        XCTAssertGreaterThan(board.collectionView.contentInset.top, 0, "案内行が出ているのに押し下げていない")
+
+        board.applyOnboarding(step: .done)
+        board.view.layoutIfNeeded()   // setNeedsLayout が入っていれば、これだけで引き直される
+        XCTAssertEqual(board.collectionView.contentInset.top, 0, accuracy: 0.5, "案内行が消えたのに押し下げが残っている")
+    }
+
     // MARK: - 埋まる演出
 
     /// 直前に無かった写真だけを「増えた」とみなすこと。並び替えや削除では出さない

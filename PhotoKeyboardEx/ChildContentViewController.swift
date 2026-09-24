@@ -109,6 +109,9 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         onboardingStep = step
         guard isViewLoaded else { return }
         onboardingHint.apply(step: step)
+        // 案内行の出入りは isHidden を切り替えるだけで親のレイアウトが起きない。
+        // 自分でレイアウトを起こして viewDidLayoutSubviews の inset を引き直す
+        view.setNeedsLayout()
     }
 
     /// 案内行を一覧の上に敷く
