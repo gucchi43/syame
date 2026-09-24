@@ -1030,6 +1030,25 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertEqual(cell.transform.a, 1.0, accuracy: 0.001)
     }
 
+    // MARK: - 進み具合
+
+    /// 埋まった数と上限を「3 / 8」の形で出すこと
+    @MainActor
+    func testProgressShowsFilledOverLimit() {
+        let view = BoardProgressView(frame: CGRect(x: 0, y: 0, width: 200, height: 44))
+        view.apply(filled: 3, limit: 8)
+        XCTAssertEqual(view.label.text, LocalizeKey.boardProgress.localizedString(3, 8))
+        XCTAssertEqual(view.label.text, "3 / 8")
+    }
+
+    /// 上限まで埋まったら「コンプリート」に変わること
+    @MainActor
+    func testProgressSaysCompleteAtLimit() {
+        let view = BoardProgressView(frame: CGRect(x: 0, y: 0, width: 200, height: 44))
+        view.apply(filled: 8, limit: 8)
+        XCTAssertEqual(view.label.text, LocalizeKey.boardComplete.localizedString())
+    }
+
     /// 幅が極端に狭くても破綻しないこと
     func testGridMetricsHandlesTinyContainer() {
         let metrics = ChildContentViewController.gridMetrics(containerWidth: 10)

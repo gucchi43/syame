@@ -98,6 +98,9 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         setupCollectionView()
         collectionView.register(PhotoCollectionViewCell.self, forCellWithReuseIdentifier: PhotoCollectionViewCell.reuseIdentifier)
         collectionView.register(EmptySlotCell.self, forCellWithReuseIdentifier: EmptySlotCell.reuseIdentifier)
+        collectionView.register(BoardProgressView.self,
+                                forSupplementaryViewOfKind: BoardProgressView.elementKind,
+                                withReuseIdentifier: BoardProgressView.reuseIdentifier)
         collectionView.contentMode = .left
         collectionView.backgroundColor = .bgBase
         refreshControl.addTarget(self, action: #selector(self
@@ -152,6 +155,13 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
             group.interItemSpacing = .fixed(spacing)
 
             let section = NSCollectionLayoutSection(group: group)
+            // 進み具合のピルを一覧の頭に置き、スクロールに乗せる
+            let header = NSCollectionLayoutBoundarySupplementaryItem(
+                layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                   heightDimension: .estimated(56)),
+                elementKind: BoardProgressView.elementKind,
+                alignment: .top)
+            section.boundarySupplementaryItems = [header]
             section.interGroupSpacing = spacing
             section.contentInsets = NSDirectionalEdgeInsets(top: spacing,
                                                             leading: spacing,
@@ -256,6 +266,16 @@ extension ChildContentViewController: UICollectionViewDataSource {
         case .empty:
             return collectionView.dequeueReusableCell(withReuseIdentifier: EmptySlotCell.reuseIdentifier, for: indexPath)
         }
+    }
+
+    func collectionView(_ collectionView: UICollectionView,
+                        viewForSupplementaryElementOfKind kind: String,
+                        at indexPath: IndexPath) -> UICollectionReusableView {
+        let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
+                                                                   withReuseIdentifier: BoardProgressView.reuseIdentifier,
+                                                                   for: indexPath)
+        (view as? BoardProgressView)?.apply(filled: realmPhotos?.count ?? 0, limit: RealmManager.photoLimit)
+        return view
     }
 }
 

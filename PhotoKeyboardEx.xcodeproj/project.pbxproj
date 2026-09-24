@@ -18,6 +18,7 @@
 		3ACE86CEBB02C3D24A38DC01 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		3ADA80A7C5E8499BBE4A96AA /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 6C2B5E648EF740DE8D381735 /* Toast */; };
 		4105F920130C4F5180B8CA1E /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = C27D3E2C284F4289B6FC641E /* Lottie */; };
+		427F0E37B0F9C5AC0997332E /* BoardProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B9EC13E74D527856FDC7FB /* BoardProgressView.swift */; };
 		551D4C3130734866870EB9E3 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8E472C01B83C4C73818F93AA /* RealmSwift */; };
 		5911FB9D9B206B202BB42E94 /* OnboardingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F89E41C32AE8F51E23E5FC /* OnboardingCoordinator.swift */; };
 		5A1F845C0D5D9A7847C44EA4 /* GuideSampleGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1295265A3BC90109D77794B /* GuideSampleGallery.swift */; };
@@ -172,6 +173,7 @@
 		11E1B897FFA5A256EA97357A /* OnboardingHintView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingHintView.swift; sourceTree = "<group>"; };
 		18FBFD095097990BB98F818A /* GuideStepView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideStepView.swift; sourceTree = "<group>"; };
 		1BC6FE59F327556F25A20E4F /* PaywallPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaywallPresenter.swift; sourceTree = "<group>"; };
+		24B9EC13E74D527856FDC7FB /* BoardProgressView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BoardProgressView.swift; sourceTree = "<group>"; };
 		2D82B8661A81BE5AB8061313 /* PhotoQuota.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhotoQuota.swift; sourceTree = "<group>"; };
 		2E8DCF51AEA21D5ACF31D816 /* GuideComposerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideComposerView.swift; sourceTree = "<group>"; };
 		4043FCB63BC521B268037404 /* PhotoKeyboardEx.storekit */ = {isa = PBXFileReference; includeInIndex = 1; path = PhotoKeyboardEx.storekit; sourceTree = "<group>"; };
@@ -494,6 +496,7 @@
 			children = (
 				CB02F44FBF4F68EED5FA2526 /* BoardSlots.swift */,
 				D5ACAFF6A2A6055F90EE4D1C /* EmptySlotCell.swift */,
+				24B9EC13E74D527856FDC7FB /* BoardProgressView.swift */,
 			);
 			name = Board;
 			path = Board;
@@ -821,6 +824,7 @@
 				B0B3CF3A0B731F0AE6B96C4C /* OnboardingCelebration.swift in Sources */,
 				BDF0988CDCAD60E5CA81FCB5 /* BoardSlots.swift in Sources */,
 				CD81734F75815B10E5627982 /* EmptySlotCell.swift in Sources */,
+				427F0E37B0F9C5AC0997332E /* BoardProgressView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -115,3 +115,5 @@
 "celebrateOpenInstagram" = "Try in Instagram";
 "celebrateLater" = "Later";
 "onboardingHintAllowFullAccess" = "Allow Full Access, then open the keyboard once";
+"boardProgress" = "%d / %d";
+"boardComplete" = "Complete";

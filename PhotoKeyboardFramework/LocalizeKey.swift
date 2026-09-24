@@ -122,6 +122,10 @@ public enum LocalizeKey: String, CaseIterable {
     case onboardingHintSavePhoto
     case onboardingHintEnableKeyboard
     case onboardingHintAllowFullAccess
+    /// マイボードの進み具合。"%d / %d"
+    case boardProgress
+    /// 上限まで埋まったとき
+    case boardComplete
     case onboardingHintHowToSend
     case menuPremium
     case menuPremiumActive
