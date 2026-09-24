@@ -27,11 +27,12 @@ public enum Spacing {
 // MARK: - 角丸
 
 /// 「ピル」と「中程度」の2種類だけを使う。中途半端な角丸と直角を作らない。
+/// クレイ質感は角が大きいほど粘土らしく見えるため、以前の 12 / 16 から上げた。
 public enum Radius {
-    /// 入力欄、小さいカード
-    public static let small: CGFloat = 12
-    /// 画像セル、カード。参照アプリの実測値(setlogは約20pt)に近づける
-    public static let card: CGFloat = 16
+    /// 入力欄、小さいカード、ボタン
+    public static let small: CGFloat = 16
+    /// 画像セル、カード
+    public static let card: CGFloat = 24
 }
 
 extension UIView {

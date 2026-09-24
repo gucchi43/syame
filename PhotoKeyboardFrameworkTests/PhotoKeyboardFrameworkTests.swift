@@ -573,6 +573,12 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         }
     }
 
+    /// クレイの角丸は大きめに固定する。小さいと粘土ではなく厚紙に見える
+    func testRadiusIsLargeEnoughForClay() {
+        XCTAssertEqual(Radius.small, 16)
+        XCTAssertEqual(Radius.card, 24)
+    }
+
     /// クレイの面に載せる本文は 4.5:1 を満たすこと。面は淡いので白文字は載せない
     func testTextOnClaySurfacesStaysReadable() {
         for dark in [false, true] {
