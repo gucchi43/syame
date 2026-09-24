@@ -26,4 +26,15 @@ enum BoardSlots {
         let empties = Array(repeating: BoardSlot.empty, count: max(limit - photoCount, 0))
         return photos + empties
     }
+
+    /// 直前の一覧に無かった写真の添字。保存直後に「ぽんと出す」マスを決める。
+    /// 通知は id を持たないため、前後の id の差で見つける
+    static func newlyAdded(previous: Set<String>, current: [String]) -> [Int] {
+        return current.enumerated().compactMap { previous.contains($0.element) ? nil : $0.offset }
+    }
+
+    /// 上限まで埋まった瞬間に一度だけ祝う
+    static func shouldCelebrate(filled: Int, limit: Int, hasCelebrated: Bool) -> Bool {
+        return !hasCelebrated && filled >= limit
+    }
 }

@@ -1099,6 +1099,43 @@ class PhotoKeyboardExTests: XCTestCase {
                        "案内行が消えたときにスクロール位置が飛んでいる")
     }
 
+    // MARK: - 埋まる演出
+
+    /// 直前に無かった写真だけを「増えた」とみなすこと。並び替えや削除では出さない
+    func testNewlyAddedFindsOnlyUnknownIds() {
+        let previous: Set<String> = ["a", "b"]
+        XCTAssertEqual(BoardSlots.newlyAdded(previous: previous, current: ["a", "b", "c"]), [2])
+        XCTAssertEqual(BoardSlots.newlyAdded(previous: previous, current: ["b", "a"]), [])
+        XCTAssertEqual(BoardSlots.newlyAdded(previous: previous, current: ["a"]), [])
+    }
+
+    /// 上限に達した瞬間だけ祝い、二度目は出さないこと
+    func testCelebrateOnlyOnceAtLimit() {
+        XCTAssertTrue(BoardSlots.shouldCelebrate(filled: 8, limit: 8, hasCelebrated: false))
+        XCTAssertFalse(BoardSlots.shouldCelebrate(filled: 7, limit: 8, hasCelebrated: false))
+        XCTAssertFalse(BoardSlots.shouldCelebrate(filled: 8, limit: 8, hasCelebrated: true))
+        XCTAssertTrue(BoardSlots.shouldCelebrate(filled: 9, limit: 8, hasCelebrated: false),
+                      "上限を超えていても未祝なら祝う")
+    }
+
+    /// 保存直後の演出はセルが出来てから当てる。reloadData の直後はセルが無い
+    @MainActor
+    func testCellsExistRightAfterReloadWhenLaidOut() {
+        let board = UIStoryboard(name: "ChildContent", bundle: nil)
+            .instantiateInitialViewController() as? ChildContentViewController
+        guard let board = board else { return XCTFail("マイボードを組み立てられない") }
+        board.loadViewIfNeeded()
+        board.view.frame = CGRect(x: 0, y: 0, width: 402, height: 874)
+        let window = UIWindow(frame: board.view.bounds)
+        window.rootViewController = board
+        window.isHidden = false
+        board.view.layoutIfNeeded()
+        board.collectionView.reloadData()
+        board.collectionView.layoutIfNeeded()
+        XCTAssertNotNil(board.collectionView.cellForItem(at: IndexPath(item: 0, section: 0)),
+                        "レイアウト後もセルが無い。演出の当て先が無くなる")
+    }
+
     /// 幅が極端に狭くても破綻しないこと
     func testGridMetricsHandlesTinyContainer() {
         let metrics = ChildContentViewController.gridMetrics(containerWidth: 10)

@@ -326,6 +326,16 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         XCTAssertFalse(defaults.isUsagePush(), "完了後も使い方画面が出続ける")
     }
 
+    /// マイボードの完成を祝った記録が残ること
+    func testBoardCompleteCelebrationIsRemembered() {
+        let defaults = GroupeDefaults.shared
+        defaults.sharedDefaults.removeObject(forKey: "hasCelebratedBoardComplete")
+        XCTAssertFalse(defaults.hasCelebratedBoardComplete())
+        defaults.markBoardCompleteCelebrated()
+        XCTAssertTrue(defaults.hasCelebratedBoardComplete())
+        defaults.sharedDefaults.removeObject(forKey: "hasCelebratedBoardComplete")
+    }
+
     /// レビュー依頼は送信8回目で1度だけ。
     /// カウンタをリセットしないと以降の起動で毎回ダイアログが出る
     func testRateAlertFiresOnceAfterEightSendsAndResets() {

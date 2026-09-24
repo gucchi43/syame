@@ -26,8 +26,46 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
     /// いま並べているマス。写真の枚数と上限から決め、reload のたびに引き直す
     private(set) var slots: [BoardSlot] = []
 
+    /// 直前に並べていた写真の id。増えたマスを見つけるために持つ
+    private var knownPhotoIds: Set<String> = []
+
     private func rebuildSlots() {
         slots = BoardSlots.make(photoCount: realmPhotos?.count ?? 0, limit: RealmManager.photoLimit)
+    }
+
+    /// 並べ直したあと、増えたマスを出し、上限に達していれば祝う
+    private func animateChanges() {
+        let currentIds = (realmPhotos.map { Array($0) } ?? []).map { $0.id }
+        let added = BoardSlots.newlyAdded(previous: knownPhotoIds, current: currentIds)
+        knownPhotoIds = Set(currentIds)
+
+        for index in added {
+            guard let cell = collectionView.cellForItem(at: IndexPath(item: index, section: 0)) else { continue }
+            Motion.pop(cell)
+        }
+        if !added.isEmpty {
+            Haptic.play(.fill)
+        }
+
+        let filled = currentIds.count
+        guard BoardSlots.shouldCelebrate(filled: filled, limit: RealmManager.photoLimit,
+                                         hasCelebrated: GroupeDefaults.shared.hasCelebratedBoardComplete())
+        else { return }
+        GroupeDefaults.shared.markBoardCompleteCelebrated()
+        celebrateComplete()
+    }
+
+    /// 左上から順に弾ませ、振動で締める。紙吹雪や全画面の演出はしない(spec)
+    private func celebrateComplete() {
+        let ordered = collectionView.indexPathsForVisibleItems.sorted()
+        for (offset, indexPath) in ordered.enumerated() {
+            guard let cell = collectionView.cellForItem(at: indexPath) else { continue }
+            Motion.pop(cell, delay: Motion.rippleStagger * Double(offset))
+        }
+        let total = Motion.rippleStagger * Double(ordered.count) + Motion.popDuration
+        DispatchQueue.main.asyncAfter(deadline: .now() + total) {
+            Haptic.play(.complete)
+        }
     }
 
     override func viewDidLoad() {
@@ -45,6 +83,8 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         super.viewWillAppear(animated)
         rebuildSlots()
         collectionView.reloadData()
+        // 初回表示のぶんまで「増えた」扱いにしないよう、表示時点の並びを既知として覚える
+        knownPhotoIds = Set((realmPhotos.map { Array($0) } ?? []).map { $0.id })
     }
 
     override func viewDidLayoutSubviews() {
@@ -191,11 +231,15 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
     @objc func reloadAfterPost(notification: Notification) -> Void {
         rebuildSlots()
         collectionView.reloadData()
+        // reloadData の直後はセルがまだ無い。レイアウトを確定させてから動かす
+        collectionView.layoutIfNeeded()
+        animateChanges()
     }
 
     @objc func reloadSaveState(notification: Notification) -> Void {
         rebuildSlots()
         collectionView.reloadData()
+        knownPhotoIds = Set((realmPhotos.map { Array($0) } ?? []).map { $0.id })
     }
 
     func realmObjectDidChange() {
@@ -203,6 +247,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
             guard let self = self else { return }
             self.rebuildSlots()
             self.collectionView?.reloadData()
+            self.knownPhotoIds = Set((self.realmPhotos.map { Array($0) } ?? []).map { $0.id })
         }
     }
 
