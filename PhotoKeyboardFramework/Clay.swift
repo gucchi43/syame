@@ -228,7 +228,8 @@ public class ClayButton: UIButton {
         adjustsImageWhenHighlighted = false
 
         setTitleColor(.textPrimary, for: .normal)
-        setTitleColor(UIColor.textPrimary.withAlphaComponent(0.4), for: .disabled)
+        // 無効の見た目は isEnabled の didSet が付ける alpha 0.6 だけに任せる。
+        // ここでも文字色を薄めると二重に薄まって文字が読めなくなる
         tintColor = .textPrimary
         // CTA は太字。細いままだと淡い面の上で線が痩せる
         titleLabel?.font = .scaled(.body, weight: .bold)

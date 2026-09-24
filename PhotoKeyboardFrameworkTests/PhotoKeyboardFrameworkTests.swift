@@ -919,6 +919,18 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(weight, UIFont.Weight.semibold.rawValue, "太字になっていない")
     }
 
+    /// 無効のときは全体を薄くするだけ。文字色も薄めると重なって読めなくなる
+    @MainActor
+    func testDisabledClayButtonKeepsTitleOpaque() {
+        let button = ClayButton(frame: CGRect(x: 0, y: 0, width: 160, height: 48))
+        button.setTitle("試す", for: .normal)
+        button.isEnabled = false
+        var alpha: CGFloat = 0
+        button.titleColor(for: .disabled)?.getRed(nil, green: nil, blue: nil, alpha: &alpha)
+        XCTAssertEqual(alpha, 1.0, accuracy: 0.01, "無効時の文字色が薄められている")
+        XCTAssertEqual(button.alpha, 0.6, accuracy: 0.01)
+    }
+
     /// 丸ボタンは 44pt 以上で、面が真円になること
     @MainActor
     func testRoundClayButtonMeetsTapTarget() {
