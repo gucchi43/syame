@@ -37,6 +37,8 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(reloadSaveState(notification:)), name: .updateSaveState, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadAfterPost(notification:)), name: .allReload, object: nil)
         commonInit()
+        // 表示前でも並びが決まっているようにする。データソースは viewWillAppear に頼らない
+        rebuildSlots()
     }
 
     override func viewWillAppear(_ animated: Bool) {
