@@ -1166,6 +1166,30 @@ class PhotoKeyboardExTests: XCTestCase {
                         "レイアウト後もセルが無い。演出の当て先が無くなる")
     }
 
+    /// 並びが変わっていない Realm 通知では一覧を作り直さないこと。保存直後の演出を途中で消さない
+    @MainActor
+    func testUnchangedRealmChangeDoesNotReload() {
+        let board = UIStoryboard(name: "ChildContent", bundle: nil)
+            .instantiateInitialViewController() as? ChildContentViewController
+        guard let board = board else { return XCTFail("マイボードを組み立てられない") }
+        board.loadViewIfNeeded()
+        board.view.frame = CGRect(x: 0, y: 0, width: 402, height: 874)
+        let window = UIWindow(frame: board.view.bounds)
+        window.rootViewController = board
+        window.isHidden = false
+        board.view.layoutIfNeeded()
+        board.viewWillAppear(false)          // knownPhotoIds を現状で揃える
+        board.collectionView.layoutIfNeeded()
+        let cellBefore = board.collectionView.cellForItem(at: IndexPath(item: 0, section: 0))
+        board.realmObjectDidChange()
+        let settled = expectation(description: "main.async を消化")
+        DispatchQueue.main.async { settled.fulfill() }
+        wait(for: [settled], timeout: 2)
+        board.collectionView.layoutIfNeeded()
+        let cellAfter = board.collectionView.cellForItem(at: IndexPath(item: 0, section: 0))
+        XCTAssertTrue(cellBefore === cellAfter, "並びが同じなのにセルが作り直されている")
+    }
+
     /// 幅が極端に狭くても破綻しないこと
     func testGridMetricsHandlesTinyContainer() {
         let metrics = ChildContentViewController.gridMetrics(containerWidth: 10)

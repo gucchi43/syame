@@ -248,9 +248,15 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
     func realmObjectDidChange() {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
+            let currentIds = (self.realmPhotos.map { Array($0) } ?? []).map { $0.id }
+            let photoSlotCount = self.slots.filter { if case .photo = $0 { return true } else { return false } }.count
+            // 保存直後の演出中に Realm の通知で作り直さない。並びが変わっていなければ何もしない
+            if Set(currentIds) == self.knownPhotoIds && currentIds.count == photoSlotCount {
+                return
+            }
             self.rebuildSlots()
             self.collectionView?.reloadData()
-            self.knownPhotoIds = Set((self.realmPhotos.map { Array($0) } ?? []).map { $0.id })
+            self.knownPhotoIds = Set(currentIds)
         }
     }
 
