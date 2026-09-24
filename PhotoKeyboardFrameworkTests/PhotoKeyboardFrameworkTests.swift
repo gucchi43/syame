@@ -753,6 +753,78 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         XCTAssertEqual(recorder.played, [.tap, .complete])
     }
 
+    // MARK: - ClaySurface
+
+    /// 描画した面の、上端の帯と下端の帯の平均輝度を返す。角は避けて中央 60% だけ見る
+    @MainActor
+    private func bandLuminance(of view: UIView, dark: Bool) -> (top: Double, bottom: Double) {
+        view.overrideUserInterfaceStyle = dark ? .dark : .light
+        view.layoutIfNeeded()
+        let size = view.bounds.size
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = 1
+        format.opaque = true
+        let image = UIGraphicsImageRenderer(size: size, format: format).image { context in
+            UIColor.magenta.setFill()
+            context.fill(CGRect(origin: .zero, size: size))
+            view.layer.render(in: context.cgContext)
+        }
+        guard let cg = image.cgImage else { return (0, 0) }
+        let w = cg.width, h = cg.height
+        var px = [UInt8](repeating: 0, count: w * h * 4)
+        guard let ctx = CGContext(data: &px, width: w, height: h, bitsPerComponent: 8, bytesPerRow: w * 4,
+                                  space: CGColorSpaceCreateDeviceRGB(),
+                                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return (0, 0) }
+        ctx.draw(cg, in: CGRect(x: 0, y: 0, width: w, height: h))
+        func mean(rows: Range<Int>) -> Double {
+            var sum = 0.0, n = 0.0
+            for y in rows {
+                for x in Int(Double(w) * 0.2)..<Int(Double(w) * 0.8) {
+                    let i = (y * w + x) * 4
+                    sum += 0.2126 * Double(px[i]) + 0.7152 * Double(px[i + 1]) + 0.0722 * Double(px[i + 2])
+                    n += 1
+                }
+            }
+            return sum / max(n, 1)
+        }
+        // 角丸と影を避け、面の内側の上下 12% を見る
+        let inset = Int(Double(h) * 0.12)
+        return (mean(rows: inset..<(inset * 2)), mean(rows: (h - inset * 2)..<(h - inset)))
+    }
+
+    /// 膨らむ面は上端が下端より明るいこと(ハイライトの証明)。ライト・ダーク両方
+    @MainActor
+    func testRaisedSurfaceIsBrighterAtTop() {
+        for dark in [false, true] {
+            let surface = ClaySurface(style: .raised)
+            surface.frame = CGRect(x: 0, y: 0, width: 200, height: 120)
+            let band = bandLuminance(of: surface, dark: dark)
+            XCTAssertGreaterThan(band.top, band.bottom + 2,
+                                 "\(dark ? "ダーク" : "ライト"): 上端が明るくなっていない \(band)")
+        }
+    }
+
+    /// くぼむ面は逆に上端が暗いこと
+    @MainActor
+    func testRecessedSurfaceIsDarkerAtTop() {
+        for dark in [false, true] {
+            let surface = ClaySurface(style: .recessed)
+            surface.frame = CGRect(x: 0, y: 0, width: 200, height: 120)
+            let band = bandLuminance(of: surface, dark: dark)
+            XCTAssertLessThan(band.top + 2, band.bottom,
+                              "\(dark ? "ダーク" : "ライト"): 上端が暗くなっていない \(band)")
+        }
+    }
+
+    /// 子ビューは contentView に載り、面の大きさに追従すること
+    @MainActor
+    func testSurfaceContentViewFillsBounds() {
+        let surface = ClaySurface()
+        surface.frame = CGRect(x: 0, y: 0, width: 150, height: 90)
+        surface.layoutIfNeeded()
+        XCTAssertEqual(surface.contentView.bounds.size, surface.bounds.size)
+    }
+
     // MARK: - ロゴの焼き込み
 
     /// ロゴ素材が Framework のバンドルから読めること。

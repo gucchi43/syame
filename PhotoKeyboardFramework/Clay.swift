@@ -64,6 +64,113 @@ extension UIColor {
     }
 }
 
+// MARK: - 膨らむ面
+
+/// クレイ質感の面。外側の柔らかい影、上端の内側ハイライト、下端の内側の陰で膨らみを作る。
+///
+/// 外側の影を持つ層(self, clip なし)と、中身を丸く切る層(body, clip あり)の 2 層で組む。
+/// 1 層で clipsToBounds を立てると外側の影が切れる。
+/// 子ビューは contentView に載せる。
+public final class ClaySurface: UIView {
+    public enum Style {
+        /// 膨らむ。ボタン、カード
+        case raised
+        /// くぼむ。空きスロット、入力欄
+        case recessed
+    }
+
+    public let style: Style
+    public var fill: UIColor { didSet { applyColors() } }
+    public var cornerRadius: CGFloat { didSet { setNeedsLayout() } }
+
+    /// 子ビューの置き場
+    public let contentView = UIView()
+
+    private let body = UIView()
+    private let highlight = CAGradientLayer()
+    private let shade = CAGradientLayer()
+
+    public init(style: Style = .raised, fill: UIColor = .clayLavender, cornerRadius: CGFloat = Radius.card) {
+        self.style = style
+        self.fill = fill
+        self.cornerRadius = cornerRadius
+        super.init(frame: .zero)
+        setup()
+    }
+
+    public required init?(coder: NSCoder) {
+        self.style = .raised
+        self.fill = .clayLavender
+        self.cornerRadius = Radius.card
+        super.init(coder: coder)
+        setup()
+    }
+
+    private func setup() {
+        body.clipsToBounds = true
+        body.layer.cornerCurve = .continuous
+        addSubview(body)
+
+        // 上端の光と下端の陰。向きは style で決める
+        highlight.startPoint = CGPoint(x: 0.5, y: 0)
+        highlight.endPoint = CGPoint(x: 0.5, y: 1)
+        shade.startPoint = CGPoint(x: 0.5, y: 1)
+        shade.endPoint = CGPoint(x: 0.5, y: 0)
+        body.layer.addSublayer(highlight)
+        body.layer.addSublayer(shade)
+
+        contentView.backgroundColor = .clear
+        body.addSubview(contentView)
+
+        layer.cornerCurve = .continuous
+        applyColors()
+    }
+
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        body.frame = bounds
+        body.layer.cornerRadius = cornerRadius
+        contentView.frame = body.bounds
+        highlight.frame = body.bounds
+        shade.frame = body.bounds
+        // 影の形を先に決めておくと、レイアウトのたびに影を計算し直さない
+        layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: cornerRadius).cgPath
+    }
+
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        // 影と cgColor は自動で明暗に追従しないため、ここで引き直す
+        applyColors()
+    }
+
+    private func applyColors() {
+        let resolvedFill = fill.resolvedColor(with: traitCollection)
+        let light = UIColor.clayHighlight(of: fill).resolvedColor(with: traitCollection)
+        let dark = UIColor.clayShade(of: fill).resolvedColor(with: traitCollection)
+        body.backgroundColor = resolvedFill
+
+        switch style {
+        case .raised:
+            // 上から光が当たり、下に陰が落ちる
+            highlight.colors = [light.withAlphaComponent(0.9).cgColor, light.withAlphaComponent(0).cgColor]
+            highlight.locations = [0, 0.45]
+            shade.colors = [dark.withAlphaComponent(0.55).cgColor, dark.withAlphaComponent(0).cgColor]
+            shade.locations = [0, 0.4]
+            layer.shadowColor = dark.cgColor
+            layer.shadowOffset = CGSize(width: 0, height: 6)
+            layer.shadowRadius = 12
+            layer.shadowOpacity = traitCollection.userInterfaceStyle == .dark ? 0.55 : 0.35
+        case .recessed:
+            // 上から陰が落ち、下端がわずかに光る。外側の影は持たない
+            highlight.colors = [dark.withAlphaComponent(0.6).cgColor, dark.withAlphaComponent(0).cgColor]
+            highlight.locations = [0, 0.4]
+            shade.colors = [light.withAlphaComponent(0.7).cgColor, light.withAlphaComponent(0).cgColor]
+            shade.locations = [0, 0.35]
+            layer.shadowOpacity = 0
+        }
+    }
+}
+
 // MARK: - 動き
 
 /// 押下・出現・完成の動き。時間とバネはここでだけ決める。
