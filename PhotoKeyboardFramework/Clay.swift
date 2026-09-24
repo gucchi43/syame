@@ -227,6 +227,10 @@ public class ClayButton: UIButton {
         if isCircular {
             surface.cornerRadius = bounds.height / 2
         }
+        // UIButton は setImage 等のタイミングによって内部の imageView / titleLabel を
+        // surface より背面に置き直すことがある。レイアウトのたびに前面へ出し直す
+        imageView.map { bringSubviewToFront($0) }
+        titleLabel.map { bringSubviewToFront($0) }
     }
 
     public override var isHighlighted: Bool {

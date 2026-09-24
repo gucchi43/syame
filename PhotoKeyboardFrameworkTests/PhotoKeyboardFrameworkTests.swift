@@ -844,6 +844,40 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         XCTAssertFalse(button.adjustsImageWhenHighlighted)
     }
 
+    /// 丸ボタンのアイコンが面の上に描かれること。面に隠れると押す先が分からない
+    @MainActor
+    func testRoundClayButtonDrawsItsSymbolOnTop() {
+        let button = ClayButton.round(symbol: Symbol.add, size: 56)
+        button.frame = CGRect(x: 0, y: 0, width: 56, height: 56)
+        button.overrideUserInterfaceStyle = .light
+        button.layoutIfNeeded()
+        let size = button.bounds.size
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = 1
+        format.opaque = true
+        let image = UIGraphicsImageRenderer(size: size, format: format).image { context in
+            UIColor.white.setFill()
+            context.fill(CGRect(origin: .zero, size: size))
+            button.layer.render(in: context.cgContext)
+        }
+        guard let cg = image.cgImage else { return XCTFail("描画できない") }
+        let w = cg.width, h = cg.height
+        var px = [UInt8](repeating: 0, count: w * h * 4)
+        guard let ctx = CGContext(data: &px, width: w, height: h, bitsPerComponent: 8, bytesPerRow: w * 4,
+                                  space: CGColorSpaceCreateDeviceRGB(),
+                                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return XCTFail("読めない") }
+        ctx.draw(cg, in: CGRect(x: 0, y: 0, width: w, height: h))
+        // 中央 40% の領域に、面(淡い藤色)より明らかに暗い画素があればアイコンが載っている
+        var darkest = 255
+        for y in Int(Double(h) * 0.3)..<Int(Double(h) * 0.7) {
+            for x in Int(Double(w) * 0.3)..<Int(Double(w) * 0.7) {
+                let i = (y * w + x) * 4
+                darkest = min(darkest, (Int(px[i]) + Int(px[i + 1]) + Int(px[i + 2])) / 3)
+            }
+        }
+        XCTAssertLessThan(darkest, 120, "中央にアイコンの暗い画素が無い(最も暗い値: \(darkest))")
+    }
+
     /// 文字は太字の本文色。クレイの面は淡いため白文字は載せない
     @MainActor
     func testClayButtonUsesDarkBoldTitle() {
