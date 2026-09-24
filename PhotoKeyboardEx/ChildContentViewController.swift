@@ -51,14 +51,16 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         super.viewDidLayoutSubviews()
         // 案内行が出ている間は、その高さぶん一覧を下げてヘッダと重ねない
         let inset = onboardingHint.isHidden ? 0 : onboardingHint.frame.maxY - view.safeAreaInsets.top + Spacing.s
-        if collectionView.contentInset.top != inset {
-            let previousInset = collectionView.contentInset.top
+        let previousInset = collectionView.contentInset.top
+        if previousInset != inset {
+            // 先頭で止まっているときだけ、先頭に留まるよう位置を合わせる。
+            // スクロール中に inset が変わっても、利用者の位置は動かさない
+            let wasAtTop = abs(collectionView.contentOffset.y + previousInset) < 1
             collectionView.contentInset.top = inset
             collectionView.verticalScrollIndicatorInsets.top = inset
-            // contentInset を後から変えても、確定済みの contentOffset は自動で追従しない。
-            // 案内行がすでに表示済みの状態(2回目以降のレイアウト)でこの inset が変わると、
-            // 上のヘッダが案内行の裏に隠れたまま動かないため、差分ぶんだけ追わせる
-            collectionView.contentOffset.y += previousInset - inset
+            if wasAtTop {
+                collectionView.contentOffset.y = -inset
+            }
         }
     }
 

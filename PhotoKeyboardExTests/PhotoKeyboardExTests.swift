@@ -1073,6 +1073,32 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(headerTop, hint.frame.maxY, "ヘッダが案内行と重なっている")
     }
 
+    /// 下へスクロールしているときに案内行が消えても、見ている位置を動かさないこと
+    @MainActor
+    func testHidingHintDoesNotMoveScrolledContent() {
+        let board = UIStoryboard(name: "ChildContent", bundle: nil)
+            .instantiateInitialViewController() as? ChildContentViewController
+        guard let board = board else { return XCTFail("マイボードを組み立てられない") }
+        board.loadViewIfNeeded()
+        board.view.frame = CGRect(x: 0, y: 0, width: 402, height: 400)
+        board.applyOnboarding(step: .savePhoto)
+        let window = UIWindow(frame: board.view.bounds)
+        window.rootViewController = board
+        window.isHidden = false
+        board.view.layoutIfNeeded()
+
+        // 8 マスあるので 400pt の高さなら必ずスクロールできる
+        board.collectionView.contentOffset.y = 200
+        let before = board.collectionView.contentOffset.y
+
+        board.applyOnboarding(step: .done)
+        board.view.setNeedsLayout()
+        board.view.layoutIfNeeded()
+
+        XCTAssertEqual(board.collectionView.contentOffset.y, before, accuracy: 0.5,
+                       "案内行が消えたときにスクロール位置が飛んでいる")
+    }
+
     /// 幅が極端に狭くても破綻しないこと
     func testGridMetricsHandlesTinyContainer() {
         let metrics = ChildContentViewController.gridMetrics(containerWidth: 10)
