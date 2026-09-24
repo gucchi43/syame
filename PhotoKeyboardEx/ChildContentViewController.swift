@@ -23,6 +23,13 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
     var realmPhotos: Results<RealmPhoto>?
     private let refreshControl = UIRefreshControl()
 
+    /// いま並べているマス。写真の枚数と上限から決め、reload のたびに引き直す
+    private(set) var slots: [BoardSlot] = []
+
+    private func rebuildSlots() {
+        slots = BoardSlots.make(photoCount: realmPhotos?.count ?? 0, limit: RealmManager.photoLimit)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         realmPhotos = RealmManager.shared.realmData
@@ -34,8 +41,8 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        rebuildSlots()
         collectionView.reloadData()
-        updateEmptyState()
     }
 
     /// いまの手順を受け取り、案内行の表示を更新する
@@ -88,6 +95,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         collectionView.delegate = self
         setupCollectionView()
         collectionView.register(PhotoCollectionViewCell.self, forCellWithReuseIdentifier: PhotoCollectionViewCell.reuseIdentifier)
+        collectionView.register(EmptySlotCell.self, forCellWithReuseIdentifier: EmptySlotCell.reuseIdentifier)
         collectionView.contentMode = .left
         collectionView.backgroundColor = .bgBase
         refreshControl.addTarget(self, action: #selector(self
@@ -151,66 +159,21 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         }
     }
 
-    func updateEmptyState() {
-        guard (realmPhotos?.count ?? 0) == 0 else {
-            collectionView.backgroundView = nil
-            return
-        }
-
-        let emptyView = UIView(frame: collectionView.bounds)
-        emptyView.backgroundColor = .bgBase
-
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.spacing = 16
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-
-        let imageView = UIImageView()
-        imageView.image = .symbol(Symbol.emptyState, pointSize: 56)
-        imageView.tintColor = .textSecondary
-        imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
-
-        let titleLabel = UILabel()
-        titleLabel.attributedText = NSAttributedString(
-            string: LocalizeKey.myBoardEmptyTitle.localizedString(),
-            attributes: [
-                .font: UIFont.scaled(.headline, weight: .semibold),
-                .foregroundColor: UIColor.textPrimary
-            ]
-        )
-        titleLabel.textAlignment = .center
-
-        stackView.addArrangedSubview(imageView)
-        stackView.addArrangedSubview(titleLabel)
-        emptyView.addSubview(stackView)
-
-        NSLayoutConstraint.activate([
-            stackView.centerXAnchor.constraint(equalTo: emptyView.centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo: emptyView.centerYAnchor, constant: -60)
-        ])
-
-        collectionView.backgroundView = emptyView
-    }
-
     @objc func reloadAfterPost(notification: Notification) -> Void {
+        rebuildSlots()
         collectionView.reloadData()
-        updateEmptyState()
     }
 
     @objc func reloadSaveState(notification: Notification) -> Void {
+        rebuildSlots()
         collectionView.reloadData()
-        updateEmptyState()
     }
 
     func realmObjectDidChange() {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
+            self.rebuildSlots()
             self.collectionView?.reloadData()
-            self.updateEmptyState()
         }
     }
 
@@ -277,21 +240,32 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
 
 extension ChildContentViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return realmPhotos?.count ?? 0
+        return slots.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCollectionViewCell.reuseIdentifier, for: indexPath)
-        if let cell = cell as? PhotoCollectionViewCell, let photo = savedPhoto(at: indexPath.row) {
-            cell.configure(photo: photo, menu: makeMenu(for: photo))
+        switch slots[indexPath.item] {
+        case .photo(let index):
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCollectionViewCell.reuseIdentifier, for: indexPath)
+            if let cell = cell as? PhotoCollectionViewCell, let photo = savedPhoto(at: index) {
+                cell.configure(photo: photo, menu: makeMenu(for: photo))
+            }
+            return cell
+        case .empty:
+            return collectionView.dequeueReusableCell(withReuseIdentifier: EmptySlotCell.reuseIdentifier, for: indexPath)
         }
-        return cell
     }
 }
 
 extension ChildContentViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let photo = savedPhoto(at: indexPath.row) else { return }
-        showPhotoDetail(rPhoto: photo)
+        switch slots[indexPath.item] {
+        case .photo(let index):
+            guard let photo = savedPhoto(at: index) else { return }
+            showPhotoDetail(rPhoto: photo)
+        case .empty:
+            // 空きスロットは追加の入口。案内行の「保存する」と同じ導線に乗せる
+            NotificationCenter.default.post(name: .requestAddPhoto, object: nil)
+        }
     }
 }

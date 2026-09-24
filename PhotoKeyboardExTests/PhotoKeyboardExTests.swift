@@ -652,6 +652,58 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertTrue(add?.doneButton is ClayButton, "完了ボタンが ClayButton ではない")
     }
 
+    // MARK: - マイボードのスロット
+
+    /// 写真が上限に満たないぶんは空きスロットで埋め、常に上限ぶんのマスを見せること
+    func testSlotsPadWithEmptyUpToLimit() {
+        let slots = BoardSlots.make(photoCount: 3, limit: 8)
+        XCTAssertEqual(slots.count, 8)
+        XCTAssertEqual(Array(slots.prefix(3)), [.photo(index: 0), .photo(index: 1), .photo(index: 2)])
+        XCTAssertEqual(Array(slots.suffix(5)), Array(repeating: BoardSlot.empty, count: 5))
+    }
+
+    /// 0 枚なら全部が空きスロット。空状態の専用画面は要らない
+    func testSlotsAreAllEmptyWhenNothingSaved() {
+        XCTAssertEqual(BoardSlots.make(photoCount: 0, limit: 8), Array(repeating: BoardSlot.empty, count: 8))
+    }
+
+    /// 上限に達したら空きは無い
+    func testSlotsHaveNoEmptyAtLimit() {
+        let slots = BoardSlots.make(photoCount: 8, limit: 8)
+        XCTAssertEqual(slots.count, 8)
+        XCTAssertFalse(slots.contains(.empty))
+    }
+
+    /// 上限を超えて保存されていても写真を隠さない(上限を下げた既存利用者を守る)
+    func testSlotsNeverHidePhotosBeyondLimit() {
+        let slots = BoardSlots.make(photoCount: 9, limit: 8)
+        XCTAssertEqual(slots.count, 9)
+        XCTAssertEqual(slots.last, .photo(index: 8))
+    }
+
+    /// 空きスロットを押すと追加の導線に乗ること。案内行の「保存する」と同じ通知を使う
+    @MainActor
+    func testTappingEmptySlotRequestsAddPhoto() {
+        let board = UIStoryboard(name: "ChildContent", bundle: nil)
+            .instantiateInitialViewController() as? ChildContentViewController
+        guard let board = board else { return XCTFail("マイボードを組み立てられない") }
+        board.loadViewIfNeeded()
+        board.view.frame = CGRect(x: 0, y: 0, width: 402, height: 874)
+        board.view.layoutIfNeeded()
+
+        let asked = expectation(description: "追加の依頼")
+        let token = NotificationCenter.default.addObserver(forName: .requestAddPhoto, object: nil, queue: .main) { _ in
+            asked.fulfill()
+        }
+        defer { NotificationCenter.default.removeObserver(token) }
+
+        guard let emptyIndex = board.slots.firstIndex(of: .empty) else {
+            return XCTFail("空きスロットが無い。上限まで埋まった Realm で走っている")
+        }
+        board.collectionView(board.collectionView, didSelectItemAt: IndexPath(item: emptyIndex, section: 0))
+        wait(for: [asked], timeout: 2)
+    }
+
     /// キーボード設定画面の「あとで」の隣の主ボタンも同じ
     @MainActor
     func testUsageNextButtonIsClay() {
