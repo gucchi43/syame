@@ -25,6 +25,7 @@ public final class GroupeDefaults {
         case seededOfficialPhotoIds
         case lastOnboardingStep, hasCelebratedOnboarding
         case fullAccessConfirmedAt
+        case hasCelebratedBoardComplete
     }
 
     /// キーボード拡張はデバッガを繋ぎにくいため、URLオープンの結果だけApp Group経由で
@@ -106,6 +107,15 @@ public final class GroupeDefaults {
 
     public func markOnboardingCelebrated() {
         sharedDefaults.set(true, forKey: Keys.hasCelebratedOnboarding.rawValue)
+    }
+
+    /// マイボードが上限まで埋まった祝いを出したか。出すのは一度きり
+    public func hasCelebratedBoardComplete() -> Bool {
+        return sharedDefaults.bool(forKey: Keys.hasCelebratedBoardComplete.rawValue)
+    }
+
+    public func markBoardCompleteCelebrated() {
+        sharedDefaults.set(true, forKey: Keys.hasCelebratedBoardComplete.rawValue)
     }
 
     /// キーボード拡張がフルアクセスありで動いたことを記録する。

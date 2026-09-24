@@ -326,6 +326,16 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         XCTAssertFalse(defaults.isUsagePush(), "完了後も使い方画面が出続ける")
     }
 
+    /// マイボードの完成を祝った記録が残ること
+    func testBoardCompleteCelebrationIsRemembered() {
+        let defaults = GroupeDefaults.shared
+        defaults.sharedDefaults.removeObject(forKey: "hasCelebratedBoardComplete")
+        XCTAssertFalse(defaults.hasCelebratedBoardComplete())
+        defaults.markBoardCompleteCelebrated()
+        XCTAssertTrue(defaults.hasCelebratedBoardComplete())
+        defaults.sharedDefaults.removeObject(forKey: "hasCelebratedBoardComplete")
+    }
+
     /// レビュー依頼は送信8回目で1度だけ。
     /// カウンタをリセットしないと以降の起動で毎回ダイアログが出る
     func testRateAlertFiresOnceAfterEightSendsAndResets() {
@@ -546,12 +556,46 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         }
     }
 
-    /// 地とカード面の差は意図的にごく小さくしている。
-    /// ここが開くと「軽さ」が失われ、ただのグレーUIになる。
-    func testSurfaceSeparationStaysSubtle() {
+    /// 相対輝度(WCAG 2.1)。明暗の派生が正しい向きかを見る
+    private func luminance(_ color: UIColor, dark: Bool) -> CGFloat {
+        let traits = UITraitCollection(userInterfaceStyle: dark ? .dark : .light)
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        color.resolvedColor(with: traits).getRed(&r, green: &g, blue: &b, alpha: &a)
+        func channel(_ v: CGFloat) -> CGFloat {
+            return v <= 0.03928 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4)
+        }
+        return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
+    }
+
+    /// クレイの面色は、派生したハイライトが面より明るく、陰が面より暗いこと。
+    /// 派生を計算で作るので、向きが逆だと全部の部品がへこんで見える
+    func testClayHighlightAndShadeGoTheRightWay() {
+        let surfaces: [(String, UIColor)] = [("lavender", .clayLavender), ("mint", .clayMint),
+                                             ("peach", .clayPeach), ("sky", .claySky)]
         for dark in [false, true] {
-            let ratio = contrastRatio(.bgSurface, .bgBase, dark: dark)
-            XCTAssertLessThan(ratio, 1.5, "\(dark ? "ダーク" : "ライト"): 面の差が大きすぎる")
+            for (name, base) in surfaces {
+                let mode = dark ? "ダーク" : "ライト"
+                XCTAssertGreaterThan(luminance(UIColor.clayHighlight(of: base), dark: dark),
+                                     luminance(base, dark: dark), "\(mode) \(name): ハイライトが面より暗い")
+                XCTAssertLessThan(luminance(UIColor.clayShade(of: base), dark: dark),
+                                  luminance(base, dark: dark), "\(mode) \(name): 陰が面より明るい")
+            }
+        }
+    }
+
+    /// クレイの角丸は大きめに固定する。小さいと粘土ではなく厚紙に見える
+    func testRadiusIsLargeEnoughForClay() {
+        XCTAssertEqual(Radius.small, 16)
+        XCTAssertEqual(Radius.card, 24)
+    }
+
+    /// クレイの面に載せる本文は 4.5:1 を満たすこと。面は淡いので白文字は載せない
+    func testTextOnClaySurfacesStaysReadable() {
+        for dark in [false, true] {
+            for base in [UIColor.clayLavender, .clayMint, .clayPeach, .claySky] {
+                XCTAssertGreaterThanOrEqual(contrastRatio(.textPrimary, base, dark: dark), 4.5,
+                                            "\(dark ? "ダーク" : "ライト"): クレイの面の上で本文が読めない")
+            }
         }
     }
 
@@ -576,16 +620,6 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         shadow.getWhite(nil, alpha: &alpha)
         XCTAssertGreaterThan(alpha, 0.15, "影が薄すぎて輪郭にならない")
         XCTAssertNotEqual(label.shadowOffset, .zero, "影がずれていないと輪郭が出ない")
-    }
-
-    /// CTAの文字は太字。細いままだと淡い地の上で線が痩せて読みにくい
-    func testAuroraButtonUsesBoldTitle() {
-        let button = AuroraButton(frame: CGRect(x: 0, y: 0, width: 120, height: 44))
-        button.setTitle("テスト", for: .normal)
-        let weight = (button.titleLabel?.font.fontDescriptor
-            .object(forKey: .traits) as? [UIFontDescriptor.TraitKey: Any])?[.weight] as? CGFloat ?? 0
-        XCTAssertGreaterThanOrEqual(weight, UIFont.Weight.semibold.rawValue,
-                                    "CTAの文字が十分に太くない")
     }
 
     /// 色と位置の数が揃っていないと、グラデーションが崩れるか描画されない
@@ -661,6 +695,250 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         for name in names {
             XCTAssertNotNil(UIImage(systemName: name), "SF Symbol が存在しない: \(name)")
         }
+    }
+
+    // MARK: - 動きと振動
+
+    /// テストで振動を記録する
+    private final class RecordingHaptic: HapticDriver {
+        var played: [Haptic.Kind] = []
+        func play(_ kind: Haptic.Kind) { played.append(kind) }
+    }
+
+    /// 押すと縮み、離すと戻ること
+    @MainActor
+    func testPressShrinksAndReleaseRestores() {
+        Motion.isReducedOverride = false
+        defer { Motion.isReducedOverride = nil }
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 40))
+        Motion.pressDown(view)
+        XCTAssertLessThan(view.transform.a, 1.0, "押しても縮んでいない")
+        Motion.release(view)
+        XCTAssertEqual(view.transform.a, 1.0, accuracy: 0.001, "離しても戻っていない")
+    }
+
+    /// 視差効果を減らす設定のときは、縮小も移動もしないこと
+    @MainActor
+    func testReducedMotionSkipsTransform() {
+        Motion.isReducedOverride = true
+        defer { Motion.isReducedOverride = nil }
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 40))
+        Motion.pressDown(view)
+        XCTAssertEqual(view.transform, .identity, "設定を無視して縮んでいる")
+        Motion.pop(view)
+        XCTAssertEqual(view.transform, .identity, "設定を無視して出現の縮小をしている")
+    }
+
+    /// 出現の動きは 1.0 倍で終わること。途中の 1.05 倍で止まると並びが崩れる
+    @MainActor
+    func testPopEndsAtIdentity() {
+        Motion.isReducedOverride = false
+        defer { Motion.isReducedOverride = nil }
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+        let done = expectation(description: "出現の完了")
+        Motion.pop(view) { done.fulfill() }
+        wait(for: [done], timeout: 3)
+        XCTAssertEqual(view.transform.a, 1.0, accuracy: 0.001)
+        XCTAssertEqual(view.alpha, 1.0, accuracy: 0.001)
+    }
+
+    /// 振動は差し替えた生成器へ届くこと
+    func testHapticGoesThroughInjectedDriver() {
+        let recorder = RecordingHaptic()
+        let previous = Haptic.driver
+        Haptic.driver = recorder
+        defer { Haptic.driver = previous }
+        Haptic.play(.tap)
+        Haptic.play(.complete)
+        XCTAssertEqual(recorder.played, [.tap, .complete])
+    }
+
+    // MARK: - ClaySurface
+
+    /// 描画した面の、上端の帯と下端の帯の平均輝度を返す。角は避けて中央 60% だけ見る
+    @MainActor
+    private func bandLuminance(of view: UIView, dark: Bool) -> (top: Double, bottom: Double) {
+        view.overrideUserInterfaceStyle = dark ? .dark : .light
+        view.layoutIfNeeded()
+        let size = view.bounds.size
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = 1
+        format.opaque = true
+        let image = UIGraphicsImageRenderer(size: size, format: format).image { context in
+            UIColor.magenta.setFill()
+            context.fill(CGRect(origin: .zero, size: size))
+            view.layer.render(in: context.cgContext)
+        }
+        guard let cg = image.cgImage else { return (0, 0) }
+        let w = cg.width, h = cg.height
+        var px = [UInt8](repeating: 0, count: w * h * 4)
+        guard let ctx = CGContext(data: &px, width: w, height: h, bitsPerComponent: 8, bytesPerRow: w * 4,
+                                  space: CGColorSpaceCreateDeviceRGB(),
+                                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return (0, 0) }
+        ctx.draw(cg, in: CGRect(x: 0, y: 0, width: w, height: h))
+        func mean(rows: Range<Int>) -> Double {
+            var sum = 0.0, n = 0.0
+            for y in rows {
+                for x in Int(Double(w) * 0.2)..<Int(Double(w) * 0.8) {
+                    let i = (y * w + x) * 4
+                    sum += 0.2126 * Double(px[i]) + 0.7152 * Double(px[i + 1]) + 0.0722 * Double(px[i + 2])
+                    n += 1
+                }
+            }
+            return sum / max(n, 1)
+        }
+        // 角丸と影を避け、面の内側の上下 12% を見る
+        let inset = Int(Double(h) * 0.12)
+        return (mean(rows: inset..<(inset * 2)), mean(rows: (h - inset * 2)..<(h - inset)))
+    }
+
+    /// 膨らむ面は上端が下端より明るいこと(ハイライトの証明)。ライト・ダーク両方
+    @MainActor
+    func testRaisedSurfaceIsBrighterAtTop() {
+        for dark in [false, true] {
+            let surface = ClaySurface(style: .raised)
+            surface.frame = CGRect(x: 0, y: 0, width: 200, height: 120)
+            let band = bandLuminance(of: surface, dark: dark)
+            XCTAssertGreaterThan(band.top, band.bottom + 2,
+                                 "\(dark ? "ダーク" : "ライト"): 上端が明るくなっていない \(band)")
+        }
+    }
+
+    /// くぼむ面は逆に上端が暗いこと
+    @MainActor
+    func testRecessedSurfaceIsDarkerAtTop() {
+        for dark in [false, true] {
+            let surface = ClaySurface(style: .recessed)
+            surface.frame = CGRect(x: 0, y: 0, width: 200, height: 120)
+            let band = bandLuminance(of: surface, dark: dark)
+            XCTAssertLessThan(band.top + 2, band.bottom,
+                              "\(dark ? "ダーク" : "ライト"): 上端が暗くなっていない \(band)")
+        }
+    }
+
+    /// 子ビューは contentView に載り、面の大きさに追従すること
+    @MainActor
+    func testSurfaceContentViewFillsBounds() {
+        let surface = ClaySurface()
+        surface.frame = CGRect(x: 0, y: 0, width: 150, height: 90)
+        surface.layoutIfNeeded()
+        XCTAssertEqual(surface.contentView.bounds.size, surface.bounds.size)
+    }
+
+    /// 子ビューの大きさが面へ伝わること。frame で置く作りだと制約で載せた子の幅が 0 に潰れる
+    @MainActor
+    func testSurfaceGrowsToFitConstrainedChild() {
+        let surface = ClaySurface()
+        surface.translatesAutoresizingMaskIntoConstraints = false
+        let label = UILabel()
+        label.text = "3 / 8"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        surface.contentView.addSubview(label)
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: surface.contentView.topAnchor, constant: 8),
+            label.bottomAnchor.constraint(equalTo: surface.contentView.bottomAnchor, constant: -8),
+            label.leadingAnchor.constraint(equalTo: surface.contentView.leadingAnchor, constant: 24),
+            label.trailingAnchor.constraint(equalTo: surface.contentView.trailingAnchor, constant: -24)
+        ])
+        let size = surface.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
+        XCTAssertGreaterThan(size.width, 48, "面がラベルの幅に広がっていない: \(size)")
+        XCTAssertGreaterThan(size.height, 16, "面がラベルの高さに広がっていない: \(size)")
+    }
+
+    // MARK: - ClayButton
+
+    /// 押している間は沈み、離すと戻ること。振動は押した瞬間に 1 回
+    @MainActor
+    func testClayButtonSinksWhileHighlighted() {
+        Motion.isReducedOverride = false
+        defer { Motion.isReducedOverride = nil }
+        let recorder = RecordingHaptic()
+        let previous = Haptic.driver
+        Haptic.driver = recorder
+        defer { Haptic.driver = previous }
+
+        let button = ClayButton(frame: CGRect(x: 0, y: 0, width: 160, height: 48))
+        button.setTitle("試す", for: .normal)
+        button.isHighlighted = true
+        XCTAssertLessThan(button.transform.a, 1.0, "押しても沈んでいない")
+        XCTAssertEqual(recorder.played, [.tap])
+        button.isHighlighted = false
+        XCTAssertEqual(button.transform.a, 1.0, accuracy: 0.001, "離しても戻っていない")
+        XCTAssertEqual(recorder.played, [.tap], "離すときにも振動している")
+    }
+
+    /// 押下の手応えは沈む動きと振動だけ。UIKit の自動の暗転を重ねると二重に見える
+    @MainActor
+    func testClayButtonDisablesSystemHighlightDimming() {
+        let button = ClayButton.round(symbol: Symbol.add)
+        XCTAssertFalse(button.adjustsImageWhenHighlighted)
+    }
+
+    /// 丸ボタンのアイコンが面の上に描かれること。面に隠れると押す先が分からない
+    @MainActor
+    func testRoundClayButtonDrawsItsSymbolOnTop() {
+        let button = ClayButton.round(symbol: Symbol.add, size: 56)
+        button.frame = CGRect(x: 0, y: 0, width: 56, height: 56)
+        button.overrideUserInterfaceStyle = .light
+        button.layoutIfNeeded()
+        let size = button.bounds.size
+        let format = UIGraphicsImageRendererFormat.default()
+        format.scale = 1
+        format.opaque = true
+        let image = UIGraphicsImageRenderer(size: size, format: format).image { context in
+            UIColor.white.setFill()
+            context.fill(CGRect(origin: .zero, size: size))
+            button.layer.render(in: context.cgContext)
+        }
+        guard let cg = image.cgImage else { return XCTFail("描画できない") }
+        let w = cg.width, h = cg.height
+        var px = [UInt8](repeating: 0, count: w * h * 4)
+        guard let ctx = CGContext(data: &px, width: w, height: h, bitsPerComponent: 8, bytesPerRow: w * 4,
+                                  space: CGColorSpaceCreateDeviceRGB(),
+                                  bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return XCTFail("読めない") }
+        ctx.draw(cg, in: CGRect(x: 0, y: 0, width: w, height: h))
+        // 中央 40% の領域に、面(淡い藤色)より明らかに暗い画素があればアイコンが載っている
+        var darkest = 255
+        for y in Int(Double(h) * 0.3)..<Int(Double(h) * 0.7) {
+            for x in Int(Double(w) * 0.3)..<Int(Double(w) * 0.7) {
+                let i = (y * w + x) * 4
+                darkest = min(darkest, (Int(px[i]) + Int(px[i + 1]) + Int(px[i + 2])) / 3)
+            }
+        }
+        XCTAssertLessThan(darkest, 120, "中央にアイコンの暗い画素が無い(最も暗い値: \(darkest))")
+    }
+
+    /// 文字は太字の本文色。クレイの面は淡いため白文字は載せない
+    @MainActor
+    func testClayButtonUsesDarkBoldTitle() {
+        let button = ClayButton(frame: CGRect(x: 0, y: 0, width: 160, height: 48))
+        button.setTitle("試す", for: .normal)
+        XCTAssertEqual(button.titleColor(for: .normal), UIColor.textPrimary)
+        let traits = button.titleLabel?.font.fontDescriptor.object(forKey: .traits) as? [UIFontDescriptor.TraitKey: Any]
+        let weight = (traits?[.weight] as? CGFloat) ?? 0
+        XCTAssertGreaterThanOrEqual(weight, UIFont.Weight.semibold.rawValue, "太字になっていない")
+    }
+
+    /// 無効のときは全体を薄くするだけ。文字色も薄めると重なって読めなくなる
+    @MainActor
+    func testDisabledClayButtonKeepsTitleOpaque() {
+        let button = ClayButton(frame: CGRect(x: 0, y: 0, width: 160, height: 48))
+        button.setTitle("試す", for: .normal)
+        button.isEnabled = false
+        var alpha: CGFloat = 0
+        button.titleColor(for: .disabled)?.getRed(nil, green: nil, blue: nil, alpha: &alpha)
+        XCTAssertEqual(alpha, 1.0, accuracy: 0.01, "無効時の文字色が薄められている")
+        XCTAssertEqual(button.alpha, 0.6, accuracy: 0.01)
+    }
+
+    /// 丸ボタンは 44pt 以上で、面が真円になること
+    @MainActor
+    func testRoundClayButtonMeetsTapTarget() {
+        let button = ClayButton.round(symbol: Symbol.add)
+        button.layoutIfNeeded()
+        XCTAssertGreaterThanOrEqual(button.bounds.width, 44)
+        XCTAssertEqual(button.bounds.width, button.bounds.height)
+        XCTAssertNotNil(button.image(for: .normal))
     }
 
     // MARK: - ロゴの焼き込み

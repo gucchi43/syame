@@ -44,6 +44,7 @@ final class PhotoCollectionViewCell: UICollectionViewCell {
         return (Spacing.s * 2 + titleHeight(lines: titleLineLimit)).rounded(.up)
     }
 
+    private let surface = ClaySurface(style: .raised, fill: .bgSurface, cornerRadius: Radius.card)
     let photoImageView = UIImageView()
     let titleLabel = UILabel()
     let menuButton = UIButton(type: .system)
@@ -66,13 +67,18 @@ final class PhotoCollectionViewCell: UICollectionViewCell {
     }
 
     private func setupSubviews() {
-        contentView.backgroundColor = .bgSurface
-        contentView.applyCornerRadius(Radius.card)
+        contentView.backgroundColor = .clear
+        surface.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(surface)
 
         photoImageView.contentMode = .scaleAspectFill
         photoImageView.clipsToBounds = true
         photoImageView.backgroundColor = .bgBase
         photoImageView.translatesAutoresizingMaskIntoConstraints = false
+        // 面の角丸の内側に画像を収める。面より小さい角丸にすると角が四角く見える
+        photoImageView.layer.cornerRadius = Radius.card
+        photoImageView.layer.cornerCurve = .continuous
+        photoImageView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
 
         titleLabel.applyTextStyle(.footnote)
         titleLabel.numberOfLines = PhotoCollectionViewCell.titleLineLimit
@@ -90,37 +96,47 @@ final class PhotoCollectionViewCell: UICollectionViewCell {
         menuButton.showsMenuAsPrimaryAction = true
         menuButton.translatesAutoresizingMaskIntoConstraints = false
 
-        contentView.addSubview(photoImageView)
-        contentView.addSubview(titleLabel)
-        contentView.addSubview(menuButton)
+        let host = surface.contentView
+        host.addSubview(photoImageView)
+        host.addSubview(titleLabel)
+        host.addSubview(menuButton)
 
         let menuSize: CGFloat = 28
         NSLayoutConstraint.activate([
-            photoImageView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            photoImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            photoImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            surface.topAnchor.constraint(equalTo: contentView.topAnchor),
+            surface.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            surface.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            surface.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+
+            photoImageView.topAnchor.constraint(equalTo: host.topAnchor),
+            photoImageView.leadingAnchor.constraint(equalTo: host.leadingAnchor),
+            photoImageView.trailingAnchor.constraint(equalTo: host.trailingAnchor),
             // 画像は正方形。可変にすると同じ行の2つのセルで高さが揃わない
             photoImageView.heightAnchor.constraint(equalTo: photoImageView.widthAnchor),
 
-            menuButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Spacing.s),
-            menuButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Spacing.s),
+            menuButton.topAnchor.constraint(equalTo: host.topAnchor, constant: Spacing.s),
+            menuButton.trailingAnchor.constraint(equalTo: host.trailingAnchor, constant: -Spacing.s),
             menuButton.widthAnchor.constraint(equalToConstant: menuSize),
             menuButton.heightAnchor.constraint(equalToConstant: menuSize),
 
             titleLabel.topAnchor.constraint(equalTo: photoImageView.bottomAnchor, constant: Spacing.s),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Spacing.m),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -Spacing.m),
+            titleLabel.leadingAnchor.constraint(equalTo: host.leadingAnchor, constant: Spacing.m),
+            titleLabel.trailingAnchor.constraint(equalTo: host.trailingAnchor, constant: -Spacing.m),
             // 上下とも等号で留めて、ラベルの高さを情報エリアから決める。
             // 上限(lessThanOrEqualTo)にすると高さが UILabel の intrinsicContentSize 任せになり、
             // preferredMaxLayoutWidth が未設定のため1行ぶんに潰れて2行目が出ない。
             // 情報エリアは infoHeight で行数ぶん確保してあるので、ここは割り当てるだけでよい。
-            titleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor,
-                                               constant: -Spacing.s)
+            titleLabel.bottomAnchor.constraint(equalTo: host.bottomAnchor, constant: -Spacing.s)
         ])
 
-        menuButton.layer.cornerRadius = menuSize / 2
-        menuButton.layer.cornerCurve = .continuous
-        menuButton.clipsToBounds = true
+        menuButton.applyCornerRadius(menuSize / 2)
+    }
+
+    override var isHighlighted: Bool {
+        didSet {
+            guard isHighlighted != oldValue else { return }
+            isHighlighted ? Motion.pressDown(self) : Motion.release(self)
+        }
     }
 
     /// - Parameter menu: 3点リーダーから開くメニュー。呼び出し側が組み立てる

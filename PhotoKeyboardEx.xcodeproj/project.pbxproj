@@ -18,6 +18,7 @@
 		3ACE86CEBB02C3D24A38DC01 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		3ADA80A7C5E8499BBE4A96AA /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 6C2B5E648EF740DE8D381735 /* Toast */; };
 		4105F920130C4F5180B8CA1E /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = C27D3E2C284F4289B6FC641E /* Lottie */; };
+		427F0E37B0F9C5AC0997332E /* BoardProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 24B9EC13E74D527856FDC7FB /* BoardProgressView.swift */; };
 		551D4C3130734866870EB9E3 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 8E472C01B83C4C73818F93AA /* RealmSwift */; };
 		5911FB9D9B206B202BB42E94 /* OnboardingCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9F89E41C32AE8F51E23E5FC /* OnboardingCoordinator.swift */; };
 		5A1F845C0D5D9A7847C44EA4 /* GuideSampleGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1295265A3BC90109D77794B /* GuideSampleGallery.swift */; };
@@ -83,8 +84,11 @@
 		AA0100000000000000000012 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000011 /* PrivacyInfo.xcprivacy */; };
 		AA0100000000000000000022 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000021 /* PrivacyInfo.xcprivacy */; };
 		AA01000000000000000004 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AA01000000000000000003 /* InfoPlist.strings */; };
+		AAA24C0D646516031CBF7494 /* Clay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8A3FEE04F31648718A24751 /* Clay.swift */; };
 		B0B3CF3A0B731F0AE6B96C4C /* OnboardingCelebration.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF086916758BEEE4FD1D55AA /* OnboardingCelebration.swift */; };
+		BDF0988CDCAD60E5CA81FCB5 /* BoardSlots.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB02F44FBF4F68EED5FA2526 /* BoardSlots.swift */; };
 		C73AF9F078134AE583792C0A /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 42A00FB9C3F24E1D87CE50B6 /* Lottie */; };
+		CD81734F75815B10E5627982 /* EmptySlotCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5ACAFF6A2A6055F90EE4D1C /* EmptySlotCell.swift */; };
 		CFD5D85F61661B98449A3666 /* GuideKeyboardStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB30358838FB25745C8B7EE0 /* GuideKeyboardStripView.swift */; };
 		D2B34B4D25C085C01DEB40AC /* PremiumStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6F627618CF5716D1B09F7C9 /* PremiumStore.swift */; };
 		E4C2A35456354852A8AB32F6 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 584F21B3BDC74D14BE270281 /* RealmSwift */; };
@@ -169,6 +173,7 @@
 		11E1B897FFA5A256EA97357A /* OnboardingHintView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingHintView.swift; sourceTree = "<group>"; };
 		18FBFD095097990BB98F818A /* GuideStepView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideStepView.swift; sourceTree = "<group>"; };
 		1BC6FE59F327556F25A20E4F /* PaywallPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaywallPresenter.swift; sourceTree = "<group>"; };
+		24B9EC13E74D527856FDC7FB /* BoardProgressView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BoardProgressView.swift; sourceTree = "<group>"; };
 		2D82B8661A81BE5AB8061313 /* PhotoQuota.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhotoQuota.swift; sourceTree = "<group>"; };
 		2E8DCF51AEA21D5ACF31D816 /* GuideComposerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideComposerView.swift; sourceTree = "<group>"; };
 		4043FCB63BC521B268037404 /* PhotoKeyboardEx.storekit */ = {isa = PBXFileReference; includeInIndex = 1; path = PhotoKeyboardEx.storekit; sourceTree = "<group>"; };
@@ -244,6 +249,9 @@
 		C1F13CFAAA897B6FE9F1D418 /* GuideSettingsRowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideSettingsRowView.swift; sourceTree = "<group>"; };
 		C6F627618CF5716D1B09F7C9 /* PremiumStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PremiumStore.swift; sourceTree = "<group>"; };
 		C9BABCA4B9AFAE70E77ED974 /* GuidePhotoSource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuidePhotoSource.swift; sourceTree = "<group>"; };
+		CB02F44FBF4F68EED5FA2526 /* BoardSlots.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BoardSlots.swift; sourceTree = "<group>"; };
+		D5ACAFF6A2A6055F90EE4D1C /* EmptySlotCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmptySlotCell.swift; sourceTree = "<group>"; };
+		D8A3FEE04F31648718A24751 /* Clay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Clay.swift; sourceTree = "<group>"; };
 		DF086916758BEEE4FD1D55AA /* OnboardingCelebration.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingCelebration.swift; sourceTree = "<group>"; };
 		EB5F625F80AD2D5D385B90DF /* GuideHeroView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideHeroView.swift; sourceTree = "<group>"; };
 		F1295265A3BC90109D77794B /* GuideSampleGallery.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideSampleGallery.swift; sourceTree = "<group>"; };
@@ -405,6 +413,7 @@
 				1BC6FE59F327556F25A20E4F /* PaywallPresenter.swift */,
 				4043FCB63BC521B268037404 /* PhotoKeyboardEx.storekit */,
 				1A71B5992D78F8A1A56AA5D1 /* Onboarding */,
+				EC8ED3B8A5FB6F1A4315D952 /* Board */,
 			);
 			path = PhotoKeyboardEx;
 			sourceTree = "<group>";
@@ -461,6 +470,7 @@
 				8221370A2304D1A60046E095 /* Extension.swift */,
 				821ABDDB230EC43E00B3DCFE /* DefaultsKeys.swift */,
 				82F9F3FD22F6B2610062F451 /* Info.plist */,
+				D8A3FEE04F31648718A24751 /* Clay.swift */,
 			);
 			path = PhotoKeyboardFramework;
 			sourceTree = "<group>";
@@ -479,6 +489,17 @@
 			children = (
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		EC8ED3B8A5FB6F1A4315D952 /* Board */ = {
+			isa = PBXGroup;
+			children = (
+				CB02F44FBF4F68EED5FA2526 /* BoardSlots.swift */,
+				D5ACAFF6A2A6055F90EE4D1C /* EmptySlotCell.swift */,
+				24B9EC13E74D527856FDC7FB /* BoardProgressView.swift */,
+			);
+			name = Board;
+			path = Board;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -801,6 +822,9 @@
 				EFE2E672BDF4B664CCA80363 /* GuideHeroView.swift in Sources */,
 				5A1F845C0D5D9A7847C44EA4 /* GuideSampleGallery.swift in Sources */,
 				B0B3CF3A0B731F0AE6B96C4C /* OnboardingCelebration.swift in Sources */,
+				BDF0988CDCAD60E5CA81FCB5 /* BoardSlots.swift in Sources */,
+				CD81734F75815B10E5627982 /* EmptySlotCell.swift in Sources */,
+				427F0E37B0F9C5AC0997332E /* BoardProgressView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -843,6 +867,7 @@
 				82F9F41922F6B2920062F451 /* Photo.swift in Sources */,
 				826D657F22F831B500F66583 /* RealmManager.swift in Sources */,
 				82BB3A582328D49A003D830B /* LocalizeKey.swift in Sources */,
+				AAA24C0D646516031CBF7494 /* Clay.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

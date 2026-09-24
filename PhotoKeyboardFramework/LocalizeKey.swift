@@ -16,8 +16,7 @@ public enum LocalizeKey: String, CaseIterable {
     case navMyBoard
     
     case doneSaveToast
-    case myBoardEmptyTitle
-    
+
     case menuHome
     case menuSetting
 
@@ -123,6 +122,12 @@ public enum LocalizeKey: String, CaseIterable {
     case onboardingHintSavePhoto
     case onboardingHintEnableKeyboard
     case onboardingHintAllowFullAccess
+    /// マイボードの進み具合。"%d / %d"
+    case boardProgress
+    /// 上限まで埋まったとき
+    case boardComplete
+    /// 空きスロットの VoiceOver ラベル
+    case emptySlotAccessibility
     case onboardingHintHowToSend
     case menuPremium
     case menuPremiumActive

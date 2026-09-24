@@ -15,7 +15,7 @@ final class HowToSendViewController: UIViewController {
 
     private let scrollView = UIScrollView()
     private let contentStack = UIStackView()
-    private let doneButton = AuroraButton()
+    private let doneButton = ClayButton()
 
     /// 図に出すサムネイルの最大辺。図の中では数十ptなので、
     /// フル解像度をデコードするとキーボード拡張と同じくメモリを無駄に食う
@@ -114,7 +114,6 @@ final class HowToSendViewController: UIViewController {
         if isPresentedModally {
             doneButton.setTitle(LocalizeKey.howToDone.localizedString(), for: .normal)
             doneButton.titleLabel?.adjustsFontSizeToFitWidth = true
-            doneButton.applyCornerRadius(Radius.small)
             doneButton.addTarget(self, action: #selector(tapClose), for: .touchUpInside)
             doneButton.heightAnchor.constraint(equalToConstant: 48).isActive = true
             contentStack.setCustomSpacing(Spacing.xl * 2, after: description)

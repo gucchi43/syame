@@ -21,7 +21,7 @@ final class PaywallViewController: UIViewController {
 
     private let scrollView = UIScrollView()
     private let contentStack = UIStackView()
-    private let purchaseButton = AuroraButton()
+    private let purchaseButton = ClayButton()
     private let planStack = UIStackView()
     private let indicator = UIActivityIndicatorView(style: .medium)
     private let retryButton = UIButton(type: .system)
@@ -91,7 +91,6 @@ final class PaywallViewController: UIViewController {
         }, for: .touchUpInside)
         contentStack.addArrangedSubview(retryButton)
 
-        purchaseButton.applyCornerRadius(Radius.small)
         purchaseButton.titleLabel?.adjustsFontSizeToFitWidth = true
         purchaseButton.setTitle(LocalizeKey.paywallPurchase.localizedString(), for: .normal)
         purchaseButton.addTarget(self, action: #selector(tapPurchase), for: .touchUpInside)

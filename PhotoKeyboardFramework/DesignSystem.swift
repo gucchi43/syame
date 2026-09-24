@@ -27,11 +27,12 @@ public enum Spacing {
 // MARK: - 角丸
 
 /// 「ピル」と「中程度」の2種類だけを使う。中途半端な角丸と直角を作らない。
+/// クレイ質感は角が大きいほど粘土らしく見えるため、以前の 12 / 16 から上げた。
 public enum Radius {
-    /// 入力欄、小さいカード
-    public static let small: CGFloat = 12
-    /// 画像セル、カード。参照アプリの実測値(setlogは約20pt)に近づける
-    public static let card: CGFloat = 16
+    /// 入力欄、小さいカード、ボタン
+    public static let small: CGFloat = 16
+    /// 画像セル、カード
+    public static let card: CGFloat = 24
 }
 
 extension UIView {
@@ -201,36 +202,6 @@ extension AuroraView {
                                  width: min(fitting.width, maxWidth),
                                  height: fitting.height)
         return container
-    }
-}
-
-/// オーロラで塗るボタン。Storyboard 側でクラスをこれに変えて使う
-public class AuroraButton: UIButton {
-    public override class var layerClass: AnyClass { CAGradientLayer.self }
-
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
-        commonInit()
-    }
-
-    public required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        commonInit()
-    }
-
-    private func commonInit() {
-        Aurora.apply(to: layer as! CAGradientLayer)
-        setTitleColor(.onAurora, for: .normal)
-        tintColor = .onAurora
-        titleLabel?.applyAuroraText()
-        // CTAは太字。細いままだと淡い地の上で線が痩せて読みにくい
-        titleLabel?.font = .scaled(.body, weight: .bold)
-        titleLabel?.adjustsFontForContentSizeCategory = true
-        // アイコンだけのボタン(FAB)は影が付かないので、レイヤー側にも同じ影を落とす
-        imageView?.layer.shadowColor = UIColor.onAuroraShadow.cgColor
-        imageView?.layer.shadowOffset = CGSize(width: 0, height: 1)
-        imageView?.layer.shadowOpacity = 1
-        imageView?.layer.shadowRadius = 2
     }
 }
 

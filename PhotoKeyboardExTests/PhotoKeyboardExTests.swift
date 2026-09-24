@@ -634,6 +634,95 @@ class PhotoKeyboardExTests: XCTestCase {
                       "送り方の案内が開いていない: \(String(describing: presented))")
     }
 
+    /// 起動直後の画面の開始ボタンはクレイのボタンであること。
+    /// Storyboard の customClass を変え忘れると、見た目だけ旧デザインが残る
+    @MainActor
+    func testTopStartButtonIsClay() {
+        let top = UIStoryboard(name: "Top", bundle: nil).instantiateInitialViewController() as? TopViewController
+        top?.loadViewIfNeeded()
+        XCTAssertTrue(top?.startButton is ClayButton, "開始ボタンが ClayButton ではない")
+    }
+
+    /// 追加画面の完了ボタンも同じ
+    @MainActor
+    func testAddDoneButtonIsClay() {
+        let nav = UIStoryboard(name: "Add", bundle: nil).instantiateInitialViewController() as? UINavigationController
+        let add = nav?.viewControllers.first as? AddViewController
+        add?.loadViewIfNeeded()
+        XCTAssertTrue(add?.doneButton is ClayButton, "完了ボタンが ClayButton ではない")
+    }
+
+    // MARK: - マイボードのスロット
+
+    /// 写真が上限に満たないぶんは空きスロットで埋め、常に上限ぶんのマスを見せること
+    func testSlotsPadWithEmptyUpToLimit() {
+        let slots = BoardSlots.make(photoCount: 3, limit: 8)
+        XCTAssertEqual(slots.count, 8)
+        XCTAssertEqual(Array(slots.prefix(3)), [.photo(index: 0), .photo(index: 1), .photo(index: 2)])
+        XCTAssertEqual(Array(slots.suffix(5)), Array(repeating: BoardSlot.empty, count: 5))
+    }
+
+    /// 0 枚なら全部が空きスロット。空状態の専用画面は要らない
+    func testSlotsAreAllEmptyWhenNothingSaved() {
+        XCTAssertEqual(BoardSlots.make(photoCount: 0, limit: 8), Array(repeating: BoardSlot.empty, count: 8))
+    }
+
+    /// 上限に達したら空きは無い
+    func testSlotsHaveNoEmptyAtLimit() {
+        let slots = BoardSlots.make(photoCount: 8, limit: 8)
+        XCTAssertEqual(slots.count, 8)
+        XCTAssertFalse(slots.contains(.empty))
+    }
+
+    /// 上限を超えて保存されていても写真を隠さない(上限を下げた既存利用者を守る)
+    func testSlotsNeverHidePhotosBeyondLimit() {
+        let slots = BoardSlots.make(photoCount: 9, limit: 8)
+        XCTAssertEqual(slots.count, 9)
+        XCTAssertEqual(slots.last, .photo(index: 8))
+    }
+
+    /// 空きスロットを押すと追加の導線に乗ること。案内行の「保存する」と同じ通知を使う
+    @MainActor
+    func testTappingEmptySlotRequestsAddPhoto() {
+        let board = UIStoryboard(name: "ChildContent", bundle: nil)
+            .instantiateInitialViewController() as? ChildContentViewController
+        guard let board = board else { return XCTFail("マイボードを組み立てられない") }
+        board.loadViewIfNeeded()
+        board.view.frame = CGRect(x: 0, y: 0, width: 402, height: 874)
+        board.view.layoutIfNeeded()
+
+        let asked = expectation(description: "追加の依頼")
+        let token = NotificationCenter.default.addObserver(forName: .requestAddPhoto, object: nil, queue: .main) { _ in
+            asked.fulfill()
+        }
+        defer { NotificationCenter.default.removeObserver(token) }
+
+        guard let emptyIndex = board.slots.firstIndex(of: .empty) else {
+            return XCTFail("空きスロットが無い。上限まで埋まった Realm で走っている")
+        }
+        board.collectionView(board.collectionView, didSelectItemAt: IndexPath(item: emptyIndex, section: 0))
+        wait(for: [asked], timeout: 2)
+    }
+
+    /// 空きスロットは VoiceOver で「写真を追加」のボタンとして読めること。0 枚のときは画面がこれだけになる
+    @MainActor
+    func testEmptySlotIsAccessibleAsButton() {
+        let cell = EmptySlotCell(frame: CGRect(x: 0, y: 0, width: 180, height: 220))
+        XCTAssertTrue(cell.isAccessibilityElement)
+        XCTAssertTrue(cell.accessibilityTraits.contains(.button))
+        XCTAssertEqual(cell.accessibilityLabel, LocalizeKey.emptySlotAccessibility.localizedString())
+        XCTAssertFalse((cell.accessibilityLabel ?? "").isEmpty)
+    }
+
+    /// キーボード設定画面の「あとで」の隣の主ボタンも同じ
+    @MainActor
+    func testUsageNextButtonIsClay() {
+        let nav = UIStoryboard(name: "Usage", bundle: nil).instantiateInitialViewController() as? UINavigationController
+        let usage = nav?.viewControllers.first as? UsageViewController
+        usage?.loadViewIfNeeded()
+        XCTAssertTrue(usage?.nextButton is ClayButton, "主ボタンが ClayButton ではない")
+    }
+
     /// 起動直後の画面に「貼られた先」と「貼る元」が両方出ること。
     /// キーボードの帯だけでは、貼った結果どうなるかが伝わらない
     @MainActor
@@ -934,6 +1023,199 @@ class PhotoKeyboardExTests: XCTestCase {
     func testVeryLongTitleStopsAtTwoLines() {
         let cell = makeLaidOutCell(title: String(repeating: "あ", count: 120))
         XCTAssertEqual(renderedLineCount(of: cell.titleLabel), 2)
+    }
+
+    /// 写真セルは膨らんだ面の上に載ること。押すと沈む
+    @MainActor
+    func testPhotoCellSitsOnRaisedSurfaceAndSinks() {
+        Motion.isReducedOverride = false
+        defer { Motion.isReducedOverride = nil }
+        let metrics = ChildContentViewController.gridMetrics(containerWidth: 393)
+        let cell = PhotoCollectionViewCell(frame: CGRect(x: 0, y: 0, width: metrics.itemWidth, height: metrics.rowHeight))
+        cell.layoutIfNeeded()
+        XCTAssertTrue(cell.contentView.subviews.contains { $0 is ClaySurface }, "面が ClaySurface ではない")
+        cell.isHighlighted = true
+        XCTAssertLessThan(cell.transform.a, 1.0, "押しても沈んでいない")
+        cell.isHighlighted = false
+        XCTAssertEqual(cell.transform.a, 1.0, accuracy: 0.001)
+    }
+
+    // MARK: - 進み具合
+
+    /// 埋まった数と上限を「3 / 8」の形で出すこと
+    @MainActor
+    func testProgressShowsFilledOverLimit() {
+        let view = BoardProgressView(frame: CGRect(x: 0, y: 0, width: 200, height: 44))
+        view.apply(filled: 3, limit: 8)
+        XCTAssertEqual(view.label.text, LocalizeKey.boardProgress.localizedString(3, 8))
+        XCTAssertEqual(view.label.text, "3 / 8")
+    }
+
+    /// 上限まで埋まったら「コンプリート」に変わること
+    @MainActor
+    func testProgressSaysCompleteAtLimit() {
+        let view = BoardProgressView(frame: CGRect(x: 0, y: 0, width: 200, height: 44))
+        view.apply(filled: 8, limit: 8)
+        XCTAssertEqual(view.label.text, LocalizeKey.boardComplete.localizedString())
+    }
+
+    /// 案内行が出ている間、進み具合のピルは案内行の下に来ること。重なると読めない
+    @MainActor
+    func testProgressHeaderSitsBelowOnboardingHint() {
+        let board = UIStoryboard(name: "ChildContent", bundle: nil)
+            .instantiateInitialViewController() as? ChildContentViewController
+        guard let board = board else { return XCTFail("マイボードを組み立てられない") }
+        board.loadViewIfNeeded()
+        board.view.frame = CGRect(x: 0, y: 0, width: 402, height: 874)
+        board.applyOnboarding(step: .savePhoto)
+        let window = UIWindow(frame: board.view.bounds)
+        window.rootViewController = board
+        window.isHidden = false
+        board.view.layoutIfNeeded()
+
+        guard let header = board.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(
+            ofKind: BoardProgressView.elementKind, at: IndexPath(item: 0, section: 0)) else {
+            return XCTFail("ヘッダが無い")
+        }
+        let headerTop = board.collectionView.convert(header.frame, to: board.view).minY
+        let hint = board.view.subviews.first { $0 is OnboardingHintView }
+        guard let hint = hint, !hint.isHidden else { return XCTFail("案内行が出ていない") }
+        XCTAssertGreaterThanOrEqual(headerTop, hint.frame.maxY, "ヘッダが案内行と重なっている")
+    }
+
+    /// 下へスクロールしているときに案内行が消えても、見ている位置を動かさないこと
+    @MainActor
+    func testHidingHintDoesNotMoveScrolledContent() {
+        let board = UIStoryboard(name: "ChildContent", bundle: nil)
+            .instantiateInitialViewController() as? ChildContentViewController
+        guard let board = board else { return XCTFail("マイボードを組み立てられない") }
+        board.loadViewIfNeeded()
+        board.view.frame = CGRect(x: 0, y: 0, width: 402, height: 400)
+        board.applyOnboarding(step: .savePhoto)
+        let window = UIWindow(frame: board.view.bounds)
+        window.rootViewController = board
+        window.isHidden = false
+        board.view.layoutIfNeeded()
+
+        // 8 マスあるので 400pt の高さなら必ずスクロールできる
+        board.collectionView.contentOffset.y = 200
+        let before = board.collectionView.contentOffset.y
+
+        board.applyOnboarding(step: .done)
+        board.view.setNeedsLayout()
+        board.view.layoutIfNeeded()
+
+        XCTAssertEqual(board.collectionView.contentOffset.y, before, accuracy: 0.5,
+                       "案内行が消えたときにスクロール位置が飛んでいる")
+    }
+
+    /// 案内行が消えたら、一覧の押し下げも戻ること。手でレイアウトを起こさなくても
+    @MainActor
+    func testInsetReturnsToZeroWhenHintHides() {
+        let board = UIStoryboard(name: "ChildContent", bundle: nil)
+            .instantiateInitialViewController() as? ChildContentViewController
+        guard let board = board else { return XCTFail("マイボードを組み立てられない") }
+        board.loadViewIfNeeded()
+        board.view.frame = CGRect(x: 0, y: 0, width: 402, height: 874)
+        board.applyOnboarding(step: .savePhoto)
+        let window = UIWindow(frame: board.view.bounds)
+        window.rootViewController = board
+        window.isHidden = false
+        board.view.layoutIfNeeded()
+        XCTAssertGreaterThan(board.collectionView.contentInset.top, 0, "案内行が出ているのに押し下げていない")
+
+        board.applyOnboarding(step: .done)
+        board.view.layoutIfNeeded()   // setNeedsLayout が入っていれば、これだけで引き直される
+        XCTAssertEqual(board.collectionView.contentInset.top, 0, accuracy: 0.5, "案内行が消えたのに押し下げが残っている")
+    }
+
+    // MARK: - 埋まる演出
+
+    /// 直前に無かった写真だけを「増えた」とみなすこと。並び替えや削除では出さない
+    func testNewlyAddedFindsOnlyUnknownIds() {
+        let previous: Set<String> = ["a", "b"]
+        XCTAssertEqual(BoardSlots.newlyAdded(previous: previous, current: ["a", "b", "c"]), [2])
+        XCTAssertEqual(BoardSlots.newlyAdded(previous: previous, current: ["b", "a"]), [])
+        XCTAssertEqual(BoardSlots.newlyAdded(previous: previous, current: ["a"]), [])
+    }
+
+    /// 上限に達した瞬間だけ祝い、二度目は出さないこと
+    func testCelebrateOnlyOnceAtLimit() {
+        XCTAssertTrue(BoardSlots.shouldCelebrate(filled: 8, limit: 8, hasCelebrated: false))
+        XCTAssertFalse(BoardSlots.shouldCelebrate(filled: 7, limit: 8, hasCelebrated: false))
+        XCTAssertFalse(BoardSlots.shouldCelebrate(filled: 8, limit: 8, hasCelebrated: true))
+        XCTAssertTrue(BoardSlots.shouldCelebrate(filled: 9, limit: 8, hasCelebrated: false),
+                      "上限を超えていても未祝なら祝う")
+    }
+
+    /// 保存直後の演出はセルが出来てから当てる。reloadData の直後はセルが無い
+    @MainActor
+    func testCellsExistRightAfterReloadWhenLaidOut() {
+        let board = UIStoryboard(name: "ChildContent", bundle: nil)
+            .instantiateInitialViewController() as? ChildContentViewController
+        guard let board = board else { return XCTFail("マイボードを組み立てられない") }
+        board.loadViewIfNeeded()
+        board.view.frame = CGRect(x: 0, y: 0, width: 402, height: 874)
+        let window = UIWindow(frame: board.view.bounds)
+        window.rootViewController = board
+        window.isHidden = false
+        board.view.layoutIfNeeded()
+        board.collectionView.reloadData()
+        board.collectionView.layoutIfNeeded()
+        XCTAssertNotNil(board.collectionView.cellForItem(at: IndexPath(item: 0, section: 0)),
+                        "レイアウト後もセルが無い。演出の当て先が無くなる")
+    }
+
+    /// cellForItemAt の回数を数える。元のデータソースへそのまま転送する。
+    /// セルの同一性比較だと再利用プールが同じインスタンスを返すことがあり、
+    /// 作り直しの有無を区別できないため、呼び出し回数で見る
+    private final class CountingDataSource: NSObject, UICollectionViewDataSource {
+        let base: UICollectionViewDataSource
+        var cellRequests = 0
+        init(base: UICollectionViewDataSource) { self.base = base }
+        func collectionView(_ cv: UICollectionView, numberOfItemsInSection s: Int) -> Int {
+            base.collectionView(cv, numberOfItemsInSection: s)
+        }
+        func collectionView(_ cv: UICollectionView, cellForItemAt ip: IndexPath) -> UICollectionViewCell {
+            cellRequests += 1
+            return base.collectionView(cv, cellForItemAt: ip)
+        }
+        func collectionView(_ cv: UICollectionView, viewForSupplementaryElementOfKind kind: String, at ip: IndexPath) -> UICollectionReusableView {
+            base.collectionView!(cv, viewForSupplementaryElementOfKind: kind, at: ip)
+        }
+    }
+
+    /// 並びが変わっていない Realm 通知では一覧を作り直さないこと。保存直後の演出を途中で消さない。
+    /// セルの同一性ではなく cellForItemAt の呼び出し回数で「作り直したかどうか」を見る
+    @MainActor
+    func testUnchangedRealmChangeDoesNotReload() {
+        let board = UIStoryboard(name: "ChildContent", bundle: nil)
+            .instantiateInitialViewController() as? ChildContentViewController
+        guard let board = board else { return XCTFail("マイボードを組み立てられない") }
+        board.loadViewIfNeeded()
+        board.view.frame = CGRect(x: 0, y: 0, width: 402, height: 874)
+        let window = UIWindow(frame: board.view.bounds)
+        window.rootViewController = board
+        window.isHidden = false
+        board.view.layoutIfNeeded()
+        board.viewWillAppear(false)          // knownPhotoIds を現状で揃える
+
+        guard let baseDataSource = board.collectionView.dataSource else {
+            return XCTFail("dataSource が設定されていない")
+        }
+        let spy = CountingDataSource(base: baseDataSource)
+        board.collectionView.dataSource = spy
+        board.collectionView.reloadData()
+        board.collectionView.layoutIfNeeded()
+        let before = spy.cellRequests
+
+        board.realmObjectDidChange()
+        let settled = expectation(description: "main.async を消化")
+        DispatchQueue.main.async { settled.fulfill() }
+        wait(for: [settled], timeout: 2)
+        board.collectionView.layoutIfNeeded()
+
+        XCTAssertEqual(spy.cellRequests, before, "並びが同じなのに一覧を作り直している")
     }
 
     /// 幅が極端に狭くても破綻しないこと

@@ -62,9 +62,8 @@ class UsageViewController: UIViewController {
         navBarButton.applySymbol(Symbol.menu)
         nextButton.setTitle(LocalizeKey.settingDone.localizedString(), for: .normal)
         addLaterButtonIfPresentedModally()
-        // 文字色と影は AuroraButton が持つ
+        // 文字色と影は ClayButton が持つ
         nextButton.titleLabel?.adjustsFontSizeToFitWidth = true
-        nextButton.applyCornerRadius(Radius.small)
         subLabel.textColor = .textPrimary
         subLabel.adjustsFontForContentSizeCategory = true
         insertFullAccessIllustration()

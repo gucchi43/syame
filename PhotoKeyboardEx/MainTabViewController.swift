@@ -17,7 +17,7 @@ class MainTabViewController: UIViewController {
 
     @IBOutlet weak var barMenuButton: UIBarButtonItem!
 
-    var fabButton = AuroraButton()
+    var fabButton = ClayButton.round(symbol: Symbol.add, size: 56)
 
     private lazy var boardViewController: ChildContentViewController = {
         let storyboard = UIStoryboard(name: "ChildContent", bundle: .main)
@@ -229,24 +229,12 @@ class MainTabViewController: UIViewController {
     }
 
     func layoutFAB() {
-        let size: CGFloat = 56
-        fabButton.frame = CGRect(x: 0, y: 0, width: size, height: size)
-        // 地の塗りは AuroraButton が layer 側で持つ
-        fabButton.applyCornerRadius(size / 2)
-        fabButton.layer.shadowColor = UIColor.black.cgColor
-        fabButton.layer.shadowOffset = CGSize(width: 0, height: 2)
-        fabButton.layer.shadowOpacity = 0.3
-        fabButton.layer.shadowRadius = 4
-        fabButton.setImage(.symbol(Symbol.add, pointSize: 22, weight: .medium), for: .normal)
-        fabButton.tintColor = .onAurora
+        // 大きさは round(symbol:size:) が制約で持つ。影も面も ClaySurface が持つ
         fabButton.addTarget(self, action: #selector(tapFAB), for: .touchUpInside)
-        fabButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(fabButton)
         NSLayoutConstraint.activate([
-            fabButton.widthAnchor.constraint(equalToConstant: size),
-            fabButton.heightAnchor.constraint(equalToConstant: size),
-            fabButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            fabButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
+            fabButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -Spacing.l),
+            fabButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -Spacing.l)
         ])
     }
 

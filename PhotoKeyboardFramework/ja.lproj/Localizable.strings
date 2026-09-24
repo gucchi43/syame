@@ -13,7 +13,6 @@
 "navMyBoard" = "ペリペリ";
 
 "doneSaveToast" = "保存しました！";
-"myBoardEmptyTitle" = "使いたい画像を保存しよう →";
 
 "menuHome" = "ホーム";
 "menuSetting" = "キーボード設定方法";
@@ -116,3 +115,6 @@
 "celebrateOpenInstagram" = "Instagramで試す";
 "celebrateLater" = "あとで";
 "onboardingHintAllowFullAccess" = "フルアクセスを許可して、一度キーボードを開く";
+"boardProgress" = "%d / %d";
+"boardComplete" = "コンプリート";
+"emptySlotAccessibility" = "写真を追加";
