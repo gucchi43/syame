@@ -171,6 +171,93 @@ public final class ClaySurface: UIView {
     }
 }
 
+// MARK: - 押すと沈むボタン
+
+/// クレイの面を土台にしたボタン。押すと沈み、離すとバネで戻り、押した瞬間に振動する。
+///
+/// UIButton の派生にしているのは、Storyboard の customClass と
+/// `@IBOutlet weak var button: UIButton!` からそのまま使うため。
+/// 面は subview として最背面に置き、UIButton の title / image はその上に載る。
+public class ClayButton: UIButton {
+    private let surface = ClaySurface(style: .raised, fill: .clayLavender, cornerRadius: Radius.small)
+
+    /// 面の色
+    public var fill: UIColor {
+        get { surface.fill }
+        set { surface.fill = newValue }
+    }
+
+    /// 面の角丸。真円にしたいときは layoutSubviews で高さの半分を入れる
+    public var cornerRadius: CGFloat {
+        get { surface.cornerRadius }
+        set { surface.cornerRadius = newValue }
+    }
+
+    /// 真円にする。round(symbol:) が立てる
+    private var isCircular = false
+
+    public override init(frame: CGRect) {
+        super.init(frame: frame)
+        commonInit()
+    }
+
+    public required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        commonInit()
+    }
+
+    private func commonInit() {
+        backgroundColor = .clear
+        surface.isUserInteractionEnabled = false
+        insertSubview(surface, at: 0)
+
+        setTitleColor(.textPrimary, for: .normal)
+        setTitleColor(UIColor.textPrimary.withAlphaComponent(0.4), for: .disabled)
+        tintColor = .textPrimary
+        // CTA は太字。細いままだと淡い面の上で線が痩せる
+        titleLabel?.font = .scaled(.body, weight: .bold)
+        titleLabel?.adjustsFontForContentSizeCategory = true
+    }
+
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        surface.frame = bounds
+        if isCircular {
+            surface.cornerRadius = bounds.height / 2
+        }
+    }
+
+    public override var isHighlighted: Bool {
+        didSet {
+            guard isHighlighted != oldValue else { return }
+            if isHighlighted {
+                Haptic.play(.tap)
+                Motion.pressDown(self)
+            } else {
+                Motion.release(self)
+            }
+        }
+    }
+
+    public override var isEnabled: Bool {
+        didSet { alpha = isEnabled ? 1.0 : 0.6 }
+    }
+
+    /// アイコンだけの丸いボタン。キーボードのツールバーや閉じるボタンに使う。44pt 以上
+    public static func round(symbol: String, size: CGFloat = 44, fill: UIColor = .clayLavender) -> ClayButton {
+        let button = ClayButton(frame: CGRect(x: 0, y: 0, width: size, height: size))
+        button.isCircular = true
+        button.fill = fill
+        button.setImage(.symbol(symbol, textStyle: .body, weight: .semibold), for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            button.widthAnchor.constraint(equalToConstant: size),
+            button.heightAnchor.constraint(equalToConstant: size)
+        ])
+        return button
+    }
+}
+
 // MARK: - 動き
 
 /// 押下・出現・完成の動き。時間とバネはここでだけ決める。

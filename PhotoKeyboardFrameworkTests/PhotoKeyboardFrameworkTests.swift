@@ -825,6 +825,49 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         XCTAssertEqual(surface.contentView.bounds.size, surface.bounds.size)
     }
 
+    // MARK: - ClayButton
+
+    /// 押している間は沈み、離すと戻ること。振動は押した瞬間に 1 回
+    @MainActor
+    func testClayButtonSinksWhileHighlighted() {
+        Motion.isReducedOverride = false
+        defer { Motion.isReducedOverride = nil }
+        let recorder = RecordingHaptic()
+        let previous = Haptic.driver
+        Haptic.driver = recorder
+        defer { Haptic.driver = previous }
+
+        let button = ClayButton(frame: CGRect(x: 0, y: 0, width: 160, height: 48))
+        button.setTitle("試す", for: .normal)
+        button.isHighlighted = true
+        XCTAssertLessThan(button.transform.a, 1.0, "押しても沈んでいない")
+        XCTAssertEqual(recorder.played, [.tap])
+        button.isHighlighted = false
+        XCTAssertEqual(button.transform.a, 1.0, accuracy: 0.001, "離しても戻っていない")
+        XCTAssertEqual(recorder.played, [.tap], "離すときにも振動している")
+    }
+
+    /// 文字は太字の本文色。クレイの面は淡いため白文字は載せない
+    @MainActor
+    func testClayButtonUsesDarkBoldTitle() {
+        let button = ClayButton(frame: CGRect(x: 0, y: 0, width: 160, height: 48))
+        button.setTitle("試す", for: .normal)
+        XCTAssertEqual(button.titleColor(for: .normal), UIColor.textPrimary)
+        let traits = button.titleLabel?.font.fontDescriptor.object(forKey: .traits) as? [UIFontDescriptor.TraitKey: Any]
+        let weight = (traits?[.weight] as? CGFloat) ?? 0
+        XCTAssertGreaterThanOrEqual(weight, UIFont.Weight.semibold.rawValue, "太字になっていない")
+    }
+
+    /// 丸ボタンは 44pt 以上で、面が真円になること
+    @MainActor
+    func testRoundClayButtonMeetsTapTarget() {
+        let button = ClayButton.round(symbol: Symbol.add)
+        button.layoutIfNeeded()
+        XCTAssertGreaterThanOrEqual(button.bounds.width, 44)
+        XCTAssertEqual(button.bounds.width, button.bounds.height)
+        XCTAssertNotNil(button.image(for: .normal))
+    }
+
     // MARK: - ロゴの焼き込み
 
     /// ロゴ素材が Framework のバンドルから読めること。
