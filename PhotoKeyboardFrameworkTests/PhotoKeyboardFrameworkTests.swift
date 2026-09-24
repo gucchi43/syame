@@ -546,6 +546,43 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         }
     }
 
+    /// 相対輝度(WCAG 2.1)。明暗の派生が正しい向きかを見る
+    private func luminance(_ color: UIColor, dark: Bool) -> CGFloat {
+        let traits = UITraitCollection(userInterfaceStyle: dark ? .dark : .light)
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        color.resolvedColor(with: traits).getRed(&r, green: &g, blue: &b, alpha: &a)
+        func channel(_ v: CGFloat) -> CGFloat {
+            return v <= 0.03928 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4)
+        }
+        return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
+    }
+
+    /// クレイの面色は、派生したハイライトが面より明るく、陰が面より暗いこと。
+    /// 派生を計算で作るので、向きが逆だと全部の部品がへこんで見える
+    func testClayHighlightAndShadeGoTheRightWay() {
+        let surfaces: [(String, UIColor)] = [("lavender", .clayLavender), ("mint", .clayMint),
+                                             ("peach", .clayPeach), ("sky", .claySky)]
+        for dark in [false, true] {
+            for (name, base) in surfaces {
+                let mode = dark ? "ダーク" : "ライト"
+                XCTAssertGreaterThan(luminance(UIColor.clayHighlight(of: base), dark: dark),
+                                     luminance(base, dark: dark), "\(mode) \(name): ハイライトが面より暗い")
+                XCTAssertLessThan(luminance(UIColor.clayShade(of: base), dark: dark),
+                                  luminance(base, dark: dark), "\(mode) \(name): 陰が面より明るい")
+            }
+        }
+    }
+
+    /// クレイの面に載せる本文は 4.5:1 を満たすこと。面は淡いので白文字は載せない
+    func testTextOnClaySurfacesStaysReadable() {
+        for dark in [false, true] {
+            for base in [UIColor.clayLavender, .clayMint, .clayPeach, .claySky] {
+                XCTAssertGreaterThanOrEqual(contrastRatio(.textPrimary, base, dark: dark), 4.5,
+                                            "\(dark ? "ダーク" : "ライト"): クレイの面の上で本文が読めない")
+            }
+        }
+    }
+
     /// 白い文字は色だけでは読めない。最も明るい帯で 1.3:1 しかない。
     /// だから onAurora を白にするなら、影で輪郭を作ることが必須条件になる。
     func testWhiteOnAuroraNeedsShadowToBeReadable() {

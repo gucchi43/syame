@@ -83,6 +83,7 @@
 		AA0100000000000000000012 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000011 /* PrivacyInfo.xcprivacy */; };
 		AA0100000000000000000022 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000021 /* PrivacyInfo.xcprivacy */; };
 		AA01000000000000000004 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = AA01000000000000000003 /* InfoPlist.strings */; };
+		AAA24C0D646516031CBF7494 /* Clay.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8A3FEE04F31648718A24751 /* Clay.swift */; };
 		B0B3CF3A0B731F0AE6B96C4C /* OnboardingCelebration.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF086916758BEEE4FD1D55AA /* OnboardingCelebration.swift */; };
 		C73AF9F078134AE583792C0A /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 42A00FB9C3F24E1D87CE50B6 /* Lottie */; };
 		CFD5D85F61661B98449A3666 /* GuideKeyboardStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB30358838FB25745C8B7EE0 /* GuideKeyboardStripView.swift */; };
@@ -244,6 +245,7 @@
 		C1F13CFAAA897B6FE9F1D418 /* GuideSettingsRowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideSettingsRowView.swift; sourceTree = "<group>"; };
 		C6F627618CF5716D1B09F7C9 /* PremiumStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PremiumStore.swift; sourceTree = "<group>"; };
 		C9BABCA4B9AFAE70E77ED974 /* GuidePhotoSource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuidePhotoSource.swift; sourceTree = "<group>"; };
+		D8A3FEE04F31648718A24751 /* Clay.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Clay.swift; sourceTree = "<group>"; };
 		DF086916758BEEE4FD1D55AA /* OnboardingCelebration.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingCelebration.swift; sourceTree = "<group>"; };
 		EB5F625F80AD2D5D385B90DF /* GuideHeroView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideHeroView.swift; sourceTree = "<group>"; };
 		F1295265A3BC90109D77794B /* GuideSampleGallery.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideSampleGallery.swift; sourceTree = "<group>"; };
@@ -461,6 +463,7 @@
 				8221370A2304D1A60046E095 /* Extension.swift */,
 				821ABDDB230EC43E00B3DCFE /* DefaultsKeys.swift */,
 				82F9F3FD22F6B2610062F451 /* Info.plist */,
+				D8A3FEE04F31648718A24751 /* Clay.swift */,
 			);
 			path = PhotoKeyboardFramework;
 			sourceTree = "<group>";
@@ -843,6 +846,7 @@
 				82F9F41922F6B2920062F451 /* Photo.swift in Sources */,
 				826D657F22F831B500F66583 /* RealmManager.swift in Sources */,
 				82BB3A582328D49A003D830B /* LocalizeKey.swift in Sources */,
+				AAA24C0D646516031CBF7494 /* Clay.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
