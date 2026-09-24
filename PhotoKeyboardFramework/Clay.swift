@@ -210,6 +210,8 @@ public class ClayButton: UIButton {
         backgroundColor = .clear
         surface.isUserInteractionEnabled = false
         insertSubview(surface, at: 0)
+        // 沈む動きだけで押下を伝える。UIKit の自動の暗転は重ねない
+        adjustsImageWhenHighlighted = false
 
         setTitleColor(.textPrimary, for: .normal)
         setTitleColor(UIColor.textPrimary.withAlphaComponent(0.4), for: .disabled)

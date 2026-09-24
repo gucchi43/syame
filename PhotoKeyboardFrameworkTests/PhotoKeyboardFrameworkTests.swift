@@ -847,6 +847,13 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         XCTAssertEqual(recorder.played, [.tap], "離すときにも振動している")
     }
 
+    /// 押下の手応えは沈む動きと振動だけ。UIKit の自動の暗転を重ねると二重に見える
+    @MainActor
+    func testClayButtonDisablesSystemHighlightDimming() {
+        let button = ClayButton.round(symbol: Symbol.add)
+        XCTAssertFalse(button.adjustsImageWhenHighlighted)
+    }
+
     /// 文字は太字の本文色。クレイの面は淡いため白文字は載せない
     @MainActor
     func testClayButtonUsesDarkBoldTitle() {
