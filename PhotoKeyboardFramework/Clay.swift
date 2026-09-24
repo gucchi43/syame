@@ -63,3 +63,116 @@ extension UIColor {
                        alpha: a1)
     }
 }
+
+// MARK: - 動き
+
+/// 押下・出現・完成の動き。時間とバネはここでだけ決める。
+/// 「視差効果を減らす」が有効なら縮小と移動を行わず、フェードだけにする。
+public enum Motion {
+    /// テストから設定を固定するための上書き。nil なら端末の設定に従う
+    public static var isReducedOverride: Bool?
+
+    public static var isReduced: Bool {
+        return isReducedOverride ?? UIAccessibility.isReduceMotionEnabled
+    }
+
+    /// 沈む速さ。指の動きより遅いと重く感じる
+    public static let pressDuration: TimeInterval = 0.12
+    /// 戻りのバネ。小さいほど大きく揺れる
+    public static let pressDamping: CGFloat = 0.55
+    /// 沈んだときの縮み
+    public static let pressScale: CGFloat = 0.96
+    /// 沈んだときの下がり
+    public static let pressDrop: CGFloat = 2
+
+    /// 出現の時間とバネ
+    public static let popDuration: TimeInterval = 0.45
+    public static let popDamping: CGFloat = 0.6
+    /// 完成の波で、隣のマスをずらす間隔
+    public static let rippleStagger: TimeInterval = 0.05
+
+    /// 押した瞬間。縮めて少し下げる
+    public static func pressDown(_ view: UIView) {
+        guard !isReduced else { return }
+        UIView.animate(withDuration: pressDuration, delay: 0, options: [.curveEaseOut, .allowUserInteraction]) {
+            view.transform = CGAffineTransform(scaleX: pressScale, y: pressScale)
+                .translatedBy(x: 0, y: pressDrop)
+        }
+    }
+
+    /// 離した瞬間。バネで元に戻す
+    public static func release(_ view: UIView) {
+        guard !isReduced else { return }
+        // テストではアニメーションの終端を待たずに検証するため、最終値を先に置く
+        UIView.animate(withDuration: pressDuration * 3, delay: 0,
+                       usingSpringWithDamping: pressDamping, initialSpringVelocity: 0.5,
+                       options: [.allowUserInteraction]) {
+            view.transform = .identity
+        }
+        view.transform = .identity
+    }
+
+    /// 出現。0.6 倍から 1.05 倍を経て 1.0 へ。
+    /// 縮小を使えない設定のときはフェードだけにする
+    public static func pop(_ view: UIView, delay: TimeInterval = 0, completion: (() -> Void)? = nil) {
+        if isReduced {
+            view.alpha = 0
+            UIView.animate(withDuration: popDuration * 0.5, delay: delay, options: []) {
+                view.alpha = 1
+            } completion: { _ in completion?() }
+            return
+        }
+        view.transform = CGAffineTransform(scaleX: 0.6, y: 0.6)
+        view.alpha = 0
+        UIView.animate(withDuration: popDuration * 0.4, delay: delay, options: [.curveEaseOut]) {
+            view.transform = CGAffineTransform(scaleX: 1.05, y: 1.05)
+            view.alpha = 1
+        } completion: { _ in
+            UIView.animate(withDuration: popDuration * 0.6, delay: 0,
+                           usingSpringWithDamping: popDamping, initialSpringVelocity: 0.3,
+                           options: []) {
+                view.transform = .identity
+            } completion: { _ in completion?() }
+        }
+    }
+}
+
+// MARK: - 振動
+
+/// 振動の生成器。テストでは記録用に差し替える
+public protocol HapticDriver {
+    func play(_ kind: Haptic.Kind)
+}
+
+/// 端末の生成器で鳴らす既定の実装
+final class SystemHapticDriver: HapticDriver {
+    private let light = UIImpactFeedbackGenerator(style: .light)
+    private let medium = UIImpactFeedbackGenerator(style: .medium)
+    private let notification = UINotificationFeedbackGenerator()
+
+    func play(_ kind: Haptic.Kind) {
+        switch kind {
+        case .tap: light.impactOccurred()
+        case .fill: medium.impactOccurred()
+        case .complete: notification.notificationOccurred(.success)
+        }
+    }
+}
+
+/// 振動の種類。音は入れない(spec)
+public enum Haptic {
+    public enum Kind: Equatable {
+        /// ボタンを押した
+        case tap
+        /// マスが埋まった
+        case fill
+        /// 上限まで埋まった
+        case complete
+    }
+
+    public static var driver: HapticDriver = SystemHapticDriver()
+
+    public static func play(_ kind: Kind) {
+        driver.play(kind)
+    }
+}

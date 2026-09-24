@@ -697,6 +697,62 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         }
     }
 
+    // MARK: - 動きと振動
+
+    /// テストで振動を記録する
+    private final class RecordingHaptic: HapticDriver {
+        var played: [Haptic.Kind] = []
+        func play(_ kind: Haptic.Kind) { played.append(kind) }
+    }
+
+    /// 押すと縮み、離すと戻ること
+    @MainActor
+    func testPressShrinksAndReleaseRestores() {
+        Motion.isReducedOverride = false
+        defer { Motion.isReducedOverride = nil }
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 40))
+        Motion.pressDown(view)
+        XCTAssertLessThan(view.transform.a, 1.0, "押しても縮んでいない")
+        Motion.release(view)
+        XCTAssertEqual(view.transform.a, 1.0, accuracy: 0.001, "離しても戻っていない")
+    }
+
+    /// 視差効果を減らす設定のときは、縮小も移動もしないこと
+    @MainActor
+    func testReducedMotionSkipsTransform() {
+        Motion.isReducedOverride = true
+        defer { Motion.isReducedOverride = nil }
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 40))
+        Motion.pressDown(view)
+        XCTAssertEqual(view.transform, .identity, "設定を無視して縮んでいる")
+        Motion.pop(view)
+        XCTAssertEqual(view.transform, .identity, "設定を無視して出現の縮小をしている")
+    }
+
+    /// 出現の動きは 1.0 倍で終わること。途中の 1.05 倍で止まると並びが崩れる
+    @MainActor
+    func testPopEndsAtIdentity() {
+        Motion.isReducedOverride = false
+        defer { Motion.isReducedOverride = nil }
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+        let done = expectation(description: "出現の完了")
+        Motion.pop(view) { done.fulfill() }
+        wait(for: [done], timeout: 3)
+        XCTAssertEqual(view.transform.a, 1.0, accuracy: 0.001)
+        XCTAssertEqual(view.alpha, 1.0, accuracy: 0.001)
+    }
+
+    /// 振動は差し替えた生成器へ届くこと
+    func testHapticGoesThroughInjectedDriver() {
+        let recorder = RecordingHaptic()
+        let previous = Haptic.driver
+        Haptic.driver = recorder
+        defer { Haptic.driver = previous }
+        Haptic.play(.tap)
+        Haptic.play(.complete)
+        XCTAssertEqual(recorder.played, [.tap, .complete])
+    }
+
     // MARK: - ロゴの焼き込み
 
     /// ロゴ素材が Framework のバンドルから読めること。
