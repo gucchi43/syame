@@ -26,6 +26,11 @@ final class EmptySlotCell: UICollectionViewCell {
     }
 
     private func setupSubviews() {
+        // 見た目だけの「+」画像は VoiceOver から辿れないため、セル自体をボタンとして読ませる
+        isAccessibilityElement = true
+        accessibilityTraits = .button
+        accessibilityLabel = LocalizeKey.emptySlotAccessibility.localizedString()
+
         contentView.backgroundColor = .clear
         surface.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(surface)

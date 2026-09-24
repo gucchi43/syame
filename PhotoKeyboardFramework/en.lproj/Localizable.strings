@@ -117,3 +117,4 @@
 "onboardingHintAllowFullAccess" = "Allow Full Access, then open the keyboard once";
 "boardProgress" = "%d / %d";
 "boardComplete" = "Complete";
+"emptySlotAccessibility" = "Add photo";

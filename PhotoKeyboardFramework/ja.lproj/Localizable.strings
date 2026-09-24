@@ -117,3 +117,4 @@
 "onboardingHintAllowFullAccess" = "フルアクセスを許可して、一度キーボードを開く";
 "boardProgress" = "%d / %d";
 "boardComplete" = "コンプリート";
+"emptySlotAccessibility" = "写真を追加";

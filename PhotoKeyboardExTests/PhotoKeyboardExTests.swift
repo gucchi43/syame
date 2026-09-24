@@ -704,6 +704,16 @@ class PhotoKeyboardExTests: XCTestCase {
         wait(for: [asked], timeout: 2)
     }
 
+    /// 空きスロットは VoiceOver で「写真を追加」のボタンとして読めること。0 枚のときは画面がこれだけになる
+    @MainActor
+    func testEmptySlotIsAccessibleAsButton() {
+        let cell = EmptySlotCell(frame: CGRect(x: 0, y: 0, width: 180, height: 220))
+        XCTAssertTrue(cell.isAccessibilityElement)
+        XCTAssertTrue(cell.accessibilityTraits.contains(.button))
+        XCTAssertEqual(cell.accessibilityLabel, LocalizeKey.emptySlotAccessibility.localizedString())
+        XCTAssertFalse((cell.accessibilityLabel ?? "").isEmpty)
+    }
+
     /// キーボード設定画面の「あとで」の隣の主ボタンも同じ
     @MainActor
     func testUsageNextButtonIsClay() {
