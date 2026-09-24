@@ -109,6 +109,7 @@ public final class ClaySurface: UIView {
     private func setup() {
         body.clipsToBounds = true
         body.layer.cornerCurve = .continuous
+        body.translatesAutoresizingMaskIntoConstraints = false
         addSubview(body)
 
         // 上端の光と下端の陰。向きは style で決める
@@ -120,7 +121,22 @@ public final class ClaySurface: UIView {
         body.layer.addSublayer(shade)
 
         contentView.backgroundColor = .clear
+        contentView.translatesAutoresizingMaskIntoConstraints = false
         body.addSubview(contentView)
+
+        // body と contentView を frame ではなく制約で面に貼る。
+        // frame で置くと、子ビューを制約で contentView に載せたときに
+        // intrinsic size が面へ伝わらず、幅が 0 に潰れる
+        NSLayoutConstraint.activate([
+            body.topAnchor.constraint(equalTo: topAnchor),
+            body.bottomAnchor.constraint(equalTo: bottomAnchor),
+            body.leadingAnchor.constraint(equalTo: leadingAnchor),
+            body.trailingAnchor.constraint(equalTo: trailingAnchor),
+            contentView.topAnchor.constraint(equalTo: body.topAnchor),
+            contentView.bottomAnchor.constraint(equalTo: body.bottomAnchor),
+            contentView.leadingAnchor.constraint(equalTo: body.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: body.trailingAnchor)
+        ])
 
         layer.cornerCurve = .continuous
         applyColors()
@@ -128,9 +144,7 @@ public final class ClaySurface: UIView {
 
     public override func layoutSubviews() {
         super.layoutSubviews()
-        body.frame = bounds
         body.layer.cornerRadius = cornerRadius
-        contentView.frame = body.bounds
         highlight.frame = body.bounds
         shade.frame = body.bounds
         // 影の形を先に決めておくと、レイアウトのたびに影を計算し直さない

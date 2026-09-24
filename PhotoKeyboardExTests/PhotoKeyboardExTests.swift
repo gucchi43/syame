@@ -1049,6 +1049,30 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertEqual(view.label.text, LocalizeKey.boardComplete.localizedString())
     }
 
+    /// 案内行が出ている間、進み具合のピルは案内行の下に来ること。重なると読めない
+    @MainActor
+    func testProgressHeaderSitsBelowOnboardingHint() {
+        let board = UIStoryboard(name: "ChildContent", bundle: nil)
+            .instantiateInitialViewController() as? ChildContentViewController
+        guard let board = board else { return XCTFail("マイボードを組み立てられない") }
+        board.loadViewIfNeeded()
+        board.view.frame = CGRect(x: 0, y: 0, width: 402, height: 874)
+        board.applyOnboarding(step: .savePhoto)
+        let window = UIWindow(frame: board.view.bounds)
+        window.rootViewController = board
+        window.isHidden = false
+        board.view.layoutIfNeeded()
+
+        guard let header = board.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(
+            ofKind: BoardProgressView.elementKind, at: IndexPath(item: 0, section: 0)) else {
+            return XCTFail("ヘッダが無い")
+        }
+        let headerTop = board.collectionView.convert(header.frame, to: board.view).minY
+        let hint = board.view.subviews.first { $0 is OnboardingHintView }
+        guard let hint = hint, !hint.isHidden else { return XCTFail("案内行が出ていない") }
+        XCTAssertGreaterThanOrEqual(headerTop, hint.frame.maxY, "ヘッダが案内行と重なっている")
+    }
+
     /// 幅が極端に狭くても破綻しないこと
     func testGridMetricsHandlesTinyContainer() {
         let metrics = ChildContentViewController.gridMetrics(containerWidth: 10)

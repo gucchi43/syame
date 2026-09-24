@@ -815,6 +815,26 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         XCTAssertEqual(surface.contentView.bounds.size, surface.bounds.size)
     }
 
+    /// 子ビューの大きさが面へ伝わること。frame で置く作りだと制約で載せた子の幅が 0 に潰れる
+    @MainActor
+    func testSurfaceGrowsToFitConstrainedChild() {
+        let surface = ClaySurface()
+        surface.translatesAutoresizingMaskIntoConstraints = false
+        let label = UILabel()
+        label.text = "3 / 8"
+        label.translatesAutoresizingMaskIntoConstraints = false
+        surface.contentView.addSubview(label)
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: surface.contentView.topAnchor, constant: 8),
+            label.bottomAnchor.constraint(equalTo: surface.contentView.bottomAnchor, constant: -8),
+            label.leadingAnchor.constraint(equalTo: surface.contentView.leadingAnchor, constant: 24),
+            label.trailingAnchor.constraint(equalTo: surface.contentView.trailingAnchor, constant: -24)
+        ])
+        let size = surface.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
+        XCTAssertGreaterThan(size.width, 48, "面がラベルの幅に広がっていない: \(size)")
+        XCTAssertGreaterThan(size.height, 16, "面がラベルの高さに広がっていない: \(size)")
+    }
+
     // MARK: - ClayButton
 
     /// 押している間は沈み、離すと戻ること。振動は押した瞬間に 1 回

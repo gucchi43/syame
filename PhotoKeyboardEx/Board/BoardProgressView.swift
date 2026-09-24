@@ -35,18 +35,14 @@ final class BoardProgressView: UICollectionReusableView {
         label.translatesAutoresizingMaskIntoConstraints = false
         pill.contentView.addSubview(label)
 
-        // ClaySurface.contentView は layoutSubviews で body.bounds に合わせて frame を
-        // 手動で流し込んでおり、Auto Layout には参加しない。そのため contentView 側の
-        // アンカーに幅を委ねると解決できず、pill の幅が 0 に潰れる。
-        // label の幅から pill 自体の幅が決まるよう、pill 自身のアンカーに直接つなぐ
         NSLayoutConstraint.activate([
             pill.centerXAnchor.constraint(equalTo: centerXAnchor),
             pill.topAnchor.constraint(equalTo: topAnchor, constant: Spacing.s),
             pill.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -Spacing.s),
-            label.topAnchor.constraint(equalTo: pill.topAnchor, constant: Spacing.s),
-            label.bottomAnchor.constraint(equalTo: pill.bottomAnchor, constant: -Spacing.s),
-            label.leadingAnchor.constraint(equalTo: pill.leadingAnchor, constant: Spacing.xl),
-            label.trailingAnchor.constraint(equalTo: pill.trailingAnchor, constant: -Spacing.xl)
+            label.topAnchor.constraint(equalTo: pill.contentView.topAnchor, constant: Spacing.s),
+            label.bottomAnchor.constraint(equalTo: pill.contentView.bottomAnchor, constant: -Spacing.s),
+            label.leadingAnchor.constraint(equalTo: pill.contentView.leadingAnchor, constant: Spacing.xl),
+            label.trailingAnchor.constraint(equalTo: pill.contentView.trailingAnchor, constant: -Spacing.xl)
         ])
     }
 
