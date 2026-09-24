@@ -634,6 +634,33 @@ class PhotoKeyboardExTests: XCTestCase {
                       "送り方の案内が開いていない: \(String(describing: presented))")
     }
 
+    /// 起動直後の画面の開始ボタンはクレイのボタンであること。
+    /// Storyboard の customClass を変え忘れると、見た目だけ旧デザインが残る
+    @MainActor
+    func testTopStartButtonIsClay() {
+        let top = UIStoryboard(name: "Top", bundle: nil).instantiateInitialViewController() as? TopViewController
+        top?.loadViewIfNeeded()
+        XCTAssertTrue(top?.startButton is ClayButton, "開始ボタンが ClayButton ではない")
+    }
+
+    /// 追加画面の完了ボタンも同じ
+    @MainActor
+    func testAddDoneButtonIsClay() {
+        let nav = UIStoryboard(name: "Add", bundle: nil).instantiateInitialViewController() as? UINavigationController
+        let add = nav?.viewControllers.first as? AddViewController
+        add?.loadViewIfNeeded()
+        XCTAssertTrue(add?.doneButton is ClayButton, "完了ボタンが ClayButton ではない")
+    }
+
+    /// キーボード設定画面の「あとで」の隣の主ボタンも同じ
+    @MainActor
+    func testUsageNextButtonIsClay() {
+        let nav = UIStoryboard(name: "Usage", bundle: nil).instantiateInitialViewController() as? UINavigationController
+        let usage = nav?.viewControllers.first as? UsageViewController
+        usage?.loadViewIfNeeded()
+        XCTAssertTrue(usage?.nextButton is ClayButton, "主ボタンが ClayButton ではない")
+    }
+
     /// 起動直後の画面に「貼られた先」と「貼る元」が両方出ること。
     /// キーボードの帯だけでは、貼った結果どうなるかが伝わらない
     @MainActor

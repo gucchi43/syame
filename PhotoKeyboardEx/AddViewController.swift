@@ -110,10 +110,8 @@ class AddViewController: UIViewController {
     func addButtonState() {
         let canSubmit = !(titleTextField.text ?? "").isEmpty && choiceImage != nil
         doneButton.isEnabled = canSubmit
-        // 文字色と影は AuroraButton が持つ
-        // AuroraButton は layer 自体がグラデーションなので、
-        // backgroundColor を薄めても地の色は変わらない。無効状態は透明度で出す
-        doneButton.alpha = canSubmit ? 1.0 : 0.4
+        // 文字色と影は ClayButton が持つ
+        // 無効状態の透明度も ClayButton の isEnabled が持つ
     }
     
     

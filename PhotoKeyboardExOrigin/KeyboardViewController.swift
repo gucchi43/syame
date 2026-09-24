@@ -170,9 +170,8 @@ class KeyboardViewController: UIInputViewController, UITextFieldDelegate, RealmM
         self.nextKeyboardButton.addTarget(self, action: #selector(handleInputModeList(from:with:)), for: .allTouchEvents)
         self.notFullBGView.backgroundColor = .clear
         self.notFullButton.titleLabel?.adjustsFontSizeToFitWidth = true
-        // 文字色と影は AuroraButton が持つ
-        self.notFullButton.applyCornerRadius(Radius.small)
-        
+        // 文字色と影は ClayButton が持つ
+
         // 案内文は言語ごとに語順が変わるため、断片を連結せず1文として strings に置く。
         // 角括弧で囲んだ部分が太字になる
         self.notFullButton.setTitle(LocalizeKey.notFullButton.localizedString(), for: .normal)

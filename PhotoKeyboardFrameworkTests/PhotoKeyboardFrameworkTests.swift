@@ -612,16 +612,6 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         XCTAssertNotEqual(label.shadowOffset, .zero, "影がずれていないと輪郭が出ない")
     }
 
-    /// CTAの文字は太字。細いままだと淡い地の上で線が痩せて読みにくい
-    func testAuroraButtonUsesBoldTitle() {
-        let button = AuroraButton(frame: CGRect(x: 0, y: 0, width: 120, height: 44))
-        button.setTitle("テスト", for: .normal)
-        let weight = (button.titleLabel?.font.fontDescriptor
-            .object(forKey: .traits) as? [UIFontDescriptor.TraitKey: Any])?[.weight] as? CGFloat ?? 0
-        XCTAssertGreaterThanOrEqual(weight, UIFont.Weight.semibold.rawValue,
-                                    "CTAの文字が十分に太くない")
-    }
-
     /// 色と位置の数が揃っていないと、グラデーションが崩れるか描画されない
     func testAuroraStopsAreConsistent() {
         XCTAssertEqual(Aurora.colors.count, Aurora.locations.count)
