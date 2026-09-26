@@ -1088,6 +1088,49 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(empty.frame.minY, 24)
     }
 
+    // MARK: - 紙とテープ
+
+    /// 方眼の紙は、紙の色と線の色の両方を描くこと
+    @MainActor
+    func testPaperDrawsGridLines() {
+        let paper = PaperBackgroundView(frame: CGRect(x: 0, y: 0, width: 140, height: 140))
+        paper.overrideUserInterfaceStyle = .light
+        paper.layoutIfNeeded()
+        XCTAssertTrue(containsColor(paper, UIColor.bgBase.resolvedColor(with: UITraitCollection(userInterfaceStyle: .light)), tolerance: 3))
+        // 線は紙より少し暗い。紙そのものの色以外の画素があること
+        XCTAssertTrue(containsColor(paper, UIColor(red: 0.90, green: 0.90, blue: 0.91, alpha: 1), tolerance: 20), "方眼の線が描かれていない")
+    }
+
+    /// テープは種類ごとの色で描かれること(黒テープはライトで黒)
+    @MainActor
+    func testBlackTapeIsDark() {
+        let tape = TapeView(style: .black)
+        tape.frame = CGRect(x: 0, y: 0, width: 60, height: 18)
+        tape.overrideUserInterfaceStyle = .light
+        XCTAssertTrue(containsColor(tape, UIColor(red: 0.11, green: 0.106, blue: 0.098, alpha: 1), tolerance: 30))
+    }
+
+    /// ちぎった切れ端のマスクは、上辺がまっすぐでないこと
+    func testTornEdgeIsJagged() {
+        let mask = TornEdge.mask(for: CGRect(x: 0, y: 0, width: 200, height: 200))
+        guard let path = mask.path else { return XCTFail("マスクが無い") }
+        var topYs: Set<Int> = []
+        path.applyWithBlock { element in
+            let p = element.pointee.points[0]
+            if p.y < 10 { topYs.insert(Int(p.y.rounded())) }
+        }
+        XCTAssertGreaterThan(topYs.count, 1, "上辺が一直線")
+    }
+
+    /// 荷札はタイプライターの書体で日付を載せること
+    @MainActor
+    func testTicketUsesLabelFont() {
+        let ticket = TicketView()
+        ticket.text = "2026.09.27"
+        XCTAssertEqual(ticket.textLabelForTesting.font.fontName, UIFont.label(.caption2).fontName)
+        XCTAssertEqual(ticket.textLabelForTesting.text, "2026.09.27")
+    }
+
     // MARK: - バージョン比較
 
     /// メジャー番号を無視すると、端末の方が新しいのに更新を促してしまう

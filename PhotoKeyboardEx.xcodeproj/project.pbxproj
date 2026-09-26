@@ -27,6 +27,7 @@
 		6E76805505B4AFC3BC26E11F /* GuidePhotoSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9BABCA4B9AFAE70E77ED974 /* GuidePhotoSource.swift */; };
 		729D6FAE63DA48C982591D94 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		7A1E5EED2B0900010000A002 /* HowToSendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A1E5EED2B0900010000A001 /* HowToSendViewController.swift */; };
+		812ADE48F4F19A6582AACA1B /* JournalProps.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10D471B0CDBDC96B46406E01 /* JournalProps.swift */; };
 		821ABDD8230C641600B3DCFE /* Usage.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 821ABDD7230C641600B3DCFE /* Usage.storyboard */; };
 		821ABDDA230C642A00B3DCFE /* UsageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821ABDD9230C642A00B3DCFE /* UsageViewController.swift */; };
 		821ABDDC230EC43E00B3DCFE /* DefaultsKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = 821ABDDB230EC43E00B3DCFE /* DefaultsKeys.swift */; };
@@ -173,6 +174,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		10D471B0CDBDC96B46406E01 /* JournalProps.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JournalProps.swift; sourceTree = "<group>"; };
 		11E1B897FFA5A256EA97357A /* OnboardingHintView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingHintView.swift; sourceTree = "<group>"; };
 		18FBFD095097990BB98F818A /* GuideStepView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideStepView.swift; sourceTree = "<group>"; };
 		1BC6FE59F327556F25A20E4F /* PaywallPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaywallPresenter.swift; sourceTree = "<group>"; };
@@ -361,6 +363,7 @@
 			isa = PBXGroup;
 			children = (
 				951152FB764F8C15B36A7474 /* JournalPlacer.swift */,
+				10D471B0CDBDC96B46406E01 /* JournalProps.swift */,
 			);
 			name = Journal;
 			path = Journal;
@@ -845,6 +848,7 @@
 				5A1F845C0D5D9A7847C44EA4 /* GuideSampleGallery.swift in Sources */,
 				B0B3CF3A0B731F0AE6B96C4C /* OnboardingCelebration.swift in Sources */,
 				3A3D53DFE4043C934BD614A6 /* JournalPlacer.swift in Sources */,
+				812ADE48F4F19A6582AACA1B /* JournalProps.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
