@@ -675,6 +675,14 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
                                     "ブランド名が十分に太くない")
     }
 
+    /// 書体が読み込めない環境でも、nil にならず代わりの書体が返ること
+    func testJournalFontsFallBackWhenMissing() {
+        let journal = UIFont.journal(.body)
+        let label = UIFont.label(.body)
+        XCTAssertGreaterThan(journal.pointSize, 0)
+        XCTAssertGreaterThan(label.pointSize, 0)
+    }
+
     /// 使用するSF Symbolsが実在すること。名前を間違えるとアイコンが消える
     func testAllSymbolsExist() {
         let names = [Symbol.menu, Symbol.more, Symbol.textMode, Symbol.globe,

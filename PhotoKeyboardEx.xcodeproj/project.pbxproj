@@ -87,11 +87,15 @@
 		B0B3CF3A0B731F0AE6B96C4C /* OnboardingCelebration.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF086916758BEEE4FD1D55AA /* OnboardingCelebration.swift */; };
 		C73AF9F078134AE583792C0A /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 42A00FB9C3F24E1D87CE50B6 /* Lottie */; };
 		CFD5D85F61661B98449A3666 /* GuideKeyboardStripView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FB30358838FB25745C8B7EE0 /* GuideKeyboardStripView.swift */; };
+		D1AE311B858EB59B9A807A2D /* ZenKurenaido-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CDB876F01802FFFB05C6FEDB /* ZenKurenaido-Regular.ttf */; };
 		D2B34B4D25C085C01DEB40AC /* PremiumStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6F627618CF5716D1B09F7C9 /* PremiumStore.swift */; };
 		E4C2A35456354852A8AB32F6 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 584F21B3BDC74D14BE270281 /* RealmSwift */; };
+		E50C7CF02392CDC42C8E0236 /* OFL-ZenKurenaido.txt in Resources */ = {isa = PBXBuildFile; fileRef = AEEBB76E16544BDEF14B870B /* OFL-ZenKurenaido.txt */; };
+		EDB617FF4F04794E2180BC1D /* LICENSE-SpecialElite.txt in Resources */ = {isa = PBXBuildFile; fileRef = CD3B0A4BD93624276706B452 /* LICENSE-SpecialElite.txt */; };
 		EDB839492F9819690068143E /* RealmSwift in Embed Frameworks */ = {isa = PBXBuildFile; productRef = CF8919C3BF774918835C4DB7 /* RealmSwift */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		EE49C6519FBD408388F2AED5 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = CA3065527272466C964C992A /* SwiftDate */; };
 		EFE2E672BDF4B664CCA80363 /* GuideHeroView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB5F625F80AD2D5D385B90DF /* GuideHeroView.swift */; };
+		F537776879721A5474923C6F /* SpecialElite-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C323FED6B291D2D972B265E0 /* SpecialElite-Regular.ttf */; };
 		F7E67923C349F247131F8DC1 /* PaywallPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1BC6FE59F327556F25A20E4F /* PaywallPresenter.swift */; };
 /* End PBXBuildFile section */
 
@@ -242,9 +246,13 @@
 		AA0100000000000000000021 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = PhotoKeyboardExOrigin/PrivacyInfo.xcprivacy; sourceTree = SOURCE_ROOT; };
 		AA01000000000000000001 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		AA01000000000000000002 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		AEEBB76E16544BDEF14B870B /* OFL-ZenKurenaido.txt */ = {isa = PBXFileReference; includeInIndex = 1; path = "OFL-ZenKurenaido.txt"; sourceTree = "<group>"; };
 		C1F13CFAAA897B6FE9F1D418 /* GuideSettingsRowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideSettingsRowView.swift; sourceTree = "<group>"; };
+		C323FED6B291D2D972B265E0 /* SpecialElite-Regular.ttf */ = {isa = PBXFileReference; includeInIndex = 1; path = "SpecialElite-Regular.ttf"; sourceTree = "<group>"; };
 		C6F627618CF5716D1B09F7C9 /* PremiumStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PremiumStore.swift; sourceTree = "<group>"; };
 		C9BABCA4B9AFAE70E77ED974 /* GuidePhotoSource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuidePhotoSource.swift; sourceTree = "<group>"; };
+		CD3B0A4BD93624276706B452 /* LICENSE-SpecialElite.txt */ = {isa = PBXFileReference; includeInIndex = 1; path = "LICENSE-SpecialElite.txt"; sourceTree = "<group>"; };
+		CDB876F01802FFFB05C6FEDB /* ZenKurenaido-Regular.ttf */ = {isa = PBXFileReference; includeInIndex = 1; path = "ZenKurenaido-Regular.ttf"; sourceTree = "<group>"; };
 		DF086916758BEEE4FD1D55AA /* OnboardingCelebration.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingCelebration.swift; sourceTree = "<group>"; };
 		E779F59FE9E8B38FACA17165 /* Journal.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Journal.swift; sourceTree = "<group>"; };
 		EB5F625F80AD2D5D385B90DF /* GuideHeroView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideHeroView.swift; sourceTree = "<group>"; };
@@ -345,6 +353,18 @@
 			path = Guide;
 			sourceTree = "<group>";
 		};
+		745FB7BA5BEBB3CEF34BFF27 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				CDB876F01802FFFB05C6FEDB /* ZenKurenaido-Regular.ttf */,
+				C323FED6B291D2D972B265E0 /* SpecialElite-Regular.ttf */,
+				AEEBB76E16544BDEF14B870B /* OFL-ZenKurenaido.txt */,
+				CD3B0A4BD93624276706B452 /* LICENSE-SpecialElite.txt */,
+			);
+			name = Fonts;
+			path = Fonts;
+			sourceTree = "<group>";
+		};
 		8278D12D22EE5A700034C2CC = {
 			isa = PBXGroup;
 			children = (
@@ -407,6 +427,7 @@
 				1BC6FE59F327556F25A20E4F /* PaywallPresenter.swift */,
 				4043FCB63BC521B268037404 /* PhotoKeyboardEx.storekit */,
 				1A71B5992D78F8A1A56AA5D1 /* Onboarding */,
+				745FB7BA5BEBB3CEF34BFF27 /* Fonts */,
 			);
 			path = PhotoKeyboardEx;
 			sourceTree = "<group>";
@@ -721,6 +742,10 @@
 				821ABDD8230C641600B3DCFE /* Usage.storyboard in Resources */,
 				8280C03D22F454B80069BF8B /* Add.storyboard in Resources */,
 				8278D13F22EE5A700034C2CC /* Main.storyboard in Resources */,
+				D1AE311B858EB59B9A807A2D /* ZenKurenaido-Regular.ttf in Resources */,
+				F537776879721A5474923C6F /* SpecialElite-Regular.ttf in Resources */,
+				E50C7CF02392CDC42C8E0236 /* OFL-ZenKurenaido.txt in Resources */,
+				EDB617FF4F04794E2180BC1D /* LICENSE-SpecialElite.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

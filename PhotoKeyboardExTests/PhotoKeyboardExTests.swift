@@ -963,6 +963,21 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertGreaterThan(wide.itemWidth, narrow.itemWidth)
     }
 
+    // MARK: - 書体
+
+    /// 手書きとタイプライターの書体がアプリに入っていて、名前で引けること
+    func testJournalFontsAreBundled() {
+        XCTAssertNotNil(UIFont(name: UIFont.journalFontName, size: 14), "Zen Kurenaido が読み込めない")
+        XCTAssertNotNil(UIFont(name: UIFont.labelFontName, size: 14), "Special Elite が読み込めない")
+        XCTAssertEqual(UIFont.journal(.body).fontName, UIFont.journalFontName)
+        XCTAssertEqual(UIFont.label(.caption1).fontName, UIFont.labelFontName)
+    }
+
+    /// 文字サイズの設定に追従すること。本文より見出しが大きい
+    func testJournalFontsScaleWithTextStyle() {
+        XCTAssertGreaterThan(UIFont.journal(.title2).pointSize, UIFont.journal(.footnote).pointSize)
+    }
+
     // MARK: - バージョン比較
 
     /// メジャー番号を無視すると、端末の方が新しいのに更新を促してしまう

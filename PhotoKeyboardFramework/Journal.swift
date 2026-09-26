@@ -29,3 +29,34 @@ extension UIColor {
     /// 荷札・星のシール
     public static let kraft = journalAdaptive(light: 0xE9DFC6, dark: 0xCDBF9E)
 }
+
+extension UIFont {
+    /// 手書き。題名・メモ・付箋・「次はここ」
+    public static let journalFontName = "ZenKurenaido-Regular"
+    /// タイプライター。ロゴ・日付・荷札
+    public static let labelFontName = "SpecialElite-Regular"
+
+    /// 手書きの書体を、文字サイズの設定に追従する大きさで返す。
+    /// 読み込めないとき(キーボード拡張やテスト)は丸ゴシックに落とす
+    public static func journal(_ style: UIFont.TextStyle) -> UIFont {
+        let size = standardPointSize(for: style)
+        guard let font = UIFont(name: journalFontName, size: size) else { return .brand(style) }
+        return UIFontMetrics(forTextStyle: style).scaledFont(for: font)
+    }
+
+    /// タイプライターの書体。読み込めないときは Courier に落とす
+    public static func label(_ style: UIFont.TextStyle) -> UIFont {
+        let size = standardPointSize(for: style)
+        let font = UIFont(name: labelFontName, size: size)
+            ?? UIFont(name: "Courier", size: size)
+            ?? .monospacedSystemFont(ofSize: size, weight: .regular)
+        return UIFontMetrics(forTextStyle: style).scaledFont(for: font)
+    }
+
+    /// 標準の文字サイズ設定での大きさ。UIFontMetrics がここから利用者の設定へ拡大縮小する。
+    /// preferredFont の大きさを渡すと、設定の倍率が二重に掛かる
+    private static func standardPointSize(for style: UIFont.TextStyle) -> CGFloat {
+        UIFont.preferredFont(forTextStyle: style,
+                             compatibleWith: UITraitCollection(preferredContentSizeCategory: .large)).pointSize
+    }
+}
