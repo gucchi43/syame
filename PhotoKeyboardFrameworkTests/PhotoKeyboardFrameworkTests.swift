@@ -813,6 +813,64 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         }
     }
 
+    // MARK: - 動きと振動
+
+    private final class RecordingHaptic: HapticDriver {
+        var played: [Haptic.Kind] = []
+        func play(_ kind: Haptic.Kind) { played.append(kind) }
+    }
+
+    /// 押すと縮み、離すと元の角度のまま戻ること。回転した写真でも角度が消えない
+    @MainActor
+    func testPressKeepsRotation() {
+        Motion.isReducedOverride = false
+        defer { Motion.isReducedOverride = nil }
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+        let tilted = CGAffineTransform(rotationAngle: 0.1)
+        view.transform = tilted
+        Motion.pressDown(view)
+        XCTAssertLessThan(hypot(view.transform.a, view.transform.b), 1.0, "押しても縮んでいない")
+        XCTAssertEqual(atan2(view.transform.b, view.transform.a), 0.1, accuracy: 0.001, "押したら角度が消えた")
+        Motion.release(view)
+        XCTAssertEqual(view.transform, tilted, "離しても元に戻らない")
+    }
+
+    /// 貼る動きは最後に指定の姿勢で止まること
+    @MainActor
+    func testPasteEndsAtFinalTransform() {
+        Motion.isReducedOverride = false
+        defer { Motion.isReducedOverride = nil }
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+        let final = CGAffineTransform(rotationAngle: -0.12)
+        let done = expectation(description: "貼り終わり")
+        Motion.paste(view, to: final) { done.fulfill() }
+        wait(for: [done], timeout: 3)
+        XCTAssertEqual(view.transform, final)
+        XCTAssertEqual(view.alpha, 1, accuracy: 0.001)
+    }
+
+    /// 視差効果を減らす設定では、落ちも回りもせず、はじめから最後の姿勢にいること
+    @MainActor
+    func testPasteSkipsMovementWhenReduced() {
+        Motion.isReducedOverride = true
+        defer { Motion.isReducedOverride = nil }
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+        let final = CGAffineTransform(rotationAngle: 0.05)
+        Motion.paste(view, to: final, completion: nil)
+        XCTAssertEqual(view.transform, final)
+    }
+
+    /// 振動は差し替えた生成器へ届くこと
+    func testHapticGoesThroughInjectedDriver() {
+        let recorder = RecordingHaptic()
+        let previous = Haptic.driver
+        Haptic.driver = recorder
+        defer { Haptic.driver = previous }
+        Haptic.play(.tap)
+        Haptic.play(.full)
+        XCTAssertEqual(recorder.played, [.tap, .full])
+    }
+
     // MARK: - ロゴの焼き込み
 
     /// ロゴ素材が Framework のバンドルから読めること。
