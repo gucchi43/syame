@@ -1131,6 +1131,40 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertEqual(ticket.textLabelForTesting.text, "2026.09.27")
     }
 
+    /// 方眼の模様色は、ライトとダークで別のタイルになり、どちらも紙の色を含むこと。
+    /// ウインドウに載せないと配色の切り替えが伝わらず、動的な色がライトのまま CGColor に
+    /// 固定される(testComposerStaysVisibleInDarkMode と同じ理由)ため、ウインドウへ載せる
+    @MainActor
+    func testGridPatternFollowsAppearance() {
+        let color = PaperBackgroundView.gridPatternColor()
+        for style in [UIUserInterfaceStyle.light, .dark] {
+            let view = UIView(frame: CGRect(x: 0, y: 0, width: 56, height: 56))
+            let window = UIWindow(frame: view.frame)
+            window.overrideUserInterfaceStyle = style
+            window.addSubview(view)
+            view.backgroundColor = color
+            window.layoutIfNeeded()
+            let paper = UIColor.bgBase.resolvedColor(with: UITraitCollection(userInterfaceStyle: style))
+            XCTAssertTrue(containsColor(view, paper, tolerance: 3), "\(style == .dark ? "ダーク" : "ライト"): 紙の色が無い")
+        }
+    }
+
+    /// 荷札の文字は、ライトでもダークでも荷札の上で読めること
+    func testTicketTextIsReadableInBothModes() {
+        for style in [UIUserInterfaceStyle.light, .dark] {
+            let traits = UITraitCollection(userInterfaceStyle: style)
+            var r1: CGFloat = 0, g1: CGFloat = 0, b1: CGFloat = 0, r2: CGFloat = 0, g2: CGFloat = 0, b2: CGFloat = 0
+            UIColor.onKraft.resolvedColor(with: traits).getRed(&r1, green: &g1, blue: &b1, alpha: nil)
+            UIColor.kraft.resolvedColor(with: traits).getRed(&r2, green: &g2, blue: &b2, alpha: nil)
+            func lum(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat) -> CGFloat {
+                func c(_ v: CGFloat) -> CGFloat { v <= 0.03928 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4) }
+                return 0.2126 * c(r) + 0.7152 * c(g) + 0.0722 * c(b)
+            }
+            let a = lum(r1, g1, b1), b = lum(r2, g2, b2)
+            XCTAssertGreaterThanOrEqual((max(a, b) + 0.05) / (min(a, b) + 0.05), 4.5)
+        }
+    }
+
     // MARK: - バージョン比較
 
     /// メジャー番号を無視すると、端末の方が新しいのに更新を促してしまう

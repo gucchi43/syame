@@ -28,6 +28,8 @@ extension UIColor {
     public static let tapeClear = journalAdaptive(light: 0xFFFFFF, lightAlpha: 0.45, dark: 0xFFFFFF, darkAlpha: 0.22)
     /// 荷札・星のシール
     public static let kraft = journalAdaptive(light: 0xE9DFC6, dark: 0xCDBF9E)
+    /// kraft の上の文字。kraft はライト・ダークどちらでも明るいので、文字は両モードとも濃い茶で固定
+    public static let onKraft = journalAdaptive(light: 0x3A2E1E, dark: 0x3A2E1E)
 }
 
 extension UIFont {

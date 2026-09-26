@@ -44,6 +44,32 @@ final class PaperBackgroundView: UIView {
         super.traitCollectionDidChange(previous)
         setNeedsDisplay()
     }
+
+    /// 方眼1マス分のタイルを animatable な UIColor(patternImage:) として返す。
+    /// 一覧の背景色に使うと、スクロールしても中身(写真)と一緒に模様が動く(スクロールビュー自体を動かすため)。
+    /// ライト・ダークで別のタイルになるよう、traits ごとに描き直す
+    static func gridPatternColor() -> UIColor {
+        UIColor { traits in
+            let scale = traits.displayScale > 0 ? traits.displayScale : 2
+            let size = CGSize(width: gridSpacing, height: gridSpacing)
+            let format = UIGraphicsImageRendererFormat()
+            format.scale = scale
+            format.opaque = true
+            let image = UIGraphicsImageRenderer(size: size, format: format).image { context in
+                let cgContext = context.cgContext
+                UIColor.bgBase.resolvedColor(with: traits).setFill()
+                cgContext.fill(CGRect(origin: .zero, size: size))
+                UIColor.paperGrid.resolvedColor(with: traits).setStroke()
+                cgContext.setLineWidth(1 / scale)
+                cgContext.move(to: CGPoint(x: 0, y: 0))
+                cgContext.addLine(to: CGPoint(x: size.width, y: 0))
+                cgContext.move(to: CGPoint(x: 0, y: 0))
+                cgContext.addLine(to: CGPoint(x: 0, y: size.height))
+                cgContext.strokePath()
+            }
+            return UIColor(patternImage: image)
+        }
+    }
 }
 
 /// マスキングテープ。黒・白・透明・長い
@@ -66,7 +92,7 @@ final class TapeView: UIView {
         case .clear:
             backgroundColor = .tapeClear
             layer.borderWidth = 0.5
-            layer.borderColor = UIColor.black.withAlphaComponent(0.08).cgColor
+            layer.borderColor = UIColor.textPrimary.withAlphaComponent(0.12).resolvedColor(with: traitCollection).cgColor
         case .corners, .clip: backgroundColor = UIColor.accent.withAlphaComponent(0.9)
         }
     }
@@ -113,7 +139,7 @@ final class TicketView: UIView {
         backgroundColor = .kraft
         isUserInteractionEnabled = false
         label.font = .label(.caption2)
-        label.textColor = UIColor(red: 0.23, green: 0.18, blue: 0.12, alpha: 1)
+        label.textColor = .onKraft
         label.translatesAutoresizingMaskIntoConstraints = false
         addSubview(label)
         NSLayoutConstraint.activate([
