@@ -15,6 +15,7 @@
 		2D4737E85345832B666CFF25 /* PaywallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 466107055132CE2E0B02FC30 /* PaywallViewController.swift */; };
 		33DE8B8E9EDEAC8780228FAE /* GuideComposerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E8DCF51AEA21D5ACF31D816 /* GuideComposerView.swift */; };
 		393231D5EC54450C9836C6F9 /* SwiftDate in Frameworks */ = {isa = PBXBuildFile; productRef = 7E2F3E9D8C6F468E9A1BD4CD /* SwiftDate */; };
+		3A3D53DFE4043C934BD614A6 /* JournalPlacer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951152FB764F8C15B36A7474 /* JournalPlacer.swift */; };
 		3ACE86CEBB02C3D24A38DC01 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		3ADA80A7C5E8499BBE4A96AA /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 6C2B5E648EF740DE8D381735 /* Toast */; };
 		4105F920130C4F5180B8CA1E /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = C27D3E2C284F4289B6FC641E /* Lottie */; };
@@ -243,6 +244,7 @@
 		82F9F40B22F6B2610062F451 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		82F9F41822F6B2920062F451 /* Photo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Photo.swift; sourceTree = "<group>"; };
 		82RB0001000000000000BB01 /* RealmBackup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealmBackup.swift; sourceTree = "<group>"; };
+		951152FB764F8C15B36A7474 /* JournalPlacer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JournalPlacer.swift; sourceTree = "<group>"; };
 		AA0100000000000000000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		AA0100000000000000000011 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = PhotoKeyboardFramework/PrivacyInfo.xcprivacy; sourceTree = SOURCE_ROOT; };
 		AA0100000000000000000021 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = PhotoKeyboardExOrigin/PrivacyInfo.xcprivacy; sourceTree = SOURCE_ROOT; };
@@ -355,6 +357,15 @@
 			path = Guide;
 			sourceTree = "<group>";
 		};
+		6AFCA25CB8BA85DD4338DBCB /* Journal */ = {
+			isa = PBXGroup;
+			children = (
+				951152FB764F8C15B36A7474 /* JournalPlacer.swift */,
+			);
+			name = Journal;
+			path = Journal;
+			sourceTree = "<group>";
+		};
 		745FB7BA5BEBB3CEF34BFF27 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
@@ -430,6 +441,7 @@
 				4043FCB63BC521B268037404 /* PhotoKeyboardEx.storekit */,
 				1A71B5992D78F8A1A56AA5D1 /* Onboarding */,
 				745FB7BA5BEBB3CEF34BFF27 /* Fonts */,
+				6AFCA25CB8BA85DD4338DBCB /* Journal */,
 			);
 			path = PhotoKeyboardEx;
 			sourceTree = "<group>";
@@ -832,6 +844,7 @@
 				EFE2E672BDF4B664CCA80363 /* GuideHeroView.swift in Sources */,
 				5A1F845C0D5D9A7847C44EA4 /* GuideSampleGallery.swift in Sources */,
 				B0B3CF3A0B731F0AE6B96C4C /* OnboardingCelebration.swift in Sources */,
+				3A3D53DFE4043C934BD614A6 /* JournalPlacer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

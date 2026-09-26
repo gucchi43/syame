@@ -978,6 +978,99 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertGreaterThan(UIFont.journal(.title2).pointSize, UIFont.journal(.footnote).pointSize)
     }
 
+    // MARK: - 貼り方
+
+    private func inputs(_ count: Int, prefix: String = "photo") -> [JournalItemInput] {
+        (0..<count).map { JournalItemInput(id: "\(prefix)-\($0)", aspectRatio: 1, dayKey: "2026-09-27") }
+    }
+
+    /// FNV-1a は既知の値と一致すること。hashValue と違い起動をまたいで変わらない
+    func testFnv1aMatchesKnownVectors() {
+        XCTAssertEqual(JournalPlacer.fnv1a64(""), 0xcbf29ce484222325)
+        XCTAssertEqual(JournalPlacer.fnv1a64("a"), 0xaf63dc4c8601ec8c)
+        XCTAssertEqual(JournalPlacer.fnv1a64("foobar"), 0x85944171f73967e8)
+    }
+
+    /// 同じ写真の列なら、何度計算しても同じ貼り方になること
+    func testPlacementIsDeterministic() {
+        let a = JournalPlacer.place(inputs(8), width: 390, top: 0)
+        let b = JournalPlacer.place(inputs(8), width: 390, top: 0)
+        XCTAssertEqual(a, b)
+    }
+
+    /// 1 枚足しても、それまでの写真の枠と角度が変わらないこと
+    func testAddingAPhotoDoesNotMoveEarlierOnes() {
+        let seven = JournalPlacer.place(inputs(7), width: 390, top: 0)
+        let eight = JournalPlacer.place(inputs(8), width: 390, top: 0)
+        XCTAssertEqual(Array(eight.prefix(7)), seven)
+    }
+
+    /// 角度は ±9° 以内、回転後の外形はノートの幅に収まること
+    func testPlacementStaysInsideTheNotebook() {
+        let width: CGFloat = 375
+        for p in JournalPlacer.place(inputs(40), width: width, top: 0) {
+            XCTAssertLessThanOrEqual(abs(p.angle), JournalPlacer.maxAngleDegrees * .pi / 180 + 0.0001)
+            // 中心 (midX, midY) を軸に回すには、先に中心へ寄せてから回転し、最後に戻す必要がある。
+            // CGAffineTransform の連結は「後から呼んだ操作ほど先に点へ適用される」ため、
+            // 先に呼ぶのが「戻す(+mid)」、最後に呼ぶのが「寄せる(-mid)」という順になる
+            let rotated = p.frame.applying(CGAffineTransform(translationX: p.frame.midX, y: p.frame.midY)
+                .rotated(by: p.angle).translatedBy(x: -p.frame.midX, y: -p.frame.midY))
+            XCTAssertGreaterThanOrEqual(rotated.minX, 0, "左にはみ出した: \(p)")
+            XCTAssertLessThanOrEqual(rotated.maxX, width, "右にはみ出した: \(p)")
+            XCTAssertGreaterThanOrEqual(p.captionFrame.minX, 0)
+            XCTAssertLessThanOrEqual(p.captionFrame.maxX, width)
+        }
+    }
+
+    /// 前の写真への食い込みは、前の写真の高さの 20% 以下
+    func testOverlapIsLimited() {
+        let placements = JournalPlacer.place(inputs(40), width: 390, top: 0)
+        for (prev, next) in zip(placements, placements.dropFirst()) {
+            let overlap = prev.frame.maxY - next.frame.minY
+            XCTAssertLessThanOrEqual(overlap, prev.frame.height * JournalPlacer.maxOverlap + 0.5)
+        }
+    }
+
+    /// 写真は左右を行き来すること。整った 1 列にしない
+    func testPhotosAlternateSides() {
+        let placements = JournalPlacer.place(inputs(6), width: 390, top: 0)
+        XCTAssertEqual(placements.map(\.isLeft), [true, false, true, false, true, false])
+    }
+
+    /// 形の出方はおおむね 紙焼き 40 / ポラロイド 25 / 切れ端 20 / 横長 15
+    func testShapesAppearInTheIntendedMix() {
+        let placements = JournalPlacer.place(inputs(1000, prefix: "mix"), width: 390, top: 0)
+        func ratio(_ s: PrintShape) -> Double { Double(placements.filter { $0.shape == s }.count) / 1000 }
+        XCTAssertEqual(ratio(.print), 0.40, accuracy: 0.06)
+        XCTAssertEqual(ratio(.polaroid), 0.25, accuracy: 0.06)
+        XCTAssertEqual(ratio(.torn), 0.20, accuracy: 0.06)
+        XCTAssertEqual(ratio(.landscape), 0.15, accuracy: 0.06)
+    }
+
+    /// 日付が変わった最初の 1 枚に荷札が付くこと
+    func testTicketMarksTheFirstPhotoOfEachDay() {
+        let items = [
+            JournalItemInput(id: "x1", aspectRatio: 1, dayKey: "2026-09-25"),
+            JournalItemInput(id: "x2", aspectRatio: 1, dayKey: "2026-09-25"),
+            JournalItemInput(id: "x3", aspectRatio: 1, dayKey: "2026-09-27"),
+        ]
+        let props = JournalPlacer.place(items, width: 390, top: 0).map(\.prop)
+        XCTAssertEqual(props[0], .ticket)
+        XCTAssertNotEqual(props[1], .ticket)
+        XCTAssertEqual(props[2], .ticket)
+    }
+
+    /// 「次はここ」は最後の写真より下にあり、ノートの幅に収まること
+    func testNextSpotSitsBelowTheLastPhoto() {
+        let placements = JournalPlacer.place(inputs(3), width: 390, top: 0)
+        let spot = JournalPlacer.nextSpot(after: placements, width: 390, top: 0)
+        XCTAssertGreaterThan(spot.frame.minY, placements.last!.bottom)
+        XCTAssertGreaterThanOrEqual(spot.frame.minX, 0)
+        XCTAssertLessThanOrEqual(spot.frame.maxX, 390)
+        let empty = JournalPlacer.nextSpot(after: [], width: 390, top: 24)
+        XCTAssertGreaterThanOrEqual(empty.frame.minY, 24)
+    }
+
     // MARK: - バージョン比較
 
     /// メジャー番号を無視すると、端末の方が新しいのに更新を促してしまう
