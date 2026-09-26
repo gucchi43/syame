@@ -124,10 +124,9 @@ public class RealmManager {
         return try! Realm(configuration: fallback)
     }
 
-    private static func makeConfiguration(fileURL: URL, readOnly: Bool = false) -> Realm.Configuration {
+    static func makeConfiguration(fileURL: URL) -> Realm.Configuration {
         var configuration = Realm.Configuration()
         configuration.fileURL = fileURL
-        configuration.readOnly = readOnly
         configuration.schemaVersion = schemaVersion
         configuration.migrationBlock = { migration, oldSchemaVersion in
             // deleteRealmIfMigrationNeeded はユーザーの保存画像を消してしまうため使わない。
@@ -174,7 +173,7 @@ public class RealmManager {
 
     /// 旧バージョンは端末のロケールで db.realm.jp / db.realm.world を切り替えていたため、
     /// 言語設定を変えると保存済みの画像が消えたように見えていた。初回起動時に1つのファイルへ統合する。
-    private static func consolidateLegacyFilesIfNeeded(container: URL, target: URL) {
+    static func consolidateLegacyFilesIfNeeded(container: URL, target: URL) {
         let fileManager = FileManager.default
         guard !fileManager.fileExists(atPath: target.path) else { return }
 
@@ -188,9 +187,9 @@ public class RealmManager {
         let temporaryURL = target.appendingPathExtension("tmp")
         try? fileManager.removeItem(at: temporaryURL)
         do {
-            // 旧ファイルはインプレース移行させたくないので読み取り専用で開く
-            let primaryRealm = try Realm(configuration: makeConfiguration(fileURL: primary, readOnly: true))
-            try primaryRealm.writeCopy(toFile: temporaryURL)
+            let migrated = try openMigratedLegacyCopy(of: primary)
+            defer { migrated.cleanup() }
+            try migrated.realm.writeCopy(toFile: temporaryURL)
             try fileManager.moveItem(at: temporaryURL, to: target)
         } catch {
             // 統合できない場合は空のファイルとして開始する(旧ファイルは残すので復旧は可能)
@@ -200,6 +199,27 @@ public class RealmManager {
 
         for url in legacyURLs.dropFirst() {
             importPhotos(from: url, into: target)
+        }
+    }
+
+    /// 旧ファイルの原本には触れず、書き込み可能な一時複製を移行してから開く。
+    ///
+    /// readOnly で開くと realm-core は移行(migrationBlock)を実行できず、
+    /// pastedAt を足した今回のスキーマ差分で SchemaMismatchException になり、
+    /// 呼び出し側の catch で握りつぶされて「統合できなかった」= 空の統合先ができてしまう。
+    /// 原本はロケール統合前の唯一のコピーなので、書き換えずに複製側だけ移行する。
+    private static func openMigratedLegacyCopy(of source: URL) throws -> (realm: Realm, cleanup: () -> Void) {
+        let fileManager = FileManager.default
+        let copyURL = source.deletingLastPathComponent()
+            .appendingPathComponent(".legacy-migrating-\(UUID().uuidString).realm")
+        try fileManager.copyItem(at: source, to: copyURL)
+        let cleanup: () -> Void = { try? fileManager.removeItem(at: copyURL) }
+        do {
+            let realm = try Realm(configuration: makeConfiguration(fileURL: copyURL))
+            return (realm, cleanup)
+        } catch {
+            cleanup()
+            throw error
         }
     }
 
@@ -216,10 +236,11 @@ public class RealmManager {
 
     private static func importPhotos(from source: URL, into target: URL) {
         do {
-            let sourceRealm = try Realm(configuration: makeConfiguration(fileURL: source, readOnly: true))
+            let migratedSource = try openMigratedLegacyCopy(of: source)
+            defer { migratedSource.cleanup() }
             let targetRealm = try Realm(configuration: makeConfiguration(fileURL: target))
             let existingIds = Set(targetRealm.objects(RealmPhoto.self).map { $0.id })
-            let missing = sourceRealm.objects(RealmPhoto.self).filter { !existingIds.contains($0.id) }
+            let missing = migratedSource.realm.objects(RealmPhoto.self).filter { !existingIds.contains($0.id) }
             guard !missing.isEmpty else { return }
             try targetRealm.write {
                 for photo in missing {
@@ -351,3 +372,49 @@ public class RealmManager {
         }
     }
 }
+
+#if DEBUG
+/// テスト専用。`pastedAt` を持たない旧スキーマの RealmPhoto 相当。
+/// `_realmObjectName` で永続化上の型名を "RealmPhoto" に固定することで、
+/// 本番の `RealmPhoto` 用スキーマとして移行(migrationBlock)を実際に走らせられる。
+final class LegacyRealmPhotoFixture: Object {
+    @objc dynamic var id = ""
+    @objc dynamic var text = ""
+    @objc dynamic var getDay = ""
+    @objc dynamic var useNum = 0
+    @objc dynamic var isPublic = false
+    @objc dynamic var imageHeight = 0
+    @objc dynamic var imageWidth = 0
+    @objc dynamic var ownerId = ""
+
+    override class func _realmObjectName() -> String { return "RealmPhoto" }
+    override class func primaryKey() -> String? { return "id" }
+}
+
+extension RealmManager {
+    /// `pastedAt` の無い旧スキーマのファイルを、指定した id の順番で書き込む。
+    /// 「本番の移行を通しても写真が消えず、順番どおりに pastedAt が入る」ことを
+    /// 確かめる移行テスト専用のヘルパー。
+    static func writeLegacyFixture(ids: [String], schemaVersion: UInt64, to url: URL) throws {
+        var configuration = Realm.Configuration()
+        configuration.fileURL = url
+        configuration.schemaVersion = schemaVersion
+        configuration.objectTypes = [LegacyRealmPhotoFixture.self]
+        // Realm はパスごとにインスタンスをキャッシュしており、スコープを抜けても
+        // 自動解放プールが片付くまで生き続けることがある。生きたままだと、この直後に
+        // 同じパスを別スキーマで開いたとき、そのキャッシュされたスキーマ情報が
+        // 使い回されてしまう(新しい型が「管理されていない」ことになる)。
+        // autoreleasepool で確実にここで解放してから返す。
+        try autoreleasepool {
+            let realm = try Realm(configuration: configuration)
+            try realm.write {
+                for id in ids {
+                    let fixture = LegacyRealmPhotoFixture()
+                    fixture.id = id
+                    realm.add(fixture)
+                }
+            }
+        }
+    }
+}
+#endif

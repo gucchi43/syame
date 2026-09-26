@@ -545,6 +545,40 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         XCTAssertEqual(ids, ["a", "c", "d"])
     }
 
+    /// 版 1(pastedAt 無し)のファイルを本番の設定で開いても写真は消えず、
+    /// 元の並び順どおりに pastedAt が増えていくこと(fix round 1)
+    func testMigratingLegacyFileKeepsAllPhotosInOrder() throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("legacy-\(UUID().uuidString).realm")
+        try RealmManager.writeLegacyFixture(ids: ["a", "b", "c"], schemaVersion: 1, to: url)
+
+        let realm = try Realm(configuration: RealmManager.makeConfiguration(fileURL: url))
+        let photos = Array(realm.objects(RealmPhoto.self).sorted(byKeyPath: RealmManager.orderKey))
+        XCTAssertEqual(photos.map { $0.id }, ["a", "b", "c"], "写真が消えている、または並びが崩れている")
+        XCTAssertLessThan(photos[0].pastedAt, photos[1].pastedAt)
+        XCTAssertLessThan(photos[1].pastedAt, photos[2].pastedAt)
+    }
+
+    /// 版 0(pastedAt 無し)の旧ロケール別ファイル2つを統合すると、
+    /// 両方の写真が取り込まれ、原本の旧ファイルは消えずに残ること(fix round 1)
+    func testConsolidatingLegacyLocaleFilesKeepsBothAndOriginals() throws {
+        let container = FileManager.default.temporaryDirectory.appendingPathComponent("legacy-container-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: container, withIntermediateDirectories: true)
+        let jpURL = container.appendingPathComponent("db.realm.jp")
+        let worldURL = container.appendingPathComponent("db.realm.world")
+        try RealmManager.writeLegacyFixture(ids: ["x"], schemaVersion: 0, to: jpURL)
+        try RealmManager.writeLegacyFixture(ids: ["y"], schemaVersion: 0, to: worldURL)
+
+        let target = container.appendingPathComponent("db.realm.shared")
+        RealmManager.consolidateLegacyFilesIfNeeded(container: container, target: target)
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: jpURL.path), "原本(jp)が消えている")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: worldURL.path), "原本(world)が消えている")
+
+        let realm = try Realm(configuration: RealmManager.makeConfiguration(fileURL: target))
+        let ids = Set(realm.objects(RealmPhoto.self).map { $0.id })
+        XCTAssertEqual(ids, ["x", "y"], "統合先に両方の写真が入っていない")
+    }
+
     // MARK: - デザイントークン
 
     /// 相対輝度からコントラスト比を求める(WCAG 2.1)
