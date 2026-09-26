@@ -4,6 +4,7 @@
 //
 //  押す・貼るの動きと振動。時間とバネはここでだけ決める。
 //  「視差効果を減らす」が有効なら、移動と回転をせずフェードだけにする。
+//  メインスレッドからだけ呼ぶ。
 //
 
 import UIKit
@@ -22,23 +23,39 @@ public enum Motion {
     static let pasteSpin: CGFloat = 0.14
     static let pasteDuration: TimeInterval = 0.55
 
-    /// 押している間の姿勢。押す前の姿勢を覚えておき、離したらそこへ戻す
-    private static var restingTransforms: [ObjectIdentifier: CGAffineTransform] = [:]
+    /// ビュー自身に紐付けた押す前の姿勢を取り出す。ない場合は nil
+    private static func restingTransform(for view: UIView) -> CGAffineTransform? {
+        let value = objc_getAssociatedObject(view, &restingKey) as? NSValue
+        return value?.cgAffineTransformValue
+    }
+
+    /// ビュー自身に押す前の姿勢を紐付ける
+    private static func setRestingTransform(_ transform: CGAffineTransform, for view: UIView) {
+        objc_setAssociatedObject(view, &restingKey, NSValue(cgAffineTransform: transform), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+    }
+
+    /// ビュー自身に紐付けた押す前の姿勢を消す
+    private static func clearRestingTransform(for view: UIView) {
+        objc_setAssociatedObject(view, &restingKey, nil, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+    }
+
+    private static var restingKey: UInt8 = 0
 
     /// 押した瞬間。いまの姿勢(回転を含む)に縮みを掛け合わせる
     public static func pressDown(_ view: UIView) {
         guard !isReduced else { return }
         let resting = view.transform
-        restingTransforms[ObjectIdentifier(view)] = resting
+        setRestingTransform(resting, for: view)
         UIView.animate(withDuration: pressDuration, delay: 0, options: [.curveEaseOut, .allowUserInteraction]) {
             view.transform = resting.scaledBy(x: pressScale, y: pressScale)
         }
     }
 
-    /// 離した瞬間。押す前の姿勢へバネで戻す
+    /// 離した瞬間。押す前の姿勢へバネで戻す。押していなければ何もしない
     public static func release(_ view: UIView) {
         guard !isReduced else { return }
-        let resting = restingTransforms.removeValue(forKey: ObjectIdentifier(view)) ?? .identity
+        guard let resting = restingTransform(for: view) else { return }
+        clearRestingTransform(for: view)
         UIView.animate(withDuration: pressDuration * 3, delay: 0, usingSpringWithDamping: 0.55,
                        initialSpringVelocity: 0.5, options: [.allowUserInteraction]) {
             view.transform = resting

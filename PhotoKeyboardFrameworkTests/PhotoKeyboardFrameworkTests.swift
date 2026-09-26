@@ -835,6 +835,18 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         XCTAssertEqual(view.transform, tilted, "離しても元に戻らない")
     }
 
+    /// 押していないビューで離しても、姿勢を勝手に戻さないこと
+    @MainActor
+    func testReleaseWithoutPressKeepsTransform() {
+        Motion.isReducedOverride = false
+        defer { Motion.isReducedOverride = nil }
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+        let tilted = CGAffineTransform(rotationAngle: -0.2)
+        view.transform = tilted
+        Motion.release(view)
+        XCTAssertEqual(view.transform, tilted)
+    }
+
     /// 貼る動きは最後に指定の姿勢で止まること
     @MainActor
     func testPasteEndsAtFinalTransform() {
