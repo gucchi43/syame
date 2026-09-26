@@ -68,35 +68,26 @@ extension UIColor {
         }
     }
 
-    /// 画面の地。
-    /// 参照した5アプリ(setlog #F4F5F5 / relight #F5F5F5 / 推しスケ #F6F6F6 ほか)は
-    /// いずれも純白を地に使っていない。
-    /// 完全な無彩色ではなくアクセントの藤色へわずかに寄せてあり、灰色が「選ばれた灰色」に見える。
-    public static let bgBase = adaptive(light: 0xF5F4F8, dark: 0x141318)
+    /// 紙。方眼ノートの地。ダークでは黒い紙
+    public static let bgBase = adaptive(light: 0xF8F7F2, dark: 0x1B1A1E)
 
-    /// カード・セル・モーダルの面。地との差はごくわずかにする。
-    /// 文字は高コントラスト、面は極低コントラストという二極構造が「軽さ」を作る。
-    public static let bgSurface = adaptive(light: 0xFFFFFF, dark: 0x1F1E24)
+    /// ポラロイドの枠やメモの下地。紙より一段明るい(ダークでは一段明るい黒)
+    public static let bgSurface = adaptive(light: 0xFFFEFB, dark: 0x242328)
 
-    /// 本文・見出し。地に対して15:1以上あり、淡い見た目でも可読性は落とさない。
-    public static let textPrimary = adaptive(light: 0x1A1922, dark: 0xF2F1F5)
+    /// ペン
+    public static let textPrimary = adaptive(light: 0x1E1C1A, dark: 0xEFEBE3)
 
-    /// 補足・メタ情報。地に対して5.11:1で、本文基準の4.5:1を満たす。
-    public static let textSecondary = adaptive(light: 0x6A6775, dark: 0x9B98A6)
+    /// 鉛筆。補足と「次はここ」。紙に対して 4.5:1 を保つ濃さ
+    public static let textSecondary = adaptive(light: 0x6E695F, dark: 0x9A958B)
 
-    /// 操作要素の色。塗りボタンや選択状態に使い、地や本文には使わない。
-    ///
-    /// アイコンのホログラムシールを敷く藤色から起こしたテーマカラー。
-    /// 藤色そのものは淡すぎて白文字が乗らないため、色相を保ったまま明度を落とし、
-    /// onAccent との比が 5.2:1 になる位置で止めている。
-    public static let accent = adaptive(light: 0x7362AE, dark: 0xB9AEE8)
+    /// テープ。ライトは黒、ダークは白
+    public static let accent = adaptive(light: 0x1C1B19, dark: 0xEDEAE2)
 
-    /// accent で塗った面の上に載せる文字・アイコンの色
-    public static let onAccent = adaptive(light: 0xFFFFFF, dark: 0x1C1B22)
+    /// テープの上の文字
+    public static let onAccent = adaptive(light: 0xF8F7F2, dark: 0x1B1A1E)
 
-    /// 選択状態やタグの下地に使う、accent を薄めた面。
-    /// accent をそのまま広い面に塗ると、並んだ画像より器が目立ってしまう。
-    public static let accentSoft = adaptive(light: 0xECE9F7, dark: 0x2A2540)
+    /// 付箋
+    public static let accentSoft = adaptive(light: 0xF6E7A1, dark: 0x5A5230)
 
     /// キーボードの地。純正キーボードの色に寄せる。
     /// アプリの地(bgBase)をそのまま使うと、白いパネルが乗っているように見えて浮く。

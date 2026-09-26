@@ -78,6 +78,7 @@
 		82RB0002000000000000BB02 /* RealmBackup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82RB0001000000000000BB01 /* RealmBackup.swift */; };
 		82RT0002000000000000CC02 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 82RT0001000000000000CC01 /* RealmSwift */; };
 		8CEB65DD0558ECA4C9E61C54 /* OnboardingHintView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E1B897FFA5A256EA97357A /* OnboardingHintView.swift */; };
+		9527B8378D745A7C01436D00 /* Journal.swift in Sources */ = {isa = PBXBuildFile; fileRef = E779F59FE9E8B38FACA17165 /* Journal.swift */; };
 		A5396D415C41006E74ECD582 /* GuideChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F18345C571FA51EC48507654 /* GuideChatView.swift */; };
 		AA0100000000000000000002 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000001 /* PrivacyInfo.xcprivacy */; };
 		AA0100000000000000000012 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AA0100000000000000000011 /* PrivacyInfo.xcprivacy */; };
@@ -245,6 +246,7 @@
 		C6F627618CF5716D1B09F7C9 /* PremiumStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PremiumStore.swift; sourceTree = "<group>"; };
 		C9BABCA4B9AFAE70E77ED974 /* GuidePhotoSource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuidePhotoSource.swift; sourceTree = "<group>"; };
 		DF086916758BEEE4FD1D55AA /* OnboardingCelebration.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingCelebration.swift; sourceTree = "<group>"; };
+		E779F59FE9E8B38FACA17165 /* Journal.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Journal.swift; sourceTree = "<group>"; };
 		EB5F625F80AD2D5D385B90DF /* GuideHeroView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideHeroView.swift; sourceTree = "<group>"; };
 		F1295265A3BC90109D77794B /* GuideSampleGallery.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideSampleGallery.swift; sourceTree = "<group>"; };
 		F18345C571FA51EC48507654 /* GuideChatView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideChatView.swift; sourceTree = "<group>"; };
@@ -461,6 +463,7 @@
 				8221370A2304D1A60046E095 /* Extension.swift */,
 				821ABDDB230EC43E00B3DCFE /* DefaultsKeys.swift */,
 				82F9F3FD22F6B2610062F451 /* Info.plist */,
+				E779F59FE9E8B38FACA17165 /* Journal.swift */,
 			);
 			path = PhotoKeyboardFramework;
 			sourceTree = "<group>";
@@ -843,6 +846,7 @@
 				82F9F41922F6B2920062F451 /* Photo.swift in Sources */,
 				826D657F22F831B500F66583 /* RealmManager.swift in Sources */,
 				82BB3A582328D49A003D830B /* LocalizeKey.swift in Sources */,
+				9527B8378D745A7C01436D00 /* Journal.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

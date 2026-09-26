@@ -546,6 +546,29 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         }
     }
 
+    /// 紙の上のペンと鉛筆は、ライト・ダークとも本文として読めること。
+    /// モックの鉛筆(#9A958B)は紙に対して 2.8:1 しかなく、濃くして 4.5:1 を超えさせた
+    func testInkAndPencilAreReadableOnPaper() {
+        for dark in [false, true] {
+            let mode = dark ? "ダーク" : "ライト"
+            XCTAssertGreaterThanOrEqual(contrastRatio(.textPrimary, .bgBase, dark: dark), 4.5, "\(mode): ペンが紙に沈む")
+            XCTAssertGreaterThanOrEqual(contrastRatio(.pencil, .bgBase, dark: dark), 4.5, "\(mode): 鉛筆が読めない")
+            XCTAssertGreaterThanOrEqual(contrastRatio(.textPrimary, .accentSoft, dark: dark), 4.5, "\(mode): 付箋の上の文字が読めない")
+            XCTAssertGreaterThanOrEqual(contrastRatio(.onAccent, .accent, dark: dark), 4.5, "\(mode): テープの上の文字が読めない")
+        }
+    }
+
+    /// 紙はライトで明るく、ダークで暗いこと。逆だと黒い紙のノートにならない
+    func testPaperFlipsWithAppearance() {
+        func white(_ color: UIColor, dark: Bool) -> CGFloat {
+            var w: CGFloat = 0
+            color.resolvedColor(with: UITraitCollection(userInterfaceStyle: dark ? .dark : .light)).getWhite(&w, alpha: nil)
+            return w
+        }
+        XCTAssertGreaterThan(white(.bgBase, dark: false), 0.9)
+        XCTAssertLessThan(white(.bgBase, dark: true), 0.15)
+    }
+
     /// 地とカード面の差は意図的にごく小さくしている。
     /// ここが開くと「軽さ」が失われ、ただのグレーUIになる。
     func testSurfaceSeparationStaysSubtle() {
@@ -628,13 +651,14 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         }
     }
 
-    /// accentSoft は選択状態の下地。面なので、地との差は小さいままでなければならない。
-    /// ここが開くと、選択されただけの行が画像より目立つ。
+    /// accentSoft は付箋。紙に貼った紙片として地から浮いてよいが、
+    /// テープ(accent)ほど強い色ではなく、面として淡いままでなければならない。
     func testAccentSoftStaysAsSurface() {
         for dark in [false, true] {
             let mode = dark ? "ダーク" : "ライト"
-            XCTAssertLessThan(contrastRatio(.accentSoft, .bgBase, dark: dark), 1.5,
-                              "\(mode): 選択状態の下地が主張しすぎている")
+            XCTAssertLessThan(contrastRatio(.accentSoft, .bgBase, dark: dark),
+                              contrastRatio(.accent, .bgBase, dark: dark),
+                              "\(mode): 付箋がテープと同じ強さになっている")
             XCTAssertGreaterThanOrEqual(contrastRatio(.textPrimary, .accentSoft, dark: dark), 4.5,
                                         "\(mode): 選択状態の上の文字が読めない")
         }
