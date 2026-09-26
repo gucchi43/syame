@@ -69,7 +69,7 @@ HTML は `一時素材/design/`（`periperi-journal.html`、`periperi-scatter.ht
 | 題名・メモ・付箋・「次はここ」 | Zen Kurenaido | `UIFont.TextStyle` に合わせて Dynamic Type に追従 |
 | ロゴ・日付・荷札 | Special Elite | 同上 |
 
-どちらも SIL Open Font License。`.ttf` をアプリに同梱し、`Info.plist` の `UIAppFonts` に登録する。ライセンス文を `PhotoKeyboardEx/Fonts/OFL.txt` に置く。
+Zen Kurenaido は SIL Open Font License、Special Elite は Apache License 2.0。どちらも同梱してよい。`.ttf` をアプリに同梱し、`Info.plist` の `UIAppFonts` に登録する。ライセンス文を `PhotoKeyboardEx/Fonts/` に置く。
 
 `UIFont.journal(_ style:)` と `UIFont.label(_ style:)` を足す（`UIFontMetrics` で拡大縮小）。書体が読み込めない場合は、日本語は `UIFont.brand` の丸ゴシック、英字は `Courier` に落とす。
 
