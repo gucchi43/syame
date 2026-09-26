@@ -984,6 +984,14 @@ class PhotoKeyboardExTests: XCTestCase {
         (0..<count).map { JournalItemInput(id: "\(prefix)-\($0)", aspectRatio: 1, dayKey: "2026-09-27") }
     }
 
+    /// 写真の中心 (midX, midY) を軸に回した後の外形。CGAffineTransform の連結は
+    /// 「後から呼んだ操作ほど先に点へ適用される」ため、先に呼ぶのが「戻す(+mid)」、
+    /// 最後に呼ぶのが「寄せる(-mid)」という順になる
+    private func rotatedFrame(_ p: JournalPlacement) -> CGRect {
+        p.frame.applying(CGAffineTransform(translationX: p.frame.midX, y: p.frame.midY)
+            .rotated(by: p.angle).translatedBy(x: -p.frame.midX, y: -p.frame.midY))
+    }
+
     /// FNV-1a は既知の値と一致すること。hashValue と違い起動をまたいで変わらない
     func testFnv1aMatchesKnownVectors() {
         XCTAssertEqual(JournalPlacer.fnv1a64(""), 0xcbf29ce484222325)
@@ -1010,11 +1018,7 @@ class PhotoKeyboardExTests: XCTestCase {
         let width: CGFloat = 375
         for p in JournalPlacer.place(inputs(40), width: width, top: 0) {
             XCTAssertLessThanOrEqual(abs(p.angle), JournalPlacer.maxAngleDegrees * .pi / 180 + 0.0001)
-            // 中心 (midX, midY) を軸に回すには、先に中心へ寄せてから回転し、最後に戻す必要がある。
-            // CGAffineTransform の連結は「後から呼んだ操作ほど先に点へ適用される」ため、
-            // 先に呼ぶのが「戻す(+mid)」、最後に呼ぶのが「寄せる(-mid)」という順になる
-            let rotated = p.frame.applying(CGAffineTransform(translationX: p.frame.midX, y: p.frame.midY)
-                .rotated(by: p.angle).translatedBy(x: -p.frame.midX, y: -p.frame.midY))
+            let rotated = rotatedFrame(p)
             XCTAssertGreaterThanOrEqual(rotated.minX, 0, "左にはみ出した: \(p)")
             XCTAssertLessThanOrEqual(rotated.maxX, width, "右にはみ出した: \(p)")
             XCTAssertGreaterThanOrEqual(p.captionFrame.minX, 0)
@@ -1022,12 +1026,25 @@ class PhotoKeyboardExTests: XCTestCase {
         }
     }
 
-    /// 前の写真への食い込みは、前の写真の高さの 20% 以下
+    /// 前の写真への食い込みは、回転した見た目でも前の写真の高さの 20% 以下
     func testOverlapIsLimited() {
         let placements = JournalPlacer.place(inputs(40), width: 390, top: 0)
         for (prev, next) in zip(placements, placements.dropFirst()) {
-            let overlap = prev.frame.maxY - next.frame.minY
+            let prevRotated = rotatedFrame(prev)
+            let nextRotated = rotatedFrame(next)
+            let overlap = prevRotated.maxY - nextRotated.minY
             XCTAssertLessThanOrEqual(overlap, prev.frame.height * JournalPlacer.maxOverlap + 0.5)
+        }
+    }
+
+    /// 題名が写真の脇にあるとき、次の写真(回転後の見た目)が題名に重ならないこと
+    func testNextPhotoDoesNotCoverTheCaptionBeside() {
+        let placements = JournalPlacer.place(inputs(40), width: 390, top: 0)
+        for (current, next) in zip(placements, placements.dropFirst()) {
+            guard current.captionSide == .beside else { continue }
+            let nextRotated = rotatedFrame(next)
+            XCTAssertFalse(nextRotated.intersects(current.captionFrame),
+                            "次の写真が題名に重なった: caption=\(current.captionFrame), next=\(nextRotated)")
         }
     }
 

@@ -74,12 +74,20 @@ enum JournalPlacer {
 
             // 回転しても幅に収まるよう、回転後の外形の半幅で左右を詰める
             let halfSpan = (photoWidth * abs(cos(angle)) + height * abs(sin(angle))) / 2
+            // この写真自身が回転で上に張り出すぶん。次の写真の食い込み計算はこれを足して初めて
+            // 「回転後の見た目」で前の写真の高さの overlap 以内に収まる
+            let ownSlack = halfSpanVerticalSlack(angle, photoWidth, height)
             let preferredMidX = isLeft ? margin + photoWidth / 2 + jitter : width - margin - photoWidth / 2 + jitter
             let midX = min(max(preferredMidX, halfSpan + boundsEpsilon), width - halfSpan - boundsEpsilon)
 
             let y: CGFloat
             if let previous = previous {
-                y = previous.bottom - previous.frame.height * overlap + (overlap == 0 ? gap : 0)
+                var candidateY = previous.bottom - previous.frame.height * overlap + (overlap == 0 ? gap : 0) + ownSlack
+                if previous.captionSide == .beside {
+                    // 題名が脇にあるときは、次の写真が題名を隠さないよう題名の下端より下に置く
+                    candidateY = max(candidateY, previous.captionFrame.maxY + ownSlack + 4)
+                }
+                y = candidateY
             } else {
                 y = top
             }
@@ -110,8 +118,7 @@ enum JournalPlacer {
             let placement = JournalPlacement(frame: frame, angle: angle, shape: shape, tape: tape, prop: prop,
                                              captionFrame: captionFrame, captionAngle: captionAngle,
                                              captionSide: captionSide,
-                                             bottom: max(frame.maxY + halfSpanVerticalSlack(angle, photoWidth, height),
-                                                         captionFrame.maxY),
+                                             bottom: max(frame.maxY + ownSlack, captionFrame.maxY),
                                              isLeft: isLeft)
             result.append(placement)
             previous = placement
