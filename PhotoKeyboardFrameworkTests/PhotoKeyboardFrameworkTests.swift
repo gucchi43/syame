@@ -508,6 +508,43 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         XCTAssertEqual(restored.objects(RealmPhoto.self).count, 1, "新しい方の複製に入れ替わっていない")
     }
 
+    // MARK: - 貼った順
+
+    /// 新しく作った写真には、作った時刻が入ること
+    func testNewPhotoRecordsWhenItWasPasted() {
+        let before = Date()
+        let photo = RealmPhoto.create(id: "p", text: "", image: UIImage(), imageHeight: 1, imageWidth: 1,
+                                      getDay: "", isPublic: false, ownerId: "")
+        XCTAssertGreaterThanOrEqual(photo.pastedAt.timeIntervalSince1970, before.timeIntervalSince1970 - 1)
+    }
+
+    /// 移行で入れる日時は、今の並び順どおりに増えていき、最後が基準の時刻になること
+    func testMigrationDatesKeepTheCurrentOrder() {
+        let end = Date(timeIntervalSince1970: 1_800_000_000)
+        let dates = RealmManager.migrationDates(count: 3, endingAt: end)
+        XCTAssertEqual(dates.count, 3)
+        XCTAssertLessThan(dates[0], dates[1])
+        XCTAssertLessThan(dates[1], dates[2])
+        XCTAssertEqual(dates[2], end)
+    }
+
+    /// 並びは pastedAt の昇順。途中を消しても残りの順番は変わらない
+    func testPhotosStayInPastedOrderAfterDeletingOne() throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("order-\(UUID().uuidString).realm")
+        let realm = try makeRealm(at: url)
+        try realm.write {
+            for (i, id) in ["a", "b", "c", "d"].enumerated() {
+                let p = RealmPhoto.create(id: id, text: "", image: UIImage(), imageHeight: 1, imageWidth: 1,
+                                          getDay: "", isPublic: false, ownerId: "")
+                p.pastedAt = Date(timeIntervalSince1970: TimeInterval(1000 + i))
+                realm.add(p)
+            }
+        }
+        try realm.write { realm.delete(realm.objects(RealmPhoto.self).filter("id == 'b'")) }
+        let ids = Array(realm.objects(RealmPhoto.self).sorted(byKeyPath: RealmManager.orderKey).map { $0.id })
+        XCTAssertEqual(ids, ["a", "c", "d"])
+    }
+
     // MARK: - デザイントークン
 
     /// 相対輝度からコントラスト比を求める(WCAG 2.1)

@@ -28,6 +28,9 @@ public class RealmPhoto: Object {
     @objc public dynamic var imageHeight = 0
     @objc public dynamic var imageWidth = 0
     @objc public dynamic var ownerId = ""
+    /// ノートに貼った時刻。マイボードはこの順に上から下へ並ぶ。
+    /// Realm は並びを指定しないと、削除のあとに順番が入れ替わることがある
+    @objc public dynamic var pastedAt = Date()
     @objc dynamic private var _image: UIImage? = nil
     @objc public dynamic var image: UIImage? {
         set{
@@ -99,6 +102,7 @@ public class RealmPhoto: Object {
         realmPhoto.getDay = getDay
         realmPhoto.isPublic = isPublic
         realmPhoto.ownerId = ownerId
+        realmPhoto.pastedAt = Date()
         return realmPhoto
     }
 

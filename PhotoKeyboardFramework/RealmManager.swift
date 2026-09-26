@@ -27,7 +27,9 @@ public class RealmManager {
     private static let legacyJPFileName = "db.realm.jp"
     private static let legacyWorldFileName = "db.realm.world"
     private static let legacyOriginalFileName = "db.realm"
-    private static let schemaVersion: UInt64 = 1
+    private static let schemaVersion: UInt64 = 2
+    /// マイボードとキーボードの並び順
+    static let orderKey = "pastedAt"
 
     private let configuration: Realm.Configuration
     /// 変更通知の購読はメインスレッドのRealmに紐づくため、その参照を保持しておく
@@ -36,7 +38,13 @@ public class RealmManager {
 
     /// スレッド拘束を避けるため、常に呼び出しスレッドのRealmから取得する
     public var realmData: Results<RealmPhoto> {
-        return realm().objects(RealmPhoto.self)
+        return realm().objects(RealmPhoto.self).sorted(byKeyPath: RealmManager.orderKey)
+    }
+
+    /// 版 1 から上げるときに既存の写真へ入れる日時。
+    /// 今見えている順番を変えないよう、1 秒ずつ増やして最後を基準の時刻にする
+    static func migrationDates(count: Int, endingAt end: Date) -> [Date] {
+        return (0..<count).map { end.addingTimeInterval(TimeInterval($0 - (count - 1))) }
     }
 
     private init() {
@@ -121,9 +129,18 @@ public class RealmManager {
         configuration.fileURL = fileURL
         configuration.readOnly = readOnly
         configuration.schemaVersion = schemaVersion
-        configuration.migrationBlock = { _, _ in
-            // スキーマを変更したらここに移行処理を追加する。
+        configuration.migrationBlock = { migration, oldSchemaVersion in
             // deleteRealmIfMigrationNeeded はユーザーの保存画像を消してしまうため使わない。
+            if oldSchemaVersion < 2 {
+                var objects: [MigrationObject] = []
+                migration.enumerateObjects(ofType: RealmPhoto.className()) { _, new in
+                    if let new = new { objects.append(new) }
+                }
+                let dates = RealmManager.migrationDates(count: objects.count, endingAt: Date())
+                for (object, date) in zip(objects, dates) {
+                    object["pastedAt"] = date
+                }
+            }
         }
         configuration.objectTypes = [RealmPhoto.self]
         // 削除しても Realm のファイルは縮まない。肥大すると端末バックアップの容量を
