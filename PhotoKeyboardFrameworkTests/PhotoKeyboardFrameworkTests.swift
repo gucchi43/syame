@@ -579,6 +579,54 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         XCTAssertEqual(ids, ["x", "y"], "統合先に両方の写真が入っていない")
     }
 
+    /// 取り込みが1つでも失敗したら目印を書かず、直したあとの次回起動で
+    /// 残りが取り込まれてはじめて目印が書かれること(fix round 2)
+    func testConsolidationRetriesUntilAllLegacyFilesSucceed() throws {
+        let container = FileManager.default.temporaryDirectory.appendingPathComponent("legacy-retry-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: container, withIntermediateDirectories: true)
+        let jpURL = container.appendingPathComponent("db.realm.jp")
+        let worldURL = container.appendingPathComponent("db.realm.world")
+        let markerURL = container.appendingPathComponent(".legacy-consolidated")
+        let target = container.appendingPathComponent("db.realm.shared")
+
+        try RealmManager.writeLegacyFixture(ids: ["x"], schemaVersion: 0, to: jpURL)
+        // 壊れたファイルとして、Realm形式でないバイト列を置く
+        try Data("not a realm file".utf8).write(to: worldURL)
+
+        RealmManager.consolidateLegacyFilesIfNeeded(container: container, target: target)
+
+        XCTAssertFalse(FileManager.default.fileExists(atPath: markerURL.path), "1つ失敗したのに目印が書かれている")
+        let afterFirstTry = try Realm(configuration: RealmManager.makeConfiguration(fileURL: target))
+        XCTAssertEqual(Set(afterFirstTry.objects(RealmPhoto.self).map { $0.id }), ["x"], "成功した分は入っているはず")
+
+        // 壊れたファイルを正しいものに差し替える
+        try FileManager.default.removeItem(at: worldURL)
+        try RealmManager.writeLegacyFixture(ids: ["y"], schemaVersion: 0, to: worldURL)
+
+        RealmManager.consolidateLegacyFilesIfNeeded(container: container, target: target)
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: markerURL.path), "全部成功したのに目印が書かれていない")
+        let afterSecondTry = try Realm(configuration: RealmManager.makeConfiguration(fileURL: target))
+        XCTAssertEqual(Set(afterSecondTry.objects(RealmPhoto.self).map { $0.id }), ["x", "y"])
+    }
+
+    /// 統合で使う一時複製が、コンテナに残らず片付くこと(fix round 2)
+    func testConsolidationLeavesNoTemporaryLegacyCopies() throws {
+        let container = FileManager.default.temporaryDirectory.appendingPathComponent("legacy-cleanup-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: container, withIntermediateDirectories: true)
+        let jpURL = container.appendingPathComponent("db.realm.jp")
+        let worldURL = container.appendingPathComponent("db.realm.world")
+        let target = container.appendingPathComponent("db.realm.shared")
+        try RealmManager.writeLegacyFixture(ids: ["x"], schemaVersion: 0, to: jpURL)
+        try RealmManager.writeLegacyFixture(ids: ["y"], schemaVersion: 0, to: worldURL)
+
+        RealmManager.consolidateLegacyFilesIfNeeded(container: container, target: target)
+
+        let leftovers = try FileManager.default.contentsOfDirectory(atPath: container.path)
+            .filter { $0.hasPrefix(".legacy-migrating-") }
+        XCTAssertTrue(leftovers.isEmpty, "一時複製が残っている: \(leftovers)")
+    }
+
     // MARK: - デザイントークン
 
     /// 相対輝度からコントラスト比を求める(WCAG 2.1)

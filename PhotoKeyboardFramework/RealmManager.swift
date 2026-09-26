@@ -171,59 +171,91 @@ public class RealmManager {
 
     // MARK: - 旧ロケール別ファイルの統合
 
+    /// 統合が済んだ目印。Realm 本体と同じ共有コンテナに置くことで、
+    /// コンテナごと作り直されたときは目印も一緒に消え、次回また統合が走る(整合が取れる)。
+    /// UserDefaults に置くと、コンテナは生きたまま目印だけ残る/消えるという食い違いが起きうる。
+    private static let legacyConsolidationMarkerFileName = ".legacy-consolidated"
+
+    private static func legacyConsolidationMarkerURL(container: URL) -> URL {
+        return container.appendingPathComponent(legacyConsolidationMarkerFileName)
+    }
+
     /// 旧バージョンは端末のロケールで db.realm.jp / db.realm.world を切り替えていたため、
-    /// 言語設定を変えると保存済みの画像が消えたように見えていた。初回起動時に1つのファイルへ統合する。
+    /// 言語設定を変えると保存済みの画像が消えたように見えていた。1つのファイルへ統合する。
+    ///
+    /// 「済み」は出力先(target)の有無ではなく目印ファイルで判定する。
+    /// 出力先の有無で判定すると、初回の統合が(空き容量不足などで)失敗して
+    /// 空の出力先だけができた場合に、次回以降は「統計済み」とみなされて
+    /// 永久にやり直されなくなる。目印は全ファイルの取り込みが成功したときだけ書く。
     static func consolidateLegacyFilesIfNeeded(container: URL, target: URL) {
         let fileManager = FileManager.default
-        guard !fileManager.fileExists(atPath: target.path) else { return }
+        let markerURL = legacyConsolidationMarkerURL(container: container)
+        guard !fileManager.fileExists(atPath: markerURL.path) else { return }
 
         let legacyURLs = orderedLegacyURLs(container: container)
             .filter { fileManager.fileExists(atPath: $0.path) }
-        guard let primary = legacyURLs.first else { return }
+        guard !legacyURLs.isEmpty else { return }
 
-        // 直接 target へ書くと途中で失敗したときに壊れたファイルが残り、次回以降は
-        // 「statごと存在する」ため統合がスキップされて永久に復旧できなくなる。
-        // 一時ファイルへ書いてから原子的に差し替える。
-        let temporaryURL = target.appendingPathExtension("tmp")
-        try? fileManager.removeItem(at: temporaryURL)
-        do {
-            let migrated = try openMigratedLegacyCopy(of: primary)
-            defer { migrated.cleanup() }
-            try migrated.realm.writeCopy(toFile: temporaryURL)
-            try fileManager.moveItem(at: temporaryURL, to: target)
-        } catch {
-            // 統合できない場合は空のファイルとして開始する(旧ファイルは残すので復旧は可能)
-            try? fileManager.removeItem(at: temporaryURL)
-            return
+        // target は importPhotos の中で(無ければ新規に、あれば開いたまま)使う。
+        // 1つずつ独立した書き込みトランザクションで追加するため、
+        // 事前にファイル全体を複製する(旧: writeCopy)必要がなく、
+        // 空き容量は旧ファイル1つぶんの一時複製で済む。
+        var allSucceeded = true
+        for url in legacyURLs {
+            if !importPhotos(from: url, into: target) {
+                allSucceeded = false
+            }
         }
 
-        for url in legacyURLs.dropFirst() {
-            importPhotos(from: url, into: target)
-        }
+        // 1つでも取り込みに失敗したら目印を書かず、次回の起動で全部やり直す。
+        // id で重複を弾くため、成功済みの分をもう一度取り込んでも安全。
+        guard allSucceeded else { return }
+        fileManager.createFile(atPath: markerURL.path, contents: Data())
     }
 
-    /// 旧ファイルの原本には触れず、書き込み可能な一時複製を移行してから開く。
+    /// 旧ファイルの原本には触れず、書き込み可能な一時複製を移行してからクロージャに渡す。
     ///
     /// readOnly で開くと realm-core は移行(migrationBlock)を実行できず、
-    /// pastedAt を足した今回のスキーマ差分で SchemaMismatchException になり、
-    /// 呼び出し側の catch で握りつぶされて「統合できなかった」= 空の統合先ができてしまう。
-    /// 原本はロケール統合前の唯一のコピーなので、書き換えずに複製側だけ移行する。
-    private static func openMigratedLegacyCopy(of source: URL) throws -> (realm: Realm, cleanup: () -> Void) {
+    /// pastedAt を足した今回のスキーマ差分で例外になり、呼び出し側の catch で
+    /// 握りつぶされて「取り込めなかった」ことになるため、複製側だけ移行する。
+    ///
+    /// 複製の後片付けは autoreleasepool を抜けて Realm のインスタンスを
+    /// 解放してから行う。生きたまま `.realm` だけを消すと `.lock` / `.note` /
+    /// `.management` が古い本体を指したまま残り不整合になるため、
+    /// `Realm.deleteFiles` でまとめて消す。
+    /// `.lock` は deleteFiles の対象外(中身を持たず開くたびに作り直されるので、
+    /// 長く使う本体なら残してよいファイル)だが、この複製は使い捨てで二度と
+    /// 開かないため、名前が一意な `.legacy-migrating-` ファイルを溜めないよう
+    /// あわせて消す。
+    private static func withMigratedLegacyCopy<T>(of source: URL, _ body: (Realm) throws -> T) -> T? {
         let fileManager = FileManager.default
         let copyURL = source.deletingLastPathComponent()
             .appendingPathComponent(".legacy-migrating-\(UUID().uuidString).realm")
-        try fileManager.copyItem(at: source, to: copyURL)
-        let cleanup: () -> Void = { try? fileManager.removeItem(at: copyURL) }
         do {
-            let realm = try Realm(configuration: makeConfiguration(fileURL: copyURL))
-            return (realm, cleanup)
+            try fileManager.copyItem(at: source, to: copyURL)
         } catch {
-            cleanup()
-            throw error
+            // 途中まで複製された断片が残ることがあるので掃除しておく
+            try? fileManager.removeItem(at: copyURL)
+            return nil
+        }
+
+        let copyConfiguration = makeConfiguration(fileURL: copyURL)
+        defer {
+            try? Realm.deleteFiles(for: copyConfiguration)
+            try? fileManager.removeItem(at: copyURL)
+            try? fileManager.removeItem(at: copyURL.appendingPathExtension("lock"))
+        }
+        do {
+            return try autoreleasepool {
+                let realm = try Realm(configuration: copyConfiguration)
+                return try body(realm)
+            }
+        } catch {
+            return nil
         }
     }
 
-    /// 現在のロケールに対応するファイルを優先して統合元にする
+    /// 現在のロケールに対応するファイルを優先する(順序自体は id で重複を弾くため結果に影響しない)
     private static func orderedLegacyURLs(container: URL) -> [URL] {
         let names: [String]
         if Lang.rootKey() == Lang.japaneseRootKey {
@@ -234,22 +266,30 @@ public class RealmManager {
         return names.map { container.appendingPathComponent($0) }
     }
 
-    private static func importPhotos(from source: URL, into target: URL) {
-        do {
-            let migratedSource = try openMigratedLegacyCopy(of: source)
-            defer { migratedSource.cleanup() }
-            let targetRealm = try Realm(configuration: makeConfiguration(fileURL: target))
-            let existingIds = Set(targetRealm.objects(RealmPhoto.self).map { $0.id })
-            let missing = migratedSource.realm.objects(RealmPhoto.self).filter { !existingIds.contains($0.id) }
-            guard !missing.isEmpty else { return }
-            try targetRealm.write {
-                for photo in missing {
-                    targetRealm.create(RealmPhoto.self, value: photo, update: .modified)
-                }
+    /// 旧ファイルから未取り込みの写真だけを取り込む。id で判定するため、
+    /// 前回どこまで成功したかに関わらず、何度実行しても安全(冪等)。
+    /// 戻り値は取り込みが成功したか(取り込む写真が無かった場合も成功扱い)。
+    @discardableResult
+    private static func importPhotos(from source: URL, into target: URL) -> Bool {
+        let result: Bool? = withMigratedLegacyCopy(of: source) { sourceRealm -> Bool in
+            guard let targetRealm = try? Realm(configuration: makeConfiguration(fileURL: target)) else {
+                return false
             }
-        } catch {
-            // 取り込めなかった旧ファイルはそのまま残す
+            let existingIds = Set(targetRealm.objects(RealmPhoto.self).map { $0.id })
+            let missing = sourceRealm.objects(RealmPhoto.self).filter { !existingIds.contains($0.id) }
+            guard !missing.isEmpty else { return true }
+            do {
+                try targetRealm.write {
+                    for photo in missing {
+                        targetRealm.create(RealmPhoto.self, value: photo, update: .modified)
+                    }
+                }
+                return true
+            } catch {
+                return false
+            }
         }
+        return result ?? false
     }
 
     // MARK: - 変更通知
