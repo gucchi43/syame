@@ -651,14 +651,13 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         }
     }
 
-    /// accentSoft は付箋。紙に貼った紙片として地から浮いてよいが、
-    /// テープ(accent)ほど強い色ではなく、面として淡いままでなければならない。
+    /// accentSoft は付箋。紙の上の面なので淡く保つ。
+    /// 濃くすると写真より付箋が目立ってしまう。
     func testAccentSoftStaysAsSurface() {
         for dark in [false, true] {
             let mode = dark ? "ダーク" : "ライト"
-            XCTAssertLessThan(contrastRatio(.accentSoft, .bgBase, dark: dark),
-                              contrastRatio(.accent, .bgBase, dark: dark),
-                              "\(mode): 付箋がテープと同じ強さになっている")
+            XCTAssertLessThan(contrastRatio(.accentSoft, .bgBase, dark: dark), 3.0,
+                              "\(mode): 付箋が濃すぎて写真より目立っている")
             XCTAssertGreaterThanOrEqual(contrastRatio(.textPrimary, .accentSoft, dark: dark), 4.5,
                                         "\(mode): 選択状態の上の文字が読めない")
         }
