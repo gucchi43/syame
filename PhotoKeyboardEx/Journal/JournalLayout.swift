@@ -26,13 +26,9 @@ final class JournalLayout: UICollectionViewLayout {
 
     override func prepare() {
         super.prepare()
-        guard let collectionView = collectionView, let dataSource = collectionView.dataSource else { return }
-        // collectionView.numberOfSections / numberOfItems(inSection:) は prepare() の中から呼ぶと
-        // UIKit 内部の再入(_prepareToLoadData の途中呼び出し)で不正な値(0 件など)を返すことがあるため、
-        // dataSource のメソッドを直接叩いて数える
-        let sectionCount = dataSource.numberOfSections?(in: collectionView) ?? 1
+        guard let collectionView = collectionView else { return }
         let items = itemsProvider()
-        let count = sectionCount > 0 ? dataSource.collectionView(collectionView, numberOfItemsInSection: 0) : 0
+        let count = collectionView.numberOfSections > 0 ? collectionView.numberOfItems(inSection: 0) : 0
         // データソースとの食い違いで落ちないよう、少ない方に合わせる
         let inputs = Array(items.prefix(count))
         placements = JournalPlacer.place(inputs, width: width, top: JournalLayout.headerHeight + 8)
@@ -59,7 +55,7 @@ final class JournalLayout: UICollectionViewLayout {
         header.frame = CGRect(x: 0, y: 0, width: width, height: JournalLayout.headerHeight)
         headerAttributes = header
 
-        if sectionCount > 1, dataSource.collectionView(collectionView, numberOfItemsInSection: 1) > 0 {
+        if collectionView.numberOfSections > 1, collectionView.numberOfItems(inSection: 1) > 0 {
             let spot = JournalPlacer.nextSpot(after: placements, width: width, top: JournalLayout.headerHeight + 8)
             let attrs = UICollectionViewLayoutAttributes(forCellWith: IndexPath(item: 0, section: 1))
             attrs.size = spot.frame.size
@@ -72,7 +68,9 @@ final class JournalLayout: UICollectionViewLayout {
             contentHeight = attrs.frame.maxY + JournalLayout.bottomClearance
         } else {
             spotAttributes = nil
-            contentHeight = (placements.last?.bottom ?? JournalLayout.headerHeight) + JournalLayout.bottomClearance
+            // placements.last?.bottom ではなく回転を掛けた itemAttributes の外接矩形の下端を使う。
+            // 前者は回転前の値で、回転による下へのはみ出し分を見落とすため
+            contentHeight = (itemAttributes.last?.frame.maxY ?? JournalLayout.headerHeight) + JournalLayout.bottomClearance
         }
     }
 
