@@ -1255,6 +1255,18 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(spot.frame.minY, JournalLayout.headerHeight)
     }
 
+    /// 1 枚目の写真の荷札は、回っていても見出しの下に収まること
+    @MainActor
+    func testFirstTicketClearsTheHeader() {
+        let (_, layout, _) = makeJournal(photoCount: 1)
+        guard let first = layout.placements.first else { return XCTFail("写真が無い") }
+        XCTAssertEqual(first.prop, .ticket, "1 枚目には荷札が付くはず")
+        // 荷札は写真の左上から上へ張り出す。回転後の写真の上端から、さらに張り出しぶん上が荷札の上端
+        let rotated = rotatedFrame(first)
+        XCTAssertGreaterThanOrEqual(rotated.minY - PastedPhotoCell.ticketRise, JournalLayout.headerHeight,
+                                    "荷札が見出しに重なる")
+    }
+
     // MARK: - ノートの部品
 
     private func placement(_ shape: PrintShape, tape: TapeStyle = .black, prop: JournalProp = .none) -> JournalPlacement {

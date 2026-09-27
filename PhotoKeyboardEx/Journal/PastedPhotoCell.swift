@@ -13,6 +13,8 @@ final class PastedPhotoCell: UICollectionViewCell {
     static let reuseIdentifier = "PastedPhotoCell"
     static let polaroidSide: CGFloat = 7
     static let polaroidBottom: CGFloat = 26
+    /// 荷札が写真の上端からどれだけ上へ張り出すか
+    static let ticketRise: CGFloat = 26
 
     private let paperView = UIView()          // ポラロイドの縁。紙焼きのときは写真と同じ大きさ
     private let photoView = UIImageView()
@@ -116,7 +118,7 @@ final class PastedPhotoCell: UICollectionViewCell {
         }
 
         switch prop {
-        case .ticket: propView?.frame = CGRect(x: -10, y: -26, width: 88, height: 20)
+        case .ticket: propView?.frame = CGRect(x: -10, y: -Self.ticketRise, width: 88, height: 20)
         case .star: propView?.frame = CGRect(x: bounds.maxX - 14, y: bounds.maxY - 14, width: 22, height: 22)
         case .none: break
         }

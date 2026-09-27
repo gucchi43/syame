@@ -13,6 +13,10 @@ final class JournalLayout: UICollectionViewLayout {
     static let headerKind = "JournalHeader"
     static let headerHeight: CGFloat = 28
     static let bottomClearance: CGFloat = 140
+    /// 写真の並びを始める位置。1 枚目には必ず荷札が付き、写真の上端から
+    /// PastedPhotoCell.ticketRise ぶん上へ張り出す。見出しの下に荷札とテープのぶんを
+    /// 空けておかないと、荷札が見出しの日付に重なる
+    static let contentTop: CGFloat = headerHeight + 8 + PastedPhotoCell.ticketRise + 4
 
     var itemsProvider: () -> [JournalItemInput] = { [] }
     private(set) var placements: [JournalPlacement] = []
@@ -31,7 +35,7 @@ final class JournalLayout: UICollectionViewLayout {
         let count = collectionView.numberOfSections > 0 ? collectionView.numberOfItems(inSection: 0) : 0
         // データソースとの食い違いで落ちないよう、少ない方に合わせる
         let inputs = Array(items.prefix(count))
-        placements = JournalPlacer.place(inputs, width: width, top: JournalLayout.headerHeight + 8)
+        placements = JournalPlacer.place(inputs, width: width, top: JournalLayout.contentTop)
 
         itemAttributes = placements.enumerated().map { index, p in
             let attrs = UICollectionViewLayoutAttributes(forCellWith: IndexPath(item: index, section: 0))
@@ -56,7 +60,7 @@ final class JournalLayout: UICollectionViewLayout {
         headerAttributes = header
 
         if collectionView.numberOfSections > 1, collectionView.numberOfItems(inSection: 1) > 0 {
-            let spot = JournalPlacer.nextSpot(after: placements, width: width, top: JournalLayout.headerHeight + 8)
+            let spot = JournalPlacer.nextSpot(after: placements, width: width, top: JournalLayout.contentTop)
             let attrs = UICollectionViewLayoutAttributes(forCellWith: IndexPath(item: 0, section: 1))
             attrs.size = spot.frame.size
             attrs.center = CGPoint(x: spot.frame.midX, y: spot.frame.midY)
