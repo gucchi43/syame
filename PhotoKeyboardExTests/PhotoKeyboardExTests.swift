@@ -1534,6 +1534,26 @@ class PhotoKeyboardExTests: XCTestCase {
         board.collectionView(board.collectionView, willDisplay: spotCell, forItemAt: IndexPath(item: 0, section: 1))
         XCTAssertTrue(GroupeDefaults.shared.hasCelebratedNotebookFull(), "「次はここ」セルが表示されたら記録が立つはず")
     }
+
+    /// 予約のあとに写真が減って「次はここ」に戻っていたら、演出も記録もしない
+    @MainActor
+    func testPendingCelebrationIsDroppedWhenTheSpotIsNoLongerFull() {
+        guard let board = makeBoard() else { return XCTFail("マイボードを組み立てられない") }
+        GroupeDefaults.shared.sharedDefaults.removeObject(forKey: "hasCelebratedNotebookFull")
+        defer { GroupeDefaults.shared.sharedDefaults.removeObject(forKey: "hasCelebratedNotebookFull") }
+        board.markFullCelebrationPendingForTesting()
+
+        let nextCell = NextSpotCell(frame: CGRect(x: 0, y: 0, width: 170, height: 140))
+        nextCell.configure(state: .next(remaining: 1))
+        board.collectionView(board.collectionView, willDisplay: nextCell, forItemAt: IndexPath(item: 0, section: 1))
+        XCTAssertFalse(GroupeDefaults.shared.hasCelebratedNotebookFull(), "「次はここ」の状態では記録が立たないはず")
+
+        // 予約は取り消されているので、そのあと「いっぱい」のセルが出ても演出しない
+        let fullCell = NextSpotCell(frame: CGRect(x: 0, y: 0, width: 170, height: 140))
+        fullCell.configure(state: .full)
+        board.collectionView(board.collectionView, willDisplay: fullCell, forItemAt: IndexPath(item: 0, section: 1))
+        XCTAssertFalse(GroupeDefaults.shared.hasCelebratedNotebookFull(), "取り消した予約で演出しないはず")
+    }
 }
 
 /// ビュー階層に出ている文字を集める。文言が実際に画面へ届いているかを見る

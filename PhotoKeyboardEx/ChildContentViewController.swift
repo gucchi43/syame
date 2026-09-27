@@ -401,6 +401,12 @@ extension ChildContentViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         // 予約していた「いっぱい」の演出は、「次はここ」セルが実際に表示された瞬間に出す
         guard indexPath.section == 1, pendingFullCelebration, let spot = cell as? NextSpotCell else { return }
+        // 予約から表示までの間に写真が減っていたら、「いっぱい」ではないので予約ごと取り消す。
+        // 記録も立てないので、本当にいっぱいになったときに改めて演出できる
+        guard spot.state == .full else {
+            pendingFullCelebration = false
+            return
+        }
         celebrateFullSpot(spot)
     }
 
