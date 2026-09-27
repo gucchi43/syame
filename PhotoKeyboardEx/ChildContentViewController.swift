@@ -161,12 +161,12 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         }
     }
 
-    /// 写真を長押ししたときのメニュー。コピーと削除
-    private func makeMenu(for photo: RealmPhoto) -> UIMenu {
-        let id = photo.id
+    /// 写真を長押ししたときのメニュー。コピーと削除。
+    /// 写真そのものは捕まえず id だけを持つ。別の経路で消えた写真に触れると Realm が例外で落ちるため
+    private func makeMenu(forPhotoId id: String) -> UIMenu {
         let copy = UIAction(title: LocalizeKey.menuCopy.localizedString(),
                             image: .symbol(Symbol.copy)) { [weak self] _ in
-            self?.copyToPasteboard(photo: photo)
+            self?.copyPhoto(id: id)
         }
         let delete = UIAction(title: LocalizeKey.menuDelete.localizedString(),
                               image: .symbol(Symbol.delete),
@@ -179,14 +179,13 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
     /// 長押しメニューの題名の列。メニューの中身の検証に使う
     func contextMenuActionsForTesting(at indexPath: IndexPath) -> [String] {
         guard indexPath.section == 0, let photo = savedPhoto(at: indexPath.item) else { return [] }
-        return makeMenu(for: photo).children.map(\.title)
+        return makeMenu(forPhotoId: photo.id).children.map(\.title)
     }
 
-    /// VoiceOver では長押しできないので、同じ操作をカスタムアクションで出す
-    private func accessibilityActions(for photo: RealmPhoto) -> [UIAccessibilityCustomAction] {
-        let id = photo.id
+    /// VoiceOver では長押しできないので、同じ操作をカスタムアクションで出す。メニューと同じく id だけを持つ
+    private func accessibilityActions(forPhotoId id: String) -> [UIAccessibilityCustomAction] {
         let copy = UIAccessibilityCustomAction(name: LocalizeKey.menuCopy.localizedString()) { [weak self] _ in
-            self?.copyToPasteboard(photo: photo)
+            self?.copyPhoto(id: id)
             return true
         }
         let delete = UIAccessibilityCustomAction(name: LocalizeKey.menuDelete.localizedString()) { [weak self] _ in
@@ -198,10 +197,13 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
 
     /// キーボードを開かなくても貼り付けられるようにする。
     /// フルアクセスの許可を得る前に価値を体験してもらうための導線。
-    private func copyToPasteboard(photo: RealmPhoto) {
-        guard let image = photo.image else { return }
+    /// 実行した時点の Realm から id で引き直す。見つからないか、すでに消えていれば何もしない
+    func copyPhoto(id: String) {
+        guard let photo = RealmManager.shared.realmData.filter("id == %@", id).first,
+              !photo.isInvalidated,
+              let image = photo.image else { return }
         image.copyToPasteboardWithWatermark()
-        RealmManager.shared.incrementUseNum(id: photo.id)
+        RealmManager.shared.incrementUseNum(id: id)
         let toast = AuroraView.makeToast(message: LocalizeKey.copiedToast.localizedString(),
                                          maxWidth: view.bounds.width - Spacing.l * 2)
         view.showToast(toast, duration: 1.5, position: .center)
@@ -227,11 +229,9 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         return realmPhotos[index]
     }
 
-    /// 貼り方を読む。レイアウトより先に呼ばれて未計算なら、その場で計算させる
+    /// 貼り方を読む。普段は cellForItemAt より先にレイアウトの prepare が走っている。
+    /// 未計算なら nil を返し、ここから prepare を呼んで UIKit の知らない所で属性を差し替えることはしない
     private func placement(at index: Int) -> JournalPlacement? {
-        if !journalLayout.placements.indices.contains(index) {
-            collectionView.collectionViewLayout.prepare()
-        }
         return journalLayout.placements.indices.contains(index) ? journalLayout.placements[index] : nil
     }
 
@@ -274,7 +274,10 @@ extension ChildContentViewController: UICollectionViewDataSource {
                            placement: placement,
                            ticketText: ticketText,
                            title: photo.text)
-            cell.accessibilityCustomActions = accessibilityActions(for: photo)
+            cell.accessibilityCustomActions = accessibilityActions(forPhotoId: photo.id)
+        } else {
+            // 貼り方が未計算なら空のまま返す。次のレイアウトで描き直される
+            cell.accessibilityCustomActions = nil
         }
         return cell
     }
@@ -318,9 +321,9 @@ extension ChildContentViewController: UICollectionViewDelegate {
                         point: CGPoint) -> UIContextMenuConfiguration? {
         // 写真 1 枚への長押しだけにメニューを出す。「次はここ」には出さない
         guard indexPaths.count == 1, let indexPath = indexPaths.first, indexPath.section == 0,
-              let photo = savedPhoto(at: indexPath.item) else { return nil }
+              let id = savedPhoto(at: indexPath.item)?.id else { return nil }
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
-            self?.makeMenu(for: photo)
+            self?.makeMenu(forPhotoId: id)
         }
     }
 }

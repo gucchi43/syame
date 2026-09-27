@@ -851,8 +851,11 @@ class PhotoKeyboardExTests: XCTestCase {
 
     /// 「次はここ」を押すと追加の導線に乗ること
     @MainActor
-    func testTappingNextSpotRequestsAddPhoto() {
+    func testTappingNextSpotRequestsAddPhoto() throws {
         guard let board = makeBoard() else { return XCTFail("マイボードを組み立てられない") }
+        if board.collectionView.numberOfItems(inSection: 0) >= RealmManager.photoLimit {
+            throw XCTSkip("写真が上限まで入っている")
+        }
         let asked = expectation(description: "追加の依頼")
         let token = NotificationCenter.default.addObserver(forName: .requestAddPhoto, object: nil, queue: .main) { _ in asked.fulfill() }
         defer { NotificationCenter.default.removeObserver(token) }
@@ -873,10 +876,23 @@ class PhotoKeyboardExTests: XCTestCase {
 
     /// VoiceOver でもコピーと削除ができること
     @MainActor
-    func testPhotoOffersAccessibilityActions() {
-        guard let board = makeBoard(), board.collectionView.numberOfItems(inSection: 0) > 0 else { return }
+    func testPhotoOffersAccessibilityActions() throws {
+        guard let board = makeBoard() else { return XCTFail("マイボードを組み立てられない") }
+        guard board.collectionView.numberOfItems(inSection: 0) > 0 else {
+            throw XCTSkip("写真が 1 枚も無い")
+        }
         let cell = board.collectionView.cellForItem(at: IndexPath(item: 0, section: 0))
         XCTAssertEqual(cell?.accessibilityCustomActions?.count, 2)
+    }
+
+    /// 消えた写真のコピーを実行しても落ちず、何もしないこと。
+    /// メニューやアクションは id だけを持ち、実行時に引き直す
+    @MainActor
+    func testCopyingMissingPhotoDoesNothing() {
+        guard let board = makeBoard() else { return XCTFail("マイボードを組み立てられない") }
+        let before = UIPasteboard.general.changeCount
+        board.copyPhoto(id: "no-such-photo-\(UUID().uuidString)")
+        XCTAssertEqual(UIPasteboard.general.changeCount, before, "存在しない写真でペーストボードが書き換わった")
     }
 
     // MARK: - 書体
