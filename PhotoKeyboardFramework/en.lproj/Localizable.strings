@@ -119,4 +119,5 @@
 "journalRemaining" = "%d more to go";
 "journalFull" = "This notebook is full";
 "journalPhotoAccessibility" = "%@, photo";
+"journalUntitledPhotoAccessibility" = "Photo";
 "journalAddPhotoAccessibility" = "Add photo";

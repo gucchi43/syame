@@ -55,12 +55,16 @@ final class NextSpotCell: UICollectionViewCell {
             remainingLabel.text = remaining.map { LocalizeKey.journalRemaining.localizedString($0) }
             border.isHidden = false
             accessibilityLabel = LocalizeKey.journalAddPhotoAccessibility.localizedString()
+            // 画面に書いてある「あと n 枚」を、VoiceOver でも値として読む
+            accessibilityValue = remainingLabel.text
             accessibilityTraits = .button
         case .full:
             titleLabel.text = LocalizeKey.journalFull.localizedString()
             remainingLabel.text = nil
             border.isHidden = true
             accessibilityLabel = titleLabel.text
+            // 題名がすでに「このノートはいっぱい」なので、値で同じ文言を重ねて読ませない
+            accessibilityValue = nil
             accessibilityTraits = .staticText
         }
     }

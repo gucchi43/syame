@@ -1347,6 +1347,46 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertEqual(cell.accessibilityLabel, LocalizeKey.journalPhotoAccessibility.localizedString("腹へった"))
     }
 
+    /// 題名が空なら「写真」とだけ読み、「、写真」のように区切りから始めないこと(最終レビュー M6)
+    @MainActor
+    func testUntitledPhotoCellReadsJustPhoto() {
+        let cell = PastedPhotoCell(frame: CGRect(x: 0, y: 0, width: 180, height: 200))
+        cell.configure(image: UIImage(), placement: placement(.print), ticketText: nil, title: "")
+        XCTAssertEqual(cell.accessibilityLabel, LocalizeKey.journalUntitledPhotoAccessibility.localizedString())
+        cell.configure(image: UIImage(), placement: placement(.print), ticketText: nil, title: "  ")
+        XCTAssertEqual(cell.accessibilityLabel, LocalizeKey.journalUntitledPhotoAccessibility.localizedString(),
+                       "空白だけの題名でも区切りから読み始めている")
+    }
+
+    /// 「次はここ」は残り枚数を値として読むこと。残りを出さないときは値も無いこと(最終レビュー M5)
+    @MainActor
+    func testNextSpotReadsRemainingAsValue() {
+        let cell = NextSpotCell(frame: CGRect(x: 0, y: 0, width: 170, height: 140))
+        cell.configure(state: .next(remaining: 3))
+        XCTAssertEqual(cell.accessibilityValue, LocalizeKey.journalRemaining.localizedString(3))
+        cell.configure(state: .next(remaining: nil))
+        XCTAssertNil(cell.accessibilityValue)
+        // いっぱいのときは題名そのものが「このノートはいっぱい」なので、値で重ねて読まない
+        cell.configure(state: .full)
+        XCTAssertEqual(cell.accessibilityLabel, LocalizeKey.journalFull.localizedString())
+        XCTAssertNil(cell.accessibilityValue)
+    }
+
+    /// 方眼のタイルは明暗ごとに一度だけ作り、同じ明暗では使い回すこと(最終レビュー M9)
+    @MainActor
+    func testGridPatternTilesAreCachedPerAppearance() {
+        let color = PaperBackgroundView.gridPattern
+        // ほかのテストや宿主アプリがまだ使っていない倍率にして、作られる回数を数えられるようにする
+        let light = UITraitCollection(traitsFrom: [UITraitCollection(userInterfaceStyle: .light), UITraitCollection(displayScale: 7)])
+        let dark = UITraitCollection(traitsFrom: [UITraitCollection(userInterfaceStyle: .dark), UITraitCollection(displayScale: 7)])
+        let before = PaperBackgroundView.gridTileRenderCountForTesting
+        for _ in 0..<3 {
+            _ = color.resolvedColor(with: light)
+            _ = color.resolvedColor(with: dark)
+        }
+        XCTAssertEqual(PaperBackgroundView.gridTileRenderCountForTesting - before, 2, "明暗ごとに 1 回ずつだけ描くはず")
+    }
+
     /// 題名は手書きの書体で 3 行まで
     @MainActor
     func testCaptionIsHandwrittenAndStopsAtThreeLines() {

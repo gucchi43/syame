@@ -134,6 +134,8 @@ public enum LocalizeKey: String, CaseIterable {
     case journalRemaining
     case journalFull
     case journalPhotoAccessibility
+    /// 題名の無い写真の読み上げ
+    case journalUntitledPhotoAccessibility
     case journalAddPhotoAccessibility
 
     /// 数値などを差し込む文言に使う。書式は Localizable.strings 側が持つ

@@ -59,7 +59,11 @@ final class PastedPhotoCell: UICollectionViewCell {
         shape = placement.shape
         tape = placement.tape
         prop = placement.prop
-        accessibilityLabel = LocalizeKey.journalPhotoAccessibility.localizedString(title)
+        // 題名が無いときは「写真」とだけ読む。そのまま差し込むと「、写真」と区切りから始まる
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        accessibilityLabel = trimmedTitle.isEmpty
+            ? LocalizeKey.journalUntitledPhotoAccessibility.localizedString()
+            : LocalizeKey.journalPhotoAccessibility.localizedString(title)
 
         tapeViews.forEach { $0.removeFromSuperview() }
         switch placement.tape {

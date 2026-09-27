@@ -50,9 +50,20 @@ final class PaperBackgroundView: UIView {
     /// 方眼1マス分のタイルを animatable な UIColor(patternImage:) として返す。
     /// 一覧の背景色に使うと、スクロールしても中身(写真)と一緒に模様が動く(スクロールビュー自体を動かすため)。
     /// ライト・ダークで別のタイルになるよう、traits ごとに描き直す
+    /// 明暗(と画面の倍率)ごとに作ったタイルの色。動的な色は解決のたびに呼ばれるので、
+    /// 毎回画像を描き直さないよう使い回す。実際には明暗の 2 つだけになる
+    private static var gridTileCache: [String: UIColor] = [:]
+    private static let gridTileLock = NSLock()
+    /// タイルを描いた回数。使い回せているかの検証に使う
+    private(set) static var gridTileRenderCountForTesting = 0
+
     static func gridPatternColor() -> UIColor {
         UIColor { traits in
             let scale = traits.displayScale > 0 ? traits.displayScale : 2
+            let key = "\(traits.userInterfaceStyle == .dark ? "dark" : "light")@\(scale)"
+            gridTileLock.lock()
+            defer { gridTileLock.unlock() }
+            if let cached = gridTileCache[key] { return cached }
             let size = CGSize(width: gridSpacing, height: gridSpacing)
             let format = UIGraphicsImageRendererFormat()
             format.scale = scale
@@ -69,7 +80,10 @@ final class PaperBackgroundView: UIView {
                 cgContext.addLine(to: CGPoint(x: 0, y: size.height))
                 cgContext.strokePath()
             }
-            return UIColor(patternImage: image)
+            gridTileRenderCountForTesting += 1
+            let tile = UIColor(patternImage: image)
+            gridTileCache[key] = tile
+            return tile
         }
     }
 }

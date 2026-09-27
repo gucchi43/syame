@@ -119,4 +119,5 @@
 "journalRemaining" = "あと %d 枚";
 "journalFull" = "このノートはいっぱい";
 "journalPhotoAccessibility" = "%@、写真";
+"journalUntitledPhotoAccessibility" = "写真";
 "journalAddPhotoAccessibility" = "写真を追加";
