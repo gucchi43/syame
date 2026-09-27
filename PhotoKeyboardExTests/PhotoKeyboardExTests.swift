@@ -1466,6 +1466,23 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertEqual(atan2(sticker.transform.b, sticker.transform.a), -6 * .pi / 180, accuracy: 0.001, "離したら傾きが消えた")
     }
 
+    /// 点線リングの色は CGColor に焼き込むため、明暗が切り替わったら引き直すこと
+    @MainActor
+    func testStickerButtonRingRedrawsOnAppearanceChange() {
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+        let sticker = StickerButton(symbol: Symbol.add)
+        window.addSubview(sticker)
+        window.overrideUserInterfaceStyle = .light
+        sticker.layoutIfNeeded()
+        let lightColor = sticker.ringLayerForTesting.strokeColor
+
+        window.overrideUserInterfaceStyle = .dark
+        sticker.layoutIfNeeded()
+        let darkColor = sticker.ringLayerForTesting.strokeColor
+
+        XCTAssertNotEqual(lightColor, darkColor, "明暗が変わってもリングの色が引き直されていない")
+    }
+
     /// ロゴはラベルライターのテープで、タイプライターの書体。読み上げはマイボード
     @MainActor
     func testLogoIsALabelTape() {

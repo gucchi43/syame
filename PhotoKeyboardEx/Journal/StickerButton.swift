@@ -43,6 +43,9 @@ final class StickerButton: UIControl {
 
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
+    /// テストから点線リングの層を確かめるための入口
+    var ringLayerForTesting: CAShapeLayer { ring }
+
     override func layoutSubviews() {
         super.layoutSubviews()
         imageView.frame = bounds
@@ -50,6 +53,12 @@ final class StickerButton: UIControl {
         ring.path = UIBezierPath(ovalIn: bounds.insetBy(dx: 4, dy: 4)).cgPath
         ring.strokeColor = UIColor.textPrimary.withAlphaComponent(0.25).resolvedColor(with: traitCollection).cgColor
         layer.shadowPath = UIBezierPath(ovalIn: bounds).cgPath
+    }
+
+    override func traitCollectionDidChange(_ previous: UITraitCollection?) {
+        super.traitCollectionDidChange(previous)
+        // 点線の色は CGColor なので、明暗が変わったら引き直す
+        setNeedsLayout()
     }
 
     override var isHighlighted: Bool {

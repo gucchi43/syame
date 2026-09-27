@@ -78,6 +78,8 @@ final class OnboardingHintView: UIControl {
         path.addLine(to: CGPoint(x: bounds.maxX, y: bounds.maxY - size))
         path.close()
         foldLayer.path = path.cgPath
+        // 影の形を毎回計算させない。角丸の矩形で固定する
+        layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: 2).cgPath
     }
 
     /// 出す手順を与える。案内が要らない手順なら自分を隠す
