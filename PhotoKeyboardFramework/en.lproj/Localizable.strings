@@ -116,3 +116,8 @@
 "celebrateOpenInstagram" = "Try in Instagram";
 "celebrateLater" = "Later";
 "onboardingHintAllowFullAccess" = "Allow Full Access, then open the keyboard once";
+"journalNextSpot" = "Next goes here";
+"journalRemaining" = "%d more to go";
+"journalFull" = "This notebook is full";
+"journalPhotoAccessibility" = "%@, photo";
+"journalAddPhotoAccessibility" = "Add photo";

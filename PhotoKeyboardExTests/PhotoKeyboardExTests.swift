@@ -1256,6 +1256,67 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertGreaterThanOrEqual(spot.frame.minY, JournalLayout.headerHeight)
     }
 
+    // MARK: - ノートの部品
+
+    private func placement(_ shape: PrintShape, tape: TapeStyle = .black, prop: JournalProp = .none) -> JournalPlacement {
+        JournalPlacement(frame: CGRect(x: 0, y: 0, width: 180, height: 200), angle: 0.05, shape: shape, tape: tape,
+                         prop: prop, captionFrame: .zero, captionAngle: 0, captionSide: .below, bottom: 200, isLeft: true)
+    }
+
+    /// ポラロイドは白い縁があり、写真は縁の内側に入ること
+    @MainActor
+    func testPolaroidHasAWhiteBorder() {
+        let cell = PastedPhotoCell(frame: CGRect(x: 0, y: 0, width: 180, height: 212))
+        cell.configure(image: UIImage(), placement: placement(.polaroid), ticketText: nil, title: "ねむい")
+        cell.layoutIfNeeded()
+        let photo = cell.photoViewForTesting.frame
+        XCTAssertGreaterThan(photo.minX, 0)
+        XCTAssertGreaterThan(cell.bounds.maxY - photo.maxY, photo.minY, "下の余白が広くない")
+    }
+
+    /// テープの種類どおりに留めてあること(2 隅なら 2 枚、クリップなら クリップ)
+    @MainActor
+    func testTapeMatchesPlacement() {
+        let cell = PastedPhotoCell(frame: CGRect(x: 0, y: 0, width: 180, height: 200))
+        cell.configure(image: UIImage(), placement: placement(.print, tape: .corners), ticketText: nil, title: "")
+        XCTAssertEqual(cell.tapeViewsForTesting.count, 2)
+        cell.configure(image: UIImage(), placement: placement(.print, tape: .clip), ticketText: nil, title: "")
+        XCTAssertTrue(cell.tapeViewsForTesting.first is ClipView)
+        cell.configure(image: UIImage(), placement: placement(.print, tape: .black), ticketText: nil, title: "")
+        XCTAssertEqual(cell.tapeViewsForTesting.count, 1)
+    }
+
+    /// VoiceOver で「題名、写真」と読めること
+    @MainActor
+    func testPhotoCellReadsItsTitle() {
+        let cell = PastedPhotoCell(frame: CGRect(x: 0, y: 0, width: 180, height: 200))
+        cell.configure(image: UIImage(), placement: placement(.print), ticketText: nil, title: "腹へった")
+        XCTAssertTrue(cell.isAccessibilityElement)
+        XCTAssertEqual(cell.accessibilityLabel, LocalizeKey.journalPhotoAccessibility.localizedString("腹へった"))
+    }
+
+    /// 題名は手書きの書体で 3 行まで
+    @MainActor
+    func testCaptionIsHandwrittenAndStopsAtThreeLines() {
+        let caption = JournalCaptionView(frame: CGRect(x: 0, y: 0, width: 140, height: 64))
+        caption.configure(text: String(repeating: "まーまーらいおん君による使い方の説明！", count: 4))
+        XCTAssertEqual(caption.label.numberOfLines, 3)
+        XCTAssertEqual(caption.label.font.fontName, UIFont.journal(.footnote).fontName)
+    }
+
+    /// 「次はここ」は残りの枚数を書き、いっぱいなら書き換わること。押せるボタンとして読めること
+    @MainActor
+    func testNextSpotShowsRemainingAndFull() {
+        let cell = NextSpotCell(frame: CGRect(x: 0, y: 0, width: 170, height: 140))
+        cell.configure(state: .next(remaining: 7))
+        XCTAssertEqual(cell.titleLabel.text, LocalizeKey.journalNextSpot.localizedString())
+        XCTAssertEqual(cell.remainingLabel.text, LocalizeKey.journalRemaining.localizedString(7))
+        XCTAssertTrue(cell.accessibilityTraits.contains(.button))
+        cell.configure(state: .full)
+        XCTAssertEqual(cell.titleLabel.text, LocalizeKey.journalFull.localizedString())
+        XCTAssertFalse(cell.accessibilityTraits.contains(.button), "いっぱいなのに押せる扱い")
+    }
+
     // MARK: - バージョン比較
 
     /// メジャー番号を無視すると、端末の方が新しいのに更新を促してしまう

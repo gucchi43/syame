@@ -116,3 +116,8 @@
 "celebrateOpenInstagram" = "Instagramで試す";
 "celebrateLater" = "あとで";
 "onboardingHintAllowFullAccess" = "フルアクセスを許可して、一度キーボードを開く";
+"journalNextSpot" = "次はここ";
+"journalRemaining" = "あと %d 枚";
+"journalFull" = "このノートはいっぱい";
+"journalPhotoAccessibility" = "%@、写真";
+"journalAddPhotoAccessibility" = "写真を追加";

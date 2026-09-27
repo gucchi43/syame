@@ -129,6 +129,14 @@ public enum LocalizeKey: String, CaseIterable {
     case premiumActiveTitle
     case premiumActiveMessage
 
+    // MARK: - ノートの部品
+
+    case journalNextSpot
+    case journalRemaining
+    case journalFull
+    case journalPhotoAccessibility
+    case journalAddPhotoAccessibility
+
     /// 数値などを差し込む文言に使う。書式は Localizable.strings 側が持つ
     public func localizedString(_ arguments: CVarArg...) -> String {
         return String(format: localizedString(), arguments: arguments)
