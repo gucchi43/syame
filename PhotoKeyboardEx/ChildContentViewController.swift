@@ -170,8 +170,38 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         collectionView.reloadData()
     }
 
-    @objc func reloadAfterPost(notification: Notification) -> Void {
+    /// 直前の id 集合には無かった id だけを「貼った」とみなす。並び替え・削除では動かさない
+    static func newlyPastedIds(previous: Set<String>, current: [String]) -> [String] {
+        current.filter { !previous.contains($0) }
+    }
+
+    @objc func reloadAfterPost(notification: Notification) {
         reloadBoard()
+        collectionView.layoutIfNeeded()
+        let ids = currentPhotoIds()
+        let pasted = Self.newlyPastedIds(previous: knownPhotoIds, current: ids)
+        knownPhotoIds = Set(ids)
+        guard let newId = pasted.last, let index = ids.firstIndex(of: newId) else { return }
+        let indexPath = IndexPath(item: index, section: 0)
+        // 貼った写真まで下げてから、上から落としてくる
+        collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
+        collectionView.layoutIfNeeded()
+        if let cell = collectionView.cellForItem(at: indexPath),
+           let final = collectionView.layoutAttributesForItem(at: indexPath)?.transform {
+            Haptic.play(.paste)
+            Motion.paste(cell, to: final) { [weak self] in self?.celebrateIfFull() }
+        } else {
+            celebrateIfFull()
+        }
+    }
+
+    /// 上限まで貼った瞬間に一度だけ「いっぱい」を演出する
+    private func celebrateIfFull() {
+        guard currentPhotoIds().count >= RealmManager.photoLimit,
+              !GroupeDefaults.shared.hasCelebratedNotebookFull(),
+              let spot = collectionView.cellForItem(at: IndexPath(item: 0, section: 1)) as? NextSpotCell else { return }
+        GroupeDefaults.shared.markNotebookFullCelebrated()
+        spot.revealWriting { Haptic.play(.full) }
     }
 
     @objc func reloadSaveState(notification: Notification) -> Void {

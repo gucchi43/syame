@@ -1492,6 +1492,26 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertEqual(label?.font.fontName, UIFont.label(.headline).fontName)
         XCTAssertEqual(tab?.brandTitleViewForTesting?.accessibilityLabel, LocalizeKey.navMyBoard.localizedString())
     }
+
+    /// 直前に無かった写真だけを「貼った」とみなすこと。並び替えや削除では動かさない
+    func testNewlyPastedIdsFindsOnlyUnknownIds() {
+        XCTAssertEqual(ChildContentViewController.newlyPastedIds(previous: ["a", "b"], current: ["a", "b", "c"]), ["c"])
+        XCTAssertEqual(ChildContentViewController.newlyPastedIds(previous: ["a", "b"], current: ["b", "a"]), [])
+        XCTAssertEqual(ChildContentViewController.newlyPastedIds(previous: ["a", "b"], current: ["a"]), [])
+    }
+
+    /// 「いっぱい」は左から書かれるように現れ、終わると全部見えていること
+    @MainActor
+    func testFullNoteRevealsLikeHandwriting() {
+        Motion.isReducedOverride = false
+        defer { Motion.isReducedOverride = nil }
+        let cell = NextSpotCell(frame: CGRect(x: 0, y: 0, width: 170, height: 140))
+        cell.configure(state: .full)
+        let done = expectation(description: "書き終わり")
+        cell.revealWriting { done.fulfill() }
+        wait(for: [done], timeout: 3)
+        XCTAssertNil(cell.titleLabel.layer.mask, "書き終わっても隠れている")
+    }
 }
 
 /// ビュー階層に出ている文字を集める。文言が実際に画面へ届いているかを見る

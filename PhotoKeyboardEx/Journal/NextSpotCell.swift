@@ -83,4 +83,36 @@ final class NextSpotCell: UICollectionViewCell {
             isHighlighted ? Motion.pressDown(self) : Motion.release(self)
         }
     }
+
+    /// 「いっぱい」を鉛筆で書くように左から見せる。視差効果を減らす設定ならフェードだけ
+    func revealWriting(completion: @escaping () -> Void) {
+        if Motion.isReduced {
+            titleLabel.alpha = 0
+            UIView.animate(withDuration: 0.3, animations: { self.titleLabel.alpha = 1 }) { _ in completion() }
+            return
+        }
+        // レイアウト前で幅が定まっていないときは、マスクせず即座に完了する
+        guard titleLabel.bounds.width > 0 else {
+            completion()
+            return
+        }
+        let mask = CALayer()
+        mask.backgroundColor = UIColor.black.cgColor
+        mask.frame = CGRect(x: 0, y: 0, width: 0, height: titleLabel.bounds.height)
+        titleLabel.layer.mask = mask
+        CATransaction.begin()
+        CATransaction.setCompletionBlock { [weak self] in
+            self?.titleLabel.layer.mask = nil
+            completion()
+        }
+        let grow = CABasicAnimation(keyPath: "bounds.size.width")
+        grow.fromValue = 0
+        grow.toValue = titleLabel.bounds.width
+        grow.duration = 0.8
+        mask.anchorPoint = CGPoint(x: 0, y: 0)
+        mask.position = .zero
+        mask.bounds = CGRect(x: 0, y: 0, width: titleLabel.bounds.width, height: titleLabel.bounds.height)
+        mask.add(grow, forKey: "write")
+        CATransaction.commit()
+    }
 }
