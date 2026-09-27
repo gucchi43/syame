@@ -1517,6 +1517,87 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertNil(cell.titleLabel.layer.mask, "書き終わっても隠れている")
     }
 
+    /// 実機の追加の流れを再現する。保存(Realm 書き込み) -> Realm の通知 -> シートが閉じてからの .allReload。
+    /// 保存した写真の id を返す
+    @MainActor
+    private func simulateAddFlow(on board: ChildContentViewController) -> String? {
+        let id = "test-add-\(UUID().uuidString)"
+        var saved = false
+        RealmManager.shared.save(data: makeBoardPhoto(id: id), success: { saved = true }, failure: { _ in })
+        guard saved else { return nil }
+        board.realmObjectDidChange()
+        // Realm の通知と realmObjectDidChange の中の非同期処理を先に済ませる(シートの閉じアニメより先に来る順)
+        RunLoop.main.run(until: Date().addingTimeInterval(0.3))
+        // .allReload を投げると、テストの宿主アプリ側のマイボードも反応して振動を鳴らしてしまう。
+        // 検証したい板にだけ届くよう、受け手の処理を直接呼ぶ
+        board.reloadAfterPost(notification: Notification(name: .allReload))
+        return id
+    }
+
+    private func makeBoardPhoto(id: String) -> RealmPhoto {
+        return RealmPhoto.create(id: id, text: "", image: makeGuideImage(color: .red, size: CGSize(width: 40, height: 40)),
+                                 imageHeight: 40, imageWidth: 40, getDay: "", isPublic: false, ownerId: "")
+    }
+
+    private func deletePhotos(_ ids: [String]) {
+        for id in ids {
+            RealmManager.shared.delete(docId: id, success: {}, failure: { _ in })
+        }
+    }
+
+    /// Realm の通知がシートの閉じアニメより先に来ても、貼る振動が出ること(最終レビュー C2)
+    @MainActor
+    func testPasteMotionPlaysEvenWhenRealmNotifiesFirst() {
+        Motion.isReducedOverride = true
+        defer { Motion.isReducedOverride = nil }
+        final class Rec: HapticDriver { var played: [Haptic.Kind] = []; func play(_ k: Haptic.Kind) { played.append(k) } }
+        let rec = Rec(); let prev = Haptic.driver; Haptic.driver = rec; defer { Haptic.driver = prev }
+        let celebrated = GroupeDefaults.shared.hasCelebratedNotebookFull()
+        defer { if !celebrated { GroupeDefaults.shared.sharedDefaults.removeObject(forKey: "hasCelebratedNotebookFull") } }
+
+        guard let board = makeBoard() else { return XCTFail("マイボードを組み立てられない") }
+        board.viewWillAppear(false)
+        guard let id = simulateAddFlow(on: board) else { return XCTFail("保存できない") }
+        defer { deletePhotos([id]) }
+
+        XCTAssertTrue(rec.played.contains(.paste), "貼る振動が出ていない: \(rec.played)")
+    }
+
+    /// 上限ちょうど(8 枚目)を同じ順で足すと、「いっぱい」が予約または記録されること(最終レビュー C2)
+    @MainActor
+    func testFillingTheNoteByTheRealAddFlowCelebrates() throws {
+        Motion.isReducedOverride = true
+        defer { Motion.isReducedOverride = nil }
+        final class Rec: HapticDriver { var played: [Haptic.Kind] = []; func play(_ k: Haptic.Kind) { played.append(k) } }
+        let rec = Rec(); let prev = Haptic.driver; Haptic.driver = rec; defer { Haptic.driver = prev }
+        GroupeDefaults.shared.sharedDefaults.removeObject(forKey: "hasCelebratedNotebookFull")
+        defer { GroupeDefaults.shared.sharedDefaults.removeObject(forKey: "hasCelebratedNotebookFull") }
+
+        guard let board = makeBoard() else { return XCTFail("マイボードを組み立てられない") }
+        let existing = board.collectionView.numberOfItems(inSection: 0)
+        if existing >= RealmManager.photoLimit {
+            throw XCTSkip("写真が上限まで入っている")
+        }
+        // 上限の 1 枚手前まで埋めておく
+        var added: [String] = []
+        defer { deletePhotos(added) }
+        for _ in existing..<(RealmManager.photoLimit - 1) {
+            let id = "test-fill-\(UUID().uuidString)"
+            RealmManager.shared.save(data: makeBoardPhoto(id: id), success: {}, failure: { _ in })
+            added.append(id)
+        }
+
+        board.viewWillAppear(false)
+        XCTAssertFalse(board.isFullCelebrationPendingForTesting, "まだいっぱいではない")
+        guard let id = simulateAddFlow(on: board) else { return XCTFail("保存できない") }
+        added.append(id)
+        // 貼る動き(視差効果を減らす設定で 0.25 秒)の終わりに「いっぱい」を呼ぶ
+        RunLoop.main.run(until: Date().addingTimeInterval(0.8))
+
+        XCTAssertTrue(board.isFullCelebrationPendingForTesting || GroupeDefaults.shared.hasCelebratedNotebookFull(),
+                      "8 枚目を足したのに「いっぱい」が予約も記録もされていない")
+    }
+
     /// 「いっぱい」は予約しておき、そのセルが実際に表示された瞬間にだけ演出すること
     @MainActor
     func testFullCelebrationWaitsUntilTheSpotIsShown() {

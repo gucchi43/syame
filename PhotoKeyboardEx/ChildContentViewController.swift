@@ -24,7 +24,8 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
     private let refreshControl = UIRefreshControl()
     private let journalLayout = JournalLayout()
 
-    /// 直前に並べていた写真の id。増えた写真を見つけ、並びが同じ通知を見分けるために持つ
+    /// 直前に並べていた写真の id。増えた写真を見つけ、並びが同じ通知を見分けるために持つ。
+    /// 増えた分は reloadAfterPost(追加の流れ)・viewWillAppear・reloadSaveState でだけ取り込む
     private var knownPhotoIds: Set<String> = []
 
     /// 「いっぱい」の演出がまだ見せられていない予約。「次はここ」セルが実際に表示されたときに演出する
@@ -188,7 +189,11 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         let ids = currentPhotoIds()
         let pasted = Self.newlyPastedIds(previous: knownPhotoIds, current: ids)
         knownPhotoIds = Set(ids)
-        guard let newId = pasted.last, let index = ids.firstIndex(of: newId) else { return }
+        // 貼る写真が見つからなくても、上限に届いていれば「いっぱい」は出す
+        guard let newId = pasted.last, let index = ids.firstIndex(of: newId) else {
+            celebrateIfFull()
+            return
+        }
         let indexPath = IndexPath(item: index, section: 0)
         // 貼った写真まで下げてから、上から落としてくる
         collectionView.scrollToItem(at: indexPath, at: .centeredVertically, animated: false)
@@ -229,6 +234,11 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         pendingFullCelebration = true
     }
 
+    /// テスト用に予約状態を読む
+    var isFullCelebrationPendingForTesting: Bool {
+        pendingFullCelebration
+    }
+
     @objc func reloadSaveState(notification: Notification) -> Void {
         reloadBoard()
         knownPhotoIds = Set(currentPhotoIds())
@@ -243,7 +253,10 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
                 return
             }
             self.reloadBoard()
-            self.knownPhotoIds = Set(ids)
+            // 減った分だけ反映する。増えた分はここで既知にしない。
+            // Realm の通知はシートの閉じアニメより先に来るため、ここで進めると
+            // reloadAfterPost で新しい写真が見つからず、貼る動きも「いっぱい」も出なくなる
+            self.knownPhotoIds.formIntersection(ids)
         }
     }
 
