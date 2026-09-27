@@ -1330,6 +1330,31 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertEqual(cell.accessibilityLabel, LocalizeKey.journalFull.localizedString())
     }
 
+    /// ボードの「いっぱい」は保存できるかどうかの裏返しにそろえること(最終レビュー I3)。
+    /// 課金状態は差し替えられないため、今の状態での一致だけを見る
+    @MainActor
+    func testBoardFullMatchesQuota() {
+        XCTAssertEqual(PhotoQuota.isBoardFull, !PhotoQuota.canSave)
+    }
+
+    /// プレミアムなら何枚でも「次はここ」で、残り枚数は出さないこと。
+    /// 無料なら上限で「いっぱい」、手前では残り枚数(最終レビュー I3)
+    @MainActor
+    func testNextSpotStateForPremiumNeverFills() {
+        let limit = RealmManager.photoLimit
+        XCTAssertEqual(ChildContentViewController.nextSpotState(photoCount: limit, isPremium: true), .next(remaining: nil))
+        XCTAssertEqual(ChildContentViewController.nextSpotState(photoCount: limit + 5, isPremium: true), .next(remaining: nil))
+        XCTAssertEqual(ChildContentViewController.nextSpotState(photoCount: 1, isPremium: true), .next(remaining: nil))
+        XCTAssertEqual(ChildContentViewController.nextSpotState(photoCount: limit, isPremium: false), .full)
+        XCTAssertEqual(ChildContentViewController.nextSpotState(photoCount: limit - 1, isPremium: false), .next(remaining: 1))
+
+        let cell = NextSpotCell(frame: CGRect(x: 0, y: 0, width: 170, height: 140))
+        cell.configure(state: .next(remaining: nil))
+        XCTAssertEqual(cell.titleLabel.text, LocalizeKey.journalNextSpot.localizedString())
+        XCTAssertNil(cell.remainingLabel.text, "プレミアムなのに残り枚数が出ている")
+        XCTAssertTrue(cell.accessibilityTraits.contains(.button))
+    }
+
     /// 見出しは「日付 — p.1」をタイプライターの書体・鉛筆色で書くこと
     @MainActor
     func testHeaderShowsDateAndPage() {

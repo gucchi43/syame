@@ -130,6 +130,7 @@ Zen Kurenaido は SIL Open Font License、Special Elite は Apache License 2.0�
 - 上限（`RealmManager.photoLimit`、今は 8）に達していなければ、いちばん下の写真の下に鉛筆の点線の枠を 1 つだけ置き、「次はここ」と書く。押すと追加へ進む（`.requestAddPhoto`）
 - 枠の脇に鉛筆で「あと n 枚」
 - 上限に達したら、枠の代わりに「このノートはいっぱい」と書く
+- 「いっぱい」の判定は保存できるかどうか（`PhotoQuota.isBoardFull` = `!canSave`）にそろえる。プレミアムでは出さず、常に「次はここ」で残り枚数も書かない
 - 数字のピル、並んだ空きスロットは置かない
 
 ### ノートの上

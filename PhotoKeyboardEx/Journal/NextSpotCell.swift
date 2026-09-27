@@ -11,7 +11,8 @@ import PhotoKeyboardFramework
 
 final class NextSpotCell: UICollectionViewCell {
     static let reuseIdentifier = "NextSpotCell"
-    enum State: Equatable { case next(remaining: Int), full }
+    /// remaining が nil なら残り枚数を出さない(プレミアムは上限が無い)
+    enum State: Equatable { case next(remaining: Int?), full }
 
     let titleLabel = UILabel()
     let remainingLabel = UILabel()
@@ -51,7 +52,7 @@ final class NextSpotCell: UICollectionViewCell {
         switch state {
         case .next(let remaining):
             titleLabel.text = LocalizeKey.journalNextSpot.localizedString()
-            remainingLabel.text = LocalizeKey.journalRemaining.localizedString(remaining)
+            remainingLabel.text = remaining.map { LocalizeKey.journalRemaining.localizedString($0) }
             border.isHidden = false
             accessibilityLabel = LocalizeKey.journalAddPhotoAccessibility.localizedString()
             accessibilityTraits = .button

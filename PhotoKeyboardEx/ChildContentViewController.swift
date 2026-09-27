@@ -41,6 +41,8 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         RealmManager.shared.delegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(reloadSaveState(notification:)), name: .updateSaveState, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(reloadAfterPost(notification:)), name: .allReload, object: nil)
+        // 課金状態で「いっぱい」かどうかが変わるので、「次はここ」を描き直す
+        NotificationCenter.default.addObserver(self, selector: #selector(premiumStateDidChange), name: .premiumStateChanged, object: nil)
         commonInit()
     }
 
@@ -49,7 +51,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         reloadBoard()
         knownPhotoIds = Set(currentPhotoIds())
         // アプリを閉じている間に上限へ達して見逃した人にも、次に「いっぱい」が見えたとき一度だけ見せる
-        if currentPhotoIds().count >= RealmManager.photoLimit && !GroupeDefaults.shared.hasCelebratedNotebookFull() {
+        if PhotoQuota.isBoardFull && !GroupeDefaults.shared.hasCelebratedNotebookFull() {
             pendingFullCelebration = true
         }
     }
@@ -178,6 +180,14 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         collectionView.reloadData()
     }
 
+    /// 「次はここ」の状態。いっぱいの判定は PhotoQuota.isBoardFull と同じ条件
+    /// (プレミアムでなく、上限に達している)。プレミアムは上限が無いので残り枚数も出さない
+    static func nextSpotState(photoCount: Int, isPremium: Bool) -> NextSpotCell.State {
+        if isPremium { return .next(remaining: nil) }
+        if photoCount >= RealmManager.photoLimit { return .full }
+        return .next(remaining: RealmManager.photoLimit - photoCount)
+    }
+
     /// 直前の id 集合には無かった id だけを「貼った」とみなす。並び替え・削除では動かさない
     static func newlyPastedIds(previous: Set<String>, current: [String]) -> [String] {
         current.filter { !previous.contains($0) }
@@ -211,7 +221,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
     /// 「次はここ」セルがいま画面に見えていればその場で演出し、見えていなければ
     /// スクロールして呼び寄せ、実際に表示された瞬間(willDisplay)に演出する
     private func celebrateIfFull() {
-        guard currentPhotoIds().count >= RealmManager.photoLimit,
+        guard PhotoQuota.isBoardFull,
               !GroupeDefaults.shared.hasCelebratedNotebookFull() else { return }
         pendingFullCelebration = true
         let spotIndexPath = IndexPath(item: 0, section: 1)
@@ -237,6 +247,10 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
     /// テスト用に予約状態を読む
     var isFullCelebrationPendingForTesting: Bool {
         pendingFullCelebration
+    }
+
+    @objc private func premiumStateDidChange() {
+        reloadBoard()
     }
 
     @objc func reloadSaveState(notification: Notification) -> Void {
@@ -363,10 +377,8 @@ extension ChildContentViewController: UICollectionViewDataSource {
         if indexPath.section == 1 {
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NextSpotCell.reuseIdentifier, for: indexPath)
             if let cell = cell as? NextSpotCell {
-                let count = realmPhotos?.count ?? 0
-                cell.configure(state: count >= RealmManager.photoLimit
-                               ? .full
-                               : .next(remaining: RealmManager.photoLimit - count))
+                cell.configure(state: Self.nextSpotState(photoCount: realmPhotos?.count ?? 0,
+                                                         isPremium: PremiumStore.shared.isPremium))
             }
             return cell
         }
@@ -426,7 +438,7 @@ extension ChildContentViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if indexPath.section == 1 {
             // いっぱいのときは追加の導線に乗せない
-            guard (realmPhotos?.count ?? 0) < RealmManager.photoLimit else { return }
+            guard !PhotoQuota.isBoardFull else { return }
             NotificationCenter.default.post(name: .requestAddPhoto, object: nil)
             return
         }

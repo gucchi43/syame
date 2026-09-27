@@ -19,6 +19,12 @@ enum PhotoQuota {
         return RealmManager.shared.canSaveMorePhotos
     }
 
+    /// マイボードの「このノートはいっぱい」を出すか。保存できるかどうかの裏返しにそろえ、
+    /// プレミアムでは出さない
+    static var isBoardFull: Bool {
+        return !canSave
+    }
+
     /// 無料で保存できる枚数。ペイウォールと上限アラートの文言に出す
     static var freeLimit: Int {
         return RealmManager.photoLimit
