@@ -37,6 +37,7 @@ enum JournalPlacer {
     static let margin: CGFloat = 16
     static let captionMinWidth: CGFloat = 110
     static let captionMaxWidth: CGFloat = 150
+    /// 題名の高さ。文字サイズが標準のときの値で、place の captionScale で拡大する
     static let captionHeightBeside: CGFloat = 64
     static let captionHeightBelow: CGFloat = 44
     static let maxAngleDegrees: CGFloat = 9
@@ -57,7 +58,9 @@ enum JournalPlacer {
         return hash
     }
 
-    static func place(_ items: [JournalItemInput], width: CGFloat, top: CGFloat) -> [JournalPlacement] {
+    /// captionScale は題名の文字サイズの倍率(Dynamic Type)。UIKit を知らないよう、呼び出し側で求めて渡す
+    static func place(_ items: [JournalItemInput], width: CGFloat, top: CGFloat,
+                      captionScale: CGFloat = 1) -> [JournalPlacement] {
         var result: [JournalPlacement] = []
         var previous: JournalPlacement?
         var previousDay: String?
@@ -100,11 +103,11 @@ enum JournalPlacer {
             if captionSide == .beside {
                 let w = min(freeWidth, captionMaxWidth)
                 let x = isLeft ? midX + halfSpan + 8 : midX - halfSpan - 8 - w
-                captionFrame = CGRect(x: x, y: frame.minY + height * 0.3, width: w, height: captionHeightBeside)
+                captionFrame = CGRect(x: x, y: frame.minY + height * 0.3, width: w, height: (captionHeightBeside * captionScale).rounded(.up))
             } else {
                 let w = min(width - margin * 2, photoWidth + 40)
                 let x = min(max(midX - w / 2, margin), width - margin - w)
-                captionFrame = CGRect(x: x, y: frame.maxY + 8, width: w, height: captionHeightBelow)
+                captionFrame = CGRect(x: x, y: frame.maxY + 8, width: w, height: (captionHeightBelow * captionScale).rounded(.up))
             }
             let captionAngle = -angle / 3
 

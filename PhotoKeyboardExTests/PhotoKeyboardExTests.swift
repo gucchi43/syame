@@ -1267,6 +1267,47 @@ class PhotoKeyboardExTests: XCTestCase {
                                     "荷札が見出しに重なる")
     }
 
+    /// 文字を大きくする設定では、題名と見出しの高さが既定より大きくなり、
+    /// 1 枚目の荷札は大きくなった見出しにも重ならないこと(最終レビュー I4)
+    @MainActor
+    func testLargeTextGrowsCaptionAndHeaderWithoutTicketOverlap() {
+        let traits = UITraitCollection(preferredContentSizeCategory: .accessibilityExtraLarge)
+        let headerHeight = JournalLayout.headerHeight(for: traits)
+        XCTAssertGreaterThan(headerHeight, JournalLayout.headerHeight, "見出しの高さが大きくなっていない")
+        let scale = JournalLayout.captionScale(for: traits)
+        XCTAssertGreaterThan(scale, 1)
+
+        let base = JournalPlacer.place(inputs(6), width: 390, top: JournalLayout.contentTop)
+        let large = JournalPlacer.place(inputs(6), width: 390,
+                                        top: JournalLayout.contentTop(headerHeight: headerHeight),
+                                        captionScale: scale)
+        for (l, b) in zip(large, base) {
+            XCTAssertGreaterThan(l.captionFrame.height, b.captionFrame.height, "題名の高さが大きくなっていない")
+        }
+        guard let first = large.first else { return XCTFail("写真が無い") }
+        XCTAssertEqual(first.prop, .ticket)
+        XCTAssertGreaterThanOrEqual(rotatedFrame(first).minY - PastedPhotoCell.ticketRise, headerHeight,
+                                    "荷札が大きくなった見出しに重なる")
+
+        // レイアウト自身も、コレクションビューの文字サイズを読んで見出しを大きくすること
+        if #available(iOS 17.0, *) {
+            // dataSource は weak なので、StubSource も最後まで保持する
+            let (cv, layout, source) = makeJournal(photoCount: 1)
+            cv.traitOverrides.preferredContentSizeCategory = .accessibilityExtraLarge
+            cv.updateTraitsIfNeeded()
+            // ウインドウ外のコレクションビューでは無効化してもレイアウトの計算が走らないため、直接呼ぶ
+            layout.invalidateLayout()
+            layout.prepare()
+            let header = layout.layoutAttributesForSupplementaryView(ofKind: JournalLayout.headerKind,
+                                                                    at: IndexPath(item: 0, section: 0))
+            XCTAssertGreaterThan(header?.frame.height ?? 0, JournalLayout.headerHeight)
+            guard let placed = layout.placements.first else { return XCTFail("写真が無い") }
+            XCTAssertGreaterThanOrEqual(rotatedFrame(placed).minY - PastedPhotoCell.ticketRise, header?.frame.height ?? .infinity,
+                                        "レイアウト上で荷札が見出しに重なる")
+            _ = (cv, source)
+        }
+    }
+
     // MARK: - ノートの部品
 
     private func placement(_ shape: PrintShape, tape: TapeStyle = .black, prop: JournalProp = .none) -> JournalPlacement {

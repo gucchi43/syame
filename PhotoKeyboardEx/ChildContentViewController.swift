@@ -73,6 +73,14 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         }
     }
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        // 文字サイズが変わると見出しと題名の枠の高さが変わるので、貼り方を計算し直す
+        if previousTraitCollection?.preferredContentSizeCategory != traitCollection.preferredContentSizeCategory {
+            journalLayout.invalidateLayout()
+        }
+    }
+
     /// いまの手順を受け取り、案内行の表示を更新する
     func applyOnboarding(step: OnboardingStep) {
         onboardingStep = step

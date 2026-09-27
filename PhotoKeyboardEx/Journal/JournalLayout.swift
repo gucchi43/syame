@@ -11,12 +11,29 @@ import UIKit
 final class JournalLayout: UICollectionViewLayout {
     static let captionKind = "JournalCaption"
     static let headerKind = "JournalHeader"
+    /// 見出しの高さ。文字サイズが標準のときの値で、headerHeight(for:) で拡大する
     static let headerHeight: CGFloat = 28
     static let bottomClearance: CGFloat = 140
+    /// 文字サイズが標準のときの、写真の並びを始める位置
+    static let contentTop: CGFloat = contentTop(headerHeight: headerHeight)
+
     /// 写真の並びを始める位置。1 枚目には必ず荷札が付き、写真の上端から
     /// PastedPhotoCell.ticketRise ぶん上へ張り出す。見出しの下に荷札とテープのぶんを
     /// 空けておかないと、荷札が見出しの日付に重なる
-    static let contentTop: CGFloat = headerHeight + 8 + PastedPhotoCell.ticketRise + 4
+    static func contentTop(headerHeight: CGFloat) -> CGFloat {
+        headerHeight + 8 + PastedPhotoCell.ticketRise + 4
+    }
+
+    /// 見出しの高さを、見出しの書体(caption2)と同じ倍率で文字サイズに合わせて広げる
+    static func headerHeight(for traits: UITraitCollection) -> CGFloat {
+        UIFontMetrics(forTextStyle: .caption2).scaledValue(for: headerHeight, compatibleWith: traits).rounded(.up)
+    }
+
+    /// 題名の高さの倍率。題名の書体(footnote)と同じ倍率にする
+    static func captionScale(for traits: UITraitCollection) -> CGFloat {
+        let base = JournalPlacer.captionHeightBeside
+        return UIFontMetrics(forTextStyle: .footnote).scaledValue(for: base, compatibleWith: traits) / base
+    }
 
     var itemsProvider: () -> [JournalItemInput] = { [] }
     private(set) var placements: [JournalPlacement] = []
@@ -35,7 +52,12 @@ final class JournalLayout: UICollectionViewLayout {
         let count = collectionView.numberOfSections > 0 ? collectionView.numberOfItems(inSection: 0) : 0
         // データソースとの食い違いで落ちないよう、少ない方に合わせる
         let inputs = Array(items.prefix(count))
-        placements = JournalPlacer.place(inputs, width: width, top: JournalLayout.contentTop)
+        // 文字を大きくする設定では、見出しと題名の枠もそれに合わせて広げる
+        let traits = collectionView.traitCollection
+        let headerHeight = JournalLayout.headerHeight(for: traits)
+        let contentTop = JournalLayout.contentTop(headerHeight: headerHeight)
+        placements = JournalPlacer.place(inputs, width: width, top: contentTop,
+                                         captionScale: JournalLayout.captionScale(for: traits))
 
         itemAttributes = placements.enumerated().map { index, p in
             let attrs = UICollectionViewLayoutAttributes(forCellWith: IndexPath(item: index, section: 0))
@@ -56,11 +78,11 @@ final class JournalLayout: UICollectionViewLayout {
         }
         let header = UICollectionViewLayoutAttributes(forSupplementaryViewOfKind: JournalLayout.headerKind,
                                                       with: IndexPath(item: 0, section: 0))
-        header.frame = CGRect(x: 0, y: 0, width: width, height: JournalLayout.headerHeight)
+        header.frame = CGRect(x: 0, y: 0, width: width, height: headerHeight)
         headerAttributes = header
 
         if collectionView.numberOfSections > 1, collectionView.numberOfItems(inSection: 1) > 0 {
-            let spot = JournalPlacer.nextSpot(after: placements, width: width, top: JournalLayout.contentTop)
+            let spot = JournalPlacer.nextSpot(after: placements, width: width, top: contentTop)
             let attrs = UICollectionViewLayoutAttributes(forCellWith: IndexPath(item: 0, section: 1))
             attrs.size = spot.frame.size
             attrs.center = CGPoint(x: spot.frame.midX, y: spot.frame.midY)
@@ -74,7 +96,7 @@ final class JournalLayout: UICollectionViewLayout {
             spotAttributes = nil
             // placements.last?.bottom ではなく回転を掛けた itemAttributes の外接矩形の下端を使う。
             // 前者は回転前の値で、回転による下へのはみ出し分を見落とすため
-            contentHeight = (itemAttributes.last?.frame.maxY ?? JournalLayout.headerHeight) + JournalLayout.bottomClearance
+            contentHeight = (itemAttributes.last?.frame.maxY ?? headerHeight) + JournalLayout.bottomClearance
         }
     }
 
