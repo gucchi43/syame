@@ -616,8 +616,31 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
         RealmManager.consolidateLegacyFilesIfNeeded(container: container, target: target)
 
         XCTAssertTrue(FileManager.default.fileExists(atPath: markerURL.path), "全部成功したのに目印が書かれていない")
+        XCTAssertFalse(FileManager.default.fileExists(atPath: container.appendingPathComponent(".legacy-consolidating").path),
+                       "成功したのに試行中の目印が残っている")
         let afterSecondTry = try Realm(configuration: RealmManager.makeConfiguration(fileURL: target))
         XCTAssertEqual(Set(afterSecondTry.objects(RealmPhoto.self).map { $0.id }), ["x", "y"])
+    }
+
+    /// 配信版(出力先の有無で判定していた旧実装)で統合済みの利用者は、
+    /// 目印が無くても再統合されないこと。再統合すると、統合後に消した写真が
+    /// 旧ファイルから id 差分で戻ってしまう(最終レビュー C1)
+    func testConsolidationSkipsWhenReleasedVersionAlreadyConsolidated() throws {
+        let container = FileManager.default.temporaryDirectory.appendingPathComponent("legacy-released-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: container, withIntermediateDirectories: true)
+        let jpURL = container.appendingPathComponent("db.realm.jp")
+        let target = container.appendingPathComponent("db.realm.shared")
+        let markerURL = container.appendingPathComponent(".legacy-consolidated")
+        // 旧版で統合したあと、利用者が "y" を消した状態
+        try RealmManager.writeLegacyFixture(ids: ["x"], schemaVersion: 1, to: target)
+        try RealmManager.writeLegacyFixture(ids: ["x", "y"], schemaVersion: 0, to: jpURL)
+
+        RealmManager.consolidateLegacyFilesIfNeeded(container: container, target: target)
+
+        let realm = try Realm(configuration: RealmManager.makeConfiguration(fileURL: target))
+        XCTAssertEqual(Set(realm.objects(RealmPhoto.self).map { $0.id }), ["x"], "消した写真が戻っている")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: markerURL.path), "統合済みの目印が書かれていない")
+        XCTAssertTrue(FileManager.default.fileExists(atPath: jpURL.path), "原本(jp)が消えている")
     }
 
     /// 統合で使う一時複製が、コンテナに残らず片付くこと(fix round 2)

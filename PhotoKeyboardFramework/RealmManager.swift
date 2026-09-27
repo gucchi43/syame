@@ -175,18 +175,29 @@ public class RealmManager {
     /// コンテナごと作り直されたときは目印も一緒に消え、次回また統合が走る(整合が取れる)。
     /// UserDefaults に置くと、コンテナは生きたまま目印だけ残る/消えるという食い違いが起きうる。
     private static let legacyConsolidationMarkerFileName = ".legacy-consolidated"
+    /// 統合を試している最中の目印。取り込みを始める前に書き、成功したら消す。
+    /// これが無いのに出力先だけがある場合は、目印を持たない旧版(2.2.x 以前)が
+    /// 統合を済ませたものと判断できる。
+    private static let legacyConsolidatingMarkerFileName = ".legacy-consolidating"
 
     private static func legacyConsolidationMarkerURL(container: URL) -> URL {
         return container.appendingPathComponent(legacyConsolidationMarkerFileName)
     }
 
+    private static func legacyConsolidatingMarkerURL(container: URL) -> URL {
+        return container.appendingPathComponent(legacyConsolidatingMarkerFileName)
+    }
+
     /// 旧バージョンは端末のロケールで db.realm.jp / db.realm.world を切り替えていたため、
     /// 言語設定を変えると保存済みの画像が消えたように見えていた。1つのファイルへ統合する。
     ///
-    /// 「済み」は出力先(target)の有無ではなく目印ファイルで判定する。
+    /// 「済み」は出力先(target)の有無だけでなく目印ファイルで判定する。
     /// 出力先の有無で判定すると、初回の統合が(空き容量不足などで)失敗して
-    /// 空の出力先だけができた場合に、次回以降は「統計済み」とみなされて
+    /// 空の出力先だけができた場合に、次回以降は「統合済み」とみなされて
     /// 永久にやり直されなくなる。目印は全ファイルの取り込みが成功したときだけ書く。
+    ///
+    /// ただし目印を持たない旧版で統合を済ませた利用者もいるため、
+    /// 「出力先がある・完了の目印も試行中の目印も無い」ときは統合済みとみなす。
     static func consolidateLegacyFilesIfNeeded(container: URL, target: URL) {
         let fileManager = FileManager.default
         let markerURL = legacyConsolidationMarkerURL(container: container)
@@ -195,6 +206,19 @@ public class RealmManager {
         let legacyURLs = orderedLegacyURLs(container: container)
             .filter { fileManager.fileExists(atPath: $0.path) }
         guard !legacyURLs.isEmpty else { return }
+
+        // 旧版(出力先の有無で判定し、成功時にだけ出力先を作っていた)で統合済みの利用者。
+        // ここで取り込み直すと、統合後に消した写真が旧ファイルから id 差分で戻ってしまう。
+        // 旧ファイルは今の方針どおり消さずに残し、完了の目印だけ書く。
+        let consolidatingURL = legacyConsolidatingMarkerURL(container: container)
+        if fileManager.fileExists(atPath: target.path),
+           !fileManager.fileExists(atPath: consolidatingURL.path) {
+            fileManager.createFile(atPath: markerURL.path, contents: Data())
+            return
+        }
+        // 取り込みの前に「試行中」を書く。途中で失敗して出力先だけが残っても、
+        // 次回は旧版の統合済みと取り違えずにやり直せる。
+        guard fileManager.createFile(atPath: consolidatingURL.path, contents: Data()) else { return }
 
         // target は importPhotos の中で(無ければ新規に、あれば開いたまま)使う。
         // 1つずつ独立した書き込みトランザクションで追加するため、
@@ -211,6 +235,7 @@ public class RealmManager {
         // id で重複を弾くため、成功済みの分をもう一度取り込んでも安全。
         guard allSucceeded else { return }
         fileManager.createFile(atPath: markerURL.path, contents: Data())
+        try? fileManager.removeItem(at: consolidatingURL)
     }
 
     /// 旧ファイルの原本には触れず、書き込み可能な一時複製を移行してからクロージャに渡す。
