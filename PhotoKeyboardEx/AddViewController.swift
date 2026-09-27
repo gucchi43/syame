@@ -169,11 +169,13 @@ class AddViewController: UIViewController {
             showUploadError(UploadError.realmSaveFailed)
             return
         }
-        NotificationCenter.default.post(name: .finishUpload, object: nil, userInfo: nil)
         if GroupeDefaults.shared.isRateAlert() {
             requestReview()
         }
-        dismiss(animated: true, completion: nil)
+        // シートが下りてから知らせる。閉じている最中に貼る動きが走ると、その下で見えないまま終わる
+        dismiss(animated: true) {
+            NotificationCenter.default.post(name: .finishUpload, object: nil, userInfo: nil)
+        }
     }
 
     private func requestReview() {

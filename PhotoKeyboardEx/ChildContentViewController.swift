@@ -24,6 +24,13 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
     private let refreshControl = UIRefreshControl()
     private let journalLayout = JournalLayout()
 
+    /// 直前に並べていた写真の id。増えた写真を見つけ、並びが同じ通知を見分けるために持つ
+    private var knownPhotoIds: Set<String> = []
+
+    private func currentPhotoIds() -> [String] {
+        (realmPhotos.map { Array($0) } ?? []).map { $0.id }
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         realmPhotos = RealmManager.shared.realmData
@@ -36,6 +43,24 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         reloadBoard()
+        knownPhotoIds = Set(currentPhotoIds())
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // 案内行が出ている間は、その高さぶんノートを下げて見出しと重ねない
+        let inset = onboardingHint.isHidden ? 0 : onboardingHint.frame.maxY - view.safeAreaInsets.top + Spacing.s
+        let previousInset = collectionView.contentInset.top
+        if previousInset != inset {
+            // 先頭で止まっているときだけ、先頭に留まるよう位置を合わせる。
+            // スクロール中に inset が変わっても、利用者の位置は動かさない
+            let wasAtTop = abs(collectionView.contentOffset.y + previousInset) < 1
+            collectionView.contentInset.top = inset
+            collectionView.verticalScrollIndicatorInsets.top = inset
+            if wasAtTop {
+                collectionView.contentOffset.y = -inset
+            }
+        }
     }
 
     /// いまの手順を受け取り、案内行の表示を更新する
@@ -43,6 +68,9 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         onboardingStep = step
         guard isViewLoaded else { return }
         onboardingHint.apply(step: step)
+        // 案内行の出入りは isHidden を切り替えるだけで親のレイアウトが起きない。
+        // 自分でレイアウトを起こして viewDidLayoutSubviews の inset を引き直す
+        view.setNeedsLayout()
     }
 
     /// 案内行を一覧の上に敷く
@@ -146,11 +174,19 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
 
     @objc func reloadSaveState(notification: Notification) -> Void {
         reloadBoard()
+        knownPhotoIds = Set(currentPhotoIds())
     }
 
     func realmObjectDidChange() {
         DispatchQueue.main.async { [weak self] in
-            self?.reloadBoard()
+            guard let self = self else { return }
+            let ids = self.currentPhotoIds()
+            // 貼る動きの途中で Realm の通知で作り直さない。並びが変わっていなければ何もしない
+            if Set(ids) == self.knownPhotoIds && ids.count == self.collectionView.numberOfItems(inSection: 0) {
+                return
+            }
+            self.reloadBoard()
+            self.knownPhotoIds = Set(ids)
         }
     }
 

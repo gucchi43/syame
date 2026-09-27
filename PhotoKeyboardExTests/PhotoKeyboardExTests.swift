@@ -895,6 +895,73 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertEqual(UIPasteboard.general.changeCount, before, "存在しない写真でペーストボードが書き換わった")
     }
 
+    /// 案内行が出ている間、ノートの見出しは案内行の下に来ること
+    @MainActor
+    func testNotebookStartsBelowTheHint() {
+        guard let board = makeBoard() else { return XCTFail("マイボードを組み立てられない") }
+        board.applyOnboarding(step: .savePhoto)
+        board.view.layoutIfNeeded()
+        let header = board.collectionView.collectionViewLayout.layoutAttributesForSupplementaryView(
+            ofKind: JournalLayout.headerKind, at: IndexPath(item: 0, section: 0))!
+        let top = board.collectionView.convert(header.frame, to: board.view).minY
+        let hint = board.view.subviews.first { $0 is OnboardingHintView }!
+        XCTAssertGreaterThanOrEqual(top, hint.frame.maxY - 1)
+    }
+
+    /// 案内行が消えたら押し下げも戻ること
+    @MainActor
+    func testInsetReturnsWhenHintHides() {
+        guard let board = makeBoard() else { return XCTFail("マイボードを組み立てられない") }
+        board.applyOnboarding(step: .savePhoto)
+        board.view.layoutIfNeeded()
+        XCTAssertGreaterThan(board.collectionView.contentInset.top, 0)
+        board.applyOnboarding(step: .done)
+        board.view.layoutIfNeeded()
+        XCTAssertEqual(board.collectionView.contentInset.top, 0, accuracy: 0.5)
+    }
+
+    /// 下へスクロールしている間に案内行が消えても、見ている位置は動かないこと
+    @MainActor
+    func testHidingHintDoesNotMoveScrolledNotebook() {
+        guard let board = makeBoard() else { return XCTFail("マイボードを組み立てられない") }
+        board.view.frame.size.height = 400
+        board.applyOnboarding(step: .savePhoto)
+        board.view.layoutIfNeeded()
+        board.collectionView.contentOffset.y = 120
+        board.applyOnboarding(step: .done)
+        board.view.layoutIfNeeded()
+        XCTAssertEqual(board.collectionView.contentOffset.y, 120, accuracy: 0.5)
+    }
+
+    /// 並びが変わっていない Realm 通知では作り直さないこと(貼る動きを途中で消さない)
+    @MainActor
+    func testUnchangedRealmChangeDoesNotReloadNotebook() {
+        guard let board = makeBoard() else { return XCTFail("マイボードを組み立てられない") }
+        final class Counter: NSObject, UICollectionViewDataSource {
+            let base: UICollectionViewDataSource; var cells = 0
+            init(base: UICollectionViewDataSource) { self.base = base }
+            func numberOfSections(in cv: UICollectionView) -> Int { base.numberOfSections?(in: cv) ?? 1 }
+            func collectionView(_ cv: UICollectionView, numberOfItemsInSection s: Int) -> Int { base.collectionView(cv, numberOfItemsInSection: s) }
+            func collectionView(_ cv: UICollectionView, cellForItemAt ip: IndexPath) -> UICollectionViewCell { cells += 1; return base.collectionView(cv, cellForItemAt: ip) }
+            func collectionView(_ cv: UICollectionView, viewForSupplementaryElementOfKind k: String, at ip: IndexPath) -> UICollectionReusableView {
+                base.collectionView!(cv, viewForSupplementaryElementOfKind: k, at: ip)
+            }
+        }
+        board.beginAppearanceTransition(true, animated: false)
+        board.endAppearanceTransition()
+        let spy = Counter(base: board)
+        board.collectionView.dataSource = spy
+        board.collectionView.reloadData()
+        board.collectionView.layoutIfNeeded()
+        let before = spy.cells
+        board.realmObjectDidChange()
+        let settled = expectation(description: "main.async")
+        DispatchQueue.main.async { settled.fulfill() }
+        wait(for: [settled], timeout: 2)
+        board.collectionView.layoutIfNeeded()
+        XCTAssertEqual(spy.cells, before, "並びが同じなのにノートを作り直している")
+    }
+
     // MARK: - 書体
 
     /// 手書きとタイプライターの書体がアプリに入っていて、名前で引けること
