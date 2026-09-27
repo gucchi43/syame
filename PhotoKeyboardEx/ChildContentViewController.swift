@@ -11,8 +11,8 @@ import PhotoKeyboardFramework
 import RealmSwift
 import Toast
 
-/// マイボード(端末に保存済みの画像)の一覧。
-/// 公開フィードを廃止したため、データソースは Realm のみ。
+/// マイボード(端末に保存済みの画像)。縦に続く方眼ノートに、貼った順で写真を貼っていく。
+/// セクション 0 が写真、セクション 1 が「次はここ」(空状態も兼ねる)。データソースは Realm のみ。
 class ChildContentViewController: UIViewController, RealmManagerDelegate {
 
     @IBOutlet weak var collectionView: UICollectionView!
@@ -22,6 +22,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
     private var onboardingStep: OnboardingStep = .done
     var realmPhotos: Results<RealmPhoto>?
     private let refreshControl = UIRefreshControl()
+    private let journalLayout = JournalLayout()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,8 +35,7 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        collectionView.reloadData()
-        updateEmptyState()
+        reloadBoard()
     }
 
     /// いまの手順を受け取り、案内行の表示を更新する
@@ -86,142 +86,82 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         setupOnboardingHint()
         collectionView.dataSource = self
         collectionView.delegate = self
-        setupCollectionView()
-        collectionView.register(PhotoCollectionViewCell.self, forCellWithReuseIdentifier: PhotoCollectionViewCell.reuseIdentifier)
-        collectionView.contentMode = .left
-        collectionView.backgroundColor = .bgBase
+        journalLayout.itemsProvider = { [weak self] in self?.journalInputs() ?? [] }
+        collectionView.collectionViewLayout = journalLayout
+        collectionView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
+        collectionView.alwaysBounceVertical = true
+        collectionView.register(PastedPhotoCell.self, forCellWithReuseIdentifier: PastedPhotoCell.reuseIdentifier)
+        collectionView.register(NextSpotCell.self, forCellWithReuseIdentifier: NextSpotCell.reuseIdentifier)
+        collectionView.register(JournalCaptionView.self,
+                                forSupplementaryViewOfKind: JournalLayout.captionKind,
+                                withReuseIdentifier: JournalCaptionView.reuseIdentifier)
+        collectionView.register(JournalHeaderView.self,
+                                forSupplementaryViewOfKind: JournalLayout.headerKind,
+                                withReuseIdentifier: JournalHeaderView.reuseIdentifier)
+        // 方眼は背景ビューではなく模様色で敷く。背景ビューはスクロールしても動かず、
+        // 写真だけが方眼の上を滑ってしまうため
+        collectionView.backgroundView = nil
+        collectionView.backgroundColor = PaperBackgroundView.gridPattern
         refreshControl.addTarget(self, action: #selector(self
             .refresh(sender:)), for: .valueChanged)
         collectionView.refreshControl = refreshControl
     }
 
-    //MARK: - CollectionView UI Setup
-    func setupCollectionView(){
-        let layout = createGridLayout()
-        collectionView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
-        collectionView.alwaysBounceVertical = true
-        collectionView.collectionViewLayout = layout
-    }
+    /// 同じ日の写真を束ねるための日付キー
+    private static let dayFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.calendar = Calendar(identifier: .gregorian)
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.dateFormat = "yyyy-MM-dd"
+        return f
+    }()
+    /// 荷札と見出しに書く日付
+    private static let ticketFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.calendar = Calendar(identifier: .gregorian)
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.dateFormat = "yyyy.MM.dd"
+        return f
+    }()
 
-    private static let gridSpacing: CGFloat = 8
-    private static let gridColumns = 2
-    /// セル下部の情報エリアの高さ。セル側の定義をそのまま使う。
-    /// 文字サイズ設定で変わるため、起動時に固めず参照のたびに読む
-    private static var cellInfoHeight: CGFloat { PhotoCollectionViewCell.infoHeight }
-
-    /// 1行の高さを求める。画像は正方形にし、その下に情報エリアを積む。
-    /// 高さを可変(estimated)にすると、同じ行の2つのセルで高さが揃わず隙間ができる。
-    static func gridMetrics(containerWidth: CGFloat) -> (itemWidth: CGFloat, rowHeight: CGFloat) {
-        let columns = CGFloat(gridColumns)
-        // 左右の余白と列間の間隔を引いた残りを列数で割る
-        let available = containerWidth - gridSpacing * (columns + 1)
-        let itemWidth = max((available / columns).rounded(.down), 1)
-        return (itemWidth, itemWidth + cellInfoHeight)
-    }
-
-    private func createGridLayout() -> UICollectionViewCompositionalLayout {
-        return UICollectionViewCompositionalLayout { _, environment in
-            let spacing = ChildContentViewController.gridSpacing
-            let metrics = ChildContentViewController.gridMetrics(
-                containerWidth: environment.container.effectiveContentSize.width
-            )
-
-            // 幅を算出済みの絶対値で指定する。fractionalWidth や count 指定では
-            // 列間の間隔ぶんが考慮されず、はみ出してしまう
-            let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(
-                widthDimension: .absolute(metrics.itemWidth),
-                heightDimension: .fractionalHeight(1.0)
-            ))
-            let group = NSCollectionLayoutGroup.horizontal(
-                layoutSize: NSCollectionLayoutSize(
-                    widthDimension: .fractionalWidth(1.0),
-                    heightDimension: .absolute(metrics.rowHeight)
-                ),
-                subitems: Array(repeating: item, count: ChildContentViewController.gridColumns)
-            )
-            group.interItemSpacing = .fixed(spacing)
-
-            let section = NSCollectionLayoutSection(group: group)
-            section.interGroupSpacing = spacing
-            section.contentInsets = NSDirectionalEdgeInsets(top: spacing,
-                                                            leading: spacing,
-                                                            bottom: 88.0,
-                                                            trailing: spacing)
-            return section
+    /// レイアウトに渡す写真の列。並びは Realm の pastedAt 昇順のまま
+    private func journalInputs() -> [JournalItemInput] {
+        (realmPhotos.map { Array($0) } ?? []).map { photo in
+            let ratio = photo.imageHeight > 0 ? CGFloat(photo.imageWidth) / CGFloat(photo.imageHeight) : 1
+            return JournalItemInput(id: photo.id, aspectRatio: ratio,
+                                    dayKey: Self.dayFormatter.string(from: photo.pastedAt))
         }
     }
 
-    func updateEmptyState() {
-        guard (realmPhotos?.count ?? 0) == 0 else {
-            collectionView.backgroundView = nil
-            return
-        }
-
-        let emptyView = UIView(frame: collectionView.bounds)
-        emptyView.backgroundColor = .bgBase
-
-        let stackView = UIStackView()
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.spacing = 16
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-
-        let imageView = UIImageView()
-        imageView.image = .symbol(Symbol.emptyState, pointSize: 56)
-        imageView.tintColor = .textSecondary
-        imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.widthAnchor.constraint(equalToConstant: 80).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
-
-        let titleLabel = UILabel()
-        titleLabel.attributedText = NSAttributedString(
-            string: LocalizeKey.myBoardEmptyTitle.localizedString(),
-            attributes: [
-                .font: UIFont.scaled(.headline, weight: .semibold),
-                .foregroundColor: UIColor.textPrimary
-            ]
-        )
-        titleLabel.textAlignment = .center
-
-        stackView.addArrangedSubview(imageView)
-        stackView.addArrangedSubview(titleLabel)
-        emptyView.addSubview(stackView)
-
-        NSLayoutConstraint.activate([
-            stackView.centerXAnchor.constraint(equalTo: emptyView.centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo: emptyView.centerYAnchor, constant: -60)
-        ])
-
-        collectionView.backgroundView = emptyView
+    /// 写真の列が変わったので、貼り方を計算し直してから描き直す
+    private func reloadBoard() {
+        guard let collectionView = collectionView else { return }
+        journalLayout.invalidateLayout()
+        collectionView.reloadData()
     }
 
     @objc func reloadAfterPost(notification: Notification) -> Void {
-        collectionView.reloadData()
-        updateEmptyState()
+        reloadBoard()
     }
 
     @objc func reloadSaveState(notification: Notification) -> Void {
-        collectionView.reloadData()
-        updateEmptyState()
+        reloadBoard()
     }
 
     func realmObjectDidChange() {
         DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.collectionView?.reloadData()
-            self.updateEmptyState()
+            self?.reloadBoard()
         }
     }
 
     @objc func refresh(sender: UIRefreshControl) {
+        journalLayout.invalidateLayout()
         collectionView.reloadData {
             sender.endRefreshing()
         }
     }
 
-    /// セルの3点リーダーから開くメニューを組み立てる。
-    /// ローカルのデータなので削除の頻度は低い。1階層下げて誤操作を減らす。
+    /// 写真を長押ししたときのメニュー。コピーと削除
     private func makeMenu(for photo: RealmPhoto) -> UIMenu {
         let id = photo.id
         let copy = UIAction(title: LocalizeKey.menuCopy.localizedString(),
@@ -234,6 +174,26 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
             self?.confirmDelete(id: id)
         }
         return UIMenu(children: [copy, delete])
+    }
+
+    /// 長押しメニューの題名の列。メニューの中身の検証に使う
+    func contextMenuActionsForTesting(at indexPath: IndexPath) -> [String] {
+        guard indexPath.section == 0, let photo = savedPhoto(at: indexPath.item) else { return [] }
+        return makeMenu(for: photo).children.map(\.title)
+    }
+
+    /// VoiceOver では長押しできないので、同じ操作をカスタムアクションで出す
+    private func accessibilityActions(for photo: RealmPhoto) -> [UIAccessibilityCustomAction] {
+        let id = photo.id
+        let copy = UIAccessibilityCustomAction(name: LocalizeKey.menuCopy.localizedString()) { [weak self] _ in
+            self?.copyToPasteboard(photo: photo)
+            return true
+        }
+        let delete = UIAccessibilityCustomAction(name: LocalizeKey.menuDelete.localizedString()) { [weak self] _ in
+            self?.confirmDelete(id: id)
+            return true
+        }
+        return [copy, delete]
     }
 
     /// キーボードを開かなくても貼り付けられるようにする。
@@ -267,6 +227,14 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         return realmPhotos[index]
     }
 
+    /// 貼り方を読む。レイアウトより先に呼ばれて未計算なら、その場で計算させる
+    private func placement(at index: Int) -> JournalPlacement? {
+        if !journalLayout.placements.indices.contains(index) {
+            collectionView.collectionViewLayout.prepare()
+        }
+        return journalLayout.placements.indices.contains(index) ? journalLayout.placements[index] : nil
+    }
+
     func showPhotoDetail(rPhoto: RealmPhoto) {
         let sb = UIStoryboard(name: "PhotoDetail",bundle: nil)
         guard let vc = sb.instantiateInitialViewController() as? PhotoDetailViewController else { return }
@@ -276,22 +244,83 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
 }
 
 extension ChildContentViewController: UICollectionViewDataSource {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        // 0: 写真、1: 次はここ
+        return 2
+    }
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return realmPhotos?.count ?? 0
+        return section == 0 ? (realmPhotos?.count ?? 0) : 1
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PhotoCollectionViewCell.reuseIdentifier, for: indexPath)
-        if let cell = cell as? PhotoCollectionViewCell, let photo = savedPhoto(at: indexPath.row) {
-            cell.configure(photo: photo, menu: makeMenu(for: photo))
+        if indexPath.section == 1 {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NextSpotCell.reuseIdentifier, for: indexPath)
+            if let cell = cell as? NextSpotCell {
+                let count = realmPhotos?.count ?? 0
+                cell.configure(state: count >= RealmManager.photoLimit
+                               ? .full
+                               : .next(remaining: RealmManager.photoLimit - count))
+            }
+            return cell
+        }
+
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PastedPhotoCell.reuseIdentifier, for: indexPath)
+        if let cell = cell as? PastedPhotoCell,
+           let photo = savedPhoto(at: indexPath.item),
+           let placement = placement(at: indexPath.item) {
+            let ticketText = placement.prop == .ticket ? Self.ticketFormatter.string(from: photo.pastedAt) : nil
+            cell.configure(image: photo.thumbnail(maxPixelSize: 900) ?? photo.image,
+                           placement: placement,
+                           ticketText: ticketText,
+                           title: photo.text)
+            cell.accessibilityCustomActions = accessibilityActions(for: photo)
         }
         return cell
+    }
+
+    func collectionView(_ collectionView: UICollectionView,
+                        viewForSupplementaryElementOfKind kind: String,
+                        at indexPath: IndexPath) -> UICollectionReusableView {
+        switch kind {
+        case JournalLayout.headerKind:
+            let view = collectionView.dequeueReusableSupplementaryView(ofKind: kind,
+                                                                       withReuseIdentifier: JournalHeaderView.reuseIdentifier,
+                                                                       for: indexPath)
+            // ノートの書き出しの日付。写真が無ければ今日
+            let date = realmPhotos?.first?.pastedAt ?? Date()
+            (view as? JournalHeaderView)?.configure(dateText: Self.ticketFormatter.string(from: date))
+            return view
+        default:
+            let view = collectionView.dequeueReusableSupplementaryView(ofKind: JournalLayout.captionKind,
+                                                                       withReuseIdentifier: JournalCaptionView.reuseIdentifier,
+                                                                       for: indexPath)
+            (view as? JournalCaptionView)?.configure(text: savedPhoto(at: indexPath.item)?.text ?? "")
+            return view
+        }
     }
 }
 
 extension ChildContentViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let photo = savedPhoto(at: indexPath.row) else { return }
+        if indexPath.section == 1 {
+            // いっぱいのときは追加の導線に乗せない
+            guard (realmPhotos?.count ?? 0) < RealmManager.photoLimit else { return }
+            NotificationCenter.default.post(name: .requestAddPhoto, object: nil)
+            return
+        }
+        guard let photo = savedPhoto(at: indexPath.item) else { return }
         showPhotoDetail(rPhoto: photo)
+    }
+
+    func collectionView(_ collectionView: UICollectionView,
+                        contextMenuConfigurationForItemsAt indexPaths: [IndexPath],
+                        point: CGPoint) -> UIContextMenuConfiguration? {
+        // 写真 1 枚への長押しだけにメニューを出す。「次はここ」には出さない
+        guard indexPaths.count == 1, let indexPath = indexPaths.first, indexPath.section == 0,
+              let photo = savedPhoto(at: indexPath.item) else { return nil }
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
+            self?.makeMenu(for: photo)
+        }
     }
 }

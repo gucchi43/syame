@@ -59,7 +59,6 @@
 		8278D17222EE5AC30034C2CC /* PhotoKeyboardExOrigin.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 8278D16B22EE5AC30034C2CC /* PhotoKeyboardExOrigin.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8280C03D22F454B80069BF8B /* Add.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8280C03C22F454B80069BF8B /* Add.storyboard */; };
 		8280C03F22F454D20069BF8B /* AddViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280C03E22F454D20069BF8B /* AddViewController.swift */; };
-		8280C04222F455170069BF8B /* PhotoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280C04022F455170069BF8B /* PhotoCollectionViewCell.swift */; };
 		8280C04522F47D400069BF8B /* MainTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280C04422F47D400069BF8B /* MainTabViewController.swift */; };
 		8280C04722F481420069BF8B /* ChildContentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8280C04622F481410069BF8B /* ChildContentViewController.swift */; };
 		8280C04922F481490069BF8B /* ChildContent.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8280C04822F481490069BF8B /* ChildContent.storyboard */; };
@@ -228,7 +227,6 @@
 		8278D16B22EE5AC30034C2CC /* PhotoKeyboardExOrigin.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PhotoKeyboardExOrigin.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		8280C03C22F454B80069BF8B /* Add.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Add.storyboard; sourceTree = "<group>"; };
 		8280C03E22F454D20069BF8B /* AddViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddViewController.swift; sourceTree = "<group>"; };
-		8280C04022F455170069BF8B /* PhotoCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewCell.swift; sourceTree = "<group>"; };
 		8280C04422F47D400069BF8B /* MainTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabViewController.swift; sourceTree = "<group>"; };
 		8280C04622F481410069BF8B /* ChildContentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChildContentViewController.swift; sourceTree = "<group>"; };
 		8280C04822F481490069BF8B /* ChildContent.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ChildContent.storyboard; sourceTree = "<group>"; };
@@ -438,7 +436,6 @@
 				8280C04622F481410069BF8B /* ChildContentViewController.swift */,
 				82340957235E2EA60031E2BC /* PhotoDetail.storyboard */,
 				82340959235E2EC60031E2BC /* PhotoDetailViewController.swift */,
-				8280C04022F455170069BF8B /* PhotoCollectionViewCell.swift */,
 				8280C03C22F454B80069BF8B /* Add.storyboard */,
 				8280C03E22F454D20069BF8B /* AddViewController.swift */,
 				821ABDD7230C641600B3DCFE /* Usage.storyboard */,
@@ -838,7 +835,6 @@
 				82EA8924232A8E380022832E /* UpdateExtention.swift in Sources */,
 				82F9F3F022F589400062F451 /* MainMenuTableViewController.swift in Sources */,
 				8280C04522F47D400069BF8B /* MainTabViewController.swift in Sources */,
-				8280C04222F455170069BF8B /* PhotoCollectionViewCell.swift in Sources */,
 				821ABDDA230C642A00B3DCFE /* UsageViewController.swift in Sources */,
 				7A1E5EED2B0900010000A002 /* HowToSendViewController.swift in Sources */,
 				8278D13A22EE5A700034C2CC /* AppDelegate.swift in Sources */,

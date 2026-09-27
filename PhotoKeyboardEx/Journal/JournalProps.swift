@@ -12,6 +12,8 @@ import PhotoKeyboardFramework
 /// 方眼ノートの紙
 final class PaperBackgroundView: UIView {
     static let gridSpacing: CGFloat = 14
+    /// 方眼の模様色。タイルの描き直しを避けるため 1 回だけ作って使い回す
+    static let gridPattern: UIColor = gridPatternColor()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
