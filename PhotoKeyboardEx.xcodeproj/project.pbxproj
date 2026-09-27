@@ -83,6 +83,7 @@
 		82RT0002000000000000CC02 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 82RT0001000000000000CC01 /* RealmSwift */; };
 		84517D800D671FEF743FAE29 /* JournalHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D4C9E8A3732BC3135AA0B12 /* JournalHeaderView.swift */; };
 		85198BEC64E4E6444A4E9027 /* PastedPhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037A5E9A77DCC7A59D8BBCC4 /* PastedPhotoCell.swift */; };
+		8738FCD0BC469FCFB15F63C2 /* StickerButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECF0C2E6387A737D8A9B0D0B /* StickerButton.swift */; };
 		8CEB65DD0558ECA4C9E61C54 /* OnboardingHintView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11E1B897FFA5A256EA97357A /* OnboardingHintView.swift */; };
 		9527B8378D745A7C01436D00 /* Journal.swift in Sources */ = {isa = PBXBuildFile; fileRef = E779F59FE9E8B38FACA17165 /* Journal.swift */; };
 		A5396D415C41006E74ECD582 /* GuideChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F18345C571FA51EC48507654 /* GuideChatView.swift */; };
@@ -270,6 +271,7 @@
 		DF086916758BEEE4FD1D55AA /* OnboardingCelebration.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingCelebration.swift; sourceTree = "<group>"; };
 		E779F59FE9E8B38FACA17165 /* Journal.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Journal.swift; sourceTree = "<group>"; };
 		EB5F625F80AD2D5D385B90DF /* GuideHeroView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideHeroView.swift; sourceTree = "<group>"; };
+		ECF0C2E6387A737D8A9B0D0B /* StickerButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StickerButton.swift; sourceTree = "<group>"; };
 		F1295265A3BC90109D77794B /* GuideSampleGallery.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideSampleGallery.swift; sourceTree = "<group>"; };
 		F18345C571FA51EC48507654 /* GuideChatView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideChatView.swift; sourceTree = "<group>"; };
 		F9F89E41C32AE8F51E23E5FC /* OnboardingCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingCoordinator.swift; sourceTree = "<group>"; };
@@ -377,6 +379,7 @@
 				566859581765B63DF99EB1AB /* JournalCaptionView.swift */,
 				9D4C9E8A3732BC3135AA0B12 /* JournalHeaderView.swift */,
 				0D037FDD6AF5833D98020CAE /* NextSpotCell.swift */,
+				ECF0C2E6387A737D8A9B0D0B /* StickerButton.swift */,
 			);
 			name = Journal;
 			path = Journal;
@@ -865,6 +868,7 @@
 				3D5CDAC88E89F31C57FDFB32 /* JournalCaptionView.swift in Sources */,
 				84517D800D671FEF743FAE29 /* JournalHeaderView.swift in Sources */,
 				24125B33F6205D86E8462E9E /* NextSpotCell.swift in Sources */,
+				8738FCD0BC469FCFB15F63C2 /* StickerButton.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

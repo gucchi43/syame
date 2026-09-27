@@ -82,8 +82,10 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         NSLayoutConstraint.activate([
             onboardingHint.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
                                                 constant: Spacing.s),
-            onboardingHint.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Spacing.s),
-            onboardingHint.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -Spacing.s)
+            onboardingHint.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Spacing.l + 2),
+            // trailing は上限だけを与える。付箋は中身の幅ぶんだけ縮む
+            onboardingHint.trailingAnchor.constraint(lessThanOrEqualTo: view.trailingAnchor, constant: -(Spacing.l + 2)),
+            onboardingHint.widthAnchor.constraint(lessThanOrEqualTo: view.widthAnchor, multiplier: 0.8)
         ])
         onboardingHint.apply(step: onboardingStep)
     }

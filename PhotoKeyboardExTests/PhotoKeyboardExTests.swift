@@ -1435,6 +1435,46 @@ class PhotoKeyboardExTests: XCTestCase {
         let converted = controller.convertedImageSize(size: .zero)
         XCTAssertEqual(converted, .zero)
     }
+
+    // MARK: - 付箋とシール
+
+    /// 案内行は付箋。付箋の色で、手書きの書体、少し傾いている
+    @MainActor
+    func testHintIsAStickyNote() {
+        let hint = OnboardingHintView()
+        hint.apply(step: .savePhoto)
+        XCTAssertEqual(hint.backgroundColor, .accentSoft)
+        XCTAssertNotEqual(hint.transform, .identity, "傾いていない")
+        XCTAssertEqual(hint.textLabelForTesting.font.fontName, UIFont.journal(.subheadline).fontName)
+    }
+
+    /// 追加ボタンは付箋の色の丸いシールで、64pt、傾いていて、押すと沈み振動すること
+    @MainActor
+    func testStickerButtonIsATiltedRoundSticker() {
+        Motion.isReducedOverride = false
+        defer { Motion.isReducedOverride = nil }
+        final class Rec: HapticDriver { var played: [Haptic.Kind] = []; func play(_ k: Haptic.Kind) { played.append(k) } }
+        let rec = Rec(); let prev = Haptic.driver; Haptic.driver = rec; defer { Haptic.driver = prev }
+        let sticker = StickerButton(symbol: Symbol.add)
+        sticker.layoutIfNeeded()
+        XCTAssertEqual(sticker.bounds.width, 64)
+        XCTAssertEqual(atan2(sticker.transform.b, sticker.transform.a), -6 * .pi / 180, accuracy: 0.001)
+        sticker.isHighlighted = true
+        XCTAssertLessThan(hypot(sticker.transform.a, sticker.transform.b), 1)
+        XCTAssertEqual(rec.played, [.tap])
+        sticker.isHighlighted = false
+        XCTAssertEqual(atan2(sticker.transform.b, sticker.transform.a), -6 * .pi / 180, accuracy: 0.001, "離したら傾きが消えた")
+    }
+
+    /// ロゴはラベルライターのテープで、タイプライターの書体。読み上げはマイボード
+    @MainActor
+    func testLogoIsALabelTape() {
+        let tab = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MainTabViewController") as? MainTabViewController
+        tab?.loadViewIfNeeded()
+        let label = tab?.brandTitleViewForTesting?.subviews.compactMap { $0 as? UILabel }.first
+        XCTAssertEqual(label?.font.fontName, UIFont.label(.headline).fontName)
+        XCTAssertEqual(tab?.brandTitleViewForTesting?.accessibilityLabel, LocalizeKey.navMyBoard.localizedString())
+    }
 }
 
 /// ビュー階層に出ている文字を集める。文言が実際に画面へ届いているかを見る

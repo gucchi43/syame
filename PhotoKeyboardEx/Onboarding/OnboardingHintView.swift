@@ -6,13 +6,17 @@
 import UIKit
 import PhotoKeyboardFramework
 
-/// ボードの上に常設する「次にやること」の一行。
+/// ボードの上に常設する「次にやること」の一行。黄色い付箋として貼ってある体裁にする。
 ///
 /// 案内をモーダルだけに頼ると、閉じた瞬間に手がかりが消える。
 /// とくに1枚も保存しない利用者は、以前はキーボードの有効化を知る機会が無かった。
 final class OnboardingHintView: UIControl {
 
     private let label = UILabel()
+    /// 右下の折り返し。付箋の角がめくれて見えるようにする三角形
+    private let foldLayer = CAShapeLayer()
+    /// 折り返しの一辺の長さ
+    private static let foldSize: CGFloat = 16
 
     init() {
         super.init(frame: .zero)
@@ -23,16 +27,25 @@ final class OnboardingHintView: UIControl {
 
     private func setupSubviews() {
         backgroundColor = .accentSoft
-        applyCornerRadius(Radius.small)
+        // 付箋は角がわずかに丸いだけ。影を外に落とすため applyCornerRadius は使わず clipsToBounds は立てない
+        layer.cornerRadius = 2
+        clipsToBounds = false
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOpacity = 0.14
+        layer.shadowRadius = 5
+        layer.shadowOffset = CGSize(width: 0, height: 5)
+
+        foldLayer.fillColor = UIColor.black.withAlphaComponent(0.12).cgColor
+        layer.addSublayer(foldLayer)
 
         label.numberOfLines = 0
         label.textColor = .textPrimary
-        label.font = .scaled(.footnote, weight: .bold)
+        label.font = .journal(.subheadline)
         label.adjustsFontForContentSizeCategory = true
         label.translatesAutoresizingMaskIntoConstraints = false
 
         let chevron = UIImageView(image: .symbol(Symbol.next, textStyle: .footnote, weight: .bold))
-        chevron.tintColor = .accent
+        chevron.tintColor = .textPrimary
         chevron.setContentHuggingPriority(.required, for: .horizontal)
         chevron.translatesAutoresizingMaskIntoConstraints = false
 
@@ -50,6 +63,21 @@ final class OnboardingHintView: UIControl {
             chevron.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Spacing.m),
             chevron.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
+
+        // 貼ってあるように、わずかに傾ける
+        transform = CGAffineTransform(rotationAngle: -1.2 * .pi / 180)
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        // 右下の角がめくれた三角形。bounds が決まってから毎回引き直す
+        let size = Self.foldSize
+        let path = UIBezierPath()
+        path.move(to: CGPoint(x: bounds.maxX - size, y: bounds.maxY))
+        path.addLine(to: CGPoint(x: bounds.maxX, y: bounds.maxY))
+        path.addLine(to: CGPoint(x: bounds.maxX, y: bounds.maxY - size))
+        path.close()
+        foldLayer.path = path.cgPath
     }
 
     /// 出す手順を与える。案内が要らない手順なら自分を隠す
@@ -62,4 +90,7 @@ final class OnboardingHintView: UIControl {
         label.text = key.localizedString()
         accessibilityLabel = label.text
     }
+
+    /// テストから文言と書体を確かめるための入口
+    var textLabelForTesting: UILabel { label }
 }

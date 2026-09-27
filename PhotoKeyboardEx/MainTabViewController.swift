@@ -17,7 +17,7 @@ class MainTabViewController: UIViewController {
 
     @IBOutlet weak var barMenuButton: UIBarButtonItem!
 
-    var fabButton = AuroraButton()
+    var fabButton = StickerButton(symbol: Symbol.add)
 
     private lazy var boardViewController: ChildContentViewController = {
         let storyboard = UIStoryboard(name: "ChildContent", bundle: .main)
@@ -45,46 +45,41 @@ class MainTabViewController: UIViewController {
                                                name: .onboardingDidAdvance, object: nil)
     }
 
-    /// ナビゲーションバーの高さは44ptなので、上下に余白が残る大きさにする
-    private static let wordmarkHeight: CGFloat = 22
+    /// テストから読み上げ・書体を確かめるための入口
+    var brandTitleViewForTesting: UIView? { navigationItem.titleView }
 
-    /// ここはブランドが出る唯一の場所。文字ではなくロゴタイプを出す。
-    ///
-    /// 幅は画像の縦横比から決める。ロゴを描き直しても、比率さえ持っていれば
-    /// この関数を直さずに差し替えられる。
+    /// ここはブランドが出る唯一の場所。ラベルライターで打ったテープ(白地に黒字)を貼った体裁にする。
     private func applyBrandTitle() {
-        guard let wordmark = UIImage(named: "periperi_wordmark"), wordmark.size.height > 0 else {
-            applyFallbackBrandTitle()
-            return
-        }
-        let imageView = UIImageView(image: wordmark)
-        imageView.contentMode = .scaleAspectFit
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            imageView.heightAnchor.constraint(equalToConstant: MainTabViewController.wordmarkHeight),
-            imageView.widthAnchor.constraint(equalTo: imageView.heightAnchor,
-                                             multiplier: wordmark.size.width / wordmark.size.height)
-        ])
-        imageView.isAccessibilityElement = true
-        imageView.accessibilityLabel = LocalizeKey.navMyBoard.localizedString()
-        imageView.accessibilityTraits = .header
+        let tape = UIView()
+        tape.translatesAutoresizingMaskIntoConstraints = false
+        tape.backgroundColor = .onAccent
+        tape.layer.shadowColor = UIColor.black.cgColor
+        tape.layer.shadowOffset = CGSize(width: 0, height: 1)
+        tape.layer.shadowOpacity = 0.25
+        tape.layer.shadowRadius = 0
 
-        navigationItem.titleView = imageView
-        // titleView があると title は表示されないため、読み上げは画像側に持たせている
-        navigationItem.title = nil
-    }
-
-    /// ロゴが解決できなかったときに、名前が消えたままにならないようにする。
-    /// ロゴタイプに近い質感を出すため丸ゴシックの太字を使う。
-    private func applyFallbackBrandTitle() {
         let label = UILabel()
-        label.text = LocalizeKey.navMyBoard.localizedString()
-        label.font = .brand()
-        label.textColor = .textPrimary
+        label.text = "periperi"
+        label.font = .label(.headline)
+        label.textColor = .accent
         label.adjustsFontForContentSizeCategory = true
-        label.sizeToFit()
-        navigationItem.titleView = label
-        navigationItem.title = LocalizeKey.navMyBoard.localizedString()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        tape.addSubview(label)
+
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: tape.topAnchor, constant: 2),
+            label.bottomAnchor.constraint(equalTo: tape.bottomAnchor, constant: -2),
+            label.leadingAnchor.constraint(equalTo: tape.leadingAnchor, constant: 8),
+            label.trailingAnchor.constraint(equalTo: tape.trailingAnchor, constant: -8)
+        ])
+
+        // titleView があると title は表示されないため、読み上げはテープ側に持たせている
+        tape.isAccessibilityElement = true
+        tape.accessibilityLabel = LocalizeKey.navMyBoard.localizedString()
+        tape.accessibilityTraits = .header
+
+        navigationItem.titleView = tape
+        navigationItem.title = nil
     }
 
     /// 一覧を子ViewControllerとして敷く。FABは後から載せるため一覧より前面に来る。
@@ -229,24 +224,14 @@ class MainTabViewController: UIViewController {
     }
 
     func layoutFAB() {
-        let size: CGFloat = 56
-        fabButton.frame = CGRect(x: 0, y: 0, width: size, height: size)
-        // 地の塗りは AuroraButton が layer 側で持つ
-        fabButton.applyCornerRadius(size / 2)
-        fabButton.layer.shadowColor = UIColor.black.cgColor
-        fabButton.layer.shadowOffset = CGSize(width: 0, height: 2)
-        fabButton.layer.shadowOpacity = 0.3
-        fabButton.layer.shadowRadius = 4
-        fabButton.setImage(.symbol(Symbol.add, pointSize: 22, weight: .medium), for: .normal)
-        fabButton.tintColor = .onAurora
+        // 見た目(角丸・影)は StickerButton 自身が持つ。ここでは配置だけを決める
         fabButton.addTarget(self, action: #selector(tapFAB), for: .touchUpInside)
-        fabButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(fabButton)
         NSLayoutConstraint.activate([
-            fabButton.widthAnchor.constraint(equalToConstant: size),
-            fabButton.heightAnchor.constraint(equalToConstant: size),
-            fabButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
-            fabButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
+            fabButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,
+                                                constant: -Spacing.l - 2),
+            fabButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,
+                                              constant: -Spacing.l - 6)
         ])
     }
 
