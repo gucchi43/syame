@@ -98,7 +98,6 @@ final class NextSpotCell: UICollectionViewCell {
         }
         let mask = CALayer()
         mask.backgroundColor = UIColor.black.cgColor
-        mask.frame = CGRect(x: 0, y: 0, width: 0, height: titleLabel.bounds.height)
         titleLabel.layer.mask = mask
         CATransaction.begin()
         CATransaction.setCompletionBlock { [weak self] in

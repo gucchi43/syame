@@ -27,6 +27,9 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
     /// 直前に並べていた写真の id。増えた写真を見つけ、並びが同じ通知を見分けるために持つ
     private var knownPhotoIds: Set<String> = []
 
+    /// 「いっぱい」の演出がまだ見せられていない予約。「次はここ」セルが実際に表示されたときに演出する
+    private var pendingFullCelebration = false
+
     private func currentPhotoIds() -> [String] {
         (realmPhotos.map { Array($0) } ?? []).map { $0.id }
     }
@@ -44,6 +47,10 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         super.viewWillAppear(animated)
         reloadBoard()
         knownPhotoIds = Set(currentPhotoIds())
+        // アプリを閉じている間に上限へ達して見逃した人にも、次に「いっぱい」が見えたとき一度だけ見せる
+        if currentPhotoIds().count >= RealmManager.photoLimit && !GroupeDefaults.shared.hasCelebratedNotebookFull() {
+            pendingFullCelebration = true
+        }
     }
 
     override func viewDidLayoutSubviews() {
@@ -195,13 +202,31 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         }
     }
 
-    /// 上限まで貼った瞬間に一度だけ「いっぱい」を演出する
+    /// 上限に達していて未記録なら「いっぱい」を予約する。
+    /// 「次はここ」セルがいま画面に見えていればその場で演出し、見えていなければ
+    /// スクロールして呼び寄せ、実際に表示された瞬間(willDisplay)に演出する
     private func celebrateIfFull() {
         guard currentPhotoIds().count >= RealmManager.photoLimit,
-              !GroupeDefaults.shared.hasCelebratedNotebookFull(),
-              let spot = collectionView.cellForItem(at: IndexPath(item: 0, section: 1)) as? NextSpotCell else { return }
+              !GroupeDefaults.shared.hasCelebratedNotebookFull() else { return }
+        pendingFullCelebration = true
+        let spotIndexPath = IndexPath(item: 0, section: 1)
+        if let spot = collectionView.cellForItem(at: spotIndexPath) as? NextSpotCell {
+            celebrateFullSpot(spot)
+        } else {
+            collectionView.scrollToItem(at: spotIndexPath, at: .bottom, animated: true)
+        }
+    }
+
+    /// 実際に演出を始める。ここで初めて記録を立てる(演出できたときだけ一度きりにする)
+    private func celebrateFullSpot(_ spot: NextSpotCell) {
+        pendingFullCelebration = false
         GroupeDefaults.shared.markNotebookFullCelebrated()
         spot.revealWriting { Haptic.play(.full) }
+    }
+
+    /// テスト用に予約状態を作る
+    func markFullCelebrationPendingForTesting() {
+        pendingFullCelebration = true
     }
 
     @objc func reloadSaveState(notification: Notification) -> Void {
@@ -373,6 +398,12 @@ extension ChildContentViewController: UICollectionViewDataSource {
 }
 
 extension ChildContentViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        // 予約していた「いっぱい」の演出は、「次はここ」セルが実際に表示された瞬間に出す
+        guard indexPath.section == 1, pendingFullCelebration, let spot = cell as? NextSpotCell else { return }
+        celebrateFullSpot(spot)
+    }
+
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if indexPath.section == 1 {
             // いっぱいのときは追加の導線に乗せない

@@ -1507,10 +1507,32 @@ class PhotoKeyboardExTests: XCTestCase {
         defer { Motion.isReducedOverride = nil }
         let cell = NextSpotCell(frame: CGRect(x: 0, y: 0, width: 170, height: 140))
         cell.configure(state: .full)
+        cell.setNeedsLayout()
+        cell.layoutIfNeeded()
+        XCTAssertGreaterThan(cell.titleLabel.bounds.width, 0, "幅が定まっていない状態でのテストになっている")
         let done = expectation(description: "書き終わり")
         cell.revealWriting { done.fulfill() }
+        XCTAssertNotNil(cell.titleLabel.layer.mask, "書き始めた直後は書きかけのはず")
         wait(for: [done], timeout: 3)
         XCTAssertNil(cell.titleLabel.layer.mask, "書き終わっても隠れている")
+    }
+
+    /// 「いっぱい」は予約しておき、そのセルが実際に表示された瞬間にだけ演出すること
+    @MainActor
+    func testFullCelebrationWaitsUntilTheSpotIsShown() {
+        guard let board = makeBoard() else { return XCTFail("マイボードを組み立てられない") }
+        GroupeDefaults.shared.sharedDefaults.removeObject(forKey: "hasCelebratedNotebookFull")
+        defer { GroupeDefaults.shared.sharedDefaults.removeObject(forKey: "hasCelebratedNotebookFull") }
+        board.markFullCelebrationPendingForTesting()
+
+        let photoCell = UICollectionViewCell()
+        board.collectionView(board.collectionView, willDisplay: photoCell, forItemAt: IndexPath(item: 0, section: 0))
+        XCTAssertFalse(GroupeDefaults.shared.hasCelebratedNotebookFull(), "写真セルの表示では立たないはず")
+
+        let spotCell = NextSpotCell(frame: CGRect(x: 0, y: 0, width: 170, height: 140))
+        spotCell.configure(state: .full)
+        board.collectionView(board.collectionView, willDisplay: spotCell, forItemAt: IndexPath(item: 0, section: 1))
+        XCTAssertTrue(GroupeDefaults.shared.hasCelebratedNotebookFull(), "「次はここ」セルが表示されたら記録が立つはず")
     }
 }
 
