@@ -1165,6 +1165,97 @@ class PhotoKeyboardExTests: XCTestCase {
         }
     }
 
+    // MARK: - ノートのレイアウト
+
+    /// レイアウトに渡すだけの最小のデータソース
+    private final class StubSource: NSObject, UICollectionViewDataSource {
+        var photoCount: Int
+        init(photoCount: Int) { self.photoCount = photoCount }
+        func numberOfSections(in collectionView: UICollectionView) -> Int { 2 }
+        func collectionView(_ cv: UICollectionView, numberOfItemsInSection section: Int) -> Int { section == 0 ? photoCount : 1 }
+        func collectionView(_ cv: UICollectionView, cellForItemAt ip: IndexPath) -> UICollectionViewCell {
+            cv.dequeueReusableCell(withReuseIdentifier: "c", for: ip)
+        }
+        func collectionView(_ cv: UICollectionView, viewForSupplementaryElementOfKind kind: String, at ip: IndexPath) -> UICollectionReusableView {
+            cv.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "s", for: ip)
+        }
+    }
+
+    @MainActor
+    private func makeJournal(photoCount: Int, width: CGFloat = 390) -> (UICollectionView, JournalLayout, StubSource) {
+        let layout = JournalLayout()
+        layout.itemsProvider = { (0..<photoCount).map { JournalItemInput(id: "L\($0)", aspectRatio: 1, dayKey: "2026-09-27") } }
+        let cv = UICollectionView(frame: CGRect(x: 0, y: 0, width: width, height: 800), collectionViewLayout: layout)
+        cv.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "c")
+        cv.register(UICollectionReusableView.self, forSupplementaryViewOfKind: JournalLayout.captionKind, withReuseIdentifier: "s")
+        cv.register(UICollectionReusableView.self, forSupplementaryViewOfKind: JournalLayout.headerKind, withReuseIdentifier: "s")
+        let source = StubSource(photoCount: photoCount)
+        cv.dataSource = source
+        cv.layoutIfNeeded()
+        return (cv, layout, source)
+    }
+
+    /// 写真の姿勢は貼り方の角度どおりに回っていること
+    ///
+    /// attributes の取得は cv.layoutAttributesForItem(at:) ではなく layout 自身に対して行う。
+    /// 前者はウインドウに乗って「表示済み」になったセルにしか値を返さず、この collectionView
+    /// のようにウインドウ外で使う場合は毎回 nil になってしまうため
+    /// (実機のホストアプリと同じプロセスで動く XCTest では、テスト用のウインドウを作って
+    /// makeKeyAndVisible しても、ホストアプリ側の本物のウインドウにすぐ key を奪われて
+    /// 表示済み扱いが外れる)。レイアウト自身への問い合わせなら表示状態に左右されない。
+    @MainActor
+    func testLayoutRotatesEachPhoto() {
+        let (_, layout, _) = makeJournal(photoCount: 3)
+        for i in 0..<3 {
+            let attrs = layout.layoutAttributesForItem(at: IndexPath(item: i, section: 0))!
+            XCTAssertEqual(atan2(attrs.transform.b, attrs.transform.a), layout.placements[i].angle, accuracy: 0.0001)
+            XCTAssertEqual(attrs.center.x, layout.placements[i].frame.midX, accuracy: 0.5)
+        }
+    }
+
+    /// 後から貼った写真ほど上に重なること
+    @MainActor
+    func testLaterPhotosSitOnTop() {
+        let (_, layout, _) = makeJournal(photoCount: 3)
+        let z = (0..<3).map { layout.layoutAttributesForItem(at: IndexPath(item: $0, section: 0))!.zIndex }
+        XCTAssertEqual(z, z.sorted())
+        XCTAssertLessThan(z[0], z[2])
+    }
+
+    /// 「次はここ」はいちばん下で、ノートの高さはその下に追加ボタンのぶんの余白を持つこと
+    @MainActor
+    func testNextSpotIsLastAndContentLeavesRoomForTheButton() {
+        // collectionViewContentSize は layout.collectionView (weak) を毎回読むため、
+        // cv を破棄すると即座に解放されて幅が 0 になってしまう。ここでは cv を保持し続ける
+        let (cv, layout, _) = makeJournal(photoCount: 4)
+        let spot = layout.layoutAttributesForItem(at: IndexPath(item: 0, section: 1))!
+        let lastPhoto = layout.layoutAttributesForItem(at: IndexPath(item: 3, section: 0))!
+        XCTAssertGreaterThan(spot.frame.minY, lastPhoto.center.y)
+        XCTAssertGreaterThanOrEqual(layout.collectionViewContentSize.height, spot.frame.maxY + JournalLayout.bottomClearance - 1)
+        XCTAssertEqual(layout.collectionViewContentSize.width, 390, accuracy: 0.5)
+        _ = cv
+    }
+
+    /// 題名の補助ビューが写真ごとにあり、日付の見出しが頭にあること
+    @MainActor
+    func testCaptionsAndHeaderAreLaidOut() {
+        let (_, layout, _) = makeJournal(photoCount: 2)
+        XCTAssertNotNil(layout.layoutAttributesForSupplementaryView(ofKind: JournalLayout.headerKind, at: IndexPath(item: 0, section: 0)))
+        for i in 0..<2 {
+            let caption = layout.layoutAttributesForSupplementaryView(ofKind: JournalLayout.captionKind, at: IndexPath(item: i, section: 0))
+            XCTAssertEqual(caption?.center.x ?? -1, layout.placements[i].captionFrame.midX, accuracy: 0.5)
+        }
+        XCTAssertEqual(layout.layoutAttributesForElements(in: CGRect(x: 0, y: 0, width: 390, height: 100_000))?.count, 2 + 2 + 1 + 1)
+    }
+
+    /// 写真が 0 枚でも「次はここ」が見出しの下に出ること
+    @MainActor
+    func testEmptyNotebookStillShowsNextSpot() {
+        let (_, layout, _) = makeJournal(photoCount: 0)
+        let spot = layout.layoutAttributesForItem(at: IndexPath(item: 0, section: 1))!
+        XCTAssertGreaterThanOrEqual(spot.frame.minY, JournalLayout.headerHeight)
+    }
+
     // MARK: - バージョン比較
 
     /// メジャー番号を無視すると、端末の方が新しいのに更新を促してしまう
