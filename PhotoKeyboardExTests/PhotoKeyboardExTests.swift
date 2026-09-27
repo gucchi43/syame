@@ -1312,9 +1312,38 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertEqual(cell.titleLabel.text, LocalizeKey.journalNextSpot.localizedString())
         XCTAssertEqual(cell.remainingLabel.text, LocalizeKey.journalRemaining.localizedString(7))
         XCTAssertTrue(cell.accessibilityTraits.contains(.button))
+        XCTAssertEqual(cell.accessibilityLabel, LocalizeKey.journalAddPhotoAccessibility.localizedString())
         cell.configure(state: .full)
         XCTAssertEqual(cell.titleLabel.text, LocalizeKey.journalFull.localizedString())
         XCTAssertFalse(cell.accessibilityTraits.contains(.button), "いっぱいなのに押せる扱い")
+        XCTAssertEqual(cell.accessibilityLabel, LocalizeKey.journalFull.localizedString())
+    }
+
+    /// 見出しは「日付 — p.1」をタイプライターの書体・鉛筆色で書くこと
+    @MainActor
+    func testHeaderShowsDateAndPage() {
+        let header = JournalHeaderView(frame: CGRect(x: 0, y: 0, width: 200, height: 30))
+        header.configure(dateText: "2026.09.27")
+        XCTAssertEqual(header.label.text, "2026.09.27 — p.1")
+        XCTAssertEqual(header.label.font.fontName, UIFont.label(.caption2).fontName)
+        XCTAssertEqual(header.label.textColor, UIColor.pencil)
+    }
+
+    /// ちぎった切れ端の写真は、マスクの外形が丸ごと隠れてしまわず実際に見えること。
+    /// TornEdge.mask(for:) を貼るコンテナ(paperView.layer)としてここで初めて使うので、
+    /// マスクの前提(frame の要不要)がこのタスクで初めて確かめられる
+    @MainActor
+    func testTornPrintShowsThePhoto() {
+        let redImage = makeGuideImage(color: .red, size: CGSize(width: 200, height: 200))
+        let cell = PastedPhotoCell(frame: CGRect(x: 0, y: 0, width: 180, height: 200))
+        cell.configure(image: redImage, placement: placement(.torn), ticketText: nil, title: "")
+        cell.layoutIfNeeded()
+        XCTAssertTrue(containsColor(cell, .red, tolerance: 20), "切れ端の写真が見えていない")
+
+        let printCell = PastedPhotoCell(frame: CGRect(x: 0, y: 0, width: 180, height: 200))
+        printCell.configure(image: redImage, placement: placement(.print), ticketText: nil, title: "")
+        printCell.layoutIfNeeded()
+        XCTAssertTrue(containsColor(printCell, .red, tolerance: 20), "紙焼きの写真が見えていない")
     }
 
     // MARK: - バージョン比較

@@ -71,6 +71,12 @@ final class NextSpotCell: UICollectionViewCell {
         border.strokeColor = UIColor.pencil.resolvedColor(with: traitCollection).cgColor
     }
 
+    override func traitCollectionDidChange(_ previous: UITraitCollection?) {
+        super.traitCollectionDidChange(previous)
+        // 点線の色は CGColor なので、明暗が変わったら引き直す
+        setNeedsLayout()
+    }
+
     override var isHighlighted: Bool {
         didSet {
             guard isHighlighted != oldValue, case .next = state else { return }
