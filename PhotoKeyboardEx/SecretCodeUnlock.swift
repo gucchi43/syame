@@ -21,7 +21,7 @@ enum SecretCodeUnlock {
     /// 受け付けるコードの SHA-256(16進小文字)。正規化後の入力と比べる。
     /// リポジトリは公開なので、コードそのものはテストにも書かない
     static let acceptedDigests: Set<String> = [
-        "fd68fcf88c30b4df82ec214bb6b559ede1a5d47f3b1f751524177b998bb6bbdd"
+        "94241ab7e33c38524950166e2a1aa0eb9c3d53a1fc33e35292b32531f1ff5390"
     ]
 
     private static let unlockedKey = "secretCodeUnlocked"
