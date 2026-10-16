@@ -220,10 +220,14 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         }
     }
 
-    /// セルの3点リーダーから開くメニューを組み立てる。
+    /// セルの3点リーダーと長押しから開くメニューを組み立てる。
     /// ローカルのデータなので削除の頻度は低い。1階層下げて誤操作を減らす。
     private func makeMenu(for photo: RealmPhoto) -> UIMenu {
         let id = photo.id
+        let edit = UIAction(title: LocalizeKey.menuEdit.localizedString(),
+                            image: .symbol(Symbol.edit)) { [weak self] _ in
+            self?.presentTitleEditor(photo: photo)
+        }
         let copy = UIAction(title: LocalizeKey.menuCopy.localizedString(),
                             image: .symbol(Symbol.copy)) { [weak self] _ in
             self?.copyToPasteboard(photo: photo)
@@ -233,7 +237,33 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
                               attributes: .destructive) { [weak self] _ in
             self?.confirmDelete(id: id)
         }
-        return UIMenu(children: [copy, delete])
+        return UIMenu(children: [edit, copy, delete])
+    }
+
+    /// 題名を書き換える。追加時と同じく空の題名は受け付けない
+    private func presentTitleEditor(photo: RealmPhoto) {
+        let id = photo.id
+        let alert = UIAlertController(title: LocalizeKey.editTitleTitle.localizedString(),
+                                      message: nil,
+                                      preferredStyle: .alert)
+        let save = UIAlertAction(title: LocalizeKey.editTitleSave.localizedString(), style: .default) { [weak self, weak alert] _ in
+            guard RealmManager.shared.updateText(id: id, text: alert?.textFields?.first?.text ?? "") else { return }
+            // Realm の変更通知は件数が変わったときしか来ないので、該当のセルを自分で描き直す
+            self?.reloadCell(photoId: id)
+        }
+        alert.addTextField { field in
+            field.text = photo.text
+            field.placeholder = LocalizeKey.addInputTitle.localizedString()
+            field.clearButtonMode = .whileEditing
+            field.addAction(UIAction { [weak field] _ in
+                save.isEnabled = !(field?.text ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            }, for: .editingChanged)
+        }
+        save.isEnabled = !photo.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        alert.addAction(UIAlertAction(title: LocalizeKey.baseCancel.localizedString(), style: .cancel))
+        alert.addAction(save)
+        alert.preferredAction = save
+        present(alert, animated: true)
     }
 
     /// キーボードを開かなくても貼り付けられるようにする。
@@ -260,6 +290,11 @@ class ChildContentViewController: UIViewController, RealmManagerDelegate {
         })
         alert.addAction(UIAlertAction(title: LocalizeKey.baseCancel.localizedString(), style: .cancel))
         present(alert, animated: true)
+    }
+
+    private func reloadCell(photoId: String) {
+        guard let index = realmPhotos?.firstIndex(where: { $0.id == photoId }) else { return }
+        collectionView.reloadItems(at: [IndexPath(item: index, section: 0)])
     }
 
     private func savedPhoto(at index: Int) -> RealmPhoto? {
@@ -293,5 +328,15 @@ extension ChildContentViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let photo = savedPhoto(at: indexPath.row) else { return }
         showPhotoDetail(rPhoto: photo)
+    }
+
+    /// 長押しでも3点リーダーと同じメニューを出す。小さなボタンを狙わなくても編集できるように
+    func collectionView(_ collectionView: UICollectionView,
+                        contextMenuConfigurationForItemAt indexPath: IndexPath,
+                        point: CGPoint) -> UIContextMenuConfiguration? {
+        guard let photo = savedPhoto(at: indexPath.row) else { return nil }
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
+            self?.makeMenu(for: photo)
+        }
     }
 }

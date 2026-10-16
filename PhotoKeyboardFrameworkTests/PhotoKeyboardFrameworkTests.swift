@@ -811,4 +811,29 @@ class PhotoKeyboardFrameworkTests: XCTestCase {
                        "角括弧の対応が取れていない: \(guide)")
         XCTAssertEqual(makeEmphasized(guide).string, guide)
     }
+
+    // MARK: - 題名の編集
+
+    /// 題名だけが書き換わり、前後の空白は落とすこと。空の題名では書き換えないこと
+    func testUpdateTextRewritesOnlyTheTitle() throws {
+        var configuration = Realm.Configuration()
+        configuration.inMemoryIdentifier = "testUpdateText-\(UUID().uuidString)"
+        configuration.objectTypes = [RealmPhoto.self]
+        let realm = try Realm(configuration: configuration)
+
+        let photo = RealmPhoto()
+        photo.id = "photo"
+        photo.text = "before"
+        photo.useNum = 3
+        try realm.write { realm.add(photo) }
+
+        XCTAssertTrue(RealmManager.updateText(id: "photo", text: "  after  ", in: realm))
+        XCTAssertEqual(photo.text, "after")
+        XCTAssertEqual(photo.useNum, 3, "題名以外まで書き換わっている")
+
+        XCTAssertFalse(RealmManager.updateText(id: "photo", text: "   ", in: realm))
+        XCTAssertEqual(photo.text, "after", "空の題名で書き換わっている")
+
+        XCTAssertFalse(RealmManager.updateText(id: "no-such-id", text: "x", in: realm))
+    }
 }

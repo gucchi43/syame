@@ -122,3 +122,6 @@
 "secretCodeSuccessTitle" = "Code applied";
 "secretCodeSuccessMessage" = "You can now save unlimited images.";
 "secretCodeInvalid" = "That code is not valid";
+"menuEdit" = "Edit";
+"editTitleTitle" = "Edit title";
+"editTitleSave" = "Save";

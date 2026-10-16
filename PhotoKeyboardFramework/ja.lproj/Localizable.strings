@@ -122,3 +122,6 @@
 "secretCodeSuccessTitle" = "コードを適用しました";
 "secretCodeSuccessMessage" = "画像を枚数の制限なく保存できるようになりました。";
 "secretCodeInvalid" = "コードが正しくありません";
+"menuEdit" = "編集";
+"editTitleTitle" = "タイトルを編集";
+"editTitleSave" = "保存";
