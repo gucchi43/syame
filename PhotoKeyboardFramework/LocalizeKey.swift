@@ -129,6 +129,12 @@ public enum LocalizeKey: String, CaseIterable {
     case premiumActiveTitle
     case premiumActiveMessage
 
+    // MARK: - 題名の編集
+
+    case menuEdit
+    case editTitleTitle
+    case editTitleSave
+
     // MARK: - シークレットコード
 
     case secretCodeTitle

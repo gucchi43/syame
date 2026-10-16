@@ -314,6 +314,30 @@ public class RealmManager {
         }
     }
 
+    /// 題名だけを書き換える。前後の空白を除いて空になる場合は書き換えず false を返す。
+    /// incrementUseNum と同じく、未管理のコピーで上書きすると画像を再エンコードして劣化するため、
+    /// 管理下のオブジェクトの text だけを書き換える
+    @discardableResult
+    public func updateText(id: String, text: String) -> Bool {
+        guard let realm = diskRealm() else { return false }
+        return RealmManager.updateText(id: id, text: text, in: realm)
+    }
+
+    /// 書き込み先を受け取る版。テストでメモリ上の Realm を渡せるよう分けている
+    static func updateText(id: String, text: String, in realm: Realm) -> Bool {
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty,
+              let photo = realm.object(ofType: RealmPhoto.self, forPrimaryKey: id) else { return false }
+        do {
+            try realm.write {
+                photo.text = trimmed
+            }
+            return true
+        } catch {
+            return false
+        }
+    }
+
     // データを削除するための処理
     public func delete(docId: String, success: @escaping () -> Void, failure: @escaping (String) -> Void) {
         guard let realm = diskRealm() else {
