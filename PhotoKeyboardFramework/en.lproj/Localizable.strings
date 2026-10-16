@@ -116,3 +116,9 @@
 "celebrateOpenInstagram" = "Try in Instagram";
 "celebrateLater" = "Later";
 "onboardingHintAllowFullAccess" = "Allow Full Access, then open the keyboard once";
+"secretCodeTitle" = "Secret code";
+"secretCodePlaceholder" = "Enter code";
+"secretCodeSubmit" = "Apply";
+"secretCodeSuccessTitle" = "Code applied";
+"secretCodeSuccessMessage" = "You can now save unlimited images.";
+"secretCodeInvalid" = "That code is not valid";

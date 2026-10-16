@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		020F8C5EF9412556E4E89330 /* PhotoQuota.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D82B8661A81BE5AB8061313 /* PhotoQuota.swift */; };
+		7888095D6F3C959852809CDD /* SecretCodeUnlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1730FCBD548120D271CFDA5A /* SecretCodeUnlock.swift */; };
 		0C3FA8DCC26D4ADFCECCE942 /* GuideStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18FBFD095097990BB98F818A /* GuideStepView.swift */; };
 		1BA58F922609467F9EF8371F /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = CF8919C3BF774918835C4DB7 /* RealmSwift */; };
 		1CA5C392CE37392557119E2C /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
@@ -170,6 +171,7 @@
 		18FBFD095097990BB98F818A /* GuideStepView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideStepView.swift; sourceTree = "<group>"; };
 		1BC6FE59F327556F25A20E4F /* PaywallPresenter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaywallPresenter.swift; sourceTree = "<group>"; };
 		2D82B8661A81BE5AB8061313 /* PhotoQuota.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhotoQuota.swift; sourceTree = "<group>"; };
+		1730FCBD548120D271CFDA5A /* SecretCodeUnlock.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SecretCodeUnlock.swift; sourceTree = "<group>"; };
 		2E8DCF51AEA21D5ACF31D816 /* GuideComposerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuideComposerView.swift; sourceTree = "<group>"; };
 		4043FCB63BC521B268037404 /* PhotoKeyboardEx.storekit */ = {isa = PBXFileReference; includeInIndex = 1; path = PhotoKeyboardEx.storekit; sourceTree = "<group>"; };
 		466107055132CE2E0B02FC30 /* PaywallViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PaywallViewController.swift; sourceTree = "<group>"; };
@@ -401,6 +403,7 @@
 				3AFC413268D4AE00CD13CD28 /* Guide */,
 				C6F627618CF5716D1B09F7C9 /* PremiumStore.swift */,
 				2D82B8661A81BE5AB8061313 /* PhotoQuota.swift */,
+				1730FCBD548120D271CFDA5A /* SecretCodeUnlock.swift */,
 				466107055132CE2E0B02FC30 /* PaywallViewController.swift */,
 				1BC6FE59F327556F25A20E4F /* PaywallPresenter.swift */,
 				4043FCB63BC521B268037404 /* PhotoKeyboardEx.storekit */,
@@ -793,6 +796,7 @@
 				0C3FA8DCC26D4ADFCECCE942 /* GuideStepView.swift in Sources */,
 				D2B34B4D25C085C01DEB40AC /* PremiumStore.swift in Sources */,
 				020F8C5EF9412556E4E89330 /* PhotoQuota.swift in Sources */,
+				7888095D6F3C959852809CDD /* SecretCodeUnlock.swift in Sources */,
 				2D4737E85345832B666CFF25 /* PaywallViewController.swift in Sources */,
 				F7E67923C349F247131F8DC1 /* PaywallPresenter.swift in Sources */,
 				5911FB9D9B206B202BB42E94 /* OnboardingCoordinator.swift in Sources */,

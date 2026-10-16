@@ -13,9 +13,14 @@ import PhotoKeyboardFramework
 @MainActor
 enum PhotoQuota {
 
-    /// あと1枚保存できるか。プレミアムなら常に true
+    /// 上限なしで保存できるか。プレミアムかシークレットコードで解放済みなら true
+    static var isUnlimited: Bool {
+        return PremiumStore.shared.isPremium || SecretCodeUnlock.isUnlocked()
+    }
+
+    /// あと1枚保存できるか。上限なしなら常に true
     static var canSave: Bool {
-        if PremiumStore.shared.isPremium { return true }
+        if isUnlimited { return true }
         return RealmManager.shared.canSaveMorePhotos
     }
 

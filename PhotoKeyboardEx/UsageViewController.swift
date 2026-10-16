@@ -68,6 +68,7 @@ class UsageViewController: UIViewController {
         subLabel.textColor = .textPrimary
         subLabel.adjustsFontForContentSizeCategory = true
         insertFullAccessIllustration()
+        addSecretCodeGesture()
     }
 
     /// フルアクセスの許可を絵で示す。
@@ -143,6 +144,46 @@ class UsageViewController: UIViewController {
             later.centerXAnchor.constraint(equalTo: nextButton.centerXAnchor),
             later.heightAnchor.constraint(greaterThanOrEqualToConstant: 44)
         ])
+    }
+
+    /// 見出しを続けて5回叩くとシークレットコードの入力を出す。
+    ///
+    /// 見た目には何も足さない隠し入口。理由は `SecretCodeUnlock` の説明を参照
+    private func addSecretCodeGesture() {
+        let gesture = UITapGestureRecognizer(target: self, action: #selector(presentSecretCodeInput))
+        gesture.numberOfTapsRequired = 5
+        firstLabel.isUserInteractionEnabled = true
+        firstLabel.addGestureRecognizer(gesture)
+    }
+
+    @objc private func presentSecretCodeInput() {
+        let alert = UIAlertController(title: LocalizeKey.secretCodeTitle.localizedString(),
+                                      message: nil,
+                                      preferredStyle: .alert)
+        alert.addTextField { field in
+            field.placeholder = LocalizeKey.secretCodePlaceholder.localizedString()
+            field.autocapitalizationType = .none
+            field.autocorrectionType = .no
+            field.spellCheckingType = .no
+        }
+        alert.addAction(UIAlertAction(title: LocalizeKey.baseCancel.localizedString(), style: .cancel))
+        alert.addAction(UIAlertAction(title: LocalizeKey.secretCodeSubmit.localizedString(), style: .default) { [weak self, weak alert] _ in
+            let input = alert?.textFields?.first?.text ?? ""
+            self?.presentSecretCodeResult(succeeded: SecretCodeUnlock.redeem(input))
+        })
+        present(alert, animated: true)
+    }
+
+    private func presentSecretCodeResult(succeeded: Bool) {
+        let alert = succeeded
+            ? UIAlertController(title: LocalizeKey.secretCodeSuccessTitle.localizedString(),
+                                message: LocalizeKey.secretCodeSuccessMessage.localizedString(),
+                                preferredStyle: .alert)
+            : UIAlertController(title: LocalizeKey.secretCodeInvalid.localizedString(),
+                                message: nil,
+                                preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: LocalizeKey.baseOK.localizedString(), style: .default))
+        present(alert, animated: true)
     }
 
     @objc private func tapLaterButton() {
