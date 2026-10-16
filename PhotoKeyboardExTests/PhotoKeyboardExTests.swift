@@ -325,6 +325,46 @@ class PhotoKeyboardExTests: XCTestCase {
         XCTAssertEqual(PhotoQuota.freeLimit, RealmManager.photoLimit)
     }
 
+    // MARK: - シークレットコード
+
+    /// テスト専用のコード "test-code" の SHA-256。
+    /// リポジトリは公開なので、本物のコードはテストにも書かない
+    private let testCodeDigests: Set<String> = [
+        "3a5f4b089cfd9588a00d4da744493979993cd87e5361d2720acc36a83eb8c04d"
+    ]
+
+    /// 登録したコードだけを受け付け、前後の空白と大文字小文字は許すこと
+    func testSecretCodeAcceptsOnlyRegisteredCode() {
+        XCTAssertTrue(SecretCodeUnlock.isValid("test-code", accepted: testCodeDigests))
+        XCTAssertTrue(SecretCodeUnlock.isValid("  TEST-CODE\n", accepted: testCodeDigests))
+        XCTAssertFalse(SecretCodeUnlock.isValid("", accepted: testCodeDigests))
+        XCTAssertFalse(SecretCodeUnlock.isValid("test-cod", accepted: testCodeDigests))
+        XCTAssertFalse(SecretCodeUnlock.isValid("test code", accepted: testCodeDigests))
+    }
+
+    /// 正しいコードでだけ解放が記録されること。誤りでは記録しない
+    func testSecretCodeRedeemPersistsOnlyOnSuccess() {
+        let suiteName = "SecretCodeUnlockTests"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defaults.removePersistentDomain(forName: suiteName)
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
+        XCTAssertFalse(SecretCodeUnlock.isUnlocked(defaults: defaults))
+        XCTAssertFalse(SecretCodeUnlock.redeem("wrong", defaults: defaults, accepted: testCodeDigests))
+        XCTAssertFalse(SecretCodeUnlock.isUnlocked(defaults: defaults))
+        XCTAssertTrue(SecretCodeUnlock.redeem("test-code", defaults: defaults, accepted: testCodeDigests))
+        XCTAssertTrue(SecretCodeUnlock.isUnlocked(defaults: defaults))
+    }
+
+    /// 本番のコード表はハッシュ(64桁の16進小文字)だけで持つこと。平文が紛れ込まないように
+    func testSecretCodeDigestsAreHashesOnly() {
+        XCTAssertFalse(SecretCodeUnlock.acceptedDigests.isEmpty)
+        for digest in SecretCodeUnlock.acceptedDigests {
+            XCTAssertEqual(digest.count, 64)
+            XCTAssertTrue(digest.allSatisfy { "0123456789abcdef".contains($0) }, "ハッシュでない値: \(digest)")
+        }
+    }
+
     /// 上限の文言に枚数を差し込めること。
     /// 直書きのままだと photoLimit を変えたときに文言だけ古い数字が残る
     func testLimitReachedTitleTakesTheCount() {

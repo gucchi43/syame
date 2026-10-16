@@ -116,3 +116,9 @@
 "celebrateOpenInstagram" = "Instagramで試す";
 "celebrateLater" = "あとで";
 "onboardingHintAllowFullAccess" = "フルアクセスを許可して、一度キーボードを開く";
+"secretCodeTitle" = "シークレットコード";
+"secretCodePlaceholder" = "コードを入力";
+"secretCodeSubmit" = "適用";
+"secretCodeSuccessTitle" = "コードを適用しました";
+"secretCodeSuccessMessage" = "画像を枚数の制限なく保存できるようになりました。";
+"secretCodeInvalid" = "コードが正しくありません";
